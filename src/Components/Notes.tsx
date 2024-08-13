@@ -3,12 +3,12 @@ import React from 'react'
 import Navbar from './Navbar'
 import Taskbar from './Taskbar'
 
-const Statistics = () => {
+const Notes = () => {
   return (
     <View>
-      <Text style={{color: '#000000'}}>Statistics</Text>
+      <Text style={{color: '#000000'}}>Notes</Text>
     </View>
   )
 }
 
-export default Statistics
+export default Notes

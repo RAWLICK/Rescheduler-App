@@ -220,8 +220,8 @@ const Schedule = () => {
     
     return (
       <SafeAreaView style={styles.safeView}>
-      <GestureHandlerRootView>
-      <PanGestureHandler>
+      {/* <GestureHandlerRootView>
+      <PanGestureHandler> */}
         <View style={styles.mainStyle}>
           {/* <Navbar/> */}
           <View style={styles.mainArea}>
@@ -259,8 +259,8 @@ const Schedule = () => {
             {/* <Taskbar/> */}
           </View>
         </View>
-      </PanGestureHandler>
-      </GestureHandlerRootView>
+      {/* </PanGestureHandler>
+      </GestureHandlerRootView> */}
       </SafeAreaView>
     );
   }
