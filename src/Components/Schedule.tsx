@@ -21,7 +21,8 @@ import {
   View,
   Image,
   ImageBackground,
-  TouchableOpacity
+  TouchableOpacity,
+  Button
 } from 'react-native';
 import Navbar from './Navbar';
 import Taskbar from './Taskbar';
@@ -247,9 +248,13 @@ const Schedule = () => {
                 <SingleAngle/>
               </View>
             </View>
+
             <View style={styles.LowerArea}>
-               {/* <Text>3rd Flex</Text> */}
+              <TouchableOpacity style={styles.RescheduleButton}>
+                <Text style={{fontWeight: 'bold', fontSize: 20, color: '#FFFFFF'}}>Reschedule</Text>
+              </TouchableOpacity>
             </View>
+
             <View style={{flex: 0.4, alignItems: 'flex-end', marginRight: 20}}>
               <TouchableOpacity style={{backgroundColor: '#bd54ee', padding: 15, borderRadius: 30}} 
               onPress={()=> navigation.navigate('AddTiming')}>
@@ -257,6 +262,8 @@ const Schedule = () => {
               </TouchableOpacity>
             </View>
             {/* <Taskbar/> */}
+            <View style={styles.overlay}>
+            </View>
           </View>
         </View>
       {/* </PanGestureHandler>
@@ -283,6 +290,7 @@ const Schedule = () => {
       // justifyContent: 'center',
       // backgroundColor: '#10a5dd',
       backgroundColor: '#FFFFFF',
+      
     },
   
     UpperArea: {
@@ -348,14 +356,15 @@ const Schedule = () => {
       flex: 1.7,
       width: 350,
       height: 350,
-      // backgroundColor: '#0d750b',
+      // backgroundColor: 'rgba(0, 0, 0, 0.5)',
       borderRadius: 30,
       justifyContent: 'center',
       alignItems: 'center',
       alignSelf: 'center',
       position: 'relative'
       // borderWidth: 5,
-      // borderColor: '#0a74a2'
+      // borderColor: '#0a74a2',
+
     },
 
     Clock: {
@@ -443,11 +452,37 @@ const Schedule = () => {
       // backgroundColor: 'black'
     },
 
+    RescheduleButton: {
+      backgroundColor: '#6B1294',
+      height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginLeft: 60,
+      marginRight: 60,
+      borderRadius: 12,
+      marginTop: 5
+    },
+
     AddIcon: {
       width: 30,
-      height: 30,
-      
-    }
+      height: 30
+    },
+
+    overlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Black with 50% opacity
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000, // Ensure the overlay is on top
+    },
+    overlayText: {
+      color: 'white',
+      fontSize: 24,
+    },
   });
 
 export default Schedule
