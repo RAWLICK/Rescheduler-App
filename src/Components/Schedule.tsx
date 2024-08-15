@@ -31,6 +31,16 @@ const Schedule = () => {
     const [hourRotation, setHourRotation] = useState(0)
     const [minuteRotation, setMinuteRotation] = useState(0)
     const [secondRotation, setSecondRotation] = useState(0)
+    const navigation = useNavigation<NavigationProp<any, any>>();
+    const angle = useSharedValue(0);
+    const startAngle = useSharedValue(0);
+    const [infoVisible, setInfoVisible] = useState(false)
+    const [timeStart, settimeStart] = useState('')
+    const [timeEnd, settimeEnd] = useState('')
+    const [duration, setduration] = useState<number>()
+    const [Work, setWork] = useState('')
+    const [angleColor, setangleColor] = useState('')
+    const [tintstatus, setTintStatus] = useState(false)
   
     setTimeout(() => {
       let d = new Date();
@@ -40,15 +50,11 @@ const Schedule = () => {
       let hRotation = 30*hTime + 0.5*mTime;
       let mRotation = 6*mTime;
       let sRotation = 6*sTime;
-  
+      
       setHourRotation(hRotation);
       setMinuteRotation(mRotation);
       setSecondRotation(sRotation);
     }, 1000);
-    
-    const navigation = useNavigation<NavigationProp<any, any>>();
-    const angle = useSharedValue(0);
-    const startAngle = useSharedValue(0);
     
     // const [sound, setSound] = useState<Sound | null>(null);
     // const playSound = () => {
@@ -124,13 +130,6 @@ const Schedule = () => {
       "Work": ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break','Sona', 'Work 5', 'Work 5 Break', 'Work 6', 'Free 1', 'Work 7', 'Work 8', 'Work 9']
     };
   
-    const [isVisible, setIsVisible] = useState(false)
-    const [timeStart, settimeStart] = useState('')
-    const [timeEnd, settimeEnd] = useState('')
-    const [duration, setduration] = useState<number>()
-    const [Work, setWork] = useState('')
-    const [angleColor, setangleColor] = useState('')
-  
     const SingleAngle = () => {
       const hardRadius = 150;
       const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
@@ -175,7 +174,7 @@ const Schedule = () => {
               console.log('Pressed onOP');
               console.log(startAngle);
               console.log(endAngle);
-              setIsVisible(true);
+              setInfoVisible(true);
               settimeStart(startTime);
               settimeEnd(endTime)
               setWork(angleWork)
@@ -185,7 +184,7 @@ const Schedule = () => {
             };
   
             const anglePressOut = () => {
-              setIsVisible(false)
+              setInfoVisible(false)
             }
             return(
               <Path
@@ -225,9 +224,9 @@ const Schedule = () => {
       <PanGestureHandler> */}
         <View style={styles.mainStyle}>
           {/* <Navbar/> */}
-          <View style={styles.mainArea}>
+          <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
             <View style={styles.UpperArea}>
-              {isVisible && (
+              {infoVisible && (
                 <AngleInfo/>
               )}
             </View>
@@ -249,21 +248,19 @@ const Schedule = () => {
               </View>
             </View>
 
-            <View style={styles.LowerArea}>
-              <TouchableOpacity style={styles.RescheduleButton}>
-                <Text style={{fontWeight: 'bold', fontSize: 20, color: '#FFFFFF'}}>Reschedule</Text>
+            <View style={[styles.LowerArea]}>
+              <TouchableOpacity style={[styles.RescheduleButton, tintstatus == true? {opacity: 0.5} : {}]} onPress={() => setTintStatus(!(tintstatus))}>
+                <Text style={[{fontWeight: 'bold', fontSize: 20, color: '#FFFFFF'}, tintstatus == true? {color: 'rgba(255, 255, 255, 0.5)'} : {}]}>Reschedule</Text>
               </TouchableOpacity>
             </View>
 
             <View style={{flex: 0.4, alignItems: 'flex-end', marginRight: 20}}>
-              <TouchableOpacity style={{backgroundColor: '#bd54ee', padding: 15, borderRadius: 30}} 
+              <TouchableOpacity style={[{backgroundColor: '#bd54ee', padding: 15, borderRadius: 30}, tintstatus == true? {opacity: 0.5, pointerEvents: 'none'} : {}]} 
               onPress={()=> navigation.navigate('AddTiming')}>
                 <Image style={styles.AddIcon} source={AddIcon}/>
               </TouchableOpacity>
             </View>
             {/* <Taskbar/> */}
-            <View style={styles.overlay}>
-            </View>
           </View>
         </View>
       {/* </PanGestureHandler>
@@ -286,11 +283,7 @@ const Schedule = () => {
     mainArea: {
       flex: 1,
       flexDirection: 'column',
-      // alignItems: 'center',
-      // justifyContent: 'center',
-      // backgroundColor: '#10a5dd',
-      backgroundColor: '#FFFFFF',
-      
+      backgroundColor: '#FFFFFF'
     },
   
     UpperArea: {
@@ -469,20 +462,14 @@ const Schedule = () => {
     },
 
     overlay: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Black with 50% opacity
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1000, // Ensure the overlay is on top
-    },
-    overlayText: {
-      color: 'white',
-      fontSize: 24,
-    },
+      // position: 'absolute',
+      // top: 0,
+      // left: 0,
+      // right: 0,
+      // bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      // zIndex: 1000, // Ensure the overlay is on top
+    }
   });
 
 export default Schedule
