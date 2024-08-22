@@ -4,14 +4,17 @@ import { useState } from 'react';
 import ClockImage from '../Images/AnalogClockImage.png'
 // import Holder from '../Images/Holder.png'
 import AddIcon from '../Images/AddIcon.png'
+import LeftArrow from '../Images/LeftArrow.png'
 import 'react-native-gesture-handler'
 import { Gesture, GestureDetector, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Circle, Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import Sound from 'react-native-sound';
 // import ChainSound from '../Sounds/ChainSound.mp3'
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { BlurView } from "@react-native-community/blur";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 import {
   SafeAreaView,
   ScrollView,
@@ -41,6 +44,7 @@ const Schedule = () => {
     const [Work, setWork] = useState('')
     const [angleColor, setangleColor] = useState('')
     const [tintstatus, setTintStatus] = useState(false)
+    const [strokeStatus, setStrokeStatus] = useState(false)
   
     setTimeout(() => {
       let d = new Date();
@@ -74,31 +78,31 @@ const Schedule = () => {
     //   setSound(newSound);
     // })};
     
-    const pan = Gesture.Pan()
-      .onBegin(() => {
-        startAngle.value = angle.value;
-        console.log("Pressed onBegin")
-      })
-      .onStart(() => {
-        startAngle.value = angle.value;
-        console.log("Pressed onStart")
-      })
-      .onChange((event) => {
-        console.log("Pressed onChange")
-        const x = event.translationX;
-        const y = event.translationY;
-        const newAngle = Math.atan2(y, x);
-        angle.value = startAngle.value + newAngle;
-        // playSound();
-      })
-      .onFinalize(() => {
-        console.log("Pressed onFinalize")
-      });
+    // const pan = Gesture.Pan()
+    //   .onBegin(() => {
+    //     startAngle.value = angle.value;
+    //     console.log("Pressed onBegin")
+    //   })
+    //   .onStart(() => {
+    //     startAngle.value = angle.value;
+    //     console.log("Pressed onStart")
+    //   })
+    //   .onChange((event) => {
+    //     console.log("Pressed onChange")
+    //     const x = event.translationX;
+    //     const y = event.translationY;
+    //     const newAngle = Math.atan2(y, x);
+    //     angle.value = startAngle.value + newAngle;
+    //     // playSound();
+    //   })
+    //   .onFinalize(() => {
+    //     console.log("Pressed onFinalize")
+    //   });
                                                                                                                    
-      const animatedStyles = useAnimatedStyle(() => ({
-        transform: [
-          { rotate: `${angle.value}rad` }]
-      }));
+      // const animatedStyles = useAnimatedStyle(() => ({
+      //   transform: [
+      //     { rotate: `${angle.value}rad` }]
+      // }));
   
     const data = {
       "Start_": [300.0, 325.5, 351.0, 357.5, 383.0, 389.5, 390.0, 420.0, 445.0, 458.0, 496.5, 510.0, 540.0, 552.0, 565.0],
@@ -162,6 +166,12 @@ const Schedule = () => {
       return (
         <Svg width={hardRadius * 2} height={hardRadius * 2} viewBox={`0 0 ${hardRadius * 2} ${hardRadius * 2}`}>
           <Circle cx={hardRadius} cy={hardRadius} r={hardRadius} fill='#FFFFFF'/>
+          {/* <Defs>
+            <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <Stop offset="0%" stopColor="red" stopOpacity="1" />
+              <Stop offset="50%" stopColor="red" stopOpacity="0" />
+            </LinearGradient>
+          </Defs> */}
           {data['Start_'].map((startAngle, i) => {
             const endAngle = data['End_'][i];
             const sectorColor = data['Slice_Color'][i];
@@ -176,11 +186,12 @@ const Schedule = () => {
               console.log(endAngle);
               setInfoVisible(true);
               settimeStart(startTime);
-              settimeEnd(endTime)
-              setWork(angleWork)
-              setduration(angleDuration)
-              setangleColor(sectorColor)
-              console.log(angleColor)
+              settimeEnd(endTime);
+              setWork(angleWork);
+              setduration(angleDuration);
+              setangleColor(sectorColor);
+              setStrokeStatus(true);
+              console.log(angleColor);
             };
   
             const anglePressOut = () => {
@@ -193,8 +204,20 @@ const Schedule = () => {
                 fill={sectorColor}  
                 onPressIn={()=> angleOnPress()}
                 onPressOut={()=> anglePressOut()}
+                // stroke={strokeStatus? '#000000' : 'none'}
+                // strokeDasharray="5,10"  // 10 units of stroke, 5 units of gap
+                // strokeDashoffset="0"    // Start from the beginning of the path
+
+                // stroke="url(#grad)"     //<Defs> Part
+                // strokeWidth="4"
               />
           )})}
+          {tintstatus && (
+            <Path
+            d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, data["End_"][14], hourRotation)}
+            fill= "rgba(0, 0, 0, 0.5)"
+          />
+          )}
         </Svg>
       );
     };
@@ -246,6 +269,28 @@ const Schedule = () => {
               <View style={styles.arcAngle}>
                 <SingleAngle/>
               </View>
+              {tintstatus && (
+                <View style={styles.selectionDialogBox}>
+                  <BlurView
+                    style={styles.blurStyle}
+                    blurType="dark"
+                    blurAmount={10}
+                    reducedTransparencyFallbackColor="black"
+                  />
+                  <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
+                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                      <Image source={LeftArrow} style={{height: 17, width: 17}}/>
+                    </View>
+                    <View style={{flex: 6, borderRadius: 20, justifyContent: 'center', marginLeft: 45}}>
+                      <Text style={{fontWeight: 'bold', fontSize: 15}}>Choose the Prior Work</Text>
+                    </View>
+                  </View>
+                  <View style={{flex: 6}}>
+                    <Text>Selection Area</Text>
+                  </View>
+                </View>
+              )}
+              
             </View>
 
             <View style={[styles.LowerArea]}>
@@ -427,17 +472,30 @@ const Schedule = () => {
      },
   
     arcAngle: {
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: -1
+      position: 'absolute',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'center',
+      zIndex: -1
     },
-  
-    over: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    zIndex: 1
+
+    selectionDialogBox: {
+      flexDirection: 'column',
+      backgroundColor: 'black',
+      height: 320,
+      width: 320,
+      borderRadius: 20,
+      opacity: 0.85,
+      overflow: 'hidden'
+    },
+
+    blurStyle: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0
+      
     },
 
     LowerArea: {
