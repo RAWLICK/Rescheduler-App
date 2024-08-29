@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // import ClockImage from '../Images/AnalogClockImage.png'
 import ClockImage from '../Images/AnalogClockImage.png'
 // import Holder from '../Images/Holder.png'
@@ -15,6 +15,7 @@ import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { BlurView } from "@react-native-community/blur";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import Carousel from 'react-native-reanimated-carousel';
 import {
   SafeAreaView,
   ScrollView,
@@ -25,7 +26,7 @@ import {
   Image,
   ImageBackground,
   TouchableOpacity,
-  Button
+  Dimensions
 } from 'react-native';
 import Navbar from './Navbar';
 import Taskbar from './Taskbar';
@@ -45,6 +46,9 @@ const Schedule = () => {
     const [angleColor, setangleColor] = useState('')
     const [tintstatus, setTintStatus] = useState(false)
     const [strokeStatus, setStrokeStatus] = useState(false)
+    const [rescheduleStatus, setRescheduleStatus] = useState('off')
+    const [DialogTitle, setDialogTitle] = useState('')
+    const width = Dimensions.get('window').width;  // For Carousel
   
     setTimeout(() => {
       let d = new Date();
@@ -54,6 +58,7 @@ const Schedule = () => {
       let hRotation = 30*hTime + 0.5*mTime;
       let mRotation = 6*mTime;
       let sRotation = 6*sTime;
+      
       
       setHourRotation(hRotation);
       setMinuteRotation(mRotation);
@@ -131,7 +136,7 @@ const Schedule = () => {
       "rgba(28, 79, 20, 0.5)",
       "rgba(82, 176, 27, 0.5)",
       "rgba(191, 115, 181, 0.5)"],
-      "Work": ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break','Sona', 'Work 5', 'Work 5 Break', 'Work 6', 'Free 1', 'Work 7', 'Work 8', 'Work 9']
+      "Work": ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break','Sona', 'Work 5', 'Work 5 Break', 'Work 6', 'Free 1', 'Work 7', 'Work 8', 'Work 9', 'Fuck 1', 'Fuck 2', 'Fuck 3', 'Fuck 4', 'Fuck 5']
     };
   
     const SingleAngle = () => {
@@ -241,6 +246,75 @@ const Schedule = () => {
       );
     } 
     
+    useEffect(() => {
+      if (rescheduleStatus === 'PriorStage') {
+        setDialogTitle('Choose Prior Work')
+      }
+      else if (rescheduleStatus === 'FixingStage') {
+        setDialogTitle('Choose the ones to be Fixed')
+      }
+      else if (rescheduleStatus === 'RemovingStage') {
+        setDialogTitle('Choose Removing Work')
+      }
+    }, [rescheduleStatus]);
+    
+    const SelectionDialogBox = () => {
+      
+      const BackButton = () => {
+        setRescheduleStatus('off');
+        setTintStatus(false);
+      }
+      
+      return (
+        <View style={styles.selectionDialogBox}>
+          <BlurView
+            style={styles.blurStyle}
+            blurType="dark"
+            blurAmount={10}
+            reducedTransparencyFallbackColor="black"
+          />
+          <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
+            <TouchableOpacity onPress={BackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Image source={LeftArrow} style={{height: 17, width: 17}}/>
+            </TouchableOpacity>
+            <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{fontWeight: 'bold', fontSize: 15, fontFamily: 'SF Pro Display Medium'}}>{DialogTitle}</Text>
+            </View>
+            <View style={{flex: 1}}></View>
+          </View>
+          <View style={{flex: 6, paddingLeft: 20, paddingBottom: 5}}>
+            <ScrollView>
+            {data['Start_'].filter(Start => Start <= hourRotation).map((Start, i) => {
+              console.log(Start)
+              return(
+                <View style={{margin: 5}} key={i}>
+                  <BouncyCheckbox
+                    size={25}
+                    fillColor="#2173BD"
+                    // unFillColor="#FFFFFF"
+                    text={String(data['Work'][i])}
+                    iconStyle={{ borderColor: "red" }}
+                    innerIconStyle={{ borderWidth: 2 }}
+                    textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                    onPress={(isChecked: boolean) => {console.log(isChecked)}}
+                  />
+                </View>
+            )})}
+            </ScrollView>
+          </View>
+        </View>
+      )
+    }
+
+    const RescheduleButtonClick = () => {
+      setTintStatus(true)
+      rescheduleStatus === 'off' && setRescheduleStatus('PriorStage')
+      rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
+      rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
+
+      console.log("RescheduleStatus", rescheduleStatus)
+    }
+    
     return (
       <SafeAreaView style={styles.safeView}>
       {/* <GestureHandlerRootView>
@@ -270,33 +344,14 @@ const Schedule = () => {
                 <SingleAngle/>
               </View>
               {tintstatus && (
-                <View style={styles.selectionDialogBox}>
-                  <BlurView
-                    style={styles.blurStyle}
-                    blurType="dark"
-                    blurAmount={10}
-                    reducedTransparencyFallbackColor="black"
-                  />
-                  <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                      <Image source={LeftArrow} style={{height: 17, width: 17}}/>
-                    </View>
-                    <View style={{flex: 6, borderRadius: 20, justifyContent: 'center', marginLeft: 45}}>
-                      <Text style={{fontWeight: 'bold', fontSize: 15}}>Choose the Prior Work</Text>
-                    </View>
-                  </View>
-                  <View style={{flex: 6}}>
-                    <Text>Selection Area</Text>
-                  </View>
-                </View>
+                <SelectionDialogBox/>
               )}
-              
             </View>
 
             <View style={[styles.LowerArea]}>
-              <TouchableOpacity style={[styles.RescheduleButton, tintstatus == true? {opacity: 0.5} : {}]} onPress={() => setTintStatus(!(tintstatus))}>
-                <Text style={[{fontWeight: 'bold', fontSize: 20, color: '#FFFFFF'}, tintstatus == true? {color: 'rgba(255, 255, 255, 0.5)'} : {}]}>Reschedule</Text>
-              </TouchableOpacity>
+            <TouchableOpacity style={[styles.RescheduleButton, rescheduleStatus != 'off'? {backgroundColor: '#2173BD'} : {}]} onPress={() => RescheduleButtonClick()}>
+              <Text style={[{fontWeight: 'bold', fontSize: 20, color: '#FFFFFF'}]}>{rescheduleStatus != 'off'? 'Next' : 'Reschedule'}</Text>
+            </TouchableOpacity>
             </View>
 
             <View style={{flex: 0.4, alignItems: 'flex-end', marginRight: 20}}>
