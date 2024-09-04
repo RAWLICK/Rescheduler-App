@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 // import ClockImage from '../Images/AnalogClockImage.png'
 import ClockImage from '../Images/AnalogClockImage.png'
 // import Holder from '../Images/Holder.png'
@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BlurView } from "@react-native-community/blur";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import Carousel from 'react-native-reanimated-carousel';
+
 import {
   SafeAreaView,
   ScrollView,
@@ -48,7 +49,14 @@ const Schedule = () => {
     const [strokeStatus, setStrokeStatus] = useState(false)
     const [rescheduleStatus, setRescheduleStatus] = useState('off')
     const [DialogTitle, setDialogTitle] = useState('')
-    const width = Dimensions.get('window').width;  // For Carousel
+    const [checked, setChecked] = useState(false);
+    // const width = Dimensions.get('window').width;  // For Carousel
+    
+    const [PriorSelections, setPriorSelections] = useState<number[]>([])
+    const [FixedSelections, setFixedSelections] = useState<number[]>([])
+    const [RemovingSelections, setRemovingSelections] = useState<number[]>([])
+
+    
   
     setTimeout(() => {
       let d = new Date();
@@ -257,53 +265,10 @@ const Schedule = () => {
         setDialogTitle('Choose Removing Work')
       }
     }, [rescheduleStatus]);
-    
-    const SelectionDialogBox = () => {
-      
-      const BackButton = () => {
-        setRescheduleStatus('off');
-        setTintStatus(false);
-      }
-      
-      return (
-        <View style={styles.selectionDialogBox}>
-          <BlurView
-            style={styles.blurStyle}
-            blurType="dark"
-            blurAmount={10}
-            reducedTransparencyFallbackColor="black"
-          />
-          <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
-            <TouchableOpacity onPress={BackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Image source={LeftArrow} style={{height: 17, width: 17}}/>
-            </TouchableOpacity>
-            <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{fontWeight: 'bold', fontSize: 15, fontFamily: 'SF Pro Display Medium'}}>{DialogTitle}</Text>
-            </View>
-            <View style={{flex: 1}}></View>
-          </View>
-          <View style={{flex: 6, paddingLeft: 20, paddingBottom: 5}}>
-            <ScrollView>
-            {data['Start_'].filter(Start => Start <= hourRotation).map((Start, i) => {
-              console.log(Start)
-              return(
-                <View style={{margin: 5}} key={i}>
-                  <BouncyCheckbox
-                    size={25}
-                    fillColor="#2173BD"
-                    // unFillColor="#FFFFFF"
-                    text={String(data['Work'][i])}
-                    iconStyle={{ borderColor: "red" }}
-                    innerIconStyle={{ borderWidth: 2 }}
-                    textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                    onPress={(isChecked: boolean) => {console.log(isChecked)}}
-                  />
-                </View>
-            )})}
-            </ScrollView>
-          </View>
-        </View>
-      )
+
+    const DialogBackButton = () => {
+      setRescheduleStatus('off');
+      setTintStatus(false);
     }
 
     const RescheduleButtonClick = () => {
@@ -311,9 +276,32 @@ const Schedule = () => {
       rescheduleStatus === 'off' && setRescheduleStatus('PriorStage')
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
-
-      console.log("RescheduleStatus", rescheduleStatus)
     }
+
+    const handleCheckboxChange = (index: number) => {
+      if (rescheduleStatus == 'PriorStage') {
+        setPriorSelections((prevSelections) => {
+          const newSelections = [...prevSelections, index]
+          return newSelections;
+        })
+        console.log("PriorSelectionList: ", PriorSelections)
+      }
+      else if (rescheduleStatus == 'FixingStage') {
+        setFixedSelections((prevSelections) => {
+          const newSelections = [...prevSelections, index]
+          return newSelections;
+        })
+        console.log("FixedSelectionList: ", FixedSelections)
+      }
+      else if (rescheduleStatus == 'RemovingStage') {
+        setRemovingSelections((prevSelections) => {
+          const newSelections = [...prevSelections, index]
+          return newSelections;
+        })
+        console.log("RemovingSelectionList: ", RemovingSelections)
+      }
+    };
+
     
     return (
       <SafeAreaView style={styles.safeView}>
@@ -343,10 +331,56 @@ const Schedule = () => {
               <View style={styles.arcAngle}>
                 <SingleAngle/>
               </View>
+
+              {/* SelectionDialogBox--> */}
               {tintstatus && (
-                <SelectionDialogBox/>
-              )}
-            </View>
+                <View style={styles.selectionDialogBox}>
+                <BlurView
+                  style={styles.blurStyle}
+                  blurType="dark"
+                  blurAmount={10}
+                  reducedTransparencyFallbackColor="black"
+                />
+                <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
+                  <TouchableOpacity onPress={DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <Image source={LeftArrow} style={{height: 17, width: 17}}/>
+                  </TouchableOpacity>
+                  <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{fontWeight: 'bold', fontSize: 15, fontFamily: 'SF Pro Display Medium'}}>{DialogTitle}</Text>
+                  </View>
+                  <View style={{flex: 1}}></View>
+                </View>
+                <View style={{flex: 6, paddingLeft: 20, paddingBottom: 5}}>
+                  <ScrollView>
+                  {data['Start_'].filter(Start => {
+                  if (rescheduleStatus == 'PriorStage') {
+                    return Start <= hourRotation
+                  }
+                  else{
+                    return Start > hourRotation
+                  }}
+                  ).map((Start, i) => {
+                    return(
+                      <View style={{margin: 5}} key={i}>
+                        <BouncyCheckbox
+                          size={25}
+                          isChecked={checked}
+                          fillColor="#2173BD"
+                          // unFillColor="#FFFFFF"
+                          text={String(data['Work'][i])}
+                          iconStyle={{ borderColor: "red" }}
+                          innerIconStyle={{ borderWidth: 2 }}
+                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                          // onPress={(isChecked: boolean) => {console.log(isChecked)}}
+                          onPress={() => handleCheckboxChange(i)}
+                        />
+                      </View>
+                    )})}
+                    </ScrollView>
+                  </View>
+                </View>
+                )}
+              </View>
 
             <View style={[styles.LowerArea]}>
             <TouchableOpacity style={[styles.RescheduleButton, rescheduleStatus != 'off'? {backgroundColor: '#2173BD'} : {}]} onPress={() => RescheduleButtonClick()}>
