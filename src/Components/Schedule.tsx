@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BlurView } from "@react-native-community/blur";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import Carousel from 'react-native-reanimated-carousel';
+import {PythonShell} from 'python-shell';
 
 import {
   SafeAreaView,
@@ -51,6 +52,7 @@ const Schedule = () => {
     const [DialogTitle, setDialogTitle] = useState('')
     const [checked, setChecked] = useState(false);
     // const width = Dimensions.get('window').width;  // For Carousel
+    const [serverResponseMessage, setServerResponseMessage] = useState('')
     
     const [PriorSelections, setPriorSelections] = useState<number[]>([])
     const [FixedSelections, setFixedSelections] = useState<number[]>([])
@@ -276,6 +278,8 @@ const Schedule = () => {
       rescheduleStatus === 'off' && setRescheduleStatus('PriorStage')
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
+      sendNameToBackend();
+      console.log(serverResponseMessage)
     }
 
     const handleCheckboxChange = (index: number) => {
@@ -302,6 +306,29 @@ const Schedule = () => {
       }
     };
 
+    const sendNameToBackend = async () => {
+      try {
+        const response = await fetch('http://192.168.48.159/inputs', {  // Replace localhost with your computer's IP address if testing on a real device
+          method: 'POST', // Specify the request method
+          headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          },
+          body: JSON.stringify({ 'Message': 'Shack you' }), // Convert the request payload to JSON
+        });
+  
+        if (!response.ok) {  // Handle HTTP errors
+          throw new Error('Failed to fetch data from the server');
+        }
+  
+        const data = await response.json(); // Parse JSON response
+        setServerResponseMessage(data.message);  // Update state with server response
+        // console.log(serverResponseMessage)
+      } catch (error) {
+        console.error('Error sending request:', error);
+        setServerResponseMessage('Failed to connect to the backend');  // Handle network error
+        // console.log(serverResponseMessage)
+      }
+    };
     
     return (
       <SafeAreaView style={styles.safeView}>
