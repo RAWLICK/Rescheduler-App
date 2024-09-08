@@ -364,10 +364,24 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     # print(Compressed_DataFrame)
     Start_Timing = []
     End_Timing = []
+    Start_Angle = []
+    End_Angle = []
+
     for i in range(len(Compressed_DataFrame["Start_"])):
-        Start_Timing.append(str(Compressed_DataFrame["Start_"][i]))
-        End_Timing.append(str(Compressed_DataFrame["End_"][i]))
+        Start_Timing.append((str(Compressed_DataFrame["Start_"][i]).split(" ")[1])[:5])
+        End_Timing.append((str(Compressed_DataFrame["End_"][i]).split(" ")[1])[:5])
+
+    for i in range(0, len(Start_Timing)):
+        Start_Hour = int(Start_Timing[i].split(":")[0])
+        Start_Min = int(Start_Timing[i].split(":")[1])
+        End_Hour = int(End_Timing[i].split(":")[0])
+        End_Min = int(End_Timing[i].split(":")[1])
+        Start_Angle.append(30*Start_Hour + 0.5*Start_Min)
+        End_Angle.append(30*End_Hour + 0.5*End_Min)
+
     DataFrame_Dict = {
+        "Start_Angle": Start_Angle,
+        "End_Angle": End_Angle,
         "Start_Timing": Start_Timing,
         "End_Timing": End_Timing,
         "Work": Updated_Complete_Fragments,

@@ -53,6 +53,18 @@ const Schedule = () => {
     const [checked, setChecked] = useState(false);
     // const width = Dimensions.get('window').width;  // For Carousel
     const [serverResponseMessage, setServerResponseMessage] = useState('')
+    interface ApiDataType {
+      "Durations": string;
+      "End_Timing": string;
+      "Start_Timing": string;
+      "Work": string;
+    }
+    const [ApiData, setApiData] = useState<ApiDataType>({
+      "Durations": "[]",
+      "End_Timing": "[]", 
+      "Start_Timing": "[]", 
+      "Work": "[]"
+    })
     
     const [PriorSelections, setPriorSelections] = useState<number[]>([])
     const [FixedSelections, setFixedSelections] = useState<number[]>([])
@@ -268,6 +280,32 @@ const Schedule = () => {
       }
     }, [rescheduleStatus]);
 
+    // In the backend API case, ensure to have a 3rd device to share the same network in both PC and real device emulator and also ensure that Windows Firewall is closed.
+
+    const sendNameToBackend = async () => {
+      try {
+        const response = await fetch('http://192.168.43.159:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
+          method: 'POST', // Specify the request method
+          headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          },
+          body: JSON.stringify({ "Time": "4/11/23 10:00:00", "Prev": "2,4", "Remov": "10,14,17,19"}), // Convert the request payload to JSON.
+        })
+  
+        if (!response.ok) {  // Handle HTTP errors
+          throw new Error('Failed to fetch data from the server');
+        }
+  
+        const fetched_data = await response.json(); // Parse JSON response
+        setApiData(fetched_data)
+        setServerResponseMessage(fetched_data.message);  // Update state with server response
+        console.log("API_DATA: ", JSON.stringify(ApiData))
+      } catch (error) {
+        console.error('Catch Error: ', error);
+        setServerResponseMessage('Failed to connect to the backend');  // Handle network error
+      }
+    };
+
     const DialogBackButton = () => {
       setRescheduleStatus('off');
       setTintStatus(false);
@@ -279,7 +317,6 @@ const Schedule = () => {
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
       sendNameToBackend();
-      console.log(serverResponseMessage)
     }
 
     const handleCheckboxChange = (index: number) => {
@@ -306,29 +343,7 @@ const Schedule = () => {
       }
     };
 
-    const sendNameToBackend = async () => {
-      try {
-        const response = await fetch('http://192.168.48.159/inputs', {  // Replace localhost with your computer's IP address if testing on a real device
-          method: 'POST', // Specify the request method
-          headers: {
-            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
-          },
-          body: JSON.stringify({ 'Message': 'Shack you' }), // Convert the request payload to JSON
-        });
-  
-        if (!response.ok) {  // Handle HTTP errors
-          throw new Error('Failed to fetch data from the server');
-        }
-  
-        const data = await response.json(); // Parse JSON response
-        setServerResponseMessage(data.message);  // Update state with server response
-        // console.log(serverResponseMessage)
-      } catch (error) {
-        console.error('Error sending request:', error);
-        setServerResponseMessage('Failed to connect to the backend');  // Handle network error
-        // console.log(serverResponseMessage)
-      }
-    };
+    
     
     return (
       <SafeAreaView style={styles.safeView}>

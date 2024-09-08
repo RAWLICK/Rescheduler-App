@@ -7,26 +7,20 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+# In the backend API case, ensure to have a 3rd device to share the same network in both PC and real device emulator and also ensure that Windows Firewall is closed.
 
-# @app.route("/compress")
-# def compress():
-#     data = request.json
-#     time = data.get('Time')
-#     Prev = data.get('Prev')
-#     Remov = data.get('Remov')
-#     output = CompressionFunction(time, Prev, Remov)
-#     return jsonify(output)
-
-@app.route("/inputs")
-def inputs():
-    data = request.get_json()
-    print(data)
-    mess = data.get('Message')
-    return jsonify(mess)
+@app.route("/", methods=["GET", "POST"])
+def compress():
+    if request.method == 'POST':
+        data = request.json
+        time = data.get('Time')
+        Prev = data.get('Prev')
+        Remov = data.get('Remov')
+        output = CompressionFunction(time, Prev, Remov)
+        return jsonify(output)
+    else:
+        return 'COME with a POST request rascal !!'
 
 
 if __name__=='__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
