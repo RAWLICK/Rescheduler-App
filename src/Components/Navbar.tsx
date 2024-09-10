@@ -12,8 +12,8 @@ const Navbar = () => {
         <Image source={DrawerImage} style={styles.DrawerImage}/>
       </View>
       <View style={{flex: 4, flexDirection: 'row', alignItems: 'center'}}>
-        <Text style={{color: '#6A1293', fontWeight: 'bold', fontSize: 20}}>Re</Text>
-        <Text style={{fontWeight: 'bold', fontSize: 20}}>scheduler</Text>
+        <Text style={{color: '#6A1293', fontFamily: 'sf-pro-display-heavy', fontSize: 20}}>Re</Text>
+        <Text style={{fontFamily: 'sf-pro-display-heavy', fontSize: 20}}>scheduler</Text>
       </View>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Image source={ThreeDotsImage} style={styles.ThreeDotsImage}/>

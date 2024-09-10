@@ -47,5 +47,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>futura-no-2-medium-dee.ttf</string>
+		<string>sf-pro-display-medium.otf</string>
+		<string>sf-pro-display-bold.otf</string>
+		<string>sf-pro-display-heavy.otf</string>
+		<string>sf-pro-display-light.otf</string>
+	</array>
 </dict>
 </plist>

@@ -426,7 +426,7 @@ const Schedule = () => {
 
             <View style={[styles.LowerArea]}>
             <TouchableOpacity style={[styles.RescheduleButton, rescheduleStatus != 'off'? {backgroundColor: '#2173BD'} : {}]} onPress={() => RescheduleButtonClick()}>
-              <Text style={[{fontWeight: 'bold', fontSize: 20, color: '#FFFFFF'}]}>{rescheduleStatus != 'off'? 'Next' : 'Reschedule'}</Text>
+              <Text style={[{fontFamily: 'sf-pro-display-bold', fontSize: 20, color: '#FFFFFF'}]}>{rescheduleStatus != 'off'? 'Next' : 'Reschedule'}</Text>
             </TouchableOpacity>
             </View>
 

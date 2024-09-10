@@ -36,7 +36,7 @@ const Taskbar = () => {
            active === 'Schedule'? {backgroundColor: '#40095C'} : {backgroundColor: '#6B1294'}]}>
           <Image source={RescheduleImage} style={styles.TaskbarIcons}/>
         </View>
-        <Text style={[styles.IconTitle, active === 'Schedule'? {fontWeight: 'bold'}: {}]}>Schedule</Text>
+        <Text style={[styles.IconTitle, active === 'Schedule'? {fontFamily: 'sf-pro-display-bold'}: {}]}>Schedule</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
@@ -45,7 +45,7 @@ const Taskbar = () => {
            active === 'Calender'? {backgroundColor: '#40095C'} : {backgroundColor: '#6B1294'}]}>
           <Image source={CalenderImage} style={styles.TaskbarIcons}/>
         </View>
-        <Text style={[styles.IconTitle, active === 'Calender'? {fontWeight: 'bold'}: {}]}>Calender</Text>
+        <Text style={[styles.IconTitle, active === 'Calender'? {fontFamily: 'sf-pro-display-bold'}: {}]}>Calender</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
@@ -54,7 +54,7 @@ const Taskbar = () => {
            active === 'Statistics'? {backgroundColor: '#40095C'} : {backgroundColor: '#6B1294'}]}>
           <Image source={StatisticsImage} style={styles.TaskbarIcons}/>
         </View>
-        <Text style={[styles.IconTitle, active === 'Statistics'? {fontWeight: 'bold'}: {}]}>Statistics</Text>
+        <Text style={[styles.IconTitle, active === 'Statistics'? {fontFamily: 'sf-pro-display-bold'}: {}]}>Statistics</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
@@ -63,7 +63,7 @@ const Taskbar = () => {
            active === 'Notes'? {backgroundColor: '#40095C'} : {backgroundColor: '#6B1294'}]}>
           <Image source={NotesImage} style={styles.TaskbarIcons}/>
         </View>
-        <Text style={[styles.IconTitle, active === 'Notes'? {fontWeight: 'bold'}: {}]}>Notes</Text>
+        <Text style={[styles.IconTitle, active === 'Notes'? {fontFamily: 'sf-pro-display-bold'}: {}]}>Notes</Text>
       </TouchableOpacity>
 
     </View>
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
 
   IconTitle: {
     fontSize: 11,
-    fontFamily: 'sans-serif-medium'
+    fontFamily: 'sf-pro-display-medium'
   }
 })
 
