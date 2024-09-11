@@ -6,6 +6,18 @@
       "sha1": "cedd8cdde31fe129732a5d5ace298819fda155cc"
     },
     {
+      "path": "assets/Fonts/futura-no2-d-bold.otf",
+      "sha1": "9f63c01b2d511d6dc0d2a534b97b557cf05b10b6"
+    },
+    {
+      "path": "assets/Fonts/futura-no2-d-demibold.ttf",
+      "sha1": "da025f6874ae8f97e02ed6d3a320b35530618885"
+    },
+    {
+      "path": "assets/Fonts/noyh-bold.otf",
+      "sha1": "90ea840b6f4d0fc88d4f7d95f5ba105b877545ec"
+    },
+    {
       "path": "assets/Fonts/sf-pro-display-bold.otf",
       "sha1": "100e7b7fd24facbca4db38e6d4d7e01c73b82818"
     },

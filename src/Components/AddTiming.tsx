@@ -1,15 +1,38 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, ScrollView, Image, TextInput, Switch } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, ScrollView, Image, TextInput, Switch, StatusBar } from 'react-native'
 import React from 'react'
 import { useState } from 'react'
 import ChevronRight from '../Images/ChevronRight.png'
+import ChevronLeft from '../Images/ChevronLeft.png'
 import RightArrow from '../Images/RightArrow.png'
 const color = 'blue'
+const DurationBoxes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+const DurationTag = ['0h', '1h', '2h', '3h', '4h']
+
 
 const AddTiming = () => {
   const [NoteText, setNoteText] = useState('')
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   return (
     <SafeAreaView style={styles.safeView}>
+      <StatusBar
+        animated={true}
+        backgroundColor="#1B1B1D"
+        // barStyle={statusBarStyle}
+        // showHideTransition={statusBarTransition}
+        // hidden={hidden}
+      />
       <View style={styles.mainStyle}>
+      <View style={{height: 60, justifyContent: 'center', flexDirection: 'row', padding: 10, paddingLeft: 20, paddingRight: 20}}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+          <Image source={ChevronLeft} style={{height: 20, width: 20}}/>
+        </View>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+          <View style={{backgroundColor: '#ACC6FF', borderRadius: 20, padding: 8, paddingLeft: 20, paddingRight: 20}}>
+            <Text style={[styles.OptionText, {color: '#093471'}]}>Save</Text>
+          </View>
+        </View>
+      </View>
       <ScrollView>
         <View style={styles.areaOne}>
           <TouchableOpacity style={styles.UpperOption}>
@@ -64,23 +87,42 @@ const AddTiming = () => {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.MiddleOption}>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={styles.OptionText}>Duration</Text>
+          <View style={[styles.MiddleOption, {flex:2, flexDirection: 'column', justifyContent: 'center'}]}>
+            <View style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: '#9D9EA0',marginBottom: 20, borderRadius: 10}}>
+              <Text style={[styles.OptionText, {fontFamily: 'futura-no2-d-demibold', color: '#000000'}]}>Duration</Text>
             </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-              <Image source={ChevronRight} style={{height: 17, width: 17}}/>
-            </View>
-          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.BottomOption}>
+            <View style={{flexDirection: 'row'}}>
+            {DurationBoxes.map((index, i) => {
+              return(
+                <View key={i} style={[{backgroundColor: '#9D9EA0', height: 10, width: 17, marginRight: 2}, i == 0? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4} : {}, i == 15? {borderTopRightRadius: 4, borderBottomRightRadius: 4} : {}]}>
+                </View>
+            )})}
+            </View>
+            <View style={{flexDirection: 'row', marginTop: 7}}>
+            {DurationTag.map((tag, i) => {
+              return(
+                <Text style={[{marginRight: 44, fontFamily: 'futura-no-2-medium-dee', color: '#9D9EA0'}, tag != '0h'? {marginRight: 62} : {}]}>{tag}</Text>
+              )
+            })}
+            </View>
+          </View>
+
+          <View style={styles.BottomOption}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={styles.OptionText}>Reminder</Text>
+              <Text style={styles.OptionText}>All Day</Text>
             </View>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-              <View style={[styles.angleInfoColor, {backgroundColor: `${color}`}]}></View>
+            <Switch
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+              // ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+            />
             </View>
-          </TouchableOpacity>
+          </View>
+
         </View>
 
 
@@ -161,7 +203,9 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 20,
+    fontFamily: 'futura-no-2-medium-dee',
+    fontSize: 16
   },
 
   areaOne: {
@@ -172,7 +216,7 @@ const styles = StyleSheet.create({
   },
 
   areaTwo: {
-    height: 300,
+    height: 370,
     padding: 10,
     paddingBottom: 15,
     paddingTop: 15

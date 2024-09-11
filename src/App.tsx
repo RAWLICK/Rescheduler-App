@@ -24,7 +24,7 @@ function App(): React.JSX.Element {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Navbar/>
+      {/* <Navbar/> */}
       <Stack.Navigator initialRouteName="Schedule">
         <Stack.Screen name="Schedule" component={Schedule} options={{ headerShown: false }}/>
         <Stack.Screen name="AddTiming" component={AddTiming} options={{ headerShown: false }}/>
@@ -32,7 +32,7 @@ function App(): React.JSX.Element {
         <Stack.Screen name="Statistics" component={Statistics} options={{ headerShown: false }}/>
         <Stack.Screen name="Notes" component={Notes} options={{ headerShown: false }}/>
       </Stack.Navigator>
-      <Taskbar/>
+      {/* <Taskbar/> */}
     </NavigationContainer>
   );
 }

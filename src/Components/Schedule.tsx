@@ -343,14 +343,12 @@ const Schedule = () => {
       }
     };
 
-    
-    
     return (
       <SafeAreaView style={styles.safeView}>
       {/* <GestureHandlerRootView>
       <PanGestureHandler> */}
         <View style={styles.mainStyle}>
-          {/* <Navbar/> */}
+          <Navbar/>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
             <View style={styles.UpperArea}>
               {infoVisible && (
@@ -436,7 +434,7 @@ const Schedule = () => {
                 <Image style={styles.AddIcon} source={AddIcon}/>
               </TouchableOpacity>
             </View>
-            {/* <Taskbar/> */}
+            <Taskbar/>
           </View>
         </View>
       {/* </PanGestureHandler>
