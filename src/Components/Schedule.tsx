@@ -347,6 +347,14 @@ const Schedule = () => {
       <SafeAreaView style={styles.safeView}>
       {/* <GestureHandlerRootView>
       <PanGestureHandler> */}
+      {/* // BD54EE */}
+      <StatusBar
+        animated={true}
+        backgroundColor='#BD54EE'
+        // barStyle={statusBarStyle}
+        // showHideTransition={statusBarTransition}
+        // hidden={hidden}
+        />
         <View style={styles.mainStyle}>
           <Navbar/>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
@@ -386,7 +394,7 @@ const Schedule = () => {
                     <Image source={LeftArrow} style={{height: 17, width: 17}}/>
                   </TouchableOpacity>
                   <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{fontWeight: 'bold', fontSize: 15, fontFamily: 'SF Pro Display Medium'}}>{DialogTitle}</Text>
+                    <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold'}}>{DialogTitle}</Text>
                   </View>
                   <View style={{flex: 1}}></View>
                 </View>
@@ -410,7 +418,7 @@ const Schedule = () => {
                           text={String(data['Work'][i])}
                           iconStyle={{ borderColor: "red" }}
                           innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                          textStyle={{ fontFamily: "sf-pro-display-medium" }}
                           // onPress={(isChecked: boolean) => {console.log(isChecked)}}
                           onPress={() => handleCheckboxChange(i)}
                         />

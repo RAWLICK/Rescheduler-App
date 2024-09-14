@@ -1,18 +1,148 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, ScrollView, Image, TextInput, Switch, StatusBar } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, ScrollView, Image, TextInput, Switch, StatusBar, Button } from 'react-native'
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ChevronRight from '../Images/ChevronRight.png'
 import ChevronLeft from '../Images/ChevronLeft.png'
 import RightArrow from '../Images/RightArrow.png'
-const color = 'blue'
-const DurationBoxes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-const DurationTag = ['0h', '1h', '2h', '3h', '4h']
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import 'react-native-gesture-handler'
+import { Gesture, GestureDetector, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, clamp, runOnJS } from 'react-native-reanimated';
 
 
 const AddTiming = () => {
+  const color = 'blue'
+  const DurationBoxes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+  const DurationTag = ['0h', '1h', '2h', '3h', '4h']
   const [NoteText, setNoteText] = useState('')
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const [DateTimeState, setDateTimeState] = useState('off')
+  const [StartTime, setStartTime] = useState('')
+  const [EndTime, setEndTime] = useState('')
+  const [TaskDate, setTaskDate] = useState('')
+  const [Duration, setDuration] = useState('1h')
+
+  let currentDate = new Date();
+  let currentHours = currentDate.getHours().toString().padStart(2, '0');
+  let currentMinutes = currentDate.getMinutes().toString().padStart(2, '0');
+  let currentTime = `${currentHours}:${currentMinutes}`
+  let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
+  let currentMonth = (currentDate.getMonth()+1).toString().padStart(2, '0');
+  let currentYear = currentDate.getFullYear()
+  let currentDateandMonth = `${currentNumDate}/${currentMonth}/${currentYear}`
+  const durationRanges = [
+    { max: 17.52, duration: '15 min', boxNum: 0 },
+    { max: 37.21, duration: '30 min', boxNum: 1 },
+    { max: 56.26, duration: '45 min', boxNum: 2 },
+    { max: 75.35, duration: '1h', boxNum: 3 },
+    { max: 94.29, duration: '1h 15 min', boxNum: 4 },
+    { max: 113.31, duration: '1h 30 min', boxNum: 5 },
+    { max: 132.50, duration: '1h 45 min', boxNum: 6 },
+    { max: 151.58, duration: '2h', boxNum: 7 },
+    { max: 170.27, duration: '2h 15 min', boxNum: 8 },
+    { max: 189.25, duration: '2h 30 min', boxNum: 9 },
+    { max: 208.35, duration: '2h 45 min', boxNum: 10 },
+    { max: 227.34, duration: '3h', boxNum: 11 },
+    { max: 246.33, duration: '3h 15 min', boxNum: 12 },
+    { max: 265.32, duration: '3h 30 min', boxNum: 13 },
+    { max: 284.31, duration: '3h 45 min', boxNum: 14 },
+    { max: 310, duration: '4h', boxNum: 15 }
+  ];
+
+  const hideDatePicker = () => {
+    setDateTimeState('off');
+  };
+
+  const WordMonth = (date: string) => {
+    let MonthExtract = (Number(date.slice(3, 5))-1)
+    const Months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    return Months[MonthExtract]
+  }
+
+  const handleConfirm = (date: Date) => {
+    // .padStart is added to provide a leading 0 to a singular number
+    if (DateTimeState == 'date') {
+      setTaskDate(`${date.getDate().toString().padStart(2, '0') + "/" + (date.getMonth()+1).toString().padStart(2, '0') + "/" + date.getFullYear()}`)
+    }
+    else if (DateTimeState == 'month') {
+      setTaskDate(`${date.getDate().toString().padStart(2, '0') + "/" + (date.getMonth()+1).toString().padStart(2, '0') + "/" + date.getFullYear()}`)
+    }
+    else if (DateTimeState == 'StartTiming') {
+      setStartTime(`${date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0')}`)
+    }
+    else if (DateTimeState == 'EndTiming') {
+      setEndTime(`${date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0')}`)
+    }
+    hideDatePicker();
+  };
+
+  const TwelveHourFormat = (time: string) => {
+    let NumberHour = Number(time.split(':', 1))
+    let MinuteHour = Number(time.slice(3, 5))
+    if (NumberHour > 12) {
+      return `${NumberHour - 12}:${time.slice(3, 5)} PM`
+    }
+    else if (NumberHour == 12 && MinuteHour >= 0) {
+      return `${time} PM`
+    }
+    else if (time.length > 5) {
+      return time
+    }
+    else {
+      return `${time} AM`
+    }
+  }
+
+  const StartRadar = useSharedValue<number>(0);
+  const MovedRadar = useSharedValue<number>(0);
+  const FinalRadar = useSharedValue<number>(75.35);
+  // const CoveredDurBoxes = [0, 1, 2, 3]
+  const [CoveredDurBoxes, setCoveredDurBoxes] = useState<number[]>([0, 1, 2, 3])
+  console.log(CoveredDurBoxes)
+
+  const pan = Gesture.Pan()
+    .onBegin(() => {
+      StartRadar.value = FinalRadar.value;
+      // console.log("Pressed onBegin")
+    })
+    .onChange((event) => {
+      // console.log("Pressed onChange")
+      MovedRadar.value = event.translationX;
+      FinalRadar.value = StartRadar.value + MovedRadar.value
+      // runOnJS helps in running code on JavaScript thread instead on UI Thread
+      
+      const foundRange = durationRanges.find(range => FinalRadar.value <= range.max)
+
+      if (foundRange) {
+        runOnJS(setDuration)(foundRange.duration)
+      }
+      // if (!CoveredDurBoxes.includes(foundRange.boxNum)) {
+      //   runOnJS(setCoveredDurBoxes)((prevSelections) => {
+      //     const newSelections = [...prevSelections, foundRange.boxNum]
+      //     return newSelections;
+      //   })
+      // }
+      // playSound();
+    })
+    .onFinalize(() => {
+      // console.log("Pressed onFinalize")
+    });
+                                                                                                                
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: clamp(FinalRadar.value, 10, 310) }]
+  }));
+
+  useEffect(() => {
+    setStartTime(`${TwelveHourFormat(currentTime)}`)
+    setEndTime(`${TwelveHourFormat(currentTime)}`)
+    setTaskDate(currentDateandMonth)
+    
+  }, [StartTime])
+
+  
+  
   return (
     <SafeAreaView style={styles.safeView}>
       <StatusBar
@@ -21,124 +151,156 @@ const AddTiming = () => {
         // barStyle={statusBarStyle}
         // showHideTransition={statusBarTransition}
         // hidden={hidden}
-      />
+        />
+      <GestureHandlerRootView>
+      {/* <PanGestureHandler> */}
       <View style={styles.mainStyle}>
-      <View style={{height: 60, justifyContent: 'center', flexDirection: 'row', padding: 10, paddingLeft: 20, paddingRight: 20}}>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-          <Image source={ChevronLeft} style={{height: 20, width: 20}}/>
-        </View>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-          <View style={{backgroundColor: '#ACC6FF', borderRadius: 20, padding: 8, paddingLeft: 20, paddingRight: 20}}>
-            <Text style={[styles.OptionText, {color: '#093471'}]}>Save</Text>
+        <View style={{height: 60, justifyContent: 'center', flexDirection: 'row', padding: 10, paddingLeft: 20, paddingRight: 20}}>
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+            <Image source={ChevronLeft} style={{height: 20, width: 20}}/>
+          </View>
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+            <View style={{backgroundColor: '#ACC6FF', borderRadius: 20, padding: 8, paddingLeft: 20, paddingRight: 20}}>
+              <Text style={[styles.OptionText, {color: '#093471'}]}>Save</Text>
+            </View>
           </View>
         </View>
-      </View>
-      <ScrollView>
-        <View style={styles.areaOne}>
-          <TouchableOpacity style={styles.UpperOption}>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={styles.OptionText}>Work</Text>
-            </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-              <Image source={ChevronRight} style={{height: 17, width: 17}}/>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.BottomOption}>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={styles.OptionText}>Color</Text>
-            </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-              <View style={[styles.angleInfoColor, {backgroundColor: `${color}`}]}></View>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-
-        <View style={styles.areaTwo}>
-          <View style={styles.UpperOption}>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={styles.OptionText}>Date</Text>
-            </View>
-            <View style={{flex: 2, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-              <TouchableOpacity style={{height: 40, width: 50, backgroundColor: '#43464D', alignItems: 'center', marginRight: 5, borderRadius: 10, justifyContent: 'center'}}>
-                <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 17}}>09</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={{height: 40, width: 100, backgroundColor: '#43464D', alignItems: 'center', marginLeft: 5, borderRadius: 10, justifyContent: 'center'}}>
-                <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 17}}>September</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.MiddleOption}>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={styles.OptionText}>Timing</Text>
-            </View>
-            <View style={{flex: 2, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-              <TouchableOpacity style={{height: 40, width: 85, backgroundColor: '#43464D', alignItems: 'center', marginRight: 5, borderRadius: 10, justifyContent: 'center'}}>
-                <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 16}}>09:00 AM</Text>
-              </TouchableOpacity>
-              <View>
-                <Image source={RightArrow} style={{height: 17, width: 17}}/>
+        <ScrollView>
+          <View style={styles.areaOne}>
+            <TouchableOpacity style={styles.UpperOption}>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+                <Text style={styles.OptionText}>Work</Text>
               </View>
-              <TouchableOpacity style={{height: 40, width: 85, backgroundColor: '#43464D', alignItems: 'center', marginLeft: 5, borderRadius: 10, justifyContent: 'center'}}>
-                <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 16}}>10:00 AM</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+                <Image source={ChevronRight} style={{height: 17, width: 17}}/>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.BottomOption}>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+                <Text style={styles.OptionText}>Color</Text>
+              </View>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+                <View style={[styles.angleInfoColor, {backgroundColor: `${color}`}]}></View>
+              </View>
+            </TouchableOpacity>
           </View>
 
-          <View style={[styles.MiddleOption, {flex:2, flexDirection: 'column', justifyContent: 'center'}]}>
-            <View style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: '#9D9EA0',marginBottom: 20, borderRadius: 10}}>
-              <Text style={[styles.OptionText, {fontFamily: 'futura-no2-d-demibold', color: '#000000'}]}>Duration</Text>
+
+          <View style={styles.areaTwo}>
+            <View style={styles.UpperOption}>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+                <Text style={styles.OptionText}>Date</Text>
+              </View>
+              <View style={{flex: 2, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
+                <TouchableOpacity style={{height: 40, width: 50, backgroundColor: '#43464D', alignItems: 'center', marginRight: 5, borderRadius: 10, justifyContent: 'center'}} onPress={() => setDateTimeState('date')}>
+                  <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 17}}>{TaskDate.split('/', 1)}</Text>
+                  <DateTimePickerModal
+                    isVisible={DateTimeState == 'date'? true: false}
+                    mode="date"
+                    onConfirm={handleConfirm}
+                    onCancel={hideDatePicker}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity style={{height: 40, width: 100, backgroundColor: '#43464D', alignItems: 'center', marginLeft: 5, borderRadius: 10, justifyContent: 'center'}} onPress={() => setDateTimeState('month')}>
+                  <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 17}}>{WordMonth(TaskDate)}</Text>
+                  <DateTimePickerModal
+                    isVisible={DateTimeState == 'month'? true: false}
+                    mode="date"
+                    onConfirm={handleConfirm}
+                    onCancel={hideDatePicker}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
-            <View style={{flexDirection: 'row'}}>
-            {DurationBoxes.map((index, i) => {
-              return(
-                <View key={i} style={[{backgroundColor: '#9D9EA0', height: 10, width: 17, marginRight: 2}, i == 0? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4} : {}, i == 15? {borderTopRightRadius: 4, borderBottomRightRadius: 4} : {}]}>
+            <View style={styles.MiddleOption}>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+                <Text style={styles.OptionText}>Timing</Text>
+              </View>
+              <View style={{flex: 2, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
+                <TouchableOpacity style={{height: 40, width: 85, backgroundColor: '#43464D', alignItems: 'center', marginRight: 5, borderRadius: 10, justifyContent: 'center'}} onPress={() => setDateTimeState('StartTiming')}>
+                  <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 16}}>{TwelveHourFormat(StartTime)}</Text>
+                  <DateTimePickerModal
+                    isVisible={DateTimeState == 'StartTiming'? true: false}
+                    mode="time"
+                    onConfirm={handleConfirm}
+                    onCancel={hideDatePicker}
+                  />
+                </TouchableOpacity>
+                <View>
+                  <Image source={RightArrow} style={{height: 17, width: 17}}/>
                 </View>
-            )})}
+                <TouchableOpacity style={{height: 40, width: 85, backgroundColor: '#43464D', alignItems: 'center', marginLeft: 5, borderRadius: 10, justifyContent: 'center'}} onPress={() => setDateTimeState('EndTiming')}>
+                  <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 16}}>{TwelveHourFormat(EndTime)}</Text>
+                  <DateTimePickerModal
+                    isVisible={DateTimeState == 'EndTiming'? true: false}
+                    mode="time"
+                    onConfirm={handleConfirm}
+                    onCancel={hideDatePicker}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={{flexDirection: 'row', marginTop: 7}}>
-            {DurationTag.map((tag, i) => {
-              return(
-                <Text style={[{marginRight: 44, fontFamily: 'futura-no-2-medium-dee', color: '#9D9EA0'}, tag != '0h'? {marginRight: 62} : {}]}>{tag}</Text>
-              )
-            })}
+
+            <View style={[styles.MiddleOption, {flex:2, flexDirection: 'column', justifyContent: 'center'}]}>
+              <View style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: '#9D9EA0',marginBottom: 20, borderRadius: 10}}>
+                <Text style={[styles.OptionText, {fontFamily: 'futura-no2-d-demibold', color: '#000000'}]}>Duration ({Duration})</Text>
+              </View>
+              {/* 9D9EA0 */}
+              <View style={{flexDirection: 'row'}}>
+              {DurationBoxes.map((index, i) => {
+                return(
+                  <View key={i} style={[{height: 10, width: 17, marginRight: 2}, i == 0? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4} : {}, i == 15? {borderTopRightRadius: 4, borderBottomRightRadius: 4} : {}, CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}]}>
+                  </View>
+              )})}
+              </View>
+              <GestureDetector gesture={pan}>
+                <Animated.View style={[{backgroundColor: 'white', height: 20, width: 20, borderRadius: 10, position: 'absolute', top: 73}, animatedStyles]}/>
+              </GestureDetector>
+
+              <View style={{flexDirection: 'row', marginTop: 7}}>
+              {DurationTag.map((tag, i) => {
+                return(
+                  <Text key={i} style={[{marginRight: 44, fontFamily: 'futura-no-2-medium-dee', color: '#9D9EA0'}, tag != '0h'? {marginRight: 62} : {}]}>{tag}</Text>
+                )
+              })}
+              </View>
             </View>
+
+            <View style={styles.BottomOption}>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+                <Text style={styles.OptionText}>All Day</Text>
+              </View>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+              <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+                // ios_backgroundColor="#3e3e3e" 
+                onValueChange={toggleSwitch}
+                value={isEnabled}
+              /> 
+              </View>
+            </View>
+
           </View>
 
-          <View style={styles.BottomOption}>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={styles.OptionText}>All Day</Text>
-            </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-            <Switch
-              trackColor={{false: '#767577', true: '#81b0ff'}}
-              thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
-              // ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleSwitch}
-              value={isEnabled}
-            />
-            </View>
+
+          <View style={styles.areaThree}>
+            <TextInput
+              multiline
+              numberOfLines={6}
+              style={styles.OnlyOption}
+              value={NoteText}
+              onChangeText={setNoteText}
+              placeholder='Add a Note'
+              >
+            </TextInput>
           </View>
-
-        </View>
-
-
-        <View style={styles.areaThree}>
-          <TextInput
-            multiline
-            numberOfLines={6}
-            style={styles.OnlyOption}
-            value={NoteText}
-            onChangeText={setNoteText}
-            placeholder='Add a Note'
-            >
-          </TextInput>
-        </View>
-      </ScrollView>
+        </ScrollView>
       </View>
+      {/* </PanGestureHandler> */}
+      </GestureHandlerRootView>
     </SafeAreaView>
   )
 }
