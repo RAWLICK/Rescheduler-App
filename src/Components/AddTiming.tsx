@@ -99,15 +99,13 @@ const AddTiming = () => {
   const FinalRadar = useSharedValue<number>(75.35);
   // const CoveredDurBoxes = [0, 1, 2, 3]
   const [CoveredDurBoxes, setCoveredDurBoxes] = useState<number[]>([0, 1, 2, 3])
-  console.log(CoveredDurBoxes)
+  console.log("CoveredDurBoxes" , CoveredDurBoxes)
 
   const pan = Gesture.Pan()
     .onBegin(() => {
       StartRadar.value = FinalRadar.value;
-      // console.log("Pressed onBegin")
     })
     .onChange((event) => {
-      // console.log("Pressed onChange")
       MovedRadar.value = event.translationX;
       FinalRadar.value = StartRadar.value + MovedRadar.value
       // runOnJS helps in running code on JavaScript thread instead on UI Thread
@@ -116,15 +114,29 @@ const AddTiming = () => {
 
       if (foundRange) {
         runOnJS(setDuration)(foundRange.duration)
-      }
+
+        // runOnJS(setCoveredDurBoxes)((prevSelections) => {
+        //   // Check if the foundRange.boxNum is already in the previous selections
+        //   if (!prevSelections.includes(foundRange.boxNum)) {
+        //     const newSelections = [...prevSelections, foundRange.boxNum];
+        //     console.log("New Selections: ", newSelections)
+        //     return newSelections;
+        //   }
+        //   return prevSelections;
+        // })
+
+
+
       // if (!CoveredDurBoxes.includes(foundRange.boxNum)) {
-      //   runOnJS(setCoveredDurBoxes)((prevSelections) => {
-      //     const newSelections = [...prevSelections, foundRange.boxNum]
-      //     return newSelections;
-      //   })
+        runOnJS(setCoveredDurBoxes)((prevSelections) => {
+          const newSelections = [...prevSelections, foundRange.boxNum]
+          console.log("New Selections: ", newSelections)
+          return newSelections;
+        })
       // }
       // playSound();
-    })
+    }})
+
     .onFinalize(() => {
       // console.log("Pressed onFinalize")
     });
@@ -251,7 +263,9 @@ const AddTiming = () => {
               <View style={{flexDirection: 'row'}}>
               {DurationBoxes.map((index, i) => {
                 return(
-                  <View key={i} style={[{height: 10, width: 17, marginRight: 2}, i == 0? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4} : {}, i == 15? {borderTopRightRadius: 4, borderBottomRightRadius: 4} : {}, CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}]}>
+                  <View key={i} style={[{backgroundColor: '#9D9EA0', height: 10, width: 17, marginRight: 2}, i == 0? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4} : {}, i == 15? {borderTopRightRadius: 4, borderBottomRightRadius: 4} : {},
+                  /*CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}*/
+                  ]}>
                   </View>
               )})}
               </View>

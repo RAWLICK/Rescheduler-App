@@ -22,6 +22,7 @@
 		A155423A206B466CBCF9B737 /* futura-no2-d-bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7258FD81D9E6417EA587E4C3 /* futura-no2-d-bold.otf */; };
 		9E26C229E030475395988148 /* noyh-bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7FDA2021330C40918E59E4D6 /* noyh-bold.otf */; };
 		8386A26E3398411C95FA62D4 /* futura-no2-d-demibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6BEC8EAEB9794068BACFCF8F /* futura-no2-d-demibold.ttf */; };
+		18956FE1386A403DA151F243 /* coolvetica rg.otf in Resources */ = {isa = PBXBuildFile; fileRef = 69AE2AC16B914CB5835E2DDD /* coolvetica rg.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,7 @@
 		7258FD81D9E6417EA587E4C3 /* futura-no2-d-bold.otf */ = {isa = PBXFileReference; name = "futura-no2-d-bold.otf"; path = "../assets/Fonts/futura-no2-d-bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		7FDA2021330C40918E59E4D6 /* noyh-bold.otf */ = {isa = PBXFileReference; name = "noyh-bold.otf"; path = "../assets/Fonts/noyh-bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		6BEC8EAEB9794068BACFCF8F /* futura-no2-d-demibold.ttf */ = {isa = PBXFileReference; name = "futura-no2-d-demibold.ttf"; path = "../assets/Fonts/futura-no2-d-demibold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		69AE2AC16B914CB5835E2DDD /* coolvetica rg.otf */ = {isa = PBXFileReference; name = "coolvetica rg.otf"; path = "../assets/Fonts/coolvetica rg.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +180,7 @@
 				7258FD81D9E6417EA587E4C3 /* futura-no2-d-bold.otf */,
 				7FDA2021330C40918E59E4D6 /* noyh-bold.otf */,
 				6BEC8EAEB9794068BACFCF8F /* futura-no2-d-demibold.ttf */,
+				69AE2AC16B914CB5835E2DDD /* coolvetica rg.otf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -286,6 +289,7 @@
 				A155423A206B466CBCF9B737 /* futura-no2-d-bold.otf in Resources */,
 				9E26C229E030475395988148 /* noyh-bold.otf in Resources */,
 				8386A26E3398411C95FA62D4 /* futura-no2-d-demibold.ttf in Resources */,
+				18956FE1386A403DA151F243 /* coolvetica rg.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

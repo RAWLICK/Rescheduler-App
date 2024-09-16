@@ -2,6 +2,10 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "assets/Fonts/coolvetica rg.otf",
+      "sha1": "e0a13ed40b2b03e08ec645ff287c33338ea9f720"
+    },
+    {
       "path": "assets/Fonts/futura-no-2-medium-dee.ttf",
       "sha1": "cedd8cdde31fe129732a5d5ace298819fda155cc"
     },

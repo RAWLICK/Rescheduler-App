@@ -18,6 +18,7 @@ import Statistics from './Components/Statistics';
 import Notes from './Components/Notes';
 import Navbar from './Components/Navbar';
 import Taskbar from './Components/Taskbar';
+import SignIn from './Components/SignIn';
 
 
 function App(): React.JSX.Element {
@@ -25,12 +26,13 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       {/* <Navbar/> */}
-      <Stack.Navigator initialRouteName="Schedule">
+      <Stack.Navigator initialRouteName="SignIn">
         <Stack.Screen name="Schedule" component={Schedule} options={{ headerShown: false }}/>
         <Stack.Screen name="AddTiming" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="Calender" component={Calender} options={{ headerShown: false }}/>
         <Stack.Screen name="Statistics" component={Statistics} options={{ headerShown: false }}/>
         <Stack.Screen name="Notes" component={Notes} options={{ headerShown: false }}/>
+        <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }}/>
       </Stack.Navigator>
       {/* <Taskbar/> */}
     </NavigationContainer>
