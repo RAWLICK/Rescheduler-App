@@ -26,7 +26,7 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       {/* <Navbar/> */}
-      <Stack.Navigator initialRouteName="SignIn">
+      <Stack.Navigator initialRouteName="Schedule">
         <Stack.Screen name="Schedule" component={Schedule} options={{ headerShown: false }}/>
         <Stack.Screen name="AddTiming" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="Calender" component={Calender} options={{ headerShown: false }}/>

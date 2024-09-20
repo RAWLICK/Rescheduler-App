@@ -39,14 +39,14 @@ const Taskbar = () => {
         <Text style={[styles.IconTitle, active === 'Schedule'? {fontFamily: 'sf-pro-display-bold'}: {}]}>Schedule</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+      {/* <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
       onPress={CalenderClick}>
         <View style={[styles.IconView,
            active === 'Calender'? {backgroundColor: '#40095C'} : {backgroundColor: '#6B1294'}]}>
           <Image source={CalenderImage} style={styles.TaskbarIcons}/>
         </View>
         <Text style={[styles.IconTitle, active === 'Calender'? {fontFamily: 'sf-pro-display-bold'}: {}]}>Calender</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
       onPress={StatisticsClick}>
@@ -57,14 +57,14 @@ const Taskbar = () => {
         <Text style={[styles.IconTitle, active === 'Statistics'? {fontFamily: 'sf-pro-display-bold'}: {}]}>Statistics</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+      {/* <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
       onPress={NotesClick}>
         <View style={[styles.IconView,
            active === 'Notes'? {backgroundColor: '#40095C'} : {backgroundColor: '#6B1294'}]}>
           <Image source={NotesImage} style={styles.TaskbarIcons}/>
         </View>
         <Text style={[styles.IconTitle, active === 'Notes'? {fontFamily: 'sf-pro-display-bold'}: {}]}>Notes</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
     </View>
   )

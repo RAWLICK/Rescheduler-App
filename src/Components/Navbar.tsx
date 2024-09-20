@@ -4,11 +4,12 @@ import { useState } from 'react'
 import DrawerImage from '../Images/Drawer.png'
 import ThreeDotsImage from '../Images/ThreeDots.png'
 import LinearGradient from 'react-native-linear-gradient';
+import StreakFire from '../Images/StreakFire.png'
 
 const Navbar = () => {
-  // BD54EE
+  // BD54EE, 6A1293
   return (
-    <LinearGradient colors={['#BD54EE', '#FFFFFF']} style={styles.mainNav}>
+    <View style={styles.mainNav}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Image source={DrawerImage} style={styles.DrawerImage}/>
       </View>
@@ -16,17 +17,18 @@ const Navbar = () => {
         <Text style={{color: '#6A1293', fontFamily: 'sf-pro-display-heavy', fontSize: 20}}>Re</Text>
         <Text style={{fontFamily: 'sf-pro-display-heavy', fontSize: 20, color: '#FFFFFF'}}>scheduler</Text>
       </View>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Image source={ThreeDotsImage} style={styles.ThreeDotsImage}/>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginRight: 10}}>
+        <Image source={StreakFire} style={styles.ThreeDotsImage}/>
+        <Text style={{fontFamily: 'sf-pro-display-heavy', fontSize: 20, color: '#6A1293'}}>1</Text>
       </View>
-    </LinearGradient>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   mainNav: {
     flexDirection: 'row',
-    backgroundColor: '#BD54EE',
+    // backgroundColor: '#BD54EE',
     height: 55
   },
 
@@ -36,8 +38,8 @@ const styles = StyleSheet.create({
   }, 
 
   ThreeDotsImage: {
-    height: 30,
-    width: 30
+    height: 40,
+    width: 40
   }
 })
 export default Navbar

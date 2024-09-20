@@ -8,6 +8,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import 'react-native-gesture-handler'
 import { Gesture, GestureDetector, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, clamp, runOnJS } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const AddTiming = () => {
@@ -22,6 +23,17 @@ const AddTiming = () => {
   const [EndTime, setEndTime] = useState('')
   const [TaskDate, setTaskDate] = useState('')
   const [Duration, setDuration] = useState('1h')
+  const [WorkToDo, setWorkToDo] = useState('')
+  const [StartAngle, setStartAngle] = useState<number>()
+  const [EndAngle, setEndAngle] = useState<number>()
+  interface ScheduleArrayItem {
+    StartTime: string,
+    EndTime: string,
+    Work: string,
+    StartAngle: number,
+    EndAngle: number
+  }
+  const [ScheduleArray, setScheduleArray] = useState<ScheduleArrayItem[]>([])
 
   let currentDate = new Date();
   let currentHours = currentDate.getHours().toString().padStart(2, '0');
@@ -94,12 +106,22 @@ const AddTiming = () => {
     }
   }
 
+  const degreeConverter = (StartTime: string, EndTime: string) => {
+    let StartTimeHour = Number(StartTime.split(":")[0])
+    let StartTimeMinute = Number(StartTime.split(":")[1])
+    let EndTimeHour = Number(EndTime.split(":")[0])
+    let EndTimeMinute = Number(EndTime.split(":")[1])
+    let StartDegree = StartTimeHour*30 + StartTimeMinute*0.5
+    let EndDegree = EndTimeHour*30 + EndTimeMinute*0.5
+    setStartAngle(StartDegree)
+    setEndAngle(EndDegree)
+  }
+
   const StartRadar = useSharedValue<number>(0);
   const MovedRadar = useSharedValue<number>(0);
   const FinalRadar = useSharedValue<number>(75.35);
-  // const CoveredDurBoxes = [0, 1, 2, 3]
   const [CoveredDurBoxes, setCoveredDurBoxes] = useState<number[]>([0, 1, 2, 3])
-  console.log("CoveredDurBoxes" , CoveredDurBoxes)
+  // console.log("CoveredDurBoxes" , CoveredDurBoxes)
 
   const pan = Gesture.Pan()
     .onBegin(() => {
@@ -128,11 +150,11 @@ const AddTiming = () => {
 
 
       // if (!CoveredDurBoxes.includes(foundRange.boxNum)) {
-        runOnJS(setCoveredDurBoxes)((prevSelections) => {
-          const newSelections = [...prevSelections, foundRange.boxNum]
-          console.log("New Selections: ", newSelections)
-          return newSelections;
-        })
+        // runOnJS(setCoveredDurBoxes)((prevSelections) => {
+        //   const newSelections = [...prevSelections, foundRange.boxNum]
+        //   console.log("New Selections: ", newSelections)
+        //   return newSelections;
+        // })
       // }
       // playSound();
     }})
@@ -147,13 +169,64 @@ const AddTiming = () => {
   }));
 
   useEffect(() => {
-    setStartTime(`${TwelveHourFormat(currentTime)}`)
-    setEndTime(`${TwelveHourFormat(currentTime)}`)
+    setStartTime(currentTime)
+    setEndTime(currentTime)
     setTaskDate(currentDateandMonth)
-    
-  }, [StartTime])
+  }, [])
 
+  useEffect(() => {
+    degreeConverter(StartTime, EndTime);
+  }, [StartTime, EndTime])
   
+
+  const SaveButton = () => {
+    let newTask = {
+      StartTime: StartTime, 
+      EndTime: EndTime, 
+      Work: WorkToDo, 
+      StartAngle: StartAngle ?? 0, 
+      EndAngle: EndAngle ?? 0
+    }
+    setScheduleArray((prevSelections) => {
+      const UpdatedScheduleArray = [...prevSelections, newTask]
+      return UpdatedScheduleArray.sort((a, b) => a.StartAngle - b.StartAngle)
+    })
+  }
+
+  useEffect(() => {
+    console.log("ScheduleArray (after Update): ", ScheduleArray)
+  }, [ScheduleArray])
+
+  const saveStateToStorage = async (ScheduleArray: ScheduleArrayItem[]) => {
+    try {
+      await AsyncStorage.setItem('savedSchedule', JSON.stringify(ScheduleArray))
+    } catch (error) {
+      console.log("Error saving data ", error)
+    }
+  }
+
+  const loadStateFromStorage = async () => {
+    try {
+      const savedSchedule = await AsyncStorage.getItem('savedSchedule');
+      if (savedSchedule !== null) {
+        setScheduleArray(JSON.parse(savedSchedule));
+      }
+    } catch (error) {
+      console.log("Error Loading Data: ", error)
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      saveStateToStorage(ScheduleArray)  // Saving Data when component gets unmounted
+    }
+  }, [ScheduleArray])
+
+  useEffect(() => {
+    loadStateFromStorage();
+  }, [])
+
+  module.exports = {ScheduleArray}
   
   return (
     <SafeAreaView style={styles.safeView}>
@@ -172,16 +245,23 @@ const AddTiming = () => {
             <Image source={ChevronLeft} style={{height: 20, width: 20}}/>
           </View>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-            <View style={{backgroundColor: '#ACC6FF', borderRadius: 20, padding: 8, paddingLeft: 20, paddingRight: 20}}>
+            <TouchableOpacity style={{backgroundColor: '#ACC6FF', borderRadius: 20, padding: 8, paddingLeft: 20, paddingRight: 20}} onPress={SaveButton}>
               <Text style={[styles.OptionText, {color: '#093471'}]}>Save</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
         <ScrollView>
           <View style={styles.areaOne}>
             <TouchableOpacity style={styles.UpperOption}>
               <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-                <Text style={styles.OptionText}>Work</Text>
+                {/* <Text style={styles.OptionText}>Work</Text> */}
+                <TextInput
+                  style={styles.OptionText}
+                  value={WorkToDo}
+                  onChangeText={setWorkToDo}
+                  placeholder='Work'
+                >
+                </TextInput>
               </View>
               <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
                 <Image source={ChevronRight} style={{height: 17, width: 17}}/>
@@ -232,7 +312,7 @@ const AddTiming = () => {
               </View>
               <View style={{flex: 2, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
                 <TouchableOpacity style={{height: 40, width: 85, backgroundColor: '#43464D', alignItems: 'center', marginRight: 5, borderRadius: 10, justifyContent: 'center'}} onPress={() => setDateTimeState('StartTiming')}>
-                  <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 16}}>{TwelveHourFormat(StartTime)}</Text>
+                  <Text style={{fontFamily: 'futura-no2-d-demibold', fontSize: 16}}>{TwelveHourFormat(StartTime)}</Text>
                   <DateTimePickerModal
                     isVisible={DateTimeState == 'StartTiming'? true: false}
                     mode="time"
@@ -244,7 +324,7 @@ const AddTiming = () => {
                   <Image source={RightArrow} style={{height: 17, width: 17}}/>
                 </View>
                 <TouchableOpacity style={{height: 40, width: 85, backgroundColor: '#43464D', alignItems: 'center', marginLeft: 5, borderRadius: 10, justifyContent: 'center'}} onPress={() => setDateTimeState('EndTiming')}>
-                  <Text style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 16}}>{TwelveHourFormat(EndTime)}</Text>
+                  <Text style={{fontFamily: 'futura-no2-d-demibold', fontSize: 16}}>{TwelveHourFormat(EndTime)}</Text>
                   <DateTimePickerModal
                     isVisible={DateTimeState == 'EndTiming'? true: false}
                     mode="time"
@@ -318,6 +398,7 @@ const AddTiming = () => {
     </SafeAreaView>
   )
 }
+
 
 const styles = StyleSheet.create({
   safeView: {

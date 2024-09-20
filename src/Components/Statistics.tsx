@@ -5,6 +5,7 @@ import Taskbar from './Taskbar'
 
 const Statistics = () => {
   return (
+    
     <View>
       <Text style={{color: '#000000'}}>Statistics</Text>
     </View>
