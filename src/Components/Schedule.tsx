@@ -515,7 +515,7 @@ const Schedule = () => {
                 <Image style={styles.AddIcon} source={AddIcon}/>
               </TouchableOpacity>
             </View>
-            <Taskbar/>
+            <Taskbar activeState='Schedule'/>
           </View>
         </View>
       {/* </PanGestureHandler>

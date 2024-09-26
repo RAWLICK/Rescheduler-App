@@ -1,18 +1,22 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import React, { act } from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import RescheduleImage from '../Images/Reschedule.png'
 import CalenderImage from '../Images/Calender.png'
 import StatisticsImage from '../Images/Statistics.png'
 import NotesImage from '../Images/Notes.png'
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+type PropsType = {
+  activeState: string;
+};
 
-const Taskbar = () => {
-  const [active, setActive] = useState('Schedule')
+const Taskbar = (props: PropsType) => {
+  const [active, setActive] = useState(props.activeState)
   const navigation = useNavigation<NavigationProp<any, any>>();
   const ScheduleClick = () => {
-    setActive('Schedule');
+    // setActive('Schedule');
     navigation.navigate('Schedule');
   }
   const CalenderClick = () => {
@@ -20,13 +24,14 @@ const Taskbar = () => {
     navigation.navigate('Calender');
   }
   const StatisticsClick = () => {
-    setActive('Statistics');
+    // setActive('Statistics');
     navigation.navigate('Statistics');
   }
   const NotesClick = () => {
     setActive('Notes');
     navigation.navigate('Notes')
   }
+  
   return (
     <View style={styles.mainTask}>
 

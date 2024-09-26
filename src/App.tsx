@@ -27,12 +27,12 @@ function App(): React.JSX.Element {
     <NavigationContainer>
       {/* <Navbar/> */}
       <Stack.Navigator initialRouteName="Schedule">
-        <Stack.Screen name="Schedule" component={Schedule} options={{ headerShown: false }}/>
+        <Stack.Screen name="Schedule" component={Schedule} options={{ headerShown: false}}/>
         <Stack.Screen name="AddTiming" component={AddTiming} options={{ headerShown: false }}/>
-        <Stack.Screen name="Calender" component={Calender} options={{ headerShown: false }}/>
-        <Stack.Screen name="Statistics" component={Statistics} options={{ headerShown: false }}/>
-        <Stack.Screen name="Notes" component={Notes} options={{ headerShown: false }}/>
+        <Stack.Screen name="Statistics" component={Statistics} options={{ headerShown: false}}/>
         <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }}/>
+        {/* <Stack.Screen name="Calender" component={Calender} options={{ headerShown: false }}/> */}
+        {/* <Stack.Screen name="Notes" component={Notes} options={{ headerShown: false }}/> */}
       </Stack.Navigator>
       {/* <Taskbar/> */}
     </NavigationContainer>
