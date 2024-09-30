@@ -8,7 +8,7 @@ import LeftArrow from '../Images/LeftArrow.png'
 import Doodle from '../Images/Doodle.jpg'
 import 'react-native-gesture-handler'
 import { Gesture, GestureDetector, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 import Svg, { Circle, Path, Defs, Stop } from 'react-native-svg';
 import Sound from 'react-native-sound';
 // import ChainSound from '../Sounds/ChainSound.mp3'
@@ -30,6 +30,7 @@ import {
   Image,
   ImageBackground,
   TouchableOpacity,
+  Modal,
   Dimensions
 } from 'react-native';
 import Navbar from './Navbar';
@@ -63,6 +64,7 @@ const Schedule = () => {
       EndAngle: number
     }
     const {ScheduleArray} = require('./AddTiming')
+    const safeScheduleArray: [] = ScheduleArray ?? []
 
     // useEffect(() => {
     //   console.log("ScheduleArray (In Schedule.tsx): ",ScheduleArray)
@@ -146,42 +148,12 @@ const Schedule = () => {
       //     { rotate: `${angle.value}rad` }]
       // }));
   
-    const data = {
-      "Start_": [300.0, 325.5, 351.0, 357.5, 383.0, 389.5, 390.0, 420.0, 445.0, 458.0, 496.5, 510.0, 540.0, 552.0, 565.0],
-      "End_": [325.5, 351.0, 357.5, 383.0, 389.5, 390.0, 420.0, 445.0, 458.0, 496.5, 510.0, 540.0, 552.0, 565.0, 590.5],
-      "Time_Start": ['10:00:00', '10:51:00', '11:42:00', '11:55:00', '12:46:00', '12:59:00', '13:00:00', '14:00:00', '14:50:00', '15:16:00', '16:33:00', '17:00:00', '18:00:00', '18:24:00', '18:50:00', '19:41:00', '22:00:00', '22:30:00', '22:44:00', '00:00:00'],
-      "Time_End": ['10:51:00', '11:42:00', '11:55:00', '12:46:00', '12:59:00', '13:00:00', '14:00:00', '14:50:00', '15:16:00', '16:33:00', '17:00:00', '18:00:00', '18:24:00', '18:50:00', '19:41:00', '22:00:00', '22:30:00', '22:44:00', '00:00:00', '05:00:00'],
-      "Duration": [51, 51, 13, 51, 13, 1, 60, 50, 26, 77, 27, 60, 24, 26, 51, 139, 30, 14, 76, 300],
-      "Slice_Color": [
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)"],
-      "Work": ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break','Sona', 'Work 5', 'Work 5 Break', 'Work 6', 'Free 1', 'Work 7', 'Work 8', 'Work 9', 'Fuck 1', 'Fuck 2', 'Fuck 3', 'Fuck 4', 'Fuck 5']
-    };
-
     // const data = {
-    //   "Time_Start": ScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
-    //   "Time_End": ScheduleArray.map((item: ScheduleArrayItems) => item.EndTime),
-    //   "Work": ScheduleArray.map((item: ScheduleArrayItems) => item.Work),
-    //   "Start_": ScheduleArray.map((item: ScheduleArrayItems) => item.StartAngle),
-    //   "End_": ScheduleArray.map((item: ScheduleArrayItems) => item.EndAngle),
+    //   "Start_": [300.0, 325.5, 351.0, 357.5, 383.0, 389.5, 390.0, 420.0, 445.0, 458.0, 496.5, 510.0, 540.0, 552.0, 565.0],
+    //   "End_": [325.5, 351.0, 357.5, 383.0, 389.5, 390.0, 420.0, 445.0, 458.0, 496.5, 510.0, 540.0, 552.0, 565.0, 590.5],
+    //   "Time_Start": ['10:00:00', '10:51:00', '11:42:00', '11:55:00', '12:46:00', '12:59:00', '13:00:00', '14:00:00', '14:50:00', '15:16:00', '16:33:00', '17:00:00', '18:00:00', '18:24:00', '18:50:00', '19:41:00', '22:00:00', '22:30:00', '22:44:00', '00:00:00'],
+    //   "Time_End": ['10:51:00', '11:42:00', '11:55:00', '12:46:00', '12:59:00', '13:00:00', '14:00:00', '14:50:00', '15:16:00', '16:33:00', '17:00:00', '18:00:00', '18:24:00', '18:50:00', '19:41:00', '22:00:00', '22:30:00', '22:44:00', '00:00:00', '05:00:00'],
+    //   "Duration": [51, 51, 13, 51, 13, 1, 60, 50, 26, 77, 27, 60, 24, 26, 51, 139, 30, 14, 76, 300],
     //   "Slice_Color": [
     //   "rgba(175, 193, 85, 0.5)",
     //   "rgba(182, 108, 239, 0.5)",
@@ -203,11 +175,42 @@ const Schedule = () => {
     //   "rgba(28, 79, 20, 0.5)",
     //   "rgba(82, 176, 27, 0.5)",
     //   "rgba(191, 115, 181, 0.5)"],
-    // }
+    //   "Work": ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break','Sona', 'Work 5', 'Work 5 Break', 'Work 6', 'Free 1', 'Work 7', 'Work 8', 'Work 9', 'Fuck 1', 'Fuck 2', 'Fuck 3', 'Fuck 4', 'Fuck 5']
+    // };
 
-    // useEffect(() => {
-    //   console.log("Data (In Schedule.tsx): ", data)
-    // }, [])
+    const data = {
+      "Time_Start": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
+      "Time_End": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndTime),
+      "Work": safeScheduleArray.map((item: ScheduleArrayItems) => item.Work),
+      "Start_": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartAngle),
+      "End_": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndAngle),
+      "Slice_Color": [
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      // "rgba(19, 249, 16, 0.5)",
+      // "rgba(69, 221, 118, 0.5)", 
+      // "rgba(17, 150, 214, 0.5) ",
+      // "rgba(174, 182, 155, 0.5)",
+      // "rgba(54, 147, 187, 0.5) ",
+      // "rgba(49, 107, 93, 0.5)",
+      // "rgba(12, 248, 250, 0.5) ",
+      // "rgba(146, 120, 43, 0.5)", 
+      // "rgba(38, 3, 93, 0.5)",
+      // "rgba(240, 19, 80, 0.5)",
+      // "rgba(227, 127, 0, 0.5)",
+      // "rgba(38, 131, 56, 0.5)",
+      // "rgba(57, 190, 200, 0.5)",
+      // "rgba(28, 79, 20, 0.5)",
+      // "rgba(82, 176, 27, 0.5)",
+      // "rgba(191, 115, 181, 0.5)"
+    ],
+    }
+
+    useEffect(() => {
+      console.log("Data (In Schedule.tsx): ", data)
+    }, [])
     
   
     const SingleAngle = () => {
@@ -361,12 +364,11 @@ const Schedule = () => {
     }
 
     const RescheduleButtonClick = () => {
-      // setTintStatus(true)
-      // rescheduleStatus === 'off' && setRescheduleStatus('PriorStage')
-      // rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
-      // rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
+      rescheduleStatus === 'off' && setRescheduleStatus('PriorStage')
+      rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
+      rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
       // sendNameToBackend();
-      console.log("ScheduleArray (In Schedule.tsx): ",ScheduleArray)
+      // console.log("ScheduleArray (In Schedule.tsx): ",ScheduleArray)
     }
 
     const handleCheckboxChange = (index: number) => {
@@ -415,21 +417,21 @@ const Schedule = () => {
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
             <View style={styles.UpperArea}>
-              <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5}}>
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: '#a032d3', borderRightWidth: 2}}>
-                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-heavy', fontSize: 17}}>08:24 AM</Text>
+              <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 1}}>
+                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>08:24 AM</Text>
                 </View>
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-heavy', fontSize: 17}}>September 24</Text>
+                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>September 24</Text>
                 </View>
               </View>
 
-              <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5}}>
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: '#a032d3',  borderBottomWidth: 2}}>
-                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-heavy', fontSize: 17}}>Chemistry Work (1h 21mins)</Text>
+              <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5, elevation: 5}}>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'grey',  borderBottomWidth: 1}}>
+                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Chemistry Work (1h 21mins)</Text>
                 </View>
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}}>
-                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-heavy', fontSize: 17}}>09:21 AM - 10:30 AM</Text>
+                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>09:21 AM - 10:30 AM</Text>
                 </View>
               </View>
               {/* {infoVisible && (
@@ -454,68 +456,89 @@ const Schedule = () => {
               </View>
 
               {/* SelectionDialogBox--> */}
-              {tintstatus && (
-                <View style={styles.selectionDialogBox}>
+              <Modal visible={rescheduleStatus !== 'off'}>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 <BlurView
-                  style={styles.blurStyle}
-                  blurType="dark"
-                  blurAmount={10}
-                  reducedTransparencyFallbackColor="black"
-                />
-                <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
-                  <TouchableOpacity onPress={DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                    <Image source={LeftArrow} style={{height: 17, width: 17}}/>
-                  </TouchableOpacity>
-                  <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold'}}>{DialogTitle}</Text>
+                    style={styles.blurStyle}
+                    blurType="light"
+                    blurAmount={10}
+                    reducedTransparencyFallbackColor="light"
+                  />
+                  <Animated.View style={[styles.selectionDialogBox]}>
+                  <BlurView
+                    style={styles.blurStyle}
+                    blurType="dark"
+                    blurAmount={50}
+                    reducedTransparencyFallbackColor="black"
+                  />
+                  <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
+                    <TouchableOpacity onPress={DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                      <Image source={LeftArrow} style={{height: 17, width: 17}}/>
+                    </TouchableOpacity>
+                    <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+                      <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{DialogTitle}</Text>
+                    </View>
+                    <View style={{flex: 1}}></View>
                   </View>
-                  <View style={{flex: 1}}></View>
+                  <View style={{flex: 5, paddingLeft: 20, paddingBottom: 5}}>
+                    <ScrollView>
+                    {data['Start_'].filter((Start: number) => {
+                    if (rescheduleStatus == 'PriorStage') {
+                      return Start <= hourRotation
+                    }
+                    else{
+                      return Start > hourRotation
+                    }}
+                    ).map((Start:number, i:number) => {
+                      return(
+                        <View style={{margin: 5}} key={i}>
+                          <BouncyCheckbox
+                            size={25}
+                            isChecked={checked}
+                            fillColor="#2173BD"
+                            // unFillColor="#FFFFFF"
+                            text={String(data['Work'][i])}
+                            iconStyle={{ borderColor: "red" }}
+                            innerIconStyle={{ borderWidth: 2 }}
+                            textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff' }}
+                            // onPress={(isChecked: boolean) => {console.log(isChecked)}}
+                            onPress={() => handleCheckboxChange(i)}
+                          />
+                        </View>
+                      )})}
+                      </ScrollView>
+                    </View>
+                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
+                      <TouchableOpacity onPress={() => RescheduleButtonClick()}>
+                        <Text style={{color: '#2173BD', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </Animated.View>
                 </View>
-                <View style={{flex: 6, paddingLeft: 20, paddingBottom: 5}}>
-                  {/* <ScrollView>
-                  {data['Start_'].filter(Start => {
-                  if (rescheduleStatus == 'PriorStage') {
-                    return Start <= hourRotation
-                  }
-                  else{
-                    return Start > hourRotation
-                  }}
-                  ).map((Start:number, i:number) => {
-                    return(
-                      <View style={{margin: 5}} key={i}>
-                        <BouncyCheckbox
-                          size={25}
-                          isChecked={checked}
-                          fillColor="#2173BD"
-                          // unFillColor="#FFFFFF"
-                          text={String(data['Work'][i])}
-                          iconStyle={{ borderColor: "red" }}
-                          innerIconStyle={{ borderWidth: 2 }}
-                          textStyle={{ fontFamily: "sf-pro-display-medium" }}
-                          // onPress={(isChecked: boolean) => {console.log(isChecked)}}
-                          onPress={() => handleCheckboxChange(i)}
-                        />
-                      </View>
-                    )})}
-                    </ScrollView> */}
-                  </View>
-                </View>
-                )}
+              </Modal>
               </View>
 
             <View style={[styles.LowerArea]}>
-            <TouchableOpacity style={[styles.RescheduleButton, rescheduleStatus != 'off'? {backgroundColor: '#2173BD'} : {}]} onPress={() => RescheduleButtonClick()}>
-              <Text style={[{fontFamily: 'sf-pro-display-bold', fontSize: 20, color: '#FFFFFF'}]}>{rescheduleStatus != 'off'? 'Next' : 'Reschedule'}</Text>
+            <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
+              <Text style={[{fontFamily: 'sf-pro-display-bold', fontSize: 20, color: '#FFFFFF'}]}>Reschedule</Text>
             </TouchableOpacity>
             </View>
 
-            <View style={{flex: 0.4, alignItems: 'flex-end', marginRight: 20}}>
-              <TouchableOpacity style={[{backgroundColor: '#bd54ee', padding: 15, borderRadius: 30}, tintstatus == true? {opacity: 0.5, pointerEvents: 'none'} : {}]} 
+            <View style={{flex: 0.4, alignItems: 'center', justifyContent: 'center', marginRight: 20, flexDirection: 'row'}}>
+              <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red'}} onPress={() => navigation.navigate('HandlingModals', { screen: 'ScheduleTable' })}>
+                <Text style={{color: 'black'}}>Schedule</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'blue'}}>
+                <Text style={{color: 'black'}}>Calender</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[{ flex: 1, paddingLeft: 160}]} 
               onPress={()=> navigation.navigate('AddTiming')}>
-                <Image style={styles.AddIcon} source={AddIcon}/>
+                <View style={{backgroundColor: '#bd54ee', padding: 15, borderRadius: 30}}>
+                  <Image style={styles.AddIcon} source={AddIcon}/>
+                </View>
               </TouchableOpacity>
             </View>
-            <Taskbar activeState='Schedule'/>
+            {/* <Taskbar activeState='Schedule'/> */}
           </View>
         </View>
       {/* </PanGestureHandler>
@@ -546,7 +569,8 @@ const Schedule = () => {
       // alignItems: 'center',
       justifyContent: 'center',
       paddingLeft: 15,
-      paddingRight: 15
+      paddingRight: 15,
+      paddingBottom: 5
     },
   
     angleInfo: {
@@ -711,7 +735,6 @@ const Schedule = () => {
       left: 0,
       bottom: 0,
       right: 0
-      
     },
 
     LowerArea: {

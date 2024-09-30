@@ -408,7 +408,8 @@ const styles = StyleSheet.create({
 
   mainStyle: {
     flex: 1,
-    backgroundColor: '#1B1B1D'
+    backgroundColor: '#1B1B1D',
+    paddingTop: StatusBar.currentHeight
   },
 
   UpperOption: {
@@ -421,7 +422,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 5,
     marginBottom: 1,
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 20,
+    // 
   },
 
   MiddleOption: {
