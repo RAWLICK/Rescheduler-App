@@ -1,10 +1,10 @@
 import React from 'react';
+import { useRef } from 'react';
 import type {PropsWithChildren} from 'react';
 import Schedule from './Components/Schedule';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import AddTiming from './Components/AddTiming';
 import Calender from './Components/Calender';
@@ -14,9 +14,9 @@ import Notes from './Components/Notes';
 import Navbar from './Components/Navbar';
 import Taskbar from './Components/Taskbar';
 import SignIn from './Components/SignIn';
+import { View, Text, TouchableOpacity, Button } from 'react-native'
 
 function App(): React.JSX.Element {
-  const ModalStack = createStackNavigator();
   const Drawer = createDrawerNavigator();
   const NativeStack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -40,23 +40,12 @@ function App(): React.JSX.Element {
     );
   }
 
-  function ModalNav() {
-    return (
-    <ModalStack.Navigator>
-      <ModalStack.Group screenOptions={{ presentation: 'modal' }}>
-        <ModalStack.Screen name='ScheduleTable' component={ScheduleTable} options={{ headerShown: false }}/>
-      </ModalStack.Group>
-    </ModalStack.Navigator>
-    )
-  }
 
   return (
     <NavigationContainer>
       <NativeStack.Navigator initialRouteName="Sched">
         <NativeStack.Screen name="Sched" component={HomeTabs} options={{ headerShown: false }}/>
-        {/* <Stack.Screen name="Stats" component={HomeTabs} options={{ headerShown: false }}/> */}
         <NativeStack.Screen name="AddTiming" component={AddTiming} options={{ headerShown: false }}/>
-        <NativeStack.Screen name="HandlingModals" component={ModalNav} options={{ headerShown: false }}/>
       </NativeStack.Navigator>
     </NavigationContainer>
   );

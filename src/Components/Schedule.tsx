@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 // import ClockImage from '../Images/AnalogClockImage.png'
 import ClockImage from '../Images/AnalogClockImage.png'
 // import Holder from '../Images/Holder.png'
@@ -19,6 +19,7 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import Carousel from 'react-native-reanimated-carousel';
 import {PythonShell} from 'python-shell';
 import LinearGradient from 'react-native-linear-gradient';
+import { TrueSheet } from "@lodev09/react-native-true-sheet"
 
 import {
   SafeAreaView,
@@ -31,10 +32,12 @@ import {
   ImageBackground,
   TouchableOpacity,
   Modal,
+  Button,
   Dimensions
 } from 'react-native';
 import Navbar from './Navbar';
 import Taskbar from './Taskbar';
+import ScheduleTable from '../Components/ScheduleTable'
 
 const Schedule = () => {
     const [hourRotation, setHourRotation] = useState(0)
@@ -56,6 +59,7 @@ const Schedule = () => {
     const [checked, setChecked] = useState(false);
     // const width = Dimensions.get('window').width;  // For Carousel
     const [serverResponseMessage, setServerResponseMessage] = useState('')
+    const ScheduleTableSheet = useRef<TrueSheet>(null);
     interface ScheduleArrayItems {
       StartTime: string,
       EndTime: string,
@@ -179,32 +183,32 @@ const Schedule = () => {
     // };
 
     const data = {
-      "Time_Start": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
-      "Time_End": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndTime),
+      "StartTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
+      "EndTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndTime),
       "Work": safeScheduleArray.map((item: ScheduleArrayItems) => item.Work),
-      "Start_": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartAngle),
-      "End_": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndAngle),
+      "StartAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartAngle),
+      "EndAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndAngle),
       "Slice_Color": [
       "rgba(175, 193, 85, 0.5)",
       "rgba(182, 108, 239, 0.5)",
       "rgba(78, 161, 40, 0.5)",
       "rgba(71, 214, 63, 0.5)",
-      // "rgba(19, 249, 16, 0.5)",
-      // "rgba(69, 221, 118, 0.5)", 
-      // "rgba(17, 150, 214, 0.5) ",
-      // "rgba(174, 182, 155, 0.5)",
-      // "rgba(54, 147, 187, 0.5) ",
-      // "rgba(49, 107, 93, 0.5)",
-      // "rgba(12, 248, 250, 0.5) ",
-      // "rgba(146, 120, 43, 0.5)", 
-      // "rgba(38, 3, 93, 0.5)",
-      // "rgba(240, 19, 80, 0.5)",
-      // "rgba(227, 127, 0, 0.5)",
-      // "rgba(38, 131, 56, 0.5)",
-      // "rgba(57, 190, 200, 0.5)",
-      // "rgba(28, 79, 20, 0.5)",
-      // "rgba(82, 176, 27, 0.5)",
-      // "rgba(191, 115, 181, 0.5)"
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)"
     ],
     }
 
@@ -251,11 +255,11 @@ const Schedule = () => {
               <Stop offset="50%" stopColor="red" stopOpacity="0" />
             </LinearGradient>
           </Defs> */}
-          {data['Start_'].map((startAngle:number, i:number) => {
-            const endAngle = data['End_'][i];
+          {data['StartAngle'].map((startAngle:number, i:number) => {
+            const endAngle = data['EndAngle'][i];
             const sectorColor = data['Slice_Color'][i];
-            const startTime = data['Time_Start'][i]
-            const endTime = data['Time_End'][i]
+            const startTime = data['StartTime'][i]
+            const endTime = data['EndTime'][i]
             // const angleDuration = data['Duration'][i]
             const angleWork = data['Work'][i]
   
@@ -293,7 +297,7 @@ const Schedule = () => {
           )})}
           {tintstatus && (
             <Path
-            d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, data["End_"][14], hourRotation)}
+            d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, data["EndAngle"][14], hourRotation)}
             fill= "rgba(0, 0, 0, 0.5)"
           />
           )}
@@ -395,6 +399,169 @@ const Schedule = () => {
       }
     };
 
+    async function ScheduleTableButton () {
+      await ScheduleTableSheet.current?.present();
+    }
+
+    // Nested Components 
+    const UpperArea = () => {
+      return (
+        <View style={styles.UpperArea}>
+          <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 0.5}}>
+              <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>08:24 AM</Text>
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>September 24</Text>
+            </View>
+          </View>
+
+          <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5, elevation: 5}}>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'grey',  borderBottomWidth: 0.5}}>
+              <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Chemistry Work (1h 21mins)</Text>
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}}>
+              <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>09:21 AM - 10:30 AM</Text>
+            </View>
+          </View>
+          {/* {infoVisible && (
+            <AngleInfo/>
+          )} */}
+        </View>
+      )
+    }
+
+    const ClockArea = () => {
+
+      const SelectionDialogBox = () => {
+        return (
+        <Modal visible={rescheduleStatus !== 'off'}>
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <BlurView
+              style={styles.blurStyle}
+              blurType="light"
+              blurAmount={10}
+              reducedTransparencyFallbackColor="light"
+            />
+            <Animated.View style={[styles.selectionDialogBox]}>
+            <BlurView
+              style={styles.blurStyle}
+              blurType="dark"
+              blurAmount={50}
+              reducedTransparencyFallbackColor="black"
+            />
+            <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
+              <TouchableOpacity onPress={DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Image source={LeftArrow} style={{height: 17, width: 17}}/>
+              </TouchableOpacity>
+              <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{DialogTitle}</Text>
+              </View>
+              <View style={{flex: 1}}></View>
+            </View>
+            <View style={{flex: 5, paddingLeft: 20, paddingBottom: 5}}>
+              <ScrollView>
+              {data['StartAngle'].filter((Start: number) => {
+              if (rescheduleStatus == 'PriorStage') {
+                return Start <= hourRotation
+              }
+              else{
+                return Start > hourRotation
+              }}
+              ).map((Start:number, i:number) => {
+                return(
+                  <View style={{margin: 5}} key={i}>
+                    <BouncyCheckbox
+                      size={25}
+                      isChecked={checked}
+                      fillColor="#2173BD"
+                      // unFillColor="#FFFFFF"
+                      text={String(data['Work'][i])}
+                      iconStyle={{ borderColor: "red" }}
+                      innerIconStyle={{ borderWidth: 2 }}
+                      textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff' }}
+                      // onPress={(isChecked: boolean) => {console.log(isChecked)}}
+                      onPress={() => handleCheckboxChange(i)}
+                    />
+                  </View>
+                )})}
+                </ScrollView>
+              </View>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
+                <TouchableOpacity onPress={() => RescheduleButtonClick()}>
+                  <Text style={{color: '#2173BD', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          </View>
+        </Modal>
+        );
+      }
+
+      return (
+      <View style={styles.ClockArea}>
+        <ImageBackground source={ClockImage}  style={styles.Clock}>
+          <View style={[styles.hour, { transform: [{ rotate: `${hourRotation}deg` }] }]}></View>
+          <View style={[styles.minute, { transform: [{ rotate: `${minuteRotation}deg` }] }]}></View>
+          <View style={[styles.second, { transform: [{ rotate: `${secondRotation}deg` }] }]}></View>
+        </ImageBackground>
+        {/* <GestureDetector gesture={pan}>
+        <Animated.View 
+          style={[styles.compressorOne, animatedStyles]}>
+          <Image style={styles.holderOne} source={Holder}/> 
+        </Animated.View>
+        </GestureDetector> */}
+        <View style={styles.arcAngle}>
+          <SingleAngle/>
+        </View>
+
+        <SelectionDialogBox/>
+        
+        </View>
+      )
+    }
+
+    const LowerArea = () => {
+      return (
+        <View style={[styles.LowerArea]}>
+        <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
+          <Text style={[{fontFamily: 'sf-pro-display-bold', fontSize: 20, color: '#FFFFFF'}]}>Reschedule</Text>
+        </TouchableOpacity>
+        </View>
+      )
+    }
+
+    const BottomArea = () => {
+      return (
+        <View style={{flex: 0.4, alignItems: 'center', justifyContent: 'center', marginRight: 20, flexDirection: 'row'}}>
+          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red'}} onPress={ScheduleTableButton}>
+            <Text style={{color: 'black'}}>Schedule</Text>
+          </TouchableOpacity>
+          <TrueSheet
+            ref={ScheduleTableSheet}
+            sizes={['auto', 'large']}
+            cornerRadius={24}
+          >
+            <ScheduleTable/>
+          </TrueSheet>
+          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'blue'}}>
+            <Text style={{color: 'black'}}>Calender</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[{ flex: 1, paddingLeft: 160}]} 
+          onPress={()=> navigation.navigate('AddTiming')}>
+            <View style={{backgroundColor: '#bd54ee', padding: 15, borderRadius: 30}}>
+              <Image style={styles.AddIcon} source={AddIcon}/>
+            </View>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+
+    useEffect(() => {
+      ClockArea();
+    }, [ScheduleArray])
+    
+
     return (
       <SafeAreaView style={styles.safeView}>
       {/* <GestureHandlerRootView>
@@ -416,128 +583,13 @@ const Schedule = () => {
             <Navbar/>
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
-            <View style={styles.UpperArea}>
-              <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 1}}>
-                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>08:24 AM</Text>
-                </View>
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>September 24</Text>
-                </View>
-              </View>
-
-              <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5, elevation: 5}}>
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'grey',  borderBottomWidth: 1}}>
-                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Chemistry Work (1h 21mins)</Text>
-                </View>
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}}>
-                  <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>09:21 AM - 10:30 AM</Text>
-                </View>
-              </View>
-              {/* {infoVisible && (
-                <AngleInfo/>
-              )} */}
-            </View>
+            <UpperArea/>
   
-            <View style={styles.ClockArea}>
-              <ImageBackground source={ClockImage}  style={styles.Clock}>
-                <View style={[styles.hour, { transform: [{ rotate: `${hourRotation}deg` }] }]}></View>
-                <View style={[styles.minute, { transform: [{ rotate: `${minuteRotation}deg` }] }]}></View>
-                <View style={[styles.second, { transform: [{ rotate: `${secondRotation}deg` }] }]}></View>
-              </ImageBackground>
-              {/* <GestureDetector gesture={pan}>
-              <Animated.View 
-                style={[styles.compressorOne, animatedStyles]}>
-                <Image style={styles.holderOne} source={Holder}/> 
-              </Animated.View>
-              </GestureDetector> */}
-              <View style={styles.arcAngle}>
-                <SingleAngle/>
-              </View>
+            <ClockArea/>
 
-              {/* SelectionDialogBox--> */}
-              <Modal visible={rescheduleStatus !== 'off'}>
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <BlurView
-                    style={styles.blurStyle}
-                    blurType="light"
-                    blurAmount={10}
-                    reducedTransparencyFallbackColor="light"
-                  />
-                  <Animated.View style={[styles.selectionDialogBox]}>
-                  <BlurView
-                    style={styles.blurStyle}
-                    blurType="dark"
-                    blurAmount={50}
-                    reducedTransparencyFallbackColor="black"
-                  />
-                  <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
-                    <TouchableOpacity onPress={DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                      <Image source={LeftArrow} style={{height: 17, width: 17}}/>
-                    </TouchableOpacity>
-                    <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
-                      <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{DialogTitle}</Text>
-                    </View>
-                    <View style={{flex: 1}}></View>
-                  </View>
-                  <View style={{flex: 5, paddingLeft: 20, paddingBottom: 5}}>
-                    <ScrollView>
-                    {data['Start_'].filter((Start: number) => {
-                    if (rescheduleStatus == 'PriorStage') {
-                      return Start <= hourRotation
-                    }
-                    else{
-                      return Start > hourRotation
-                    }}
-                    ).map((Start:number, i:number) => {
-                      return(
-                        <View style={{margin: 5}} key={i}>
-                          <BouncyCheckbox
-                            size={25}
-                            isChecked={checked}
-                            fillColor="#2173BD"
-                            // unFillColor="#FFFFFF"
-                            text={String(data['Work'][i])}
-                            iconStyle={{ borderColor: "red" }}
-                            innerIconStyle={{ borderWidth: 2 }}
-                            textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff' }}
-                            // onPress={(isChecked: boolean) => {console.log(isChecked)}}
-                            onPress={() => handleCheckboxChange(i)}
-                          />
-                        </View>
-                      )})}
-                      </ScrollView>
-                    </View>
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
-                      <TouchableOpacity onPress={() => RescheduleButtonClick()}>
-                        <Text style={{color: '#2173BD', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </Animated.View>
-                </View>
-              </Modal>
-              </View>
+            <LowerArea/>
 
-            <View style={[styles.LowerArea]}>
-            <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
-              <Text style={[{fontFamily: 'sf-pro-display-bold', fontSize: 20, color: '#FFFFFF'}]}>Reschedule</Text>
-            </TouchableOpacity>
-            </View>
-
-            <View style={{flex: 0.4, alignItems: 'center', justifyContent: 'center', marginRight: 20, flexDirection: 'row'}}>
-              <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red'}} onPress={() => navigation.navigate('HandlingModals', { screen: 'ScheduleTable' })}>
-                <Text style={{color: 'black'}}>Schedule</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'blue'}}>
-                <Text style={{color: 'black'}}>Calender</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[{ flex: 1, paddingLeft: 160}]} 
-              onPress={()=> navigation.navigate('AddTiming')}>
-                <View style={{backgroundColor: '#bd54ee', padding: 15, borderRadius: 30}}>
-                  <Image style={styles.AddIcon} source={AddIcon}/>
-                </View>
-              </TouchableOpacity>
-            </View>
+            <BottomArea/>
             {/* <Taskbar activeState='Schedule'/> */}
           </View>
         </View>
