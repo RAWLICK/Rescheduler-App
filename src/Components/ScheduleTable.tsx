@@ -15,9 +15,9 @@ const ScheduleTable = () => {
   const safeScheduleArray : [] = ScheduleArray ?? []
   // const [safeScheduleArray, setSafeScheduleArray] = useState<[]>(ScheduleArray ?? [])
 
-  function setScheduleArrayFunction() {
-    return safeScheduleArray
-  }
+  // function setScheduleArrayFunction() {
+  //   return safeScheduleArray
+  // }
 
   const data = {
     "StartTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
@@ -66,14 +66,14 @@ const ScheduleTable = () => {
     }
   }
 
-  useEffect(() => {
-    console.log("safeScheduleArray in Time Table", safeScheduleArray)
-  }, [])
+  // useEffect(() => {
+  //   console.log("safeScheduleArray in Time Table", safeScheduleArray)
+  // }, [])
 
   function DeleteTask(name: string) {
-    let EditedArray = safeScheduleArray.filter((obj: ScheduleArrayItems) => obj.Work !== name)
-    // setSafeScheduleArray(EditedArray)
-    console.log("Edited Array: ", EditedArray)
+    // let EditedArray = safeScheduleArray.filter((obj: ScheduleArrayItems) => obj.Work !== name)
+    // // setSafeScheduleArray(EditedArray)
+    // console.log("Edited Array: ", EditedArray)
   }
   return (
     <View style={{backgroundColor: '#e7e7e7'}}>

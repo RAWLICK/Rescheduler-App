@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, memo, useRef, useCallback } from 'react';
 // import ClockImage from '../Images/AnalogClockImage.png'
 import ClockImage from '../Images/AnalogClockImage.png'
 // import Holder from '../Images/Holder.png'
@@ -39,10 +39,43 @@ import Navbar from './Navbar';
 import Taskbar from './Taskbar';
 import ScheduleTable from '../Components/ScheduleTable'
 
+const Clock = () => {
+  const [hourRotation, setHourRotation] = useState(0);
+  const [minuteRotation, setMinuteRotation] = useState(0);
+  const [secondRotation, setSecondRotation] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const d = new Date();
+      const hTime = d.getHours();
+      const mTime = d.getMinutes();
+      const sTime = d.getSeconds();
+
+      const hRotation = 30 * hTime + 0.5 * mTime;
+      const mRotation = 6 * mTime;
+      const sRotation = 6 * sTime;
+
+      // Update the state, which will trigger a re-render
+      setHourRotation(hRotation);
+      setMinuteRotation(mRotation);
+      setSecondRotation(sRotation);
+    }, 1000);
+
+    // Clean up the interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return (
+  <ImageBackground source={ClockImage}  style={styles.Clock}>
+    <View style={[styles.hour, { transform: [{ rotate: `${hourRotation}deg` }] }]}></View>
+    <View style={[styles.minute, { transform: [{ rotate: `${minuteRotation}deg` }] }]}></View>
+    <View style={[styles.second, { transform: [{ rotate: `${secondRotation}deg` }] }]}></View>
+  </ImageBackground>
+  );
+};
+
 const Schedule = () => {
     const [hourRotation, setHourRotation] = useState(0)
-    const [minuteRotation, setMinuteRotation] = useState(0)
-    const [secondRotation, setSecondRotation] = useState(0)
     const navigation = useNavigation<NavigationProp<any, any>>();
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
@@ -55,6 +88,7 @@ const Schedule = () => {
     const [tintstatus, setTintStatus] = useState(false)
     const [strokeStatus, setStrokeStatus] = useState(false)
     const [rescheduleStatus, setRescheduleStatus] = useState('off')
+    // const rescheduleStatus = useRef('off')
     const [DialogTitle, setDialogTitle] = useState('')
     const [checked, setChecked] = useState(false);
     // const width = Dimensions.get('window').width;  // For Carousel
@@ -67,12 +101,41 @@ const Schedule = () => {
       StartAngle: number,
       EndAngle: number
     }
+
     const {ScheduleArray} = require('./AddTiming')
     const safeScheduleArray: [] = ScheduleArray ?? []
 
-    // useEffect(() => {
-    //   console.log("ScheduleArray (In Schedule.tsx): ",ScheduleArray)
-    // }, [])
+    const data = {
+      "StartTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
+      "EndTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndTime),
+      "Work": safeScheduleArray.map((item: ScheduleArrayItems) => item.Work),
+      "StartAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartAngle),
+      "EndAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndAngle),
+      "Slice_Color": [
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)"
+    ],
+    }
+    console.log("Safe Schedule Array: ", safeScheduleArray)
+    console.log("Safe Schedule Array: ", safeScheduleArray)
     
     interface ApiDataType {
       "Durations": string;
@@ -91,22 +154,21 @@ const Schedule = () => {
     const [FixedSelections, setFixedSelections] = useState<number[]>([])
     const [RemovingSelections, setRemovingSelections] = useState<number[]>([])
 
-    
+    useEffect(() => {
+      const intervalId = setInterval(() => {
+        const d = new Date();
+        const hTime = d.getHours();
+        const mTime = d.getMinutes();
   
-    setTimeout(() => {
-      let d = new Date();
-      let hTime = d.getHours();
-      let mTime = d.getMinutes();
-      let sTime = d.getSeconds();
-      let hRotation = 30*hTime + 0.5*mTime;
-      let mRotation = 6*mTime;
-      let sRotation = 6*sTime;
-      
-      
-      setHourRotation(hRotation);
-      setMinuteRotation(mRotation);
-      setSecondRotation(sRotation);
-    }, 1000);
+        const hRotation = 30 * hTime + 0.5 * mTime;
+  
+        setHourRotation(hRotation);
+      }, 3600000);
+  
+      // Clean up the interval on unmount
+      return () => clearInterval(intervalId);
+    }, []);
+
     
     // const [sound, setSound] = useState<Sound | null>(null);
     // const playSound = () => {
@@ -182,42 +244,13 @@ const Schedule = () => {
     //   "Work": ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break','Sona', 'Work 5', 'Work 5 Break', 'Work 6', 'Free 1', 'Work 7', 'Work 8', 'Work 9', 'Fuck 1', 'Fuck 2', 'Fuck 3', 'Fuck 4', 'Fuck 5']
     // };
 
-    const data = {
-      "StartTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
-      "EndTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndTime),
-      "Work": safeScheduleArray.map((item: ScheduleArrayItems) => item.Work),
-      "StartAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartAngle),
-      "EndAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndAngle),
-      "Slice_Color": [
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)"
-    ],
-    }
-
-    useEffect(() => {
-      console.log("Data (In Schedule.tsx): ", data)
-    }, [])
     
-  
-    const SingleAngle = () => {
+
+    // useEffect(() => {
+    //   console.log("Data (In Schedule.tsx): ", data)
+    // }, [])
+    
+    const SingleAngle = useCallback(() => {
       const hardRadius = 150;
       const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
         // The - 90 is used to adjust the angle so that 0 degrees points upwards, which is common in many applications like graphical rendering.
@@ -303,7 +336,7 @@ const Schedule = () => {
           )}
         </Svg>
       );
-    };
+    }, [ScheduleArray]);
   
     const AngleInfo = () => {
       return(
@@ -368,9 +401,13 @@ const Schedule = () => {
     }
 
     const RescheduleButtonClick = () => {
-      rescheduleStatus === 'off' && setRescheduleStatus('PriorStage')
+      console.log("Reschedule Button is being clicked")
+      rescheduleStatus === 'off' && setRescheduleStatus('PriorStage') 
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
+      // rescheduleStatus.current === 'off' && rescheduleStatus.current === 'PriorStage'
+      // rescheduleStatus.current === 'PriorStage' && setRescheduleStatus('FixingStage')
+      // rescheduleStatus.current === 'FixingStage' && setRescheduleStatus('RemovingStage')
       // sendNameToBackend();
       // console.log("ScheduleArray (In Schedule.tsx): ",ScheduleArray)
     }
@@ -403,7 +440,7 @@ const Schedule = () => {
       await ScheduleTableSheet.current?.present();
     }
 
-    // Nested Components 
+    // Nested Components (Composition)
     const UpperArea = () => {
       return (
         <View style={styles.UpperArea}>
@@ -429,9 +466,9 @@ const Schedule = () => {
           )} */}
         </View>
       )
-    }
+    };
 
-    const ClockArea = () => {
+    const LowerArea = () => {
 
       const SelectionDialogBox = () => {
         return (
@@ -496,40 +533,17 @@ const Schedule = () => {
           </View>
         </Modal>
         );
-      }
-
-      return (
-      <View style={styles.ClockArea}>
-        <ImageBackground source={ClockImage}  style={styles.Clock}>
-          <View style={[styles.hour, { transform: [{ rotate: `${hourRotation}deg` }] }]}></View>
-          <View style={[styles.minute, { transform: [{ rotate: `${minuteRotation}deg` }] }]}></View>
-          <View style={[styles.second, { transform: [{ rotate: `${secondRotation}deg` }] }]}></View>
-        </ImageBackground>
-        {/* <GestureDetector gesture={pan}>
-        <Animated.View 
-          style={[styles.compressorOne, animatedStyles]}>
-          <Image style={styles.holderOne} source={Holder}/> 
-        </Animated.View>
-        </GestureDetector> */}
-        <View style={styles.arcAngle}>
-          <SingleAngle/>
-        </View>
-
-        <SelectionDialogBox/>
-        
-        </View>
-      )
-    }
-
-    const LowerArea = () => {
+      };
       return (
         <View style={[styles.LowerArea]}>
-        <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
-          <Text style={[{fontFamily: 'sf-pro-display-bold', fontSize: 20, color: '#FFFFFF'}]}>Reschedule</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
+            <Text style={[{fontFamily: 'sf-pro-display-bold', fontSize: 20, color: '#FFFFFF'}]}>Reschedule</Text>
+          </TouchableOpacity>
+
+          <SelectionDialogBox/>
         </View>
       )
-    }
+    };
 
     const BottomArea = () => {
       return (
@@ -555,11 +569,11 @@ const Schedule = () => {
           </TouchableOpacity>
         </View>
       )
-    }
+    };
 
-    useEffect(() => {
-      ClockArea();
-    }, [ScheduleArray])
+    // useEffect(() => {
+    //   ClockArea();
+    // }, [ScheduleArray])
     
 
     return (
@@ -585,7 +599,14 @@ const Schedule = () => {
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
             <UpperArea/>
   
-            <ClockArea/>
+            <View style={styles.ClockArea}>
+              <Clock/>
+              
+              <View style={styles.arcAngle}>
+                <SingleAngle/>
+              </View>
+            
+            </View>
 
             <LowerArea/>
 

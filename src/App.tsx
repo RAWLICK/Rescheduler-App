@@ -9,14 +9,17 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import AddTiming from './Components/AddTiming';
 import Calender from './Components/Calender';
 import Statistics from './Components/Statistics';
-import ScheduleTable from './Components/ScheduleTable'
+import RoughComponent from './Components/RoughComponent';
+import ScheduleTable from './Components/ScheduleTable';
 import Notes from './Components/Notes';
 import Navbar from './Components/Navbar';
 import Taskbar from './Components/Taskbar';
 import SignIn from './Components/SignIn';
 import { View, Text, TouchableOpacity, Button } from 'react-native'
+import { useState } from 'react';
 
 function App(): React.JSX.Element {
+  // const [ScheduleArray, setScheduleArray] = useState(second)
   const Drawer = createDrawerNavigator();
   const NativeStack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -44,7 +47,8 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <NativeStack.Navigator initialRouteName="Sched">
-        <NativeStack.Screen name="Sched" component={HomeTabs} options={{ headerShown: false }}/>
+        {/* <NativeStack.Screen name="Sched" component={HomeTabs} options={{ headerShown: false }}/> */}
+        <NativeStack.Screen name="Sched" component={RoughComponent} options={{ headerShown: false }}/>
         <NativeStack.Screen name="AddTiming" component={AddTiming} options={{ headerShown: false }}/>
       </NativeStack.Navigator>
     </NavigationContainer>
