@@ -14,16 +14,77 @@ import {
   Button,
   Dimensions
 } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 
-const RoughComponent = () => {
-  console.log("Rough Component is re-rendering")
+type TestingPropsType = {
+  TestingHeading: string
+  TestingButton: () => void
+}
+const Testing = (props: TestingPropsType) => {
   return (
-    <View>
-      <Text style={{color: 'black'}}>RoughComponent</Text>
+    <Modal visible={false}>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{height: 100, width: 300, backgroundColor: 'black', justifyContent: 'center', alignItems: 'center'}}>
+          <View style={{margin: 5}}>
+            <Text>{props.TestingHeading}</Text>
+          </View>
+          <View>
+            <Button title='Testing Button' onPress={props.TestingButton}/>
+          </View>
+        </View>
+        </View>
+    </Modal>
+  );
+};
+
+type RoughCompProps = {
+  route: RouteProp<{ RoughComp: { parentParam: string } }, 'RoughComp'>;
+};
+
+const RoughComponent: React.FC<RoughCompProps> = ({ route }) => {
+  const { parentParam } = route.params ?? '';
+
+  const [TestingHeading, setTestingHeading] = useState("Fuck Off")
+  const navigation = useNavigation<NavigationProp<any, any>>();
+  console.log("Rough Component is re-rendering");
+
+  function TestingButton () {
+    TestingHeading == "Fuck Off" && setTestingHeading('Fuck You Off To');
+    TestingHeading == "Fuck You Off To" && setTestingHeading('Fuck Off');
+  }
+
+  return (
+    <View style={styles.mainPage}>
+      <View style={styles.TitleArea}>
+        <Text style={{color: 'black'}}>RoughComponent</Text>
+        <Text style={{color: 'black'}}>Imported Value: {parentParam}</Text>
+      </View>
+
+      <Testing TestingHeading={TestingHeading} TestingButton={TestingButton}/>
+
+      <View style={styles.ButtonArea}>
+        <Button title='Move to RoughComp2' onPress={()=> navigation.navigate('RoughCompTwo')}/>
+      </View>
     </View>
   )
 }
 
 export default RoughComponent
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  mainPage : {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems:'center'
+  },
+
+  TitleArea: {
+    margin: 10
+  },
+
+  ButtonArea: {
+    margin: 10
+  }
+})

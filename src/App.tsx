@@ -6,10 +6,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import AddTiming from './Components/AddTiming';
 import Calender from './Components/Calender';
 import Statistics from './Components/Statistics';
 import RoughComponent from './Components/RoughComponent';
+import RoughComponentTwo from './Components/RoughComponentTwo';
 import ScheduleTable from './Components/ScheduleTable';
 import Notes from './Components/Notes';
 import Navbar from './Components/Navbar';
@@ -18,11 +20,25 @@ import SignIn from './Components/SignIn';
 import { View, Text, TouchableOpacity, Button } from 'react-native'
 import { useState } from 'react';
 
+type NativeStackParamList = {
+  RoughComp: { parentParam: string }; // ParentScreen expects a parameter called 'parentParam'
+  RoughCompTwo: undefined; // ChildScreen doesn't need any parameters
+};
+
 function App(): React.JSX.Element {
-  // const [ScheduleArray, setScheduleArray] = useState(second)
+
   const Drawer = createDrawerNavigator();
-  const NativeStack = createNativeStackNavigator();
+  const NativeStack = createNativeStackNavigator<NativeStackParamList>();
   const Tab = createBottomTabNavigator();
+  const Stack = createStackNavigator();
+
+  function StackScreen() {
+    return (
+      <Stack.Navigator screenOptions={{ ...TransitionPresets.SlideFromRightIOS }}>
+        <Stack.Screen name="AddTiming" component={AddTiming} initialParams={{ itemId: 42 }} options={{ headerShown: false }}/>
+      </Stack.Navigator>
+    );
+  };
 
   function DrawerNav() {
     return (
@@ -46,10 +62,11 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <NativeStack.Navigator initialRouteName="Sched">
+      <NativeStack.Navigator initialRouteName="RoughComp">
         {/* <NativeStack.Screen name="Sched" component={HomeTabs} options={{ headerShown: false }}/> */}
-        <NativeStack.Screen name="Sched" component={RoughComponent} options={{ headerShown: false }}/>
-        <NativeStack.Screen name="AddTiming" component={AddTiming} options={{ headerShown: false }}/>
+        <NativeStack.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/>
+        <NativeStack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/>
+        {/* <NativeStack.Screen name="AddTimingStack" component={StackScreen} options={{ headerShown: false }}/> */}
       </NativeStack.Navigator>
     </NavigationContainer>
   );

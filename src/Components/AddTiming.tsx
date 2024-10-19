@@ -32,8 +32,60 @@ import Animated, {
 } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+type AreaOnePropsType = {
+  WorkToDo: string
+  setWorkToDo: React.Dispatch<React.SetStateAction<string>>
+  color: string
+}
+
+const AreaOne = (props: AreaOnePropsType) => {
+  return (
+    <View style={styles.areaOne}>
+      <TouchableOpacity style={styles.UpperOption}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+          }}>
+          {/* <Text style={styles.OptionText}>Work</Text> */}
+          <TextInput
+            style={styles.OptionText}
+            value={props.WorkToDo}
+            onChangeText={props.setWorkToDo}
+            placeholder="Work"></TextInput>
+        </View>
+        <View
+          style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+          <Image source={ChevronRight} style={{height: 17, width: 17}} />
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.BottomOption}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+          }}>
+          <Text style={styles.OptionText}>Color</Text>
+        </View>
+        <View
+          style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+          <View
+            style={[
+              styles.angleInfoColor,
+              {backgroundColor: `${props.color}`},
+            ]}></View>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 const AddTiming = () => {
-  console.log("Add Timing component is running")
+  console.log("Add Timing component is re-rendering");
+  console.log()
   const color = 'blue';
   const DurationBoxes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   const DurationTag = ['0h', '1h', '2h', '3h', '4h'];
@@ -313,51 +365,6 @@ const AddTiming = () => {
     );
   };
 
-  const AreaOne = () => {
-    return (
-      <View style={styles.areaOne}>
-        <TouchableOpacity style={styles.UpperOption}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
-            {/* <Text style={styles.OptionText}>Work</Text> */}
-            <TextInput
-              style={styles.OptionText}
-              value={WorkToDo}
-              onChangeText={setWorkToDo}
-              placeholder="Work"></TextInput>
-          </View>
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-            <Image source={ChevronRight} style={{height: 17, width: 17}} />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.BottomOption}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
-            <Text style={styles.OptionText}>Color</Text>
-          </View>
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-            <View
-              style={[
-                styles.angleInfoColor,
-                {backgroundColor: `${color}`},
-              ]}></View>
-          </View>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
   const AreaTwo = () => {
     return (
       <View style={styles.areaTwo}>
@@ -625,7 +632,7 @@ const AddTiming = () => {
           <HeaderPanel />
 
           <ScrollView>
-            <AreaOne />
+            <AreaOne WorkToDo={WorkToDo} setWorkToDo={setWorkToDo} color={color} />
 
             <AreaTwo/>
 
