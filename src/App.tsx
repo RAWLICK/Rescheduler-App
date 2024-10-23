@@ -17,44 +17,107 @@ import Notes from './Components/Notes';
 import Navbar from './Components/Navbar';
 import Taskbar from './Components/Taskbar';
 import SignIn from './Components/SignIn';
-import { View, Text, TouchableOpacity, Button } from 'react-native'
+import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, Image, GestureResponderEvent} from 'react-native'
 import { useState } from 'react';
+import RescheduleIcon from './Images/Reschedule.png'
+import StatisticsIcon from './Images/Statistics.png'
+
+type StackParamList = {
+  AddTimingStack: undefined;
+};
+
+// type DrawerParamList = {
+//   ScheduleDrawer: { ScheduleArray : [] };
+// };
+
+type TabParamList = {
+  ScheduleTab: { ScheduleArray : [] };
+  StatisticsTab: undefined;
+};
 
 type NativeStackParamList = {
-  RoughComp: { parentParam: string }; // ParentScreen expects a parameter called 'parentParam'
-  RoughCompTwo: undefined; // ChildScreen doesn't need any parameters
+  StackScreens: undefined;
+  DrawerScreens: undefined;
+  TabScreens: undefined;
+  // RoughComp: { parentParam: string, secondParam: number };
+  // RoughCompTwo: undefined; //
 };
 
 function App(): React.JSX.Element {
 
-  const Drawer = createDrawerNavigator();
+  const Stack = createStackNavigator<StackParamList>();
+  // const Drawer = createDrawerNavigator<DrawerParamList>();
+  const Tab = createBottomTabNavigator<TabParamList>();
   const NativeStack = createNativeStackNavigator<NativeStackParamList>();
-  const Tab = createBottomTabNavigator();
-  const Stack = createStackNavigator();
+
+  type CustomTabButtonPropTypes = {
+    label: string,
+    onPress: ((e: GestureResponderEvent) => void) | undefined,
+    Icon: ImageSourcePropType,
+    isFocused: boolean | undefined
+  }
+  function CustomTabButton ({label, onPress, Icon, isFocused}: CustomTabButtonPropTypes) {
+    return (
+      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+      onPress={onPress}>  
+        <View style={[styles.IconView,
+          {backgroundColor: isFocused ? '#C1BED5' : '#d2cfe4'}
+          ]}>
+          <Image source={Icon} style={[styles.TaskbarIcons, {tintColor: isFocused ? 'black' : 'grey'}]}/>
+        </View>
+        <Text style={[styles.IconTitle, {fontFamily: isFocused ? 'sf-pro-display-bold' : 'sf-pro-display-medium'}, {color: isFocused ? 'black' : 'grey'}]}>{label}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   function StackScreen() {
     return (
       <Stack.Navigator screenOptions={{ ...TransitionPresets.SlideFromRightIOS }}>
-        <Stack.Screen name="AddTiming" component={AddTiming} initialParams={{ itemId: 42 }} options={{ headerShown: false }}/>
+        <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
       </Stack.Navigator>
     );
   };
 
-  function DrawerNav() {
-    return (
-    <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen name="Home" component={Schedule} options={{ headerShown: false}}/>
-      <Drawer.Screen name="backh" component={Statistics} options={{ headerShown: false}}/>
-      {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} /> */}
-    </Drawer.Navigator>
-    )
-  }
+  // function DrawerNav() {
+  //   return (
+  //   <Drawer.Navigator initialRouteName="ScheduleDrawer">
+  //     <Drawer.Screen name="ScheduleDrawer" component={Schedule} options={{ headerShown: false}}/>
+  //   </Drawer.Navigator>
+  //   )
+  // }
 
-  function HomeTabs() {
+  function Tabs() {
     return (
-      <Tab.Navigator>
-        <Tab.Screen name="Schedule" component={DrawerNav} options={{ headerShown: false}}/>
-        <Tab.Screen name="Statistics" component={Statistics} options={{ headerShown: false}}/>
+      <Tab.Navigator screenOptions={ ({route}) => ({
+        tabBarButton: (props) => {
+          const {onPress, accessibilityState} = props;
+          const isFocused = accessibilityState?.selected || false;
+
+          let icon;
+          if (route.name == 'ScheduleTab') {
+            icon = RescheduleIcon;
+          }
+          else if (route.name == 'StatisticsTab') {
+            icon = StatisticsIcon;
+          }
+          return (
+            <CustomTabButton
+             label={route.name}
+             Icon={icon}
+             isFocused={isFocused}
+             onPress={onPress} />
+          );
+        },
+
+        tabBarStyle: {
+          backgroundColor: '#d2cfe4',
+          height: 60
+          // paddingBottom: 10,
+        }
+      })}
+      >
+        <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false }}/>
+        <Tab.Screen name="StatisticsTab" component={Statistics} options={{ headerShown: false}}/>
       </Tab.Navigator>
     );
   }
@@ -62,14 +125,34 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <NativeStack.Navigator initialRouteName="RoughComp">
-        {/* <NativeStack.Screen name="Sched" component={HomeTabs} options={{ headerShown: false }}/> */}
-        <NativeStack.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/>
-        <NativeStack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/>
-        {/* <NativeStack.Screen name="AddTimingStack" component={StackScreen} options={{ headerShown: false }}/> */}
+      <NativeStack.Navigator initialRouteName="TabScreens">
+        <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_right' }}/>
+        {/* <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/> */}
+        <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false, animation:'slide_from_right' }}/>
+        {/* <NativeStack.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/>
+        <NativeStack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
       </NativeStack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  IconView: {
+    padding: 3,
+    paddingRight: 20,
+    paddingLeft: 20,
+    borderRadius: 20
+  },
+
+  TaskbarIcons: {
+    height: 25,
+    width: 25
+  },
+
+  IconTitle: {
+    fontSize: 11,
+    fontFamily: 'sf-pro-display-medium'
+  }
+})
 
 export default App;

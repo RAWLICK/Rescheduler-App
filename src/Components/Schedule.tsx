@@ -3,8 +3,10 @@ import { useState, useEffect, memo, useRef, useCallback } from 'react';
 // import ClockImage from '../Images/AnalogClockImage.png'
 import ClockImage from '../Images/AnalogClockImage.png'
 // import Holder from '../Images/Holder.png'
-import AddIcon from '../Images/AddIcon.png'
+import AddIcon from '../Images/Add.png'
 import LeftArrow from '../Images/LeftArrow.png'
+import ScheduleTableIcon from '../Images/ScheduleTable.png'
+import CalenderIcon from '../Images/Calender.png'
 import Doodle from '../Images/Doodle.jpg'
 import 'react-native-gesture-handler'
 import { Gesture, GestureDetector, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
@@ -98,7 +100,7 @@ const LowerArea = (props: LowerAreaPropsType) => {
   return (
     <View style={[styles.LowerArea]}>
       <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
-        <Text style={[{fontFamily: 'sf-pro-display-bold', fontSize: 20, color: '#FFFFFF'}]}>Reschedule</Text>
+        <Text style={[{fontFamily: 'Geizer', fontSize: 30, color: 'white'}]}>Reschedule</Text>
       </TouchableOpacity>
 
       <Modal visible={props.rescheduleStatus !== 'off'}>
@@ -165,7 +167,15 @@ const LowerArea = (props: LowerAreaPropsType) => {
   )
 };
 
-const Schedule = () => {
+type SchedulePropsType = {
+  route: RouteProp<
+  {
+    ScheduleTab: { ScheduleArray: [] }
+  },
+  'ScheduleTab'>
+}
+
+const Schedule: React.FC<SchedulePropsType> = ({ route }) => {
     const [hourRotation, setHourRotation] = useState(0)
     const navigation = useNavigation<NavigationProp<any, any>>();
     const angle = useSharedValue(0);
@@ -192,9 +202,11 @@ const Schedule = () => {
       StartAngle: number,
       EndAngle: number
     }
-
-    const {ScheduleArray} = require('./AddTiming')
+    const { ScheduleArray } = route.params ?? '';
+    // const {ScheduleArray} = require('./AddTiming')
     const safeScheduleArray: [] = ScheduleArray ?? []
+    // const safeScheduleArray = ScheduleArray ?? []
+    console.log("Safe Schedule Array [Schedule.tsx]: ", ScheduleArray)
 
     const data = {
       "StartTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
@@ -560,26 +572,30 @@ const Schedule = () => {
 
     const BottomArea = () => {
       return (
-        <View style={{flex: 0.4, alignItems: 'center', justifyContent: 'center', marginRight: 20, flexDirection: 'row'}}>
-          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red'}} onPress={ScheduleTableButton}>
-            <Text style={{color: 'black'}}>Schedule</Text>
-          </TouchableOpacity>
-          <TrueSheet
-            ref={ScheduleTableSheet}
-            sizes={['auto', 'large']}
-            cornerRadius={24}
-          >
-            <ScheduleTable/>
-          </TrueSheet>
-          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'blue'}}>
-            <Text style={{color: 'black'}}>Calender</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[{ flex: 1, paddingLeft: 160}]} 
-          onPress={()=> navigation.navigate('AddTimingStack')}>
-            <View style={{backgroundColor: '#bd54ee', padding: 15, borderRadius: 30}}>
-              <Image style={styles.AddIcon} source={AddIcon}/>
-            </View>
-          </TouchableOpacity>
+        <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',marginRight: 60, marginLeft: 60}}>
+          <View style={{backgroundColor: '#BFB8E9', flexDirection: 'row', paddingTop: 8, paddingBottom: 8, borderRadius: 10, elevation: 5}}>
+            <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={ScheduleTableButton}>
+              <Image source={ScheduleTableIcon} style={{width: 35, height: 35}}/>
+            </TouchableOpacity>
+            <TrueSheet
+              ref={ScheduleTableSheet}
+              sizes={['auto', 'large']}
+              cornerRadius={24}
+            >
+              <ScheduleTable/>
+            </TrueSheet>
+
+            <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Image source={CalenderIcon} style={{width: 29, height: 29}}/>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
+            onPress={()=> navigation.navigate('StackScreens')}>
+              <View style={{}}>
+                <Image style={styles.AddIcon} source={AddIcon}/>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       )
     };
@@ -824,24 +840,28 @@ const Schedule = () => {
     },
 
     LowerArea: {
-      flex: 0.4,
+      flex: 0.3,
       // backgroundColor: 'black'
     },
 
     RescheduleButton: {
-      backgroundColor: '#6B1294',
+      backgroundColor: '#B020F4',
       height: 40,
       justifyContent: 'center',
       alignItems: 'center',
       marginLeft: 60,
       marginRight: 60,
       borderRadius: 12,
-      marginTop: 5
+      marginTop: 5,
+      borderRightWidth: 3,
+      borderLeftWidth: 3,
+      borderBottomWidth: 3,
+      borderColor: '#841AB6'
     },
 
     AddIcon: {
-      width: 30,
-      height: 30
+      width: 28,
+      height: 28
     },
 
     overlay: {

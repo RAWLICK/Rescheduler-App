@@ -40,11 +40,16 @@ const Testing = (props: TestingPropsType) => {
 };
 
 type RoughCompProps = {
-  route: RouteProp<{ RoughComp: { parentParam: string } }, 'RoughComp'>;
+  route: RouteProp<
+  {
+    RoughComp: { parentParam: string, secondParam: number },
+    RoughCompTwo: undefined;
+  },
+  'RoughComp'>;
 };
 
 const RoughComponent: React.FC<RoughCompProps> = ({ route }) => {
-  const { parentParam } = route.params ?? '';
+  const { parentParam, secondParam } = route.params ?? '';
 
   const [TestingHeading, setTestingHeading] = useState("Fuck Off")
   const navigation = useNavigation<NavigationProp<any, any>>();
@@ -60,6 +65,7 @@ const RoughComponent: React.FC<RoughCompProps> = ({ route }) => {
       <View style={styles.TitleArea}>
         <Text style={{color: 'black'}}>RoughComponent</Text>
         <Text style={{color: 'black'}}>Imported Value: {parentParam}</Text>
+        <Text style={{color: 'black'}}>Imported Number: {secondParam}</Text>
       </View>
 
       <Testing TestingHeading={TestingHeading} TestingButton={TestingButton}/>

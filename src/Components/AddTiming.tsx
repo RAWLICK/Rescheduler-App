@@ -18,6 +18,10 @@ import ChevronLeft from '../Images/ChevronLeft.png';
 import RightArrow from '../Images/RightArrow.png';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import 'react-native-gesture-handler';
+import { NavigationProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Gesture,
   GestureDetector,
@@ -83,9 +87,17 @@ const AreaOne = (props: AreaOnePropsType) => {
   );
 };
 
-const AddTiming = () => {
+type AddTimingPropsType = {
+  navigation: NativeStackScreenProps<
+  {
+    StackScreens: undefined 
+  },
+  'StackScreens'>
+}
+
+const AddTiming: React.FC<AddTimingPropsType> = () => {
+  const navigation = useNavigation<NavigationProp<any, any>>();
   console.log("Add Timing component is re-rendering");
-  console.log()
   const color = 'blue';
   const DurationBoxes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   const DurationTag = ['0h', '1h', '2h', '3h', '4h'];
@@ -304,7 +316,7 @@ const AddTiming = () => {
   };
 
   useEffect(() => {
-    // console.log("ScheduleArray (after Update): ", ScheduleArray)
+    console.log("ScheduleArray (after Update): ", ScheduleArray)
   }, [ScheduleArray]);
 
   const saveStateToStorage = async (ScheduleArray: ScheduleArrayItem[]) => {
@@ -343,10 +355,10 @@ const AddTiming = () => {
   const HeaderPanel = () => {
     return (
       <View style={styles.HeaderPanel}>
-        <View
+        <TouchableOpacity onPress={()=> navigation.navigate('TabScreens', { ScheduleArray: ScheduleArray })}
           style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
           <Image source={ChevronLeft} style={{height: 20, width: 20}} />
-        </View>
+        </TouchableOpacity>
         <View
           style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
           <TouchableOpacity
@@ -615,7 +627,7 @@ const AddTiming = () => {
     );
   };
 
-  module.exports = {ScheduleArray};
+  // module.exports = {ScheduleArray};
 
   return (
     <SafeAreaView style={styles.safeView}>

@@ -6,6 +6,14 @@
       "sha1": "e0a13ed40b2b03e08ec645ff287c33338ea9f720"
     },
     {
+      "path": "assets/Fonts/DOCALLISME-ON-STREET.ttf",
+      "sha1": "be959476119b0d334f07236c150ed911fd775834"
+    },
+    {
+      "path": "assets/Fonts/docallismeonstreet.otf",
+      "sha1": "7d2f1154f815c144c1355653db7f0cfdabbaf82b"
+    },
+    {
       "path": "assets/Fonts/futura-no-2-medium-dee.ttf",
       "sha1": "cedd8cdde31fe129732a5d5ace298819fda155cc"
     },
@@ -16,6 +24,10 @@
     {
       "path": "assets/Fonts/futura-no2-d-demibold.ttf",
       "sha1": "da025f6874ae8f97e02ed6d3a320b35530618885"
+    },
+    {
+      "path": "assets/Fonts/Geizer.otf",
+      "sha1": "ae31590f1b6a9cee77b869e213d061a6abd5b880"
     },
     {
       "path": "assets/Fonts/noyh-bold.otf",

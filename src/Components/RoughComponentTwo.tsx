@@ -18,21 +18,10 @@ import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-// type NativeStackParamList = {
-//   RoughComp: { parentParam: string }; // ParentScreen expects a parameter called 'parentParam'
-//   RoughCompTwo: undefined; // ChildScreen doesn't need any parameters
-// };
-
-// type RoughCompTwoNavigationProp = StackNavigationProp<NativeStackParamList, 'RoughCompTwo'>;
-
-// interface ReactCompTwoProps {
-//   navigation: RoughCompTwoNavigationProp; // The navigation prop lets you move between screens
-// }
-
 type ReactCompTwoProps = {
   navigation: StackNavigationProp<
   { 
-    RoughComp: { parentParam: string },
+    RoughComp: { parentParam: string, secondParam: number },
     RoughCompTwo: undefined;
   },
   'RoughCompTwo'>
@@ -47,7 +36,7 @@ const RoughComponentTwo: React.FC<ReactCompTwoProps> = () => {
         <Text style={{color: 'black'}}>RoughComponent Two</Text>
       </View>
       <View style={styles.ButtonArea}>
-        <Button title='Move back' onPress={()=> navigation.navigate('RoughComp', { parentParam: 'Fuck You Child you ever came' })}/>
+        <Button title='Move back' onPress={()=> navigation.navigate('RoughComp', { parentParam: 'Fuck You Child you ever came', secondParam: 18 })}/>
       </View>
     </View>
   )
