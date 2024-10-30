@@ -167,15 +167,16 @@ const LowerArea = (props: LowerAreaPropsType) => {
   )
 };
 
+type TabParamList = {
+  ScheduleTab: { ScheduleArray: [] }; // ScheduleArray is an array of strings
+  StatisticsTab: undefined;  // No params for this screen
+};
+
 type SchedulePropsType = {
-  route: RouteProp<
-  {
-    ScheduleTab: { ScheduleArray: [] }
-  },
-  'ScheduleTab'>
+  route: RouteProp<TabParamList, 'ScheduleTab'>;
 }
 
-const Schedule: React.FC<SchedulePropsType> = ({ route }) => {
+const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => {
     const [hourRotation, setHourRotation] = useState(0)
     const navigation = useNavigation<NavigationProp<any, any>>();
     const angle = useSharedValue(0);

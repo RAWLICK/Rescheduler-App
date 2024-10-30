@@ -24,6 +24,7 @@ import StatisticsIcon from './Images/Statistics.png'
 
 type StackParamList = {
   AddTimingStack: undefined;
+  // RoughCompTwo: undefined;
 };
 
 // type DrawerParamList = {
@@ -33,14 +34,13 @@ type StackParamList = {
 type TabParamList = {
   ScheduleTab: { ScheduleArray : [] };
   StatisticsTab: undefined;
+  // RoughComp: { parentParam: string, secondParam: number };
 };
 
 type NativeStackParamList = {
   StackScreens: undefined;
-  DrawerScreens: undefined;
+  // DrawerScreens: undefined;
   TabScreens: undefined;
-  // RoughComp: { parentParam: string, secondParam: number };
-  // RoughCompTwo: undefined; //
 };
 
 function App(): React.JSX.Element {
@@ -74,6 +74,7 @@ function App(): React.JSX.Element {
     return (
       <Stack.Navigator screenOptions={{ ...TransitionPresets.SlideFromRightIOS }}>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
+        {/* <Stack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
       </Stack.Navigator>
     );
   };
@@ -88,7 +89,7 @@ function App(): React.JSX.Element {
 
   function Tabs() {
     return (
-      <Tab.Navigator screenOptions={ ({route}) => ({
+      <Tab.Navigator initialRouteName="ScheduleTab" screenOptions={ ({route}) => ({
         tabBarButton: (props) => {
           const {onPress, accessibilityState} = props;
           const isFocused = accessibilityState?.selected || false;
@@ -118,6 +119,7 @@ function App(): React.JSX.Element {
       >
         <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false }}/>
         <Tab.Screen name="StatisticsTab" component={Statistics} options={{ headerShown: false}}/>
+        {/* <Tab.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/> */}
       </Tab.Navigator>
     );
   }
@@ -129,8 +131,6 @@ function App(): React.JSX.Element {
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_right' }}/>
         {/* <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/> */}
         <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false, animation:'slide_from_right' }}/>
-        {/* <NativeStack.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/>
-        <NativeStack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
       </NativeStack.Navigator>
     </NavigationContainer>
   );

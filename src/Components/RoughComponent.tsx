@@ -71,7 +71,7 @@ const RoughComponent: React.FC<RoughCompProps> = ({ route }) => {
       <Testing TestingHeading={TestingHeading} TestingButton={TestingButton}/>
 
       <View style={styles.ButtonArea}>
-        <Button title='Move to RoughComp2' onPress={()=> navigation.navigate('RoughCompTwo')}/>
+        <Button title='Move to RoughComp2' onPress={()=> navigation.navigate('StackScreens', {screen: 'RoughCompTwo'})}/>
       </View>
     </View>
   )

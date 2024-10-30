@@ -88,7 +88,7 @@ const AreaOne = (props: AreaOnePropsType) => {
 };
 
 type AddTimingPropsType = {
-  navigation: NativeStackScreenProps<
+  navigation: StackNavigationProp<
   {
     StackScreens: undefined 
   },
@@ -355,7 +355,7 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
   const HeaderPanel = () => {
     return (
       <View style={styles.HeaderPanel}>
-        <TouchableOpacity onPress={()=> navigation.navigate('TabScreens', { ScheduleArray: ScheduleArray })}
+        <TouchableOpacity onPress={()=> navigation.navigate('TabScreens', { screen: 'ScheduleTab', ScheduleArray: ScheduleArray })}
           style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
           <Image source={ChevronLeft} style={{height: 20, width: 20}} />
         </TouchableOpacity>

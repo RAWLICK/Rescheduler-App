@@ -36,7 +36,7 @@ const RoughComponentTwo: React.FC<ReactCompTwoProps> = () => {
         <Text style={{color: 'black'}}>RoughComponent Two</Text>
       </View>
       <View style={styles.ButtonArea}>
-        <Button title='Move back' onPress={()=> navigation.navigate('RoughComp', { parentParam: 'Fuck You Child you ever came', secondParam: 18 })}/>
+        <Button title='Move back' onPress={()=> navigation.navigate('RoughComp', { parentParam: 'Bitches Come and Go', secondParam: 18 })}/>
       </View>
     </View>
   )
