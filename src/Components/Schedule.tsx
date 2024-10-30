@@ -102,7 +102,6 @@ const LowerArea = (props: LowerAreaPropsType) => {
       <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
         <Text style={[{fontFamily: 'Geizer', fontSize: 30, color: 'white'}]}>Reschedule</Text>
       </TouchableOpacity>
-
       <Modal visible={props.rescheduleStatus !== 'off'}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <BlurView

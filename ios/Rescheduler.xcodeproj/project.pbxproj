@@ -8,24 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* ReschedulerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ReschedulerTests.m */; };
+		098986BC440978EB999440B6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F29B869C849DE8724138D8AC /* PrivacyInfo.xcprivacy */; };
 		0C80B921A6F3F58F76C31292 /* libPods-Rescheduler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-Rescheduler.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		18956FE1386A403DA151F243 /* coolvetica rg.otf in Resources */ = {isa = PBXBuildFile; fileRef = 69AE2AC16B914CB5835E2DDD /* coolvetica rg.otf */; };
+		1FA9C83552584CBCB8FD736B /* DOCALLISME-ON-STREET.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 63597812370343E9B4A840F7 /* DOCALLISME-ON-STREET.ttf */; };
+		21416DB6A00147C3A12BD754 /* docallismeonstreet.otf in Resources */ = {isa = PBXBuildFile; fileRef = A352D4D6C77E4FD2BB2FF586 /* docallismeonstreet.otf */; };
+		367B00FB21CC49988C5BB569 /* sf-pro-display-bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 09119D1294D94456B9CD4F65 /* sf-pro-display-bold.otf */; };
 		7699B88040F8A987B510C191 /* libPods-Rescheduler-ReschedulerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-Rescheduler-ReschedulerTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		FB1E3C0975414B46A1F37893 /* futura-no-2-medium-dee.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EC0053E95E64F7F93909125 /* futura-no-2-medium-dee.ttf */; };
-		ABF5C5383D3648099B41F04A /* sf-pro-display-medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B8731AF06EC34306984799ED /* sf-pro-display-medium.otf */; };
-		367B00FB21CC49988C5BB569 /* sf-pro-display-bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 09119D1294D94456B9CD4F65 /* sf-pro-display-bold.otf */; };
-		8B6D908008714A549B3679E1 /* sf-pro-display-heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1FE20E118FB74832A3A6A445 /* sf-pro-display-heavy.otf */; };
-		A4BC47FDC3B94E7FB42B22BE /* sf-pro-display-light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1176EB9B53E149A88DA57396 /* sf-pro-display-light.otf */; };
-		A155423A206B466CBCF9B737 /* futura-no2-d-bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7258FD81D9E6417EA587E4C3 /* futura-no2-d-bold.otf */; };
-		9E26C229E030475395988148 /* noyh-bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7FDA2021330C40918E59E4D6 /* noyh-bold.otf */; };
 		8386A26E3398411C95FA62D4 /* futura-no2-d-demibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6BEC8EAEB9794068BACFCF8F /* futura-no2-d-demibold.ttf */; };
-		18956FE1386A403DA151F243 /* coolvetica rg.otf in Resources */ = {isa = PBXBuildFile; fileRef = 69AE2AC16B914CB5835E2DDD /* coolvetica rg.otf */; };
-		21416DB6A00147C3A12BD754 /* docallismeonstreet.otf in Resources */ = {isa = PBXBuildFile; fileRef = A352D4D6C77E4FD2BB2FF586 /* docallismeonstreet.otf */; };
+		8B6D908008714A549B3679E1 /* sf-pro-display-heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1FE20E118FB74832A3A6A445 /* sf-pro-display-heavy.otf */; };
+		9E26C229E030475395988148 /* noyh-bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7FDA2021330C40918E59E4D6 /* noyh-bold.otf */; };
+		A155423A206B466CBCF9B737 /* futura-no2-d-bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7258FD81D9E6417EA587E4C3 /* futura-no2-d-bold.otf */; };
+		A4BC47FDC3B94E7FB42B22BE /* sf-pro-display-light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1176EB9B53E149A88DA57396 /* sf-pro-display-light.otf */; };
+		ABF5C5383D3648099B41F04A /* sf-pro-display-medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B8731AF06EC34306984799ED /* sf-pro-display-medium.otf */; };
 		B17DBE3AEBBE4E25845712C1 /* Geizer.otf in Resources */ = {isa = PBXBuildFile; fileRef = E0A9DF6B2620436C90E659BF /* Geizer.otf */; };
-		1FA9C83552584CBCB8FD736B /* DOCALLISME-ON-STREET.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 63597812370343E9B4A840F7 /* DOCALLISME-ON-STREET.ttf */; };
+		FB1E3C0975414B46A1F37893 /* futura-no-2-medium-dee.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EC0053E95E64F7F93909125 /* futura-no-2-medium-dee.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +43,8 @@
 		00E356EE1AD99517003FC87E /* ReschedulerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReschedulerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ReschedulerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReschedulerTests.m; sourceTree = "<group>"; };
+		09119D1294D94456B9CD4F65 /* sf-pro-display-bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "sf-pro-display-bold.otf"; path = "../assets/Fonts/sf-pro-display-bold.otf"; sourceTree = "<group>"; };
+		1176EB9B53E149A88DA57396 /* sf-pro-display-light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "sf-pro-display-light.otf"; path = "../assets/Fonts/sf-pro-display-light.otf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Rescheduler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rescheduler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Rescheduler/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Rescheduler/AppDelegate.mm; sourceTree = "<group>"; };
@@ -50,25 +53,24 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Rescheduler/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = Rescheduler/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-Rescheduler-ReschedulerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rescheduler-ReschedulerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EC0053E95E64F7F93909125 /* futura-no-2-medium-dee.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "futura-no-2-medium-dee.ttf"; path = "../assets/Fonts/futura-no-2-medium-dee.ttf"; sourceTree = "<group>"; };
+		1FE20E118FB74832A3A6A445 /* sf-pro-display-heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "sf-pro-display-heavy.otf"; path = "../assets/Fonts/sf-pro-display-heavy.otf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Rescheduler.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rescheduler.debug.xcconfig"; path = "Target Support Files/Pods-Rescheduler/Pods-Rescheduler.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-Rescheduler.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rescheduler.release.xcconfig"; path = "Target Support Files/Pods-Rescheduler/Pods-Rescheduler.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-Rescheduler-ReschedulerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rescheduler-ReschedulerTests.debug.xcconfig"; path = "Target Support Files/Pods-Rescheduler-ReschedulerTests/Pods-Rescheduler-ReschedulerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-Rescheduler.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rescheduler.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		63597812370343E9B4A840F7 /* DOCALLISME-ON-STREET.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "DOCALLISME-ON-STREET.ttf"; path = "../assets/Fonts/DOCALLISME-ON-STREET.ttf"; sourceTree = "<group>"; };
+		69AE2AC16B914CB5835E2DDD /* coolvetica rg.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "coolvetica rg.otf"; path = "../assets/Fonts/coolvetica rg.otf"; sourceTree = "<group>"; };
+		6BEC8EAEB9794068BACFCF8F /* futura-no2-d-demibold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "futura-no2-d-demibold.ttf"; path = "../assets/Fonts/futura-no2-d-demibold.ttf"; sourceTree = "<group>"; };
+		7258FD81D9E6417EA587E4C3 /* futura-no2-d-bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "futura-no2-d-bold.otf"; path = "../assets/Fonts/futura-no2-d-bold.otf"; sourceTree = "<group>"; };
+		7FDA2021330C40918E59E4D6 /* noyh-bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "noyh-bold.otf"; path = "../assets/Fonts/noyh-bold.otf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Rescheduler/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-Rescheduler-ReschedulerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rescheduler-ReschedulerTests.release.xcconfig"; path = "Target Support Files/Pods-Rescheduler-ReschedulerTests/Pods-Rescheduler-ReschedulerTests.release.xcconfig"; sourceTree = "<group>"; };
+		A352D4D6C77E4FD2BB2FF586 /* docallismeonstreet.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = docallismeonstreet.otf; path = ../assets/Fonts/docallismeonstreet.otf; sourceTree = "<group>"; };
+		B8731AF06EC34306984799ED /* sf-pro-display-medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "sf-pro-display-medium.otf"; path = "../assets/Fonts/sf-pro-display-medium.otf"; sourceTree = "<group>"; };
+		E0A9DF6B2620436C90E659BF /* Geizer.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = Geizer.otf; path = ../assets/Fonts/Geizer.otf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		1EC0053E95E64F7F93909125 /* futura-no-2-medium-dee.ttf */ = {isa = PBXFileReference; name = "futura-no-2-medium-dee.ttf"; path = "../assets/Fonts/futura-no-2-medium-dee.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		B8731AF06EC34306984799ED /* sf-pro-display-medium.otf */ = {isa = PBXFileReference; name = "sf-pro-display-medium.otf"; path = "../assets/Fonts/sf-pro-display-medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		09119D1294D94456B9CD4F65 /* sf-pro-display-bold.otf */ = {isa = PBXFileReference; name = "sf-pro-display-bold.otf"; path = "../assets/Fonts/sf-pro-display-bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		1FE20E118FB74832A3A6A445 /* sf-pro-display-heavy.otf */ = {isa = PBXFileReference; name = "sf-pro-display-heavy.otf"; path = "../assets/Fonts/sf-pro-display-heavy.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		1176EB9B53E149A88DA57396 /* sf-pro-display-light.otf */ = {isa = PBXFileReference; name = "sf-pro-display-light.otf"; path = "../assets/Fonts/sf-pro-display-light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		7258FD81D9E6417EA587E4C3 /* futura-no2-d-bold.otf */ = {isa = PBXFileReference; name = "futura-no2-d-bold.otf"; path = "../assets/Fonts/futura-no2-d-bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		7FDA2021330C40918E59E4D6 /* noyh-bold.otf */ = {isa = PBXFileReference; name = "noyh-bold.otf"; path = "../assets/Fonts/noyh-bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		6BEC8EAEB9794068BACFCF8F /* futura-no2-d-demibold.ttf */ = {isa = PBXFileReference; name = "futura-no2-d-demibold.ttf"; path = "../assets/Fonts/futura-no2-d-demibold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		69AE2AC16B914CB5835E2DDD /* coolvetica rg.otf */ = {isa = PBXFileReference; name = "coolvetica rg.otf"; path = "../assets/Fonts/coolvetica rg.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A352D4D6C77E4FD2BB2FF586 /* docallismeonstreet.otf */ = {isa = PBXFileReference; name = "docallismeonstreet.otf"; path = "../assets/Fonts/docallismeonstreet.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E0A9DF6B2620436C90E659BF /* Geizer.otf */ = {isa = PBXFileReference; name = "Geizer.otf"; path = "../assets/Fonts/Geizer.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		63597812370343E9B4A840F7 /* DOCALLISME-ON-STREET.ttf */ = {isa = PBXFileReference; name = "DOCALLISME-ON-STREET.ttf"; path = "../assets/Fonts/DOCALLISME-ON-STREET.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F29B869C849DE8724138D8AC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Rescheduler/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
+				F29B869C849DE8724138D8AC /* PrivacyInfo.xcprivacy */,
 			);
 			name = Rescheduler;
 			sourceTree = "<group>";
@@ -176,7 +179,7 @@
 			sourceTree = "<group>";
 		};
 		F53427E1AC52463B90FEBF0E /* Resources */ = {
-			isa = "PBXGroup";
+			isa = PBXGroup;
 			children = (
 				1EC0053E95E64F7F93909125 /* futura-no-2-medium-dee.ttf */,
 				B8731AF06EC34306984799ED /* sf-pro-display-medium.otf */,
@@ -192,8 +195,8 @@
 				63597812370343E9B4A840F7 /* DOCALLISME-ON-STREET.ttf */,
 			);
 			name = Resources;
-			sourceTree = "<group>";
 			path = "";
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -302,6 +305,7 @@
 				21416DB6A00147C3A12BD754 /* docallismeonstreet.otf in Resources */,
 				B17DBE3AEBBE4E25845712C1 /* Geizer.otf in Resources */,
 				1FA9C83552584CBCB8FD736B /* DOCALLISME-ON-STREET.ttf in Resources */,
+				098986BC440978EB999440B6 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,6 +578,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -601,6 +606,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				CXX = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
@@ -620,6 +626,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD = "";
+				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -639,7 +647,13 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -647,6 +661,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -674,6 +689,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				CXX = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
@@ -686,6 +702,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD = "";
+				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -704,7 +722,13 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
