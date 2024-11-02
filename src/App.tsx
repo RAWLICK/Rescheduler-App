@@ -24,6 +24,7 @@ import StatisticsIcon from './Images/Statistics.png'
 
 type StackParamList = {
   AddTimingStack: undefined;
+  SignInStack: undefined;
   // RoughCompTwo: undefined;
 };
 
@@ -72,8 +73,9 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator screenOptions={{ ...TransitionPresets.SlideFromRightIOS }}>
+      <Stack.Navigator initialRouteName='SignInStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
+        <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         {/* <Stack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
       </Stack.Navigator>
     );
@@ -127,7 +129,7 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <NativeStack.Navigator initialRouteName="TabScreens">
+      <NativeStack.Navigator initialRouteName="StackScreens">
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_right' }}/>
         {/* <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/> */}
         <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false, animation:'slide_from_right' }}/>
