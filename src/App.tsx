@@ -17,6 +17,7 @@ import Notes from './Components/Notes';
 import Navbar from './Components/Navbar';
 import Taskbar from './Components/Taskbar';
 import SignIn from './Components/SignIn';
+import SignUp from './Components/SignUp';
 import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, Image, GestureResponderEvent} from 'react-native'
 import { useState } from 'react';
 import RescheduleIcon from './Images/Reschedule.png'
@@ -25,6 +26,7 @@ import StatisticsIcon from './Images/Statistics.png'
 type StackParamList = {
   AddTimingStack: undefined;
   SignInStack: undefined;
+  SignUpStack: undefined;
   // RoughCompTwo: undefined;
 };
 
@@ -76,6 +78,7 @@ function App(): React.JSX.Element {
       <Stack.Navigator initialRouteName='SignInStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
+        <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
         {/* <Stack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
       </Stack.Navigator>
     );
@@ -91,7 +94,8 @@ function App(): React.JSX.Element {
 
   function Tabs() {
     return (
-      <Tab.Navigator initialRouteName="ScheduleTab" screenOptions={ ({route}) => ({
+      <Tab.Navigator initialRouteName="ScheduleTab"
+       screenOptions={ ({route}) => ({
         tabBarButton: (props) => {
           const {onPress, accessibilityState} = props;
           const isFocused = accessibilityState?.selected || false;
