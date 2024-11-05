@@ -39,7 +39,6 @@ import {
   Dimensions
 } from 'react-native';
 import Navbar from './Navbar';
-import Taskbar from './Taskbar';
 import ScheduleTable from '../Components/ScheduleTable'
 
 const Clock = () => {

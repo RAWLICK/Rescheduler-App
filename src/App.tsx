@@ -10,12 +10,10 @@ import { createStackNavigator, TransitionPresets } from '@react-navigation/stack
 import AddTiming from './Components/AddTiming';
 import Calender from './Components/Calender';
 import Statistics from './Components/Statistics';
+import OtpVerificaton from './Components/OtpVerificaton';
 import RoughComponent from './Components/RoughComponent';
 import RoughComponentTwo from './Components/RoughComponentTwo';
-import ScheduleTable from './Components/ScheduleTable';
-import Notes from './Components/Notes';
 import Navbar from './Components/Navbar';
-import Taskbar from './Components/Taskbar';
 import SignIn from './Components/SignIn';
 import SignUp from './Components/SignUp';
 import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, Image, GestureResponderEvent} from 'react-native'
@@ -27,6 +25,7 @@ type StackParamList = {
   AddTimingStack: undefined;
   SignInStack: undefined;
   SignUpStack: undefined;
+  OtpVerificationStack: undefined;
   // RoughCompTwo: undefined;
 };
 
@@ -75,10 +74,11 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='SignInStack'>
+      <Stack.Navigator initialRouteName='OtpVerificationStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
+        <Stack.Screen name="OtpVerificationStack" component={OtpVerificaton} options={{ headerShown: false }} />
         {/* <Stack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
       </Stack.Navigator>
     );

@@ -16,6 +16,8 @@ import {useState} from 'react';
 import SignInIcon from '../Images/SignInIcon.png';
 import LinearGradient from 'react-native-linear-gradient';
 import SignInDoodleImage from '../Images/SignInDoodle.png';
+import { NavigationProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {BlurView} from '@react-native-community/blur';
 
 type LogoSectionPropsType = {};
@@ -49,6 +51,7 @@ type CredentialInputScreenPropsType = {
 };
 
 const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
+  const navigation = useNavigation<NavigationProp<any, any>>();
   return (
     <View style={{flex: 0.5, backgroundColor: '#ab7be9'}}>
       <View style={styles.RoundedBox}>
@@ -70,7 +73,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             />
           </View>
 
-          <TouchableOpacity style={styles.ContinueBox}>
+          <TouchableOpacity style={styles.ContinueBox} onPress={() => navigation.navigate('StackScreens', { screen: 'OtpVerificationStack'})}>
             <Text style={styles.ContinueText}>Continue</Text>
           </TouchableOpacity>
         </View>
@@ -78,7 +81,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
           <View style={styles.OrSpacingBox}>
             <Text style={styles.OrSpacingText}>OR</Text>
           </View>
-          <TouchableOpacity style={styles.RegisterNewUserBox}>
+          <TouchableOpacity style={styles.RegisterNewUserBox} onPress={()=> navigation.navigate('StackScreens', { screen: 'SignUpStack'})}>
             <Text style={styles.RegisterNewUserText}>Register New User</Text>
           </TouchableOpacity>
         </View>
