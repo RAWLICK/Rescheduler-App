@@ -3,6 +3,10 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import Remove from '../Images/Remove.png'
 
+const TableTabs = () => {
+  
+}
+
 const ScheduleTable = () => {
   interface ScheduleArrayItems {
     StartTime: string,
@@ -12,6 +16,7 @@ const ScheduleTable = () => {
     EndAngle: number
   }
   const {ScheduleArray} = require('./AddTiming')
+  console.log("ScheduleArray [ScheduleTable.tsx]: ", ScheduleArray)
   const safeScheduleArray : [] = ScheduleArray ?? []
   // const [safeScheduleArray, setSafeScheduleArray] = useState<[]>(ScheduleArray ?? [])
 

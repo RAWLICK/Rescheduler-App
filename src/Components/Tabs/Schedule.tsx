@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState, useEffect, memo, useRef, useCallback } from 'react';
-// import ClockImage from '../Images/AnalogClockImage.png'
 import ClockImage from '../Images/AnalogClockImage.png'
 // import Holder from '../Images/Holder.png'
 import AddIcon from '../Images/Add.png'
@@ -14,7 +13,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } fr
 import Svg, { Circle, Path, Defs, Stop } from 'react-native-svg';
 import Sound from 'react-native-sound';
 // import ChainSound from '../Sounds/ChainSound.mp3'
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { BlurView } from "@react-native-community/blur";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
@@ -23,6 +22,7 @@ import {PythonShell} from 'python-shell';
 import LinearGradient from 'react-native-linear-gradient';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import { RouteProp } from '@react-navigation/native';
+import { CombinedRouteProp } from '../../App';
 
 import {
   SafeAreaView,
@@ -38,8 +38,9 @@ import {
   Button,
   Dimensions
 } from 'react-native';
-import Navbar from './Navbar';
-import ScheduleTable from '../Components/ScheduleTable'
+import Navbar from '../Navbar/Navbar';
+import ScheduleTable from '../Screens/ScheduleTable'
+import CalenderView from '../Screens/CalenderView'
 
 const Clock = () => {
   const [hourRotation, setHourRotation] = useState(0);
@@ -94,8 +95,8 @@ type LowerAreaPropsType = {
   RescheduleButtonClick: () => void
 }
 
+// Reschedule Button wala
 const LowerArea = (props: LowerAreaPropsType) => {
-  console.log("Lower Area is Re-rendering")
   return (
     <View style={[styles.LowerArea]}>
       <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
@@ -166,7 +167,7 @@ const LowerArea = (props: LowerAreaPropsType) => {
 };
 
 type TabParamList = {
-  ScheduleTab: { ScheduleArray: [] }; // ScheduleArray is an array of strings
+  ScheduleTab: { ScheduleArray: [], Message: string}; // ScheduleArray is an array of strings
   StatisticsTab: undefined;  // No params for this screen
 };
 
@@ -175,6 +176,7 @@ type SchedulePropsType = {
 }
 
 const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => {
+    // const route = useRoute<CombinedRouteProp>();
     const [hourRotation, setHourRotation] = useState(0)
     const navigation = useNavigation<NavigationProp<any, any>>();
     const angle = useSharedValue(0);
@@ -194,6 +196,7 @@ const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => 
     // const width = Dimensions.get('window').width;  // For Carousel
     const [serverResponseMessage, setServerResponseMessage] = useState('')
     const ScheduleTableSheet = useRef<TrueSheet>(null);
+    const CalenderSheet = useRef<TrueSheet>(null);
     interface ScheduleArrayItems {
       StartTime: string,
       EndTime: string,
@@ -201,11 +204,12 @@ const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => 
       StartAngle: number,
       EndAngle: number
     }
-    const { ScheduleArray } = route.params ?? '';
+    const { ScheduleArray, Message } = route.params ?? '';
     // const {ScheduleArray} = require('./AddTiming')
     const safeScheduleArray: [] = ScheduleArray ?? []
     // const safeScheduleArray = ScheduleArray ?? []
     console.log("Safe Schedule Array [Schedule.tsx]: ", ScheduleArray)
+    console.log("Message [Schedule.tsx]: ", Message)
 
     const data = {
       "StartTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
@@ -236,7 +240,6 @@ const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => 
       "rgba(191, 115, 181, 0.5)"
     ],
     }
-    console.log("Schedule Component is re-rendering");
     
     interface ApiDataType {
       "Durations": string;
@@ -541,6 +544,10 @@ const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => 
       await ScheduleTableSheet.current?.present();
     }
 
+    async function CalenderButton () {
+      await CalenderSheet.current?.present();
+    }
+
     // Nested Components (Composition)
     const UpperArea = () => {
       return (
@@ -569,6 +576,7 @@ const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => 
       )
     };
 
+    // Sabse niche wala
     const BottomArea = () => {
       return (
         <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',marginRight: 60, marginLeft: 60}}>
@@ -584,12 +592,19 @@ const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => 
               <ScheduleTable/>
             </TrueSheet>
 
-            <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={CalenderButton}>
               <Image source={CalenderIcon} style={{width: 29, height: 29}}/>
             </TouchableOpacity>
+            <TrueSheet
+            ref={CalenderSheet}
+            sizes={['auto', 'large']}
+            cornerRadius={24}
+            >
+              <CalenderView/>
+            </TrueSheet>
 
             <TouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
-            onPress={()=> navigation.navigate('StackScreens')}>
+            onPress={()=> navigation.navigate('StackScreens', {screen: 'AddTimingStack'})}>
               <View style={{}}>
                 <Image style={styles.AddIcon} source={AddIcon}/>
               </View>

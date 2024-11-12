@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import Navbar from './Navbar'
-import Taskbar from './Taskbar'
+import Navbar from '../Navbar/Navbar'
 import { BarChart } from 'react-native-chart-kit'
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
-import WeeklyBarChart from '../Functions/Animated-Bar-Chart/WeeklyBarChart.tsx'
+import WeeklyBarChart from '../../Functions/Animated-Bar-Chart/WeeklyBarChart'
 import ChevronLeftBlack from '../Images/ChevronLeftBlack.png'
 import ChevronRightBlack from '../Images/ChevronRightBlack.png'
 import BoldChevronDown from '../Images/BoldChevronDown.png'

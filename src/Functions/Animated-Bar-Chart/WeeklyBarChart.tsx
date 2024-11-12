@@ -5,7 +5,7 @@ import SingleBarChart from './SingleBarChart.tsx'
 
 export default function WeeklyBarChart() {
   const [WeekChangeImport, setWeekChangeImport ] = useState<number>(0)
-  const {WeekChange} = require('../../Components/Statistics.tsx')
+  const {WeekChange} = require('../../Components/Tabs/Statistics.tsx')
   useEffect(() => {
     setWeekChangeImport(WeekChange);
     console.log("Week Change Import", WeekChangeImport)

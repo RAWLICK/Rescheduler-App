@@ -18,10 +18,7 @@ import ChevronLeft from '../Images/ChevronLeft.png';
 import RightArrow from '../Images/RightArrow.png';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import 'react-native-gesture-handler';
-import { NavigationProp } from '@react-navigation/native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import {useNavigation} from '@react-navigation/native';
 import {
   Gesture,
   GestureDetector,
@@ -37,10 +34,10 @@ import Animated, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type AreaOnePropsType = {
-  WorkToDo: string
-  setWorkToDo: React.Dispatch<React.SetStateAction<string>>
-  color: string
-}
+  WorkToDo: string;
+  setWorkToDo: React.Dispatch<React.SetStateAction<string>>;
+  color: string;
+};
 
 const AreaOne = (props: AreaOnePropsType) => {
   return (
@@ -87,17 +84,11 @@ const AreaOne = (props: AreaOnePropsType) => {
   );
 };
 
-type AddTimingPropsType = {
-  navigation: StackNavigationProp<
-  {
-    StackScreens: undefined 
-  },
-  'StackScreens'>
-}
+import { CombinedNavigationProp } from '../../App';
 
-const AddTiming: React.FC<AddTimingPropsType> = () => {
-  const navigation = useNavigation<NavigationProp<any, any>>();
-  console.log("Add Timing component is re-rendering");
+const AddTiming = () => {
+  const Message = 'Keep Faith';
+  const navigation = useNavigation<CombinedNavigationProp>();
   const color = 'blue';
   const DurationBoxes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   const DurationTag = ['0h', '1h', '2h', '3h', '4h'];
@@ -147,7 +138,7 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
     {max: 284.31, duration: '3h 45 min', boxNum: 14},
     {max: 310, duration: '4h', boxNum: 15},
   ];
-  
+
   const StartRadar = useSharedValue<number>(0);
   const MovedRadar = useSharedValue<number>(0);
   const FinalRadar = useSharedValue<number>(75.35);
@@ -316,7 +307,8 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
   };
 
   useEffect(() => {
-    console.log("ScheduleArray (after Update): ", ScheduleArray)
+    console.log('ScheduleArray (AddTiming.tsx): ', ScheduleArray);
+    console.log('Message [AddTiming.tsx]: ', Message);
   }, [ScheduleArray]);
 
   const saveStateToStorage = async (ScheduleArray: ScheduleArrayItem[]) => {
@@ -355,21 +347,18 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
   const HeaderPanel = () => {
     return (
       <View style={styles.HeaderPanel}>
-        <TouchableOpacity onPress={()=> navigation.navigate('TabScreens', { screen: 'ScheduleTab', ScheduleArray: ScheduleArray })}
-          style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-          <Image source={ChevronLeft} style={{height: 20, width: 20}} />
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('TabScreens', {
+              screen: 'ScheduleTab',
+              params: {ScheduleArray, Message},
+            })
+          }
+          style={styles.BackButtonBox}>
+          <Image source={ChevronLeft} style={styles.BackButtonImage} />
         </TouchableOpacity>
-        <View
-          style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#ACC6FF',
-              borderRadius: 20,
-              padding: 8,
-              paddingLeft: 20,
-              paddingRight: 20,
-            }}
-            onPress={SaveButton}>
+        <View style={styles.SaveButtonArea}>
+          <TouchableOpacity style={styles.SaveButtonBox} onPress={SaveButton}>
             <Text style={[styles.OptionText, {color: '#093471'}]}>Save</Text>
           </TouchableOpacity>
         </View>
@@ -381,36 +370,14 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
     return (
       <View style={styles.areaTwo}>
         <View style={styles.UpperOption}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
+          <View style={styles.DateHeadingBox}>
             <Text style={styles.OptionText}>Date</Text>
           </View>
-          <View
-            style={{
-              flex: 2,
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}>
+          <View style={styles.DateAndMonthNumberArea}>
             <TouchableOpacity
-              style={{
-                height: 40,
-                width: 50,
-                backgroundColor: '#43464D',
-                alignItems: 'center',
-                marginRight: 5,
-                borderRadius: 10,
-                justifyContent: 'center',
-              }}
+              style={styles.DateNumberBox}
               onPress={() => setDateTimeState('date')}>
-              <Text
-                style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 17}}>
-                {TaskDate.split('/', 1)}
-              </Text>
+              <Text style={styles.DateText}>{TaskDate.split('/', 1)}</Text>
               <DateTimePickerModal
                 isVisible={DateTimeState == 'date' ? true : false}
                 mode="date"
@@ -419,20 +386,9 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={{
-                height: 40,
-                width: 100,
-                backgroundColor: '#43464D',
-                alignItems: 'center',
-                marginLeft: 5,
-                borderRadius: 10,
-                justifyContent: 'center',
-              }}
+              style={styles.MonthBox}
               onPress={() => setDateTimeState('month')}>
-              <Text
-                style={{fontFamily: 'futura-no-2-medium-dee', fontSize: 17}}>
-                {WordMonth(TaskDate)}
-              </Text>
+              <Text style={styles.MonthText}>{WordMonth(TaskDate)}</Text>
               <DateTimePickerModal
                 isVisible={DateTimeState == 'month' ? true : false}
                 mode="date"
@@ -444,33 +400,14 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
         </View>
 
         <View style={styles.MiddleOption}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
+          <View style={styles.TimingHeadingBox}>
             <Text style={styles.OptionText}>Timing</Text>
           </View>
-          <View
-            style={{
-              flex: 2,
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}>
+          <View style={styles.TimingArea}>
             <TouchableOpacity
-              style={{
-                height: 40,
-                width: 85,
-                backgroundColor: '#43464D',
-                alignItems: 'center',
-                marginRight: 5,
-                borderRadius: 10,
-                justifyContent: 'center',
-              }}
+              style={styles.TimingStartBox}
               onPress={() => setDateTimeState('StartTiming')}>
-              <Text style={{fontFamily: 'futura-no2-d-demibold', fontSize: 16}}>
+              <Text style={styles.TimingStartText}>
                 {TwelveHourFormat(StartTime)}
               </Text>
               <DateTimePickerModal
@@ -481,20 +418,12 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
               />
             </TouchableOpacity>
             <View>
-              <Image source={RightArrow} style={{height: 17, width: 17}} />
+              <Image source={RightArrow} style={styles.ArrowImage} />
             </View>
             <TouchableOpacity
-              style={{
-                height: 40,
-                width: 85,
-                backgroundColor: '#43464D',
-                alignItems: 'center',
-                marginLeft: 5,
-                borderRadius: 10,
-                justifyContent: 'center',
-              }}
+              style={styles.TimingEndBox}
               onPress={() => setDateTimeState('EndTiming')}>
-              <Text style={{fontFamily: 'futura-no2-d-demibold', fontSize: 16}}>
+              <Text style={styles.TimingEndText}>
                 {TwelveHourFormat(EndTime)}
               </Text>
               <DateTimePickerModal
@@ -627,7 +556,7 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
     );
   };
 
-  // module.exports = {ScheduleArray};
+  module.exports = {ScheduleArray};
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -644,11 +573,15 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
           <HeaderPanel />
 
           <ScrollView>
-            <AreaOne WorkToDo={WorkToDo} setWorkToDo={setWorkToDo} color={color} />
+            <AreaOne
+              WorkToDo={WorkToDo}
+              setWorkToDo={setWorkToDo}
+              color={color}
+            />
 
-            <AreaTwo/>
+            <AreaTwo />
 
-            <AreaThree/>
+            <AreaThree />
           </ScrollView>
         </View>
         {/* </PanGestureHandler> */}
@@ -658,6 +591,75 @@ const AddTiming: React.FC<AddTimingPropsType> = () => {
 };
 
 const styles = StyleSheet.create({
+  TimingEndText: {fontFamily: 'futura-no2-d-demibold', fontSize: 16},
+  TimingEndBox: {
+    height: 40,
+    width: 85,
+    backgroundColor: '#43464D',
+    alignItems: 'center',
+    marginLeft: 5,
+    borderRadius: 10,
+    justifyContent: 'center',
+  },
+  ArrowImage: {height: 17, width: 17},
+  TimingStartText: {fontFamily: 'futura-no2-d-demibold', fontSize: 16},
+  TimingStartBox: {
+    height: 40,
+    width: 85,
+    backgroundColor: '#43464D',
+    alignItems: 'center',
+    marginRight: 5,
+    borderRadius: 10,
+    justifyContent: 'center',
+  },
+  TimingArea: {
+    flex: 2,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  TimingHeadingBox: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  MonthText: {fontFamily: 'futura-no-2-medium-dee', fontSize: 17},
+  MonthBox: {
+    height: 40,
+    width: 100,
+    backgroundColor: '#43464D',
+    alignItems: 'center',
+    marginLeft: 5,
+    borderRadius: 10,
+    justifyContent: 'center',
+  },
+  DateText: {fontFamily: 'futura-no-2-medium-dee', fontSize: 17},
+  DateNumberBox: {
+    height: 40,
+    width: 50,
+    backgroundColor: '#43464D',
+    alignItems: 'center',
+    marginRight: 5,
+    borderRadius: 10,
+    justifyContent: 'center',
+  },
+  DateAndMonthNumberArea: {
+    flex: 2,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  DateHeadingBox: {flex: 1, justifyContent: 'center', alignItems: 'flex-start'},
+  SaveButtonBox: {
+    backgroundColor: '#ACC6FF',
+    borderRadius: 20,
+    padding: 8,
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  SaveButtonArea: {flex: 1, justifyContent: 'center', alignItems: 'flex-end'},
+  BackButtonImage: {height: 20, width: 20},
+  BackButtonBox: {flex: 1, justifyContent: 'center', alignItems: 'flex-start'},
   safeView: {
     flex: 1,
     backgroundColor: 'white',

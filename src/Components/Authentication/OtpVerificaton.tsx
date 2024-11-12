@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions } from 'react-native'
 import React from 'react'
 import OtpVerificationImage from '../Images/OtpVerificationImage.png'
 import ChevronLeftBlack from '../Images/ChevronLeftBlack.png'
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+const { width, height } = Dimensions.get('window');
 
 type HeaderPanelPropsType = {};
 
@@ -26,6 +27,7 @@ const HeaderPanel = () => {
 type VerificationPanelPropsType = {};
 
 const VerificationPanel = () => {
+    const navigation = useNavigation<NavigationProp<any, any>>();
     return (
         <View style={{ flex: 0.5 }}>
             <View style={styles.MotiveTextArea}>
@@ -47,7 +49,7 @@ const VerificationPanel = () => {
             </View>
 
             <View style={styles.SubmitButtonArea}>
-                <TouchableOpacity style={styles.SubmitButtonBox}>
+                <TouchableOpacity style={styles.SubmitButtonBox} onPress={() => navigation.navigate('TabScreens')}>
                     <Text style={styles.SubmitButtonText}>Submit</Text>
                 </TouchableOpacity>
             </View>
@@ -77,15 +79,16 @@ const OtpVerificaton = () => {
 
 export default OtpVerificaton
 
+
 const styles = StyleSheet.create({
     ResendOTPTextTwo: {
         fontFamily: 'sf-pro-display-bold',
-        fontSize: 17,
+        fontSize: 13,
         color: '#b57eea',
     },
     ResendOTPTextOne: {
         fontFamily: 'sf-pro-display-medium',
-        fontSize: 17,
+        fontSize: 13,
         color: 'grey',
     },
     ResendOTPBox: {
@@ -104,8 +107,8 @@ const styles = StyleSheet.create({
         color: '#e9e9e9',
     },
     SubmitButtonBox: {
-        height: 50,
-        width: 330,
+        height: height * 0.06,
+        width: width * 0.82,
         backgroundColor: '#b57eea',
         borderRadius: 10,
         justifyContent: 'center',
@@ -118,8 +121,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     OTPNumberBox: {
-        width: 70,
-        height: 50,
+        width: width * 0.18,
+        height: height * 0.06,
         borderWidth: 1,
         borderColor: '#d7cfdf',
         borderRadius: 10,
@@ -127,35 +130,35 @@ const styles = StyleSheet.create({
     OTPNumberArea: {
         flex: 1,
         flexDirection: 'row',
-        columnGap: 15,
+        columnGap: 13,
         justifyContent: 'center',
         alignItems: 'center',
     },
     MotiveSubHeadingTextTwo: {
         fontFamily: 'sf-pro-display-bold',
-        fontSize: 15,
+        fontSize: 13,
         color: 'black',
     },
     MotiveSubHeadingTextOne: {
         fontFamily: 'sf-pro-display-medium',
-        fontSize: 15,
+        fontSize: 13,
+        color: 'grey'
     },
     MotiveSubHeadingArea: { flexDirection: 'row', },
     MotiveHeading: {
         fontFamily: 'sf-pro-display-heavy',
-        fontSize: 30,
+        fontSize: 25,
         color: 'black',
     },
     MotiveTextArea: {
         flex: 1,
         padding: 20,
-        paddingLeft: 45,
-        paddingRight: 30,
+        paddingLeft: width * 0.1,
         rowGap: 15,
     },
     MailSendingArtImage: {
-        height: 350,
-        width: 350,
+        height: height * 0.4,
+        width: width * 0.8
     },
     MailSendingArtArea: {
         flex: 0.8,
@@ -178,7 +181,7 @@ const styles = StyleSheet.create({
     BackButtonArea: {
         flex: 0.2,
         justifyContent: 'center',
-        paddingLeft: 30,
+        paddingLeft: 20,
     },
 
 })

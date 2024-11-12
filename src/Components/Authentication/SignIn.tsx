@@ -9,7 +9,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   Dimensions,
-  TextInput,
+  TextInput
 } from 'react-native';
 import React from 'react';
 import {useState} from 'react';
@@ -19,6 +19,7 @@ import SignInDoodleImage from '../Images/SignInDoodle.png';
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import {BlurView} from '@react-native-community/blur';
+const { width, height } = Dimensions.get('window');
 
 type LogoSectionPropsType = {};
 
@@ -138,6 +139,7 @@ const styles = StyleSheet.create({
   },
   ContinueText: {
     fontFamily: 'sf-pro-display-bold',
+    color: 'white',
     fontSize: 19,
   },
   ContinueBox: {
@@ -152,6 +154,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     fontFamily: 'sf-pro-display-bold',
     fontSize: 17,
+    color: 'black'
   },
   CountryCodeText: {
     fontFamily: 'sf-pro-display-bold',
@@ -177,7 +180,8 @@ const styles = StyleSheet.create({
   CredentialBox: {marginBottom: 10},
   MotiveHeading: {
     fontFamily: 'sf-pro-display-bold',
-    fontSize: 25,
+    color: 'grey',
+    fontSize: 20,
   },
   ImageBackgroundViewStyle: {
     flex: 1,
@@ -185,7 +189,7 @@ const styles = StyleSheet.create({
   },
 
   LogoSectionTextBox: {
-    marginTop: 250,
+    marginTop: height * 0.3,
     alignItems: 'center',
   },
 

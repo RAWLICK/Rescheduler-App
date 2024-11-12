@@ -5,15 +5,14 @@ import DrawerImage from '../Images/Drawer.png'
 import ThreeDotsImage from '../Images/ThreeDots.png'
 import LinearGradient from 'react-native-linear-gradient';
 import StreakFire from '../Images/StreakFire.png'
-import { NavigationProp } from '@react-navigation/native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp, DrawerActions } from '@react-navigation/native';
 
 const Navbar = () => {
   // BD54EE, 6A1293
   const navigation = useNavigation<NavigationProp<any, any>>();
   return (
     <View style={styles.mainNav}>
-      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} >
+      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate("DrawerScreens", {screen: 'SettingsDrawer'})}>
         <Image source={DrawerImage} style={styles.DrawerImage}/>
       </TouchableOpacity>
       <View style={{flex: 4, flexDirection: 'row', alignItems: 'center'}}>

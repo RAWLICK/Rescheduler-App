@@ -10,7 +10,8 @@
     "skipLibCheck": true,       // Skips checking type definitions in node_modules
     "resolveJsonModule": true,  // Allows importing JSON files
     "noEmit": true,             // Disables emitting files
-    "isolatedModules": true     // Ensures every file is treated as a separate module
+    "isolatedModules": true ,    // Ensures every file is treated as a separate module
+    "allowImportingTsExtensions": true
   },
   "include": [
     "src/**/*.ts",

@@ -1,25 +1,32 @@
 import React from 'react';
 import { useRef } from 'react';
 import type {PropsWithChildren} from 'react';
-import Schedule from './Components/Schedule';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
-import AddTiming from './Components/AddTiming';
-import Calender from './Components/Calender';
-import Statistics from './Components/Statistics';
-import OtpVerificaton from './Components/OtpVerificaton';
-import RoughComponent from './Components/RoughComponent';
-import RoughComponentTwo from './Components/RoughComponentTwo';
-import Navbar from './Components/Navbar';
-import SignIn from './Components/SignIn';
-import SignUp from './Components/SignUp';
+import Schedule from './Components/Tabs/Schedule';
+import { NavigationContainer, CompositeNavigationProp, RouteProp } from '@react-navigation/native';
+import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { createBottomTabNavigator, BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator, DrawerNavigationProp } from '@react-navigation/drawer';
+import { createStackNavigator, TransitionPresets, StackNavigationProp } from '@react-navigation/stack';
+import AddTiming from './Components/Screens/AddTiming';
+import Calender from './Components/Screens/CalenderView';
+import Statistics from './Components/Tabs/Statistics';
+import OtpVerificaton from './Components/Authentication/OtpVerificaton';
+import Settings from './Components/Drawer/Settings';
+import RoughComponent from './Components/Rough Work/RoughComponent';
+import RoughComponentTwo from './Components/Rough Work/RoughComponentTwo';
+import Navbar from './Components/Navbar/Navbar';
+import SignIn from './Components/Authentication/SignIn';
+import SignUp from './Components/Authentication/SignUp';
 import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, Image, GestureResponderEvent} from 'react-native'
 import { useState } from 'react';
-import RescheduleIcon from './Images/Reschedule.png'
-import StatisticsIcon from './Images/Statistics.png'
+import RescheduleIcon from './Components/Images/Reschedule.png'
+import StatisticsIcon from './Components/Images/Statistics.png'
+
+// This below code helps prevent systum font overriding on application's font
+(Text as any).defaultProps = {
+  ...(Text as any).defaultProps,
+  allowFontScaling: false,
+};
 
 type StackParamList = {
   AddTimingStack: undefined;
@@ -29,26 +36,43 @@ type StackParamList = {
   // RoughCompTwo: undefined;
 };
 
-// type DrawerParamList = {
-//   ScheduleDrawer: { ScheduleArray : [] };
-// };
+type DrawerParamList = {
+  // ScheduleDrawer: { ScheduleArray : [] };
+  SettingsDrawer: undefined;
+};
 
 type TabParamList = {
-  ScheduleTab: { ScheduleArray : [] };
+  ScheduleTab: { ScheduleArray : [], Message: string };
   StatisticsTab: undefined;
   // RoughComp: { parentParam: string, secondParam: number };
 };
 
 type NativeStackParamList = {
   StackScreens: undefined;
-  // DrawerScreens: undefined;
-  TabScreens: undefined;
+  DrawerScreens: undefined;
+  TabScreens: {
+    screen: keyof TabParamList;  // Match with TabParamList
+    params?: TabParamList[keyof TabParamList];  // Include Tab parameters
+  };
 };
 
-function App(): React.JSX.Element {
+export type CombinedNavigationProp =
+  CompositeNavigationProp<
+    NativeStackNavigationProp<NativeStackParamList>,
+    CompositeNavigationProp<
+      BottomTabNavigationProp<TabParamList>,
+      CompositeNavigationProp<
+        DrawerNavigationProp<DrawerParamList>,
+        StackNavigationProp<StackParamList>
+    >   
+  >
+>;
 
+export type CombinedRouteProp = RouteProp<StackParamList> | RouteProp<DrawerParamList> | RouteProp<TabParamList> | RouteProp<NativeStackParamList>
+
+function App(): React.JSX.Element {
   const Stack = createStackNavigator<StackParamList>();
-  // const Drawer = createDrawerNavigator<DrawerParamList>();
+  const Drawer = createDrawerNavigator<DrawerParamList>();
   const Tab = createBottomTabNavigator<TabParamList>();
   const NativeStack = createNativeStackNavigator<NativeStackParamList>();
 
@@ -74,7 +98,7 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='OtpVerificationStack'>
+      <Stack.Navigator initialRouteName='SignInStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -84,13 +108,14 @@ function App(): React.JSX.Element {
     );
   };
 
-  // function DrawerNav() {
-  //   return (
-  //   <Drawer.Navigator initialRouteName="ScheduleDrawer">
-  //     <Drawer.Screen name="ScheduleDrawer" component={Schedule} options={{ headerShown: false}}/>
-  //   </Drawer.Navigator>
-  //   )
-  // }
+  function DrawerNav() {
+    return (
+    <Drawer.Navigator initialRouteName="SettingsDrawer">
+      {/* <Drawer.Screen name="ScheduleDrawer" component={Schedule} options={{ headerShown: false}}/> */}
+      <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false}}/>
+    </Drawer.Navigator>
+    )
+  }
 
   function Tabs() {
     return (
@@ -133,9 +158,9 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <NativeStack.Navigator initialRouteName="StackScreens">
-        <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_right' }}/>
-        {/* <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/> */}
+      <NativeStack.Navigator initialRouteName="TabScreens">
+        <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
+        <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
         <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false, animation:'slide_from_right' }}/>
       </NativeStack.Navigator>
     </NavigationContainer>
