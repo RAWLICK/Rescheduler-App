@@ -41,6 +41,7 @@ import {
 import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
 import CalenderView from '../Screens/CalenderView'
+import TaskCompletionBoard from '../Screens/TaskCompletionBoard';
 
 const Clock = () => {
   const [hourRotation, setHourRotation] = useState(0);
@@ -610,6 +611,7 @@ const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => 
               </View>
             </TouchableOpacity>
           </View>
+          <TaskCompletionBoard/>
         </View>
       )
     };
