@@ -12,6 +12,7 @@ import Calender from './Components/Screens/CalenderView';
 import Statistics from './Components/Tabs/Statistics';
 import OtpVerificaton from './Components/Authentication/OtpVerificaton';
 import Settings from './Components/Drawer/Settings';
+import PartneredLibraries from './Components/Drawer/PartneredLibraries';
 import RoughComponent from './Components/Rough Work/RoughComponent';
 import RoughComponentTwo from './Components/Rough Work/RoughComponentTwo';
 import Navbar from './Components/Navbar/Navbar';
@@ -39,6 +40,7 @@ type StackParamList = {
 type DrawerParamList = {
   // ScheduleDrawer: { ScheduleArray : [] };
   SettingsDrawer: undefined;
+  PartneredLibrariesDrawer: undefined;
 };
 
 type TabParamList = {
@@ -110,9 +112,10 @@ function App(): React.JSX.Element {
 
   function DrawerNav() {
     return (
-    <Drawer.Navigator initialRouteName="SettingsDrawer">
+    <Drawer.Navigator initialRouteName="PartneredLibrariesDrawer">
       {/* <Drawer.Screen name="ScheduleDrawer" component={Schedule} options={{ headerShown: false}}/> */}
       <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false}}/>
+      <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false}}/>
     </Drawer.Navigator>
     )
   }
@@ -158,7 +161,7 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <NativeStack.Navigator initialRouteName="TabScreens">
+      <NativeStack.Navigator initialRouteName="DrawerScreens">
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
         <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false, animation:'slide_from_right' }}/>
