@@ -2,34 +2,28 @@ import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'rea
 import React from 'react'
 import { useEffect, useState } from 'react'
 import Remove from '../Images/Remove.png'
+import { NavigationContainer, CompositeNavigationProp, RouteProp } from '@react-navigation/native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { ScheduleArrayItem } from './AddTiming';
 
-const TableTabs = () => {
-  
-}
+const TopTab = createMaterialTopTabNavigator();
 
-const ScheduleTable = () => {
-  interface ScheduleArrayItems {
-    StartTime: string,
-    EndTime: string,
-    Work: string,
-    StartAngle: number,
-    EndAngle: number
-  }
+export const ManualScheduleTable = () => {
   const {ScheduleArray} = require('./AddTiming')
   console.log("ScheduleArray [ScheduleTable.tsx]: ", ScheduleArray)
-  const safeScheduleArray : [] = ScheduleArray ?? []
-  // const [safeScheduleArray, setSafeScheduleArray] = useState<[]>(ScheduleArray ?? [])
+  // const safeScheduleArray : [] = ScheduleArray ?? []
+  const [safeScheduleArray, setSafeScheduleArray] = useState<ScheduleArrayItem[]>(ScheduleArray ?? [])
 
   // function setScheduleArrayFunction() {
   //   return safeScheduleArray
   // }
 
   const data = {
-    "StartTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
-    "EndTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndTime),
-    "Work": safeScheduleArray.map((item: ScheduleArrayItems) => item.Work),
-    "StartAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartAngle),
-    "EndAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndAngle),
+    "StartTime": safeScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
+    "EndTime": safeScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
+    "Work": safeScheduleArray.map((item: ScheduleArrayItem) => item.Work),
+    "StartAngle": safeScheduleArray.map((item: ScheduleArrayItem) => item.StartAngle),
+    "EndAngle": safeScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
     "Slice_Color": [
     "rgba(175, 193, 85, 0.5)",
     "rgba(182, 108, 239, 0.5)",
@@ -76,9 +70,9 @@ const ScheduleTable = () => {
   // }, [])
 
   function DeleteTask(name: string) {
-    // let EditedArray = safeScheduleArray.filter((obj: ScheduleArrayItems) => obj.Work !== name)
-    // // setSafeScheduleArray(EditedArray)
-    // console.log("Edited Array: ", EditedArray)
+    let EditedArray = safeScheduleArray.filter((obj: ScheduleArrayItem) => obj.Work !== name)
+    setSafeScheduleArray(EditedArray)
+    console.log("Edited Array: ", EditedArray)
   }
   return (
     <View style={{backgroundColor: '#e7e7e7'}}>
@@ -110,6 +104,28 @@ const ScheduleTable = () => {
         </ScrollView>
       </View>
     </View>
+  )
+}
+
+export const CompressedScheduleTable = () => {
+  return (
+    <View>
+      <Text>CompressedScheduleTable</Text>
+    </View>
+  )
+}
+
+
+const ScheduleTable = () => {
+  console.log("Rendering Schedule Table")
+  return (
+    // <View>
+    //   <TopTab.Navigator initialRouteName="Manual Table">
+    //     <TopTab.Screen name="Manual Table" component={ManualScheduleTable} options={{}}/>
+    //     <TopTab.Screen name="Rescheduled Table" component={CompressedScheduleTable} options={{}}/>
+    //   </TopTab.Navigator>
+    // </View>
+    <ManualScheduleTable/>
   )
 }
 

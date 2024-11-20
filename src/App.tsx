@@ -7,6 +7,7 @@ import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-na
 import { createBottomTabNavigator, BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator, DrawerNavigationProp } from '@react-navigation/drawer';
 import { createStackNavigator, TransitionPresets, StackNavigationProp } from '@react-navigation/stack';
+import { createMaterialTopTabNavigator, MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
 import AddTiming from './Components/Screens/AddTiming';
 import Calender from './Components/Screens/CalenderView';
 import Statistics from './Components/Tabs/Statistics';
@@ -22,6 +23,11 @@ import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, 
 import { useState } from 'react';
 import RescheduleIcon from './Components/Images/Reschedule.png'
 import StatisticsIcon from './Components/Images/Statistics.png'
+import { ScheduleArrayItem } from './Components/Screens/AddTiming';
+
+import { ManualScheduleTable } from './Components/Screens/ScheduleTable';
+import { CompressedScheduleTable } from './Components/Screens/ScheduleTable';
+import ScheduleTable from './Components/Screens/ScheduleTable';
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -38,16 +44,21 @@ type StackParamList = {
 };
 
 type DrawerParamList = {
-  // ScheduleDrawer: { ScheduleArray : [] };
+  TabsDrawer: undefined;
   SettingsDrawer: undefined;
   PartneredLibrariesDrawer: undefined;
 };
 
 type TabParamList = {
-  ScheduleTab: { ScheduleArray : [], Message: string };
+  ScheduleTab: { ScheduleArray : ScheduleArrayItem[], Message: string };
   StatisticsTab: undefined;
   // RoughComp: { parentParam: string, secondParam: number };
 };
+
+type TopTabParamList = {
+  ManualTable: undefined;
+  RescheduledTable: undefined;
+}
 
 type NativeStackParamList = {
   StackScreens: undefined;
@@ -56,6 +67,7 @@ type NativeStackParamList = {
     screen: keyof TabParamList;  // Match with TabParamList
     params?: TabParamList[keyof TabParamList];  // Include Tab parameters
   };
+  TopTabScreens: undefined;
 };
 
 export type CombinedNavigationProp =
@@ -65,18 +77,22 @@ export type CombinedNavigationProp =
       BottomTabNavigationProp<TabParamList>,
       CompositeNavigationProp<
         DrawerNavigationProp<DrawerParamList>,
+        CompositeNavigationProp<
+        MaterialTopTabNavigationProp<TopTabParamList>,
         StackNavigationProp<StackParamList>
+       > 
     >   
   >
 >;
 
-export type CombinedRouteProp = RouteProp<StackParamList> | RouteProp<DrawerParamList> | RouteProp<TabParamList> | RouteProp<NativeStackParamList>
+export type CombinedRouteProp = RouteProp<StackParamList, keyof StackParamList> | RouteProp<DrawerParamList, keyof DrawerParamList> | RouteProp<TabParamList, keyof TabParamList> | RouteProp<NativeStackParamList, keyof NativeStackParamList>
 
 function App(): React.JSX.Element {
   const Stack = createStackNavigator<StackParamList>();
   const Drawer = createDrawerNavigator<DrawerParamList>();
   const Tab = createBottomTabNavigator<TabParamList>();
   const NativeStack = createNativeStackNavigator<NativeStackParamList>();
+  const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
 
   type CustomTabButtonPropTypes = {
     label: string,
@@ -112,10 +128,10 @@ function App(): React.JSX.Element {
 
   function DrawerNav() {
     return (
-    <Drawer.Navigator initialRouteName="PartneredLibrariesDrawer">
-      {/* <Drawer.Screen name="ScheduleDrawer" component={Schedule} options={{ headerShown: false}}/> */}
-      <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false}}/>
-      <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false}}/>
+    <Drawer.Navigator initialRouteName="TabsDrawer">
+      <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
+      <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/>
+      <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
     </Drawer.Navigator>
     )
   }
@@ -127,6 +143,7 @@ function App(): React.JSX.Element {
         tabBarButton: (props) => {
           const {onPress, accessibilityState} = props;
           const isFocused = accessibilityState?.selected || false;
+          // const label = route.options?.tabBarLabel || route.name
 
           let icon;
           if (route.name == 'ScheduleTab') {
@@ -151,20 +168,19 @@ function App(): React.JSX.Element {
         }
       })}
       >
-        <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false }}/>
-        <Tab.Screen name="StatisticsTab" component={Statistics} options={{ headerShown: false}}/>
+        <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false, tabBarLabel: "Schedule" }}/>
+        <Tab.Screen name="StatisticsTab" component={Statistics} options={{ headerShown: false, tabBarLabel: "Statistics"}}/>
         {/* <Tab.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/> */}
       </Tab.Navigator>
     );
   }
-
 
   return (
     <NavigationContainer>
       <NativeStack.Navigator initialRouteName="DrawerScreens">
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
-        <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false, animation:'slide_from_right' }}/>
+        <NativeStack.Screen name="TopTabScreens" component={ScheduleTable} options={{ headerShown: false, animation:'slide_from_right' }}/>
       </NativeStack.Navigator>
     </NavigationContainer>
   );

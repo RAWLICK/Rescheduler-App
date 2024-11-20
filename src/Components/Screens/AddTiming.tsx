@@ -33,9 +33,44 @@ import Animated, {
 } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+type GroupPropsType = {
+  navigation: CombinedNavigationProp;
+  ScheduleArray: ScheduleArrayItem[];
+  Message: string;
+  SaveButton: () => void;
+};
+
+const HeaderPanel = (props: GroupPropsType) => {
+  return (
+    <View style={styles.HeaderPanel}>
+      <TouchableOpacity
+        onPress={() =>
+          props.navigation.navigate('TabScreens', {
+            screen: 'ScheduleTab',
+            params: {
+              ScheduleArray: props.ScheduleArray,
+              Message: props.Message,
+            },
+          })
+        }
+        style={styles.BackButtonBox}>
+        <Image source={ChevronLeft} style={styles.BackButtonImage} />
+      </TouchableOpacity>
+      <View style={styles.SaveButtonArea}>
+        <TouchableOpacity
+          style={styles.SaveButtonBox}
+          onPress={props.SaveButton}>
+          <Text style={[styles.OptionText, {color: '#093471'}]}>Save</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
 type AreaOnePropsType = {
   WorkToDo: string;
-  setWorkToDo: React.Dispatch<React.SetStateAction<string>>;
+  setWorkToDo: SetState<string>;
   color: string;
 };
 
@@ -83,8 +118,14 @@ const AreaOne = (props: AreaOnePropsType) => {
     </View>
   );
 };
-
-import { CombinedNavigationProp } from '../../App';
+export interface ScheduleArrayItem {
+  StartTime: string;
+  EndTime: string;
+  Work: string;
+  StartAngle: number;
+  EndAngle: number;
+}
+import {CombinedNavigationProp} from '../../App';
 
 const AddTiming = () => {
   const Message = 'Keep Faith';
@@ -103,13 +144,6 @@ const AddTiming = () => {
   const [WorkToDo, setWorkToDo] = useState('');
   const [StartAngle, setStartAngle] = useState<number>();
   const [EndAngle, setEndAngle] = useState<number>();
-  interface ScheduleArrayItem {
-    StartTime: string;
-    EndTime: string;
-    Work: string;
-    StartAngle: number;
-    EndAngle: number;
-  }
   const [ScheduleArray, setScheduleArray] = useState<ScheduleArrayItem[]>([]);
 
   let currentDate = new Date();
@@ -344,27 +378,27 @@ const AddTiming = () => {
   }, []);
 
   // Nested Components
-  const HeaderPanel = () => {
-    return (
-      <View style={styles.HeaderPanel}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('TabScreens', {
-              screen: 'ScheduleTab',
-              params: {ScheduleArray, Message},
-            })
-          }
-          style={styles.BackButtonBox}>
-          <Image source={ChevronLeft} style={styles.BackButtonImage} />
-        </TouchableOpacity>
-        <View style={styles.SaveButtonArea}>
-          <TouchableOpacity style={styles.SaveButtonBox} onPress={SaveButton}>
-            <Text style={[styles.OptionText, {color: '#093471'}]}>Save</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
+  // const HeaderPanel = () => {
+  //   return (
+  //     <View style={styles.HeaderPanel}>
+  //       <TouchableOpacity
+  //         onPress={() =>
+  //           navigation.navigate('TabScreens', {
+  //             screen: 'ScheduleTab',
+  //             params: {ScheduleArray, Message},
+  //           })
+  //         }
+  //         style={styles.BackButtonBox}>
+  //         <Image source={ChevronLeft} style={styles.BackButtonImage} />
+  //       </TouchableOpacity>
+  //       <View style={styles.SaveButtonArea}>
+  //         <TouchableOpacity style={styles.SaveButtonBox} onPress={SaveButton}>
+  //           <Text style={[styles.OptionText, {color: '#093471'}]}>Save</Text>
+  //         </TouchableOpacity>
+  //       </View>
+  //     </View>
+  //   );
+  // };
 
   const AreaTwo = () => {
     return (
@@ -441,15 +475,7 @@ const AddTiming = () => {
             styles.MiddleOption,
             {flex: 2, flexDirection: 'column', justifyContent: 'center'},
           ]}>
-          <View
-            style={{
-              height: 35,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#9D9EA0',
-              marginBottom: 20,
-              borderRadius: 10,
-            }}>
+          <View style={styles.DurationTagLineBox}>
             <Text
               style={[
                 styles.OptionText,
@@ -459,18 +485,13 @@ const AddTiming = () => {
             </Text>
           </View>
           {/* 9D9EA0 */}
-          <View style={{flexDirection: 'row'}}>
+          <View style={styles.DurationPiecesTotalBox}>
             {DurationBoxes.map((index, i) => {
               return (
                 <View
                   key={i}
                   style={[
-                    {
-                      backgroundColor: '#9D9EA0',
-                      height: 10,
-                      width: 17,
-                      marginRight: 2,
-                    },
+                    styles.DurationPerPiece,
                     i == 0
                       ? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4}
                       : {},
@@ -484,31 +505,17 @@ const AddTiming = () => {
           </View>
           <GestureDetector gesture={pan}>
             <Animated.View
-              style={[
-                {
-                  backgroundColor: 'white',
-                  height: 20,
-                  width: 20,
-                  borderRadius: 10,
-                  position: 'absolute',
-                  top: 73,
-                },
-                animatedStyles,
-              ]}
+              style={[styles.DurationMeterCircularHandle, animatedStyles]}
             />
           </GestureDetector>
 
-          <View style={{flexDirection: 'row', marginTop: 7}}>
+          <View style={styles.DurationLabelBox}>
             {DurationTag.map((tag, i) => {
               return (
                 <Text
                   key={i}
                   style={[
-                    {
-                      marginRight: 44,
-                      fontFamily: 'futura-no-2-medium-dee',
-                      color: '#9D9EA0',
-                    },
+                    styles.DurationLabels,
                     tag != '0h' ? {marginRight: 62} : {},
                   ]}>
                   {tag}
@@ -519,16 +526,10 @@ const AddTiming = () => {
         </View>
 
         <View style={styles.BottomOption}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
+          <View style={styles.AllDayFeatureBox}>
             <Text style={styles.OptionText}>All Day</Text>
           </View>
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+          <View style={styles.AllDayToggleButtonBox}>
             <Switch
               trackColor={{false: '#767577', true: '#81b0ff'}}
               thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
@@ -570,7 +571,12 @@ const AddTiming = () => {
       <GestureHandlerRootView>
         {/* <PanGestureHandler> */}
         <View style={styles.mainStyle}>
-          <HeaderPanel />
+          <HeaderPanel
+            navigation={navigation}
+            ScheduleArray={ScheduleArray}
+            Message={Message}
+            SaveButton={SaveButton}
+          />
 
           <ScrollView>
             <AreaOne
@@ -591,6 +597,45 @@ const AddTiming = () => {
 };
 
 const styles = StyleSheet.create({
+  AllDayToggleButtonBox: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+  AllDayFeatureBox: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  DurationLabels: {
+    marginRight: 44,
+    fontFamily: 'futura-no-2-medium-dee',
+    color: '#9D9EA0',
+  },
+  DurationLabelBox: {flexDirection: 'row', marginTop: 7},
+  DurationMeterCircularHandle: {
+    backgroundColor: 'white',
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    position: 'absolute',
+    top: 73,
+  },
+  DurationPerPiece: {
+    backgroundColor: '#9D9EA0',
+    height: 10,
+    width: 17,
+    marginRight: 2,
+  },
+  DurationPiecesTotalBox: {flexDirection: 'row'},
+  DurationTagLineBox: {
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#9D9EA0',
+    marginBottom: 20,
+    borderRadius: 10,
+  },
   TimingEndText: {fontFamily: 'futura-no2-d-demibold', fontSize: 16},
   TimingEndBox: {
     height: 40,

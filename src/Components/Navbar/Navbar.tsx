@@ -5,14 +5,22 @@ import DrawerImage from '../Images/Drawer.png'
 import ThreeDotsImage from '../Images/ThreeDots.png'
 import LinearGradient from 'react-native-linear-gradient';
 import StreakFire from '../Images/StreakFire.png'
-import { useNavigation, NavigationProp, DrawerActions } from '@react-navigation/native';
+import { useNavigation, NavigationProp, DrawerActions, useNavigationState } from '@react-navigation/native';
+import { CombinedNavigationProp } from '../../App';
 
 const Navbar = () => {
   // BD54EE, 6A1293
-  const navigation = useNavigation<NavigationProp<any, any>>();
+  // const navigation = useNavigation<NavigationProp<any, any>>();
+  const navigation = useNavigation<CombinedNavigationProp>();
+  const isDrawerAvailable = useNavigationState((state) =>
+    state?.type === 'drawer' // Check if the current navigation context is a drawer
+  );
+  const Message = 'Fuck You';
   return (
     <View style={styles.mainNav}>
-      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate("DrawerScreens", {screen: 'SettingsDrawer'})}>
+      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+      onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+      >
         <Image source={DrawerImage} style={styles.DrawerImage}/>
       </TouchableOpacity>
       <View style={{flex: 4, flexDirection: 'row', alignItems: 'center'}}>

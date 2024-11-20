@@ -22,7 +22,7 @@ import {PythonShell} from 'python-shell';
 import LinearGradient from 'react-native-linear-gradient';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import { RouteProp } from '@react-navigation/native';
-import { CombinedRouteProp } from '../../App';
+import { CombinedNavigationProp, CombinedRouteProp } from '../../App';
 
 import {
   SafeAreaView,
@@ -42,6 +42,7 @@ import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
 import CalenderView from '../Screens/CalenderView'
 import TaskCompletionBoard from '../Screens/TaskCompletionBoard';
+import { ScheduleArrayItem } from '../Screens/AddTiming';
 
 const Clock = () => {
   const [hourRotation, setHourRotation] = useState(0);
@@ -167,19 +168,10 @@ const LowerArea = (props: LowerAreaPropsType) => {
   )
 };
 
-type TabParamList = {
-  ScheduleTab: { ScheduleArray: [], Message: string}; // ScheduleArray is an array of strings
-  StatisticsTab: undefined;  // No params for this screen
-};
-
-type SchedulePropsType = {
-  route: RouteProp<TabParamList, 'ScheduleTab'>;
-}
-
-const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => {
-    // const route = useRoute<CombinedRouteProp>();
-    const [hourRotation, setHourRotation] = useState(0)
+const Schedule: React.FC = () => {
+    const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
+    const [hourRotation, setHourRotation] = useState(0)
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
     const [infoVisible, setInfoVisible] = useState(false)
@@ -198,26 +190,28 @@ const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => 
     const [serverResponseMessage, setServerResponseMessage] = useState('')
     const ScheduleTableSheet = useRef<TrueSheet>(null);
     const CalenderSheet = useRef<TrueSheet>(null);
-    interface ScheduleArrayItems {
-      StartTime: string,
-      EndTime: string,
-      Work: string,
-      StartAngle: number,
-      EndAngle: number
+
+    let ScheduleArray: ScheduleArrayItem[] = [];
+    let Message: string = '';
+
+    if (route.params && 'ScheduleArray' in route.params && 'Message' in route.params) {
+      // const { ScheduleArray, Message } = route.params ?? '';
+      ScheduleArray = route.params.ScheduleArray;
+      Message = route.params.Message;
+      
+    } else {
+      console.log("ScheduleArray or Message is not available in route params.");
     }
-    const { ScheduleArray, Message } = route.params ?? '';
-    // const {ScheduleArray} = require('./AddTiming')
-    const safeScheduleArray: [] = ScheduleArray ?? []
-    // const safeScheduleArray = ScheduleArray ?? []
+    
+    const safeScheduleArray: ScheduleArrayItem[] = ScheduleArray ?? []
     console.log("Safe Schedule Array [Schedule.tsx]: ", ScheduleArray)
-    console.log("Message [Schedule.tsx]: ", Message)
 
     const data = {
-      "StartTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartTime),
-      "EndTime": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndTime),
-      "Work": safeScheduleArray.map((item: ScheduleArrayItems) => item.Work),
-      "StartAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.StartAngle),
-      "EndAngle": safeScheduleArray.map((item: ScheduleArrayItems) => item.EndAngle),
+      "StartTime": safeScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
+      "EndTime": safeScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
+      "Work": safeScheduleArray.map((item: ScheduleArrayItem) => item.Work),
+      "StartAngle": safeScheduleArray.map((item: ScheduleArrayItem) => item.StartAngle),
+      "EndAngle": safeScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
       "Slice_Color": [
       "rgba(175, 193, 85, 0.5)",
       "rgba(182, 108, 239, 0.5)",
@@ -587,6 +581,7 @@ const Schedule: React.FC<SchedulePropsType> = ({ route }: SchedulePropsType) => 
             </TouchableOpacity>
             <TrueSheet
               ref={ScheduleTableSheet}
+              // sizes={['auto', 'large']}
               sizes={['auto', 'large']}
               cornerRadius={24}
             >
