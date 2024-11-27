@@ -44,7 +44,10 @@ type StackParamList = {
 };
 
 type DrawerParamList = {
-  TabsDrawer: undefined;
+  TabsDrawer: {
+   screen: keyof TabParamList;  // Match with TabParamList
+   params?: TabParamList[keyof TabParamList];  // Include Tab parameters
+  };
   SettingsDrawer: undefined;
   PartneredLibrariesDrawer: undefined;
 };
@@ -62,10 +65,12 @@ type TopTabParamList = {
 
 type NativeStackParamList = {
   StackScreens: undefined;
-  DrawerScreens: undefined;
-  TabScreens: {
-    screen: keyof TabParamList;  // Match with TabParamList
-    params?: TabParamList[keyof TabParamList];  // Include Tab parameters
+  DrawerScreens: {
+    screen: keyof DrawerParamList; // Ex- TabsDrawer, SettingsDrawer, PartneredLib
+    params?: {
+      screen: keyof TabParamList;  // Ex- Schedule Tabs, Statistics Tab
+      params: TabParamList[keyof TabParamList];
+    };
   };
   TopTabScreens: undefined;
 };
@@ -180,6 +185,7 @@ function App(): React.JSX.Element {
       <NativeStack.Navigator initialRouteName="DrawerScreens">
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
+        {/* <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false }}/> */}
         <NativeStack.Screen name="TopTabScreens" component={ScheduleTable} options={{ headerShown: false, animation:'slide_from_right' }}/>
       </NativeStack.Navigator>
     </NavigationContainer>

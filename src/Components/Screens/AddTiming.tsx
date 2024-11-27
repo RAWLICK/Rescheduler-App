@@ -12,7 +12,7 @@ import {
   Button,
 } from 'react-native';
 import React from 'react';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import ChevronRight from '../Images/ChevronRight.png';
 import ChevronLeft from '../Images/ChevronLeft.png';
 import RightArrow from '../Images/RightArrow.png';
@@ -32,13 +32,46 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TrueSheet } from "@lodev09/react-native-true-sheet"
+import ExistingSubjects from './ExistingSubjects';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+type PanGesture = ReturnType<typeof Gesture.Pan>;
+
+// Nested Components (Composition)
 type GroupPropsType = {
+  AddFromExistingWorkButton: boolean;
+  setAddFromExistingWorkButton: SetState<boolean>;
+  AddFromExistingWorkToggleSwitch: () => void;
   navigation: CombinedNavigationProp;
   ScheduleArray: ScheduleArrayItem[];
   Message: string;
   SaveButton: () => void;
+  WorkToDo: string;
+  setWorkToDo: SetState<string>;
+  color: string;
+  DateTimeState: string;
+  setDateTimeState: SetState<string>;
+  TaskDate: string;
+  handleConfirm: (date: Date) => void;
+  hideDatePicker: () => void;
+  WordMonth: (date: string) => string;
+  TwelveHourFormat: (time: string) => string;
+  StartTime: string;
+  EndTime: string;
+  Duration: string;
+  DurationBoxes: number[];
+  DurationTag: string[];
+  pan: PanGesture;
+  animatedStyles: {
+    transform: {
+      translateX: number;
+    }[];
+  };
+  isEnabled: boolean;
+  toggleSwitch: () => void;
+  NoteText: string;
+  setNoteText: SetState<string>;
 };
 
 const HeaderPanel = (props: GroupPropsType) => {
@@ -46,11 +79,14 @@ const HeaderPanel = (props: GroupPropsType) => {
     <View style={styles.HeaderPanel}>
       <TouchableOpacity
         onPress={() =>
-          props.navigation.navigate('TabScreens', {
-            screen: 'ScheduleTab',
+          props.navigation.navigate('DrawerScreens', {
+            screen: 'TabsDrawer',
             params: {
-              ScheduleArray: props.ScheduleArray,
-              Message: props.Message,
+              screen: 'ScheduleTab',
+              params: {
+                ScheduleArray: props.ScheduleArray,
+                Message: props.Message,
+              }
             },
           })
         }
@@ -68,36 +104,43 @@ const HeaderPanel = (props: GroupPropsType) => {
   );
 };
 
-type AreaOnePropsType = {
-  WorkToDo: string;
-  setWorkToDo: SetState<string>;
-  color: string;
-};
+const AreaOne = (props: GroupPropsType) => {
+  const ExistingSubjectSheet = useRef<TrueSheet>(null);
 
-const AreaOne = (props: AreaOnePropsType) => {
+  async function ExistingSubjectButton () {
+    await ExistingSubjectSheet.current?.present();
+  }
   return (
-    <View style={styles.areaOne}>
-      <TouchableOpacity style={styles.UpperOption}>
+    <>
+    <View style={[styles.areaOne, props.AddFromExistingWorkButton && {height: 150}]}>
+      <TouchableOpacity style={styles.UpperOption} onPress={ExistingSubjectButton}>
         <View
           style={{
             flex: 1,
             justifyContent: 'center',
             alignItems: 'flex-start',
           }}>
-          {/* <Text style={styles.OptionText}>Work</Text> */}
-          <TextInput
+          {!props.AddFromExistingWorkButton ? (
+            <TextInput
             style={styles.OptionText}
             value={props.WorkToDo}
             onChangeText={props.setWorkToDo}
-            placeholder="Work"></TextInput>
+            placeholder="Work"
+            placeholderTextColor="#9D9EA0"></TextInput>
+          ) : (
+            <Text style={styles.OptionText}>Work</Text>
+          )}
         </View>
         <View
           style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-          <Image source={ChevronRight} style={{height: 17, width: 17}} />
+          {props.AddFromExistingWorkButton && 
+            <Image source={ChevronRight} style={{height: 17, width: 17}} />
+          }
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.BottomOption}>
+      {!props.AddFromExistingWorkButton && 
+      <TouchableOpacity style={styles.MiddleOption}>
         <View
           style={{
             flex: 1,
@@ -115,9 +158,198 @@ const AreaOne = (props: AreaOnePropsType) => {
             ]}></View>
         </View>
       </TouchableOpacity>
+      }
+      <View style={styles.BottomOption}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+          }}>
+          <Text style={styles.OptionText}>Add from Existing Work</Text>
+        </View>
+        <TouchableOpacity style={styles.AllDayToggleButtonBox}>
+          <Switch
+            trackColor={{false: '#767577', true: '#81b0ff'}}
+            thumbColor={props.AddFromExistingWorkButton ? '#f5dd4b' : '#f4f3f4'}
+            // ios_backgroundColor="#3e3e3e"
+            onValueChange={props.AddFromExistingWorkToggleSwitch}
+            value={props.AddFromExistingWorkButton}
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+    <TrueSheet
+      ref={ExistingSubjectSheet}
+      sizes={['auto', 'large']}
+      cornerRadius={24}
+      >
+        <ExistingSubjects/>
+      </TrueSheet>
+    </>
+  );
+};
+
+const AreaTwo = (props: GroupPropsType) => {
+  return (
+    <View style={styles.areaTwo}>
+      <View style={styles.UpperOption}>
+        <View style={styles.DateHeadingBox}>
+          <Text style={styles.OptionText}>Date</Text>
+        </View>
+        <View style={styles.DateAndMonthNumberArea}>
+          <TouchableOpacity
+            style={styles.DateNumberBox}
+            onPress={() => props.setDateTimeState('date')}>
+            <Text style={styles.DateText}>{props.TaskDate.split('/', 1)}</Text>
+            <DateTimePickerModal
+              isVisible={props.DateTimeState == 'date' ? true : false}
+              mode="date"
+              onConfirm={props.handleConfirm}
+              onCancel={props.hideDatePicker}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.MonthBox}
+            onPress={() => props.setDateTimeState('month')}>
+            <Text style={styles.MonthText}>
+              {props.WordMonth(props.TaskDate)}
+            </Text>
+            <DateTimePickerModal
+              isVisible={props.DateTimeState == 'month' ? true : false}
+              mode="date"
+              onConfirm={props.handleConfirm}
+              onCancel={props.hideDatePicker}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.MiddleOption}>
+        <View style={styles.TimingHeadingBox}>
+          <Text style={styles.OptionText}>Timing</Text>
+        </View>
+        <View style={styles.TimingArea}>
+          <TouchableOpacity
+            style={styles.TimingStartBox}
+            onPress={() => props.setDateTimeState('StartTiming')}>
+            <Text style={styles.TimingStartText}>
+              {props.TwelveHourFormat(props.StartTime)}
+            </Text>
+            <DateTimePickerModal
+              isVisible={props.DateTimeState == 'StartTiming' ? true : false}
+              mode="time"
+              onConfirm={props.handleConfirm}
+              onCancel={props.hideDatePicker}
+            />
+          </TouchableOpacity>
+          <View>
+            <Image source={RightArrow} style={styles.ArrowImage} />
+          </View>
+          <TouchableOpacity
+            style={styles.TimingEndBox}
+            onPress={() => props.setDateTimeState('EndTiming')}>
+            <Text style={styles.TimingEndText}>
+              {props.TwelveHourFormat(props.EndTime)}
+            </Text>
+            <DateTimePickerModal
+              isVisible={props.DateTimeState == 'EndTiming' ? true : false}
+              mode="time"
+              onConfirm={props.handleConfirm}
+              onCancel={props.hideDatePicker}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View
+        style={[
+          styles.MiddleOption,
+          {flex: 2, flexDirection: 'column', justifyContent: 'center'},
+        ]}>
+        <View style={styles.DurationTagLineBox}>
+          <Text
+            style={[
+              styles.OptionText,
+              {fontFamily: 'futura-no2-d-demibold', color: '#000000'},
+            ]}>
+            Duration ({props.Duration})
+          </Text>
+        </View>
+        {/* 9D9EA0 */}
+        <View style={styles.DurationPiecesTotalBox}>
+          {props.DurationBoxes.map((index, i) => {
+            return (
+              <View
+                key={i}
+                style={[
+                  styles.DurationPerPiece,
+                  i == 0
+                    ? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4}
+                    : {},
+                  i == 15
+                    ? {borderTopRightRadius: 4, borderBottomRightRadius: 4}
+                    : {},
+                  /*CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}*/
+                ]}></View>
+            );
+          })}
+        </View>
+        <GestureDetector gesture={props.pan}>
+          <Animated.View
+            style={[styles.DurationMeterCircularHandle, props.animatedStyles]}
+          />
+        </GestureDetector>
+
+        <View style={styles.DurationLabelBox}>
+          {props.DurationTag.map((tag, i) => {
+            return (
+              <Text
+                key={i}
+                style={[
+                  styles.DurationLabels,
+                  tag != '0h' ? {marginRight: 62} : {},
+                ]}>
+                {tag}
+              </Text>
+            );
+          })}
+        </View>
+      </View>
+
+      <View style={styles.BottomOption}>
+        <View style={styles.AllDayFeatureBox}>
+          <Text style={styles.OptionText}>All Day</Text>
+        </View>
+        <View style={styles.AllDayToggleButtonBox}>
+          <Switch
+            trackColor={{false: '#767577', true: '#81b0ff'}}
+            thumbColor={props.isEnabled ? '#f5dd4b' : '#f4f3f4'}
+            // ios_backgroundColor="#3e3e3e"
+            onValueChange={props.toggleSwitch}
+            value={props.isEnabled}
+          />
+        </View>
+      </View>
     </View>
   );
 };
+
+const AreaThree = (props: GroupPropsType) => {
+  return (
+    <View style={styles.areaThree}>
+      <TextInput
+        multiline
+        numberOfLines={6}
+        style={styles.OnlyOption}
+        value={props.NoteText}
+        onChangeText={props.setNoteText}
+        placeholder="Add a Note"
+        placeholderTextColor="#9D9EA0"></TextInput>
+    </View>
+  );
+};
+
 export interface ScheduleArrayItem {
   StartTime: string;
   EndTime: string;
@@ -128,6 +360,8 @@ export interface ScheduleArrayItem {
 import {CombinedNavigationProp} from '../../App';
 
 const AddTiming = () => {
+  const [AddFromExistingWorkButton, setAddFromExistingWorkButton] = useState(false)
+  const AddFromExistingWorkToggleSwitch = () => setAddFromExistingWorkButton(previousState => !previousState)
   const Message = 'Keep Faith';
   const navigation = useNavigation<CombinedNavigationProp>();
   const color = 'blue';
@@ -400,162 +634,148 @@ const AddTiming = () => {
   //   );
   // };
 
-  const AreaTwo = () => {
-    return (
-      <View style={styles.areaTwo}>
-        <View style={styles.UpperOption}>
-          <View style={styles.DateHeadingBox}>
-            <Text style={styles.OptionText}>Date</Text>
-          </View>
-          <View style={styles.DateAndMonthNumberArea}>
-            <TouchableOpacity
-              style={styles.DateNumberBox}
-              onPress={() => setDateTimeState('date')}>
-              <Text style={styles.DateText}>{TaskDate.split('/', 1)}</Text>
-              <DateTimePickerModal
-                isVisible={DateTimeState == 'date' ? true : false}
-                mode="date"
-                onConfirm={handleConfirm}
-                onCancel={hideDatePicker}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.MonthBox}
-              onPress={() => setDateTimeState('month')}>
-              <Text style={styles.MonthText}>{WordMonth(TaskDate)}</Text>
-              <DateTimePickerModal
-                isVisible={DateTimeState == 'month' ? true : false}
-                mode="date"
-                onConfirm={handleConfirm}
-                onCancel={hideDatePicker}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+  // const AreaTwo = () => {
+  //   return (
+  //     <View style={styles.areaTwo}>
+  //       <View style={styles.UpperOption}>
+  //         <View style={styles.DateHeadingBox}>
+  //           <Text style={styles.OptionText}>Date</Text>
+  //         </View>
+  //         <View style={styles.DateAndMonthNumberArea}>
+  //           <TouchableOpacity
+  //             style={styles.DateNumberBox}
+  //             onPress={() => setDateTimeState('date')}>
+  //             <Text style={styles.DateText}>{TaskDate.split('/', 1)}</Text>
+  //             <DateTimePickerModal
+  //               isVisible={DateTimeState == 'date' ? true : false}
+  //               mode="date"
+  //               onConfirm={handleConfirm}
+  //               onCancel={hideDatePicker}
+  //             />
+  //           </TouchableOpacity>
+  //           <TouchableOpacity
+  //             style={styles.MonthBox}
+  //             onPress={() => setDateTimeState('month')}>
+  //             <Text style={styles.MonthText}>{WordMonth(TaskDate)}</Text>
+  //             <DateTimePickerModal
+  //               isVisible={DateTimeState == 'month' ? true : false}
+  //               mode="date"
+  //               onConfirm={handleConfirm}
+  //               onCancel={hideDatePicker}
+  //             />
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
 
-        <View style={styles.MiddleOption}>
-          <View style={styles.TimingHeadingBox}>
-            <Text style={styles.OptionText}>Timing</Text>
-          </View>
-          <View style={styles.TimingArea}>
-            <TouchableOpacity
-              style={styles.TimingStartBox}
-              onPress={() => setDateTimeState('StartTiming')}>
-              <Text style={styles.TimingStartText}>
-                {TwelveHourFormat(StartTime)}
-              </Text>
-              <DateTimePickerModal
-                isVisible={DateTimeState == 'StartTiming' ? true : false}
-                mode="time"
-                onConfirm={handleConfirm}
-                onCancel={hideDatePicker}
-              />
-            </TouchableOpacity>
-            <View>
-              <Image source={RightArrow} style={styles.ArrowImage} />
-            </View>
-            <TouchableOpacity
-              style={styles.TimingEndBox}
-              onPress={() => setDateTimeState('EndTiming')}>
-              <Text style={styles.TimingEndText}>
-                {TwelveHourFormat(EndTime)}
-              </Text>
-              <DateTimePickerModal
-                isVisible={DateTimeState == 'EndTiming' ? true : false}
-                mode="time"
-                onConfirm={handleConfirm}
-                onCancel={hideDatePicker}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+  //       <View style={styles.MiddleOption}>
+  //         <View style={styles.TimingHeadingBox}>
+  //           <Text style={styles.OptionText}>Timing</Text>
+  //         </View>
+  //         <View style={styles.TimingArea}>
+  //           <TouchableOpacity
+  //             style={styles.TimingStartBox}
+  //             onPress={() => setDateTimeState('StartTiming')}>
+  //             <Text style={styles.TimingStartText}>
+  //               {TwelveHourFormat(StartTime)}
+  //             </Text>
+  //             <DateTimePickerModal
+  //               isVisible={DateTimeState == 'StartTiming' ? true : false}
+  //               mode="time"
+  //               onConfirm={handleConfirm}
+  //               onCancel={hideDatePicker}
+  //             />
+  //           </TouchableOpacity>
+  //           <View>
+  //             <Image source={RightArrow} style={styles.ArrowImage} />
+  //           </View>
+  //           <TouchableOpacity
+  //             style={styles.TimingEndBox}
+  //             onPress={() => setDateTimeState('EndTiming')}>
+  //             <Text style={styles.TimingEndText}>
+  //               {TwelveHourFormat(EndTime)}
+  //             </Text>
+  //             <DateTimePickerModal
+  //               isVisible={DateTimeState == 'EndTiming' ? true : false}
+  //               mode="time"
+  //               onConfirm={handleConfirm}
+  //               onCancel={hideDatePicker}
+  //             />
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
 
-        <View
-          style={[
-            styles.MiddleOption,
-            {flex: 2, flexDirection: 'column', justifyContent: 'center'},
-          ]}>
-          <View style={styles.DurationTagLineBox}>
-            <Text
-              style={[
-                styles.OptionText,
-                {fontFamily: 'futura-no2-d-demibold', color: '#000000'},
-              ]}>
-              Duration ({Duration})
-            </Text>
-          </View>
-          {/* 9D9EA0 */}
-          <View style={styles.DurationPiecesTotalBox}>
-            {DurationBoxes.map((index, i) => {
-              return (
-                <View
-                  key={i}
-                  style={[
-                    styles.DurationPerPiece,
-                    i == 0
-                      ? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4}
-                      : {},
-                    i == 15
-                      ? {borderTopRightRadius: 4, borderBottomRightRadius: 4}
-                      : {},
-                    /*CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}*/
-                  ]}></View>
-              );
-            })}
-          </View>
-          <GestureDetector gesture={pan}>
-            <Animated.View
-              style={[styles.DurationMeterCircularHandle, animatedStyles]}
-            />
-          </GestureDetector>
+  //       <View
+  //         style={[
+  //           styles.MiddleOption,
+  //           {flex: 2, flexDirection: 'column', justifyContent: 'center'},
+  //         ]}>
+  //         <View style={styles.DurationTagLineBox}>
+  //           <Text
+  //             style={[
+  //               styles.OptionText,
+  //               {fontFamily: 'futura-no2-d-demibold', color: '#000000'},
+  //             ]}>
+  //             Duration ({Duration})
+  //           </Text>
+  //         </View>
+  //         {/* 9D9EA0 */}
+  //         <View style={styles.DurationPiecesTotalBox}>
+  //           {DurationBoxes.map((index, i) => {
+  //             return (
+  //               <View
+  //                 key={i}
+  //                 style={[
+  //                   styles.DurationPerPiece,
+  //                   i == 0
+  //                     ? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4}
+  //                     : {},
+  //                   i == 15
+  //                     ? {borderTopRightRadius: 4, borderBottomRightRadius: 4}
+  //                     : {},
+  //                   /*CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}*/
+  //                 ]}></View>
+  //             );
+  //           })}
+  //         </View>
+  //         <GestureDetector gesture={pan}>
+  //           <Animated.View
+  //             style={[styles.DurationMeterCircularHandle, animatedStyles]}
+  //           />
+  //         </GestureDetector>
 
-          <View style={styles.DurationLabelBox}>
-            {DurationTag.map((tag, i) => {
-              return (
-                <Text
-                  key={i}
-                  style={[
-                    styles.DurationLabels,
-                    tag != '0h' ? {marginRight: 62} : {},
-                  ]}>
-                  {tag}
-                </Text>
-              );
-            })}
-          </View>
-        </View>
+  //         <View style={styles.DurationLabelBox}>
+  //           {DurationTag.map((tag, i) => {
+  //             return (
+  //               <Text
+  //                 key={i}
+  //                 style={[
+  //                   styles.DurationLabels,
+  //                   tag != '0h' ? {marginRight: 62} : {},
+  //                 ]}>
+  //                 {tag}
+  //               </Text>
+  //             );
+  //           })}
+  //         </View>
+  //       </View>
 
-        <View style={styles.BottomOption}>
-          <View style={styles.AllDayFeatureBox}>
-            <Text style={styles.OptionText}>All Day</Text>
-          </View>
-          <View style={styles.AllDayToggleButtonBox}>
-            <Switch
-              trackColor={{false: '#767577', true: '#81b0ff'}}
-              thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
-              // ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleSwitch}
-              value={isEnabled}
-            />
-          </View>
-        </View>
-      </View>
-    );
-  };
-
-  const AreaThree = () => {
-    return (
-      <View style={styles.areaThree}>
-        <TextInput
-          multiline
-          numberOfLines={6}
-          style={styles.OnlyOption}
-          value={NoteText}
-          onChangeText={setNoteText}
-          placeholder="Add a Note"></TextInput>
-      </View>
-    );
-  };
+  //       <View style={styles.BottomOption}>
+  //         <View style={styles.AllDayFeatureBox}>
+  //           <Text style={styles.OptionText}>All Day</Text>
+  //         </View>
+  //         <View style={styles.AllDayToggleButtonBox}>
+  //           <Switch
+  //             trackColor={{false: '#767577', true: '#81b0ff'}}
+  //             thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+  //             // ios_backgroundColor="#3e3e3e"
+  //             onValueChange={toggleSwitch}
+  //             value={isEnabled}
+  //           />
+  //         </View>
+  //       </View>
+  //     </View>
+  //   );
+  // };
 
   module.exports = {ScheduleArray};
 
@@ -572,22 +792,129 @@ const AddTiming = () => {
         {/* <PanGestureHandler> */}
         <View style={styles.mainStyle}>
           <HeaderPanel
+            AddFromExistingWorkButton={AddFromExistingWorkButton}
+            setAddFromExistingWorkButton={setAddFromExistingWorkButton}
+            AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
+            NoteText={NoteText}
+            setNoteText={setNoteText}
             navigation={navigation}
             ScheduleArray={ScheduleArray}
             Message={Message}
             SaveButton={SaveButton}
+            WorkToDo={WorkToDo}
+            setWorkToDo={setWorkToDo}
+            color={color}
+            DateTimeState={DateTimeState}
+            setDateTimeState={setDateTimeState}
+            TaskDate={TaskDate}
+            handleConfirm={handleConfirm}
+            hideDatePicker={hideDatePicker}
+            WordMonth={WordMonth}
+            TwelveHourFormat={TwelveHourFormat}
+            StartTime={StartTime}
+            EndTime={EndTime}
+            Duration={Duration}
+            DurationBoxes={DurationBoxes}
+            DurationTag={DurationTag}
+            pan={pan}
+            animatedStyles={animatedStyles}
+            isEnabled={isEnabled}
+            toggleSwitch={toggleSwitch}
           />
 
           <ScrollView>
             <AreaOne
+              AddFromExistingWorkButton={AddFromExistingWorkButton}
+              setAddFromExistingWorkButton={setAddFromExistingWorkButton}
+              AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
+              NoteText={NoteText}
+              setNoteText={setNoteText}
+              navigation={navigation}
+              ScheduleArray={ScheduleArray}
+              Message={Message}
+              SaveButton={SaveButton}
               WorkToDo={WorkToDo}
               setWorkToDo={setWorkToDo}
               color={color}
+              DateTimeState={DateTimeState}
+              setDateTimeState={setDateTimeState}
+              TaskDate={TaskDate}
+              handleConfirm={handleConfirm}
+              hideDatePicker={hideDatePicker}
+              WordMonth={WordMonth}
+              TwelveHourFormat={TwelveHourFormat}
+              StartTime={StartTime}
+              EndTime={EndTime}
+              Duration={Duration}
+              DurationBoxes={DurationBoxes}
+              DurationTag={DurationTag}
+              pan={pan}
+              animatedStyles={animatedStyles}
+              isEnabled={isEnabled}
+              toggleSwitch={toggleSwitch}
             />
 
-            <AreaTwo />
+            <AreaTwo
+              AddFromExistingWorkButton={AddFromExistingWorkButton}
+              setAddFromExistingWorkButton={setAddFromExistingWorkButton}
+              AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
+              NoteText={NoteText}
+              setNoteText={setNoteText}
+              navigation={navigation}
+              ScheduleArray={ScheduleArray}
+              Message={Message}
+              SaveButton={SaveButton}
+              WorkToDo={WorkToDo}
+              setWorkToDo={setWorkToDo}
+              color={color}
+              DateTimeState={DateTimeState}
+              setDateTimeState={setDateTimeState}
+              TaskDate={TaskDate}
+              handleConfirm={handleConfirm}
+              hideDatePicker={hideDatePicker}
+              WordMonth={WordMonth}
+              TwelveHourFormat={TwelveHourFormat}
+              StartTime={StartTime}
+              EndTime={EndTime}
+              Duration={Duration}
+              DurationBoxes={DurationBoxes}
+              DurationTag={DurationTag}
+              pan={pan}
+              animatedStyles={animatedStyles}
+              isEnabled={isEnabled}
+              toggleSwitch={toggleSwitch}
+            />
 
-            <AreaThree />
+            <AreaThree
+              AddFromExistingWorkButton={AddFromExistingWorkButton}
+              setAddFromExistingWorkButton={setAddFromExistingWorkButton}
+              AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
+              NoteText={NoteText}
+              setNoteText={setNoteText}
+              navigation={navigation}
+              ScheduleArray={ScheduleArray}
+              Message={Message}
+              SaveButton={SaveButton}
+              WorkToDo={WorkToDo}
+              setWorkToDo={setWorkToDo}
+              color={color}
+              DateTimeState={DateTimeState}
+              setDateTimeState={setDateTimeState}
+              TaskDate={TaskDate}
+              handleConfirm={handleConfirm}
+              hideDatePicker={hideDatePicker}
+              WordMonth={WordMonth}
+              TwelveHourFormat={TwelveHourFormat}
+              StartTime={StartTime}
+              EndTime={EndTime}
+              Duration={Duration}
+              DurationBoxes={DurationBoxes}
+              DurationTag={DurationTag}
+              pan={pan}
+              animatedStyles={animatedStyles}
+              isEnabled={isEnabled}
+              toggleSwitch={toggleSwitch}
+            />
           </ScrollView>
         </View>
         {/* </PanGestureHandler> */}
@@ -624,10 +951,12 @@ const styles = StyleSheet.create({
   DurationPerPiece: {
     backgroundColor: '#9D9EA0',
     height: 10,
-    width: 17,
-    marginRight: 2,
+    width: '5.7%',
   },
-  DurationPiecesTotalBox: {flexDirection: 'row'},
+  DurationPiecesTotalBox: {
+    flexDirection: 'row',
+    columnGap: 2,
+  },
   DurationTagLineBox: {
     height: 35,
     justifyContent: 'center',
@@ -636,7 +965,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 10,
   },
-  TimingEndText: {fontFamily: 'futura-no2-d-demibold', fontSize: 16},
+  TimingEndText: {
+    fontFamily: 'futura-no2-d-demibold',
+    fontSize: 16,
+    color: '#9D9EA0',
+  },
   TimingEndBox: {
     height: 40,
     width: 85,
@@ -647,7 +980,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ArrowImage: {height: 17, width: 17},
-  TimingStartText: {fontFamily: 'futura-no2-d-demibold', fontSize: 16},
+  TimingStartText: {
+    fontFamily: 'futura-no2-d-demibold',
+    fontSize: 16,
+    color: '#9D9EA0',
+  },
   TimingStartBox: {
     height: 40,
     width: 85,
@@ -668,7 +1005,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
-  MonthText: {fontFamily: 'futura-no-2-medium-dee', fontSize: 17},
+  MonthText: {
+    fontFamily: 'futura-no-2-medium-dee',
+    fontSize: 17,
+    color: '#9D9EA0',
+  },
   MonthBox: {
     height: 40,
     width: 100,
@@ -678,7 +1019,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
   },
-  DateText: {fontFamily: 'futura-no-2-medium-dee', fontSize: 17},
+  DateText: {
+    fontFamily: 'futura-no-2-medium-dee',
+    fontSize: 17,
+    color: '#9D9EA0',
+  },
   DateNumberBox: {
     height: 40,
     width: 50,
@@ -781,7 +1126,7 @@ const styles = StyleSheet.create({
   },
 
   areaOne: {
-    height: 150,
+    height: 225,
     padding: 10,
     paddingBottom: 15,
     paddingTop: 15,

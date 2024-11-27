@@ -3,7 +3,7 @@ import { createSlice, nanoid } from "@reduxjs/toolkit";
 
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
-    todos: [{id: 1, text: "Hello World"}]
+    todos: [{id: "1", text: "Hello World"}]
 }
 
 function sayHello () {
@@ -27,6 +27,14 @@ export const todoSlice = createSlice({
             }
             state.todos.push(todo)
         },
-        removeTodo: () => {}
+        removeTodo: (state, action) => {
+            state.todos = state.todos.filter((todo) => todo.id !== action.payload)
+        }
     }
 })
+
+// Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
+export const {addTodo, removeTodo} = todoSlice.actions
+
+// Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
+export default todoSlice.reducer
