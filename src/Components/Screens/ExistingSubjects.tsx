@@ -14,7 +14,12 @@ const ExistingSubjects = () => {
                 <Text style={{fontFamily: 'sf-pro-display-bold', color: '#e9d3f5', fontSize: 15}}>Add New Subject</Text>
             </TouchableOpacity>
             {subjects.map((subject, index) => (
-                <TouchableOpacity style={[styles.UpperOption, {backgroundColor: '#222328', height: height * 0.06, alignItems: 'center'}]}>
+                <TouchableOpacity key={index} style={[
+                  index == 2 && styles.BottomOption,
+                  index >= 0 && index < 2 && styles.MiddleOption,
+                  // styles.UpperOption, 
+                  {backgroundColor: '#222328', height: height * 0.06, alignItems: 'center'}
+                  ]}>
                     <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 15}}>{subject}</Text>
                 </TouchableOpacity>
             ))

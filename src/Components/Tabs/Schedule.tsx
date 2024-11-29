@@ -504,9 +504,6 @@ const Schedule: React.FC = () => {
       rescheduleStatus === 'off' && setRescheduleStatus('PriorStage') 
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
-      // rescheduleStatus.current === 'off' && rescheduleStatus.current === 'PriorStage'
-      // rescheduleStatus.current === 'PriorStage' && setRescheduleStatus('FixingStage')
-      // rescheduleStatus.current === 'FixingStage' && setRescheduleStatus('RemovingStage')
       // sendNameToBackend();
       // console.log("ScheduleArray (In Schedule.tsx): ",ScheduleArray)
     }
