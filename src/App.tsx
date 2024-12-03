@@ -186,7 +186,7 @@ function App(): React.JSX.Element {
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
         {/* <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false }}/> */}
-        <NativeStack.Screen name="TopTabScreens" component={ScheduleTable} options={{ headerShown: false, animation:'slide_from_right' }}/>
+        {/* <NativeStack.Screen name="TopTabScreens" component={ScheduleTable} options={{ headerShown: false, animation:'slide_from_right' }}/> */}
       </NativeStack.Navigator>
     </NavigationContainer>
   );

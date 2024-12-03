@@ -119,12 +119,10 @@ export const CompressedScheduleTable = () => {
 const ScheduleTable = () => {
   console.log("Rendering Schedule Table")
   return (
-    // <View>
-    //   <TopTab.Navigator initialRouteName="Manual Table">
-    //     <TopTab.Screen name="Manual Table" component={ManualScheduleTable} options={{}}/>
-    //     <TopTab.Screen name="Rescheduled Table" component={CompressedScheduleTable} options={{}}/>
-    //   </TopTab.Navigator>
-    // </View>
+      // <TopTab.Navigator initialRouteName="Manual Table">
+      //   <TopTab.Screen name="Manual Table" component={ManualScheduleTable} options={{}}/>
+      //   <TopTab.Screen name="Rescheduled Table" component={CompressedScheduleTable} options={{}}/>
+      // </TopTab.Navigator>
     <ManualScheduleTable/>
   )
 }
