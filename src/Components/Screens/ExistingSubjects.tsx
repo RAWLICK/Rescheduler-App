@@ -1,14 +1,21 @@
 import { StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableOpacity, Image, Modal } from 'react-native'
 import React from 'react'
+import { useRef } from 'react'
 import AddTwo from '../Images/AddTwo.png'
 import ThreeDotsTwo from '../Images/ThreeDotsTwo.png'
 import EditIcon from '../Images/EditIcon.png'
 import DeleteIcon from '../Images/DeleteIcon.png'
 import { BlurView } from "@react-native-community/blur";
+import { TrueSheet } from "@lodev09/react-native-true-sheet"
+import AddingSubjects from './AddingSubjects'
 const { width, height } = Dimensions.get('window');
 
 const ExistingSubjects = () => {
   const subjects = ['Physics', 'Chemistry', 'Maths']
+  const AddingSubjectsSheet = useRef<TrueSheet>(null);
+  async function AddingSubjectsButton () {
+    await AddingSubjectsSheet.current?.present();
+  }
   return (
     <View style={{ backgroundColor: '#1b1b1d', padding: 30, paddingTop: 40}}>
       <View style={{ height: 50 }}>
@@ -55,32 +62,33 @@ const ExistingSubjects = () => {
               blurAmount={10}
               reducedTransparencyFallbackColor="black"
             />
-            <View style={[styles.subjectEditDialogBox]}>
-            <BlurView
-              style={styles.blurStyle}
-              blurType="light"
-              blurAmount={50}
-              reducedTransparencyFallbackColor="white"
-            />
-              <View style={{flex: 0.5, flexDirection: 'row', columnGap: 20, borderBottomWidth: 0.5, borderColor: 'grey'}}>
+            <View style={[styles.subjectEditDialogBox, {backgroundColor: '#3F3F41'}]}>
+              <TouchableOpacity style={{flex: 0.5, flexDirection: 'row', columnGap: 20, borderBottomWidth: 0.5, borderColor: 'grey'}} onPress={AddingSubjectsButton}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                   <Image source={EditIcon} style={{ height: 20, width: 20}} />
                 </View>
                 <View style={{justifyContent: 'center', alignItems: 'flex-start'}}>
                   <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 15}}>Edit</Text>
                 </View>
-              </View>
-              <View style={{flex: 0.5, flexDirection: 'row', columnGap: 20}}>
+              </TouchableOpacity>
+              <TouchableOpacity style={{flex: 0.5, flexDirection: 'row', columnGap: 20}}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                   <Image source={DeleteIcon} style={{ height: 20, width: 20}} />
                 </View>
                 <View style={{justifyContent: 'center', alignItems: 'flex-start'}}>
                   <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 15}}>Delete</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
+        <TrueSheet
+          ref={AddingSubjectsSheet}
+          sizes={['auto', 'large']}
+          cornerRadius={24}
+        >
+          <AddingSubjects/>
+        </TrueSheet>
       </View>
     </View>
   )
