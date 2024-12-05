@@ -7,10 +7,12 @@ import {addTodo, removeTodo} from '../../app/Slice'
 
 // Dispatch, reducer ko use karte hue store me changes karta hai
 const Settings = () => {
-  // const dispatch = useDispatch();
-  // const addToDoHandler = () => {
-  //   dispatch(addTodo("Hello Fucking World"));
-  // }
+  const dispatch = useDispatch();
+  const addToDoHandler = () => {
+    dispatch(addTodo("Hello Fucking World"));
+  }
+  addToDoHandler();
+  const todos = useSelector(state => state.todos)
   return (
     <SafeAreaView style={{flex: 1}}>
     <View style={{flex: 1}}>
