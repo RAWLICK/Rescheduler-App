@@ -54,7 +54,7 @@ const ExistingSubjects = () => {
           </View>
         ))
         }
-        <Modal visible={false}>
+        <Modal visible={true}>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <BlurView
               style={styles.blurStyle}
