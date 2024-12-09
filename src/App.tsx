@@ -28,6 +28,8 @@ import { ScheduleArrayItem } from './Components/Screens/AddTiming';
 import { ManualScheduleTable } from './Components/Screens/ScheduleTable';
 import { CompressedScheduleTable } from './Components/Screens/ScheduleTable';
 import ScheduleTable from './Components/Screens/ScheduleTable';
+import { Provider } from 'react-redux';
+import { Store } from './app/Store'
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -181,6 +183,7 @@ function App(): React.JSX.Element {
   }
 
   return (
+    <Provider store={Store}>
     <NavigationContainer>
       <NativeStack.Navigator initialRouteName="DrawerScreens">
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
@@ -189,6 +192,7 @@ function App(): React.JSX.Element {
         {/* <NativeStack.Screen name="TopTabScreens" component={ScheduleTable} options={{ headerShown: false, animation:'slide_from_right' }}/> */}
       </NativeStack.Navigator>
     </NavigationContainer>
+    </Provider>
   );
 }
 

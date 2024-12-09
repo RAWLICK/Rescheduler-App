@@ -3,11 +3,8 @@ import { createSlice, nanoid } from "@reduxjs/toolkit";
 
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
-    todos: [{id: "1", text: "Hello World"}]
-}
-
-function sayHello () {
-    console.log("Say Hello");
+    todos: [{id: "1", text: "Hello World"}],
+    colorInitialState: [{id: "1", text: "Blue"}]
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -33,8 +30,24 @@ export const todoSlice = createSlice({
     }
 })
 
+export const colorSlice = createSlice({
+    name: 'colorNaming',
+    initialState,
+    reducers: {
+        addColorReducer: (state, action) => {
+            const color = {
+                id: nanoid(),
+                text: action.payload
+            }
+            state.colorInitialState.push(color)
+        }
+    }
+})
+
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
 export const {addTodo, removeTodo} = todoSlice.actions
+export const { addColorReducer } = colorSlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 export default todoSlice.reducer
+// export 

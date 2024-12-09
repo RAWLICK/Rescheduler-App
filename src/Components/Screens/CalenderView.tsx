@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { useState } from 'react';
-import Navbar from './Navbar'
+// import Navbar from './Navbar'
 import {Calendar, CalendarList, Agenda, DateData} from 'react-native-calendars';
 
 const Calender = () => {

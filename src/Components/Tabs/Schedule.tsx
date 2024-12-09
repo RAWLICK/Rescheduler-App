@@ -148,7 +148,7 @@ const LowerArea = (props: LowerAreaPropsType) => {
                   text={String(props.data['Work'][i])}
                   iconStyle={{ borderColor: "red" }}
                   innerIconStyle={{ borderWidth: 2 }}
-                  textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff' }}
+                  textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff', textDecorationLine: 'none' }}
                   // onPress={(isChecked: boolean) => {console.log(isChecked)}}
                   onPress={() => props.handleCheckboxChange(i)}
                 />
@@ -158,7 +158,7 @@ const LowerArea = (props: LowerAreaPropsType) => {
           </View>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
             <TouchableOpacity onPress={() => props.RescheduleButtonClick()}>
-              <Text style={{color: '#2173BD', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
+              <Text style={{color: '#457fdf', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
