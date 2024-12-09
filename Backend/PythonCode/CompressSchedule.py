@@ -9,7 +9,59 @@ from flask import jsonify
 
 def CompressionFunction(currentTime, PriorSelections, FixedSelections):
 
-    dataframe = pd.read_excel('C:/Users/Dell/Desktop/Rescheduler/Backend/PythonCode/Schedule.xlsx')
+    # dataframe = pd.read_excel('C:/Users/Dell/Desktop/Rescheduler/Backend/PythonCode/Schedule.xlsx')
+    dataframe = pd.DataFrame([
+        {
+            "Start": "11/4/2023  5:30:00",
+            "End": "11/4/2023  6:30:00",
+            "Work": "Exercise"
+        },
+        {
+            "Start": "11/4/2023  6:30:00",
+            "End": "11/4/2023  7:30:00",
+            "Work": "Nahana, Puja, Mewa"
+        },
+        {
+            "Start": "11/4/2023  7:30:00",
+            "End": "11/4/2023  8:30:00",
+            "Work": "Work 1"
+        },
+        {
+            "Start": "11/4/2023  8:30:00",
+            "End": "11/4/2023  9:30:00",
+            "Work": "Work 2"
+        },
+        {
+            "Start": "11/4/2023  9:30:00",
+            "End": "11/4/2023  10:30:00",
+            "Work": "Work 3"
+        },
+        {
+            "Start": "11/4/2023  10:30:00",
+            "End": "11/4/2023  11:30:00",
+            "Work": "Work 4"
+        },
+        {
+            "Start": "11/4/2023  11:30:00",
+            "End": "11/4/2023  12:30:00",
+            "Work": "Work 5"
+        },
+        {
+            "Start": "11/4/2023  12:30:00",
+            "End": "11/4/2023  13:30:00",
+            "Work": "Work 6"
+        },
+        {
+            "Start": "11/4/2023  13:30:00",
+            "End": "11/4/2023  14:30:00",
+            "Work": "Work 7"
+        },
+        {
+            "Start": "11/4/2023  14:30:00",
+            "End": "11/4/2023  15:30:00",
+            "Work": "Work 8"
+        }
+    ])
 
     Work = dataframe['Work']
     Start = dataframe['Start']
@@ -18,6 +70,9 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     Work_List = list(Work)
     Start_List = list(Start)
     End_List = list(End)
+    print("Start_List: ", Start_List)
+    print("End_List: ", End_List)
+    print("Work_List: ", Work_List)
 
     print("What is the time, where you want the change?[In HH:MM]")
     print("Example Time:   4/11/23 10:00:00")
@@ -389,6 +444,8 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     }
 
     return DataFrame_Dict
+
+CompressionFunction("4/11/23 10:00:00", "2,4", "8")
 
 
 
