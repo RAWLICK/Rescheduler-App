@@ -17,7 +17,7 @@ import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { BlurView } from "@react-native-community/blur";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import Carousel from 'react-native-reanimated-carousel';
+// import Carousel from 'react-native-reanimated-carousel';
 import {PythonShell} from 'python-shell';
 import LinearGradient from 'react-native-linear-gradient';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
@@ -472,7 +472,7 @@ const Schedule: React.FC = () => {
 
     const sendNameToBackend = async () => {
       try {
-        const response = await fetch('http://192.168.70.159:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
+        const response = await fetch('http://192.168.95.92:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
           method: 'POST', // Specify the request method
           headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload

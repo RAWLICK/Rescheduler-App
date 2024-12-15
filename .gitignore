@@ -75,3 +75,4 @@ yarn-error.log
 
 # Adding build.gradle so that ndk version doesn't get changed
 /Users/architgupta/Desktop/Rescheduler-App/android/build.gradle
+

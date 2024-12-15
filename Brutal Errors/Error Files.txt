@@ -1,0 +1,91 @@
+This file's errors will be divided in four parts.
+1- Error Display
+2- Tried Efforts
+3- Succedded Effort 
+4- Ending Line
+
+----------------------------------------------------------------------------------------------------------------------------
+
+Error 1 Display:
+I ran npm run android for running my react native file and it gave error in terminal:
+node:events:485
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EMFILE: too many open files, watch
+    at FSWatcher._handle.onchange (node:internal/fs/watchers:207:21)
+Emitted 'error' event on NodeWatcher instance at:
+    at FSWatcher._checkedEmitError (/Users/architgupta/Desktop/Rescheduler-App/node_modules/metro-file-map/src/watchers/NodeWatcher.js:82:12)
+    at FSWatcher.emit (node:events:507:28)
+    at FSWatcher._handle.onchange (node:internal/fs/watchers:213:12) {
+  errno: -24,
+  syscall: 'watch',
+  code: 'EMFILE',
+  filename: null
+}
+
+Node.js v23.1.0
+Process terminated. Press <enter> to close the window
+
+Tried Efforts:
+It has actually surpassed the limit to watch numerous files.
+ulimit -n 8192 (Changed Limit with this command to watch files)
+Add the above command in zshrc file 
+sudo nano /etc/pam.d/launchd (Typed this command opening a file)
+session required pam_limits.so (Added this line)
+sudo nano /etc/security/limits.conf (Typed this command)
+Added below lines:
+*           hard    nofile          8192
+*           soft    nofile          8192
+Reset the cache by runnig command (U Know)
+lsof | grep node | wc -l (Ran this command to check if the system is hitting the file limit)
+The answer came 11 which is too low as comparison to set limit 8192.
+Restart the mac
+Added below code to metro.config.js (present in config part):
+
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
+
+/**
+ * Metro configuration
+ * https://reactnative.dev/docs/metro
+ *
+ * @type {import('metro-config').MetroConfig}
+ */
+const config = {
+  resolver: {
+    // Exclude certain paths or unnecessary files from being watched
+    blacklistRE: exclusionList([
+      /node_modules\/.*\/node_modules\/.*/, // Prevent nested `node_modules` from being watched
+    ]),
+  },
+  watchFolders: [
+    './src', // Explicitly watch only the `src` directory (or your app code directory)
+  ],
+};
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+
+ulimit -n (Ran this command to check the limit which I had set [It was 8192])
+
+Installed nvm and performed these commands to add lines in zshrc file:
+brew install nvm
+mkdir ~/.nvm
+echo "export NVM_DIR=\"$HOME/.nvm\"" >> ~/.zshrc
+echo "[ -s \"/opt/homebrew/opt/nvm/nvm.sh\" ] && . \"/opt/homebrew/opt/nvm/nvm.sh\"" >> ~/.zshrc
+source ~/.zshrc
+
+Then installed nvm 20 but couldn't use it because of some error:
+nvm install 20
+nvm use 20
+
+Upgraded watchman:
+brew upgrade watchman
+
+Then this command and it made a change first time(but showing an error at the start):
+watchman watch-del-all
+
+Succedded Effort:
+watchman watch-del-all
+
+----------------------------------------------------------------------------------------------------------------------------

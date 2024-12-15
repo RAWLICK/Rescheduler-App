@@ -63,36 +63,54 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
         }
     ])
 
-    Work = dataframe['Work']
-    Start = dataframe['Start']
-    End = dataframe['End']
+    # Work = dataframe['Work']
+    # Start = dataframe['Start']
+    # End = dataframe['End']
 
-    Work_List = list(Work)
-    Start_List = list(Start)
-    End_List = list(End)
-    print("Start_List: ", Start_List)
-    print("End_List: ", End_List)
-    print("Work_List: ", Work_List)
+    # Picking out the Work, StartTiming and End Timing from the dataframe and converting StartTiming and End Timing in datetime format so that it can be compared within
+
+    Work = list(dataframe['Work'])
+    Start = list(datetime.strptime(x, "%m/%d/%Y %H:%M:%S") for x in dataframe['Start'])
+    End = list(datetime.strptime(x, "%m/%d/%Y %H:%M:%S") for x in dataframe['End'])
+
+    # Entering the current time and converting it in datetime format
 
     print("What is the time, where you want the change?[In HH:MM]")
     print("Example Time:   4/11/23 10:00:00")
     inp_time = currentTime
     cur_time = datetime.strptime(inp_time, "%d/%m/%y %H:%M:%S")
 
+    # Now asking the user which are those works which he wants and is currently present before the current time.
+    # User's input was stored in "PriorSelections" which was passed as a parameter
+    # This data is asked through index number and holded in "Input_Prev_Work", then "Input_Prev_Work" is filtered from string of commas and holded as "Prev_Work".
+
     print("Which past things, you want ahead according to number?")
-    print(Work)
+    print(Work)                                                              
     Input_Prev_Work = PriorSelections
     Prev_Work = Input_Prev_Work.split(",")[:]
+
+    # Then "Prev_Work" is converted into a list of those actual Previous Works known as "Prev_Work_List" to be accessible forth
+    # Complete_Fragements is actually sum of all fragments which are divided on the basis of Pinned Works
+    # Now Prev_Work_List is added in Complete_Fragments because Complete_Fragements in itself means containing all items
+    
     print("So you want", list(Work[int(x)] for x in (Prev_Work)))
     Prev_Work_List = list(Work[int(x)] for x in (Prev_Work))
     Complete_Fragments = Prev_Work_List[:]
+
+    # Now asking user which are those works timings which he didn't want change on course of compression of timings
+    # User's input was stored in "FixedSelections" which was passed as a parameter
+    # Then splitting the "Input_Pin_Work" with comma to filter it making it "Pinned Work"
+    # Then making a list of those split pieces named "Pinned_Work_List"
 
     print("So what will be the pinned times in Schedule")
     print(Work)
     Input_Pin_Work = FixedSelections
     Pinned_Work = Input_Pin_Work.split(",")[:]
     Pinned_Work_List = list(Work[int(x)] for x in (Pinned_Work))
+
+
     Pinned_Work_StartTiming = list(Start[int(x)] for x in (Pinned_Work))
+    print("Pinned Work StartTiming", Pinned_Work_StartTiming)
     Pinned_Work_EndTiming = list(End[int(x)] for x in (Pinned_Work))
 
     # print("So your Pinned Works are", Pinned_Work_List)
@@ -100,8 +118,8 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
 
     # Ensures that the Time_Duration on which the cur_time falls get automatically chosen and get compressed in the schedule.
     boolean_list = []
-    for i in range (0, len(Start_List)):
-        if (cur_time >= Start_List[i] and cur_time < End_List[i]):
+    for i in range (0, len(Start)):
+        if (cur_time >= Start[i] and cur_time < End[i]):
             boolean_list.append("True")
         else: 
             boolean_list.append("False")
@@ -445,7 +463,7 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
 
     return DataFrame_Dict
 
-CompressionFunction("4/11/23 10:00:00", "2,4", "8")
+CompressionFunction("4/11/23 10:30:00", "0,1", "8")
 
 
 
