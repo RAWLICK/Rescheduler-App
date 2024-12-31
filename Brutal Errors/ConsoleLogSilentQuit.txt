@@ -1,0 +1,20 @@
+Error2 Problem:
+We are trying to run ->
+console.log("ScheduleArray: ", ScheduleArray)
+but nothing is getting displayed, not even the string part but if I remove the ScheduleArray element then the strings will start getting displayed.
+The same problem happens with displaying "data" which contains same values.
+What it is known as "silent quitting" of console.log
+
+Tried Efforts:
+Optional chaining:
+console.log("ScheduleArray (In Schedule.tsx): ", ScheduleArray ?? 'Not Available');
+
+Conditional Logging:
+if (ScheduleArray) {
+  console.log("ScheduleArray (In Schedule.tsx): ", ScheduleArray);
+} else {
+  console.log("ScheduleArray is undefined or empty.");
+}
+
+
+Succedded Effort:

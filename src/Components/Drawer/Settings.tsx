@@ -17,12 +17,12 @@ const Settings = () => {
     <SafeAreaView style={{flex: 1}}>
     <View style={{flex: 1}}>
       <Text style={{fontSize: 100}}>Settings</Text>
-      {todos.map((todo) => (
+      {/* {todos.map((todo) => (
         <View key={todo.id}>
           <Text>{todo.id}</Text>
           <Text>{todo.text}</Text>
         </View>
-      ))}
+      ))} */}
       {/* <ScheduleTable/> */}
     </View>
     </SafeAreaView>

@@ -1,5 +1,6 @@
 // nanoid helps in generating unique IDs.
 import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { combineReducers } from "@reduxjs/toolkit";
 
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
@@ -49,5 +50,10 @@ export const {addTodo, removeTodo} = todoSlice.actions
 export const { addColorReducer } = colorSlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
-export default todoSlice.reducer
-// export 
+
+const rootReducer = combineReducers({
+    todoSliceReducer: todoSlice.reducer,
+    colorSliceReducer: colorSlice.reducer
+})
+
+export { rootReducer };

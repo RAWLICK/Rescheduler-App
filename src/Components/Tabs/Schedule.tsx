@@ -43,6 +43,7 @@ import ScheduleTable from '../Screens/ScheduleTable'
 import CalenderView from '../Screens/CalenderView'
 import TaskCompletionBoard from '../Screens/TaskCompletionBoard';
 import { ScheduleArrayItem } from '../Screens/AddTiming';
+import { combineSlices } from '@reduxjs/toolkit';
 
 const Clock = () => {
   const [hourRotation, setHourRotation] = useState(0);
@@ -195,7 +196,6 @@ const Schedule: React.FC = () => {
     let Message: string = '';
 
     if (route.params && 'ScheduleArray' in route.params && 'Message' in route.params) {
-      // const { ScheduleArray, Message } = route.params ?? '';
       ScheduleArray = route.params.ScheduleArray;
       Message = route.params.Message;
       
@@ -204,7 +204,6 @@ const Schedule: React.FC = () => {
     }
     
     const safeScheduleArray: ScheduleArrayItem[] = ScheduleArray ?? []
-    console.log("Safe Schedule Array [Schedule.tsx]: ", ScheduleArray)
 
     const data = {
       "StartTime": safeScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
@@ -472,12 +471,12 @@ const Schedule: React.FC = () => {
 
     const sendNameToBackend = async () => {
       try {
-        const response = await fetch('http://192.168.95.92:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
+        const response = await fetch('http://192.168.29.107:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
           method: 'POST', // Specify the request method
           headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
-          body: JSON.stringify({ "Time": "4/11/23 10:00:00", "Prev": "2,4", "Remov": "10,14,17,19"}), // Convert the request payload to JSON.
+          body: JSON.stringify({ "Time": "4/11/23 10:30:00", "Prev": "0,1", "Fixed": "8"}), // Convert the request payload to JSON.
         })
   
         if (!response.ok) {  // Handle HTTP errors
@@ -500,12 +499,11 @@ const Schedule: React.FC = () => {
     }
 
     const RescheduleButtonClick = () => {
-      console.log("Reschedule Button is being clicked")
+      console.log("Data: ", data)
       rescheduleStatus === 'off' && setRescheduleStatus('PriorStage') 
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
-      rescheduleStatus === 'RemovingStage' && sendNameToBackend();
-      // console.log("ScheduleArray (In Schedule.tsx): ",ScheduleArray)
+      rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('off'))
     }
 
     const handleCheckboxChange = (index: number) => {
@@ -582,7 +580,7 @@ const Schedule: React.FC = () => {
               sizes={['auto', 'large']}
               cornerRadius={24}
             >
-              <ScheduleTable/>
+              {/* <ScheduleTable/> */}
             </TrueSheet>
 
             <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={CalenderButton}>

@@ -576,7 +576,7 @@ const AddTiming = () => {
 
   useEffect(() => {
     console.log('ScheduleArray (AddTiming.tsx): ', ScheduleArray);
-    console.log('Message [AddTiming.tsx]: ', Message);
+    // console.log('Message [AddTiming.tsx]: ', Message);
   }, [ScheduleArray]);
 
   const saveStateToStorage = async (ScheduleArray: ScheduleArrayItem[]) => {

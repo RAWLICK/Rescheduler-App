@@ -115,21 +115,21 @@ export const CompressedScheduleTable = () => {
   )
 }
 
-
 const ScheduleTable = () => {
-  console.log("Rendering Schedule Table")
+  // console.log("Rendering Schedule Table")
   return (
       // <TopTab.Navigator initialRouteName="Manual Table"
-      // screenOptions={{
-      //   // tabBarStyle: { backgroundColor: 'blue' }, // Background color of the tab bar
-      //   // tabBarIndicatorStyle: { backgroundColor: 'yellow', height: 4 }, // Indicator style
-      //   // tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' }, // Text style of tab labels
-      //   // tabBarActiveTintColor: 'white', // Active tab text color
-      //   // tabBarInactiveTintColor: 'gray', // Inactive tab text color
-      //   // tabBarPressColor: 'rgba(255, 255, 255, 0.5)', // Ripple effect color on Android
-      // }}>
-      //   <TopTab.Screen name="Manual Table" component={ManualScheduleTable} options={{}}/>
-      //   <TopTab.Screen name="Rescheduled Table" component={CompressedScheduleTable} options={{}}/>
+      // screenOptions={({ route }) => ({
+      //   tabBarStyle: { borderRadius: 10, height: 40 }, // Background color of the tab bar
+      //   tabBarIndicatorStyle: { display: 'none' }, // Indicator style
+      //   tabBarLabelStyle: { fontSize: 14, fontFamily: 'sf-pro-display-heavy'}, // Text style of tab labels
+      //   tabBarActiveTintColor: 'black', // Active tab text color
+      //   tabBarInactiveTintColor: 'gray', // Inactive tab text color
+      //   tabBarPressColor: 'rgba(255, 255, 255, 0.5)', // Ripple effect color on Android
+      // })}
+      // >
+      //   <TopTab.Screen name="Manual Table" component={ManualScheduleTable}/>
+      //   <TopTab.Screen name="Rescheduled Table" component={CompressedScheduleTable}/>
       // </TopTab.Navigator>
     <ManualScheduleTable/>
   )

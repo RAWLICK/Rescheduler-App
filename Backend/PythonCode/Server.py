@@ -3,6 +3,8 @@ from CompressSchedule import CompressionFunction
 from flask_cors import CORS
 from pymongo import MongoClient
 
+# First run the server before sending request to backend so that a local network could get created.
+
 # Cross-Origin Resource Sharing (CORS) can be an issue when a client on a different domain or port (your React Native app) tries to access the backend. You might need to install and configure flask-cors in your Flask app to allow requests from your React Native client.
 
 app = Flask(__name__)
@@ -19,10 +21,10 @@ collection = db['Archit Gupta']  # Collection name
 def compress():
     if request.method == 'POST':
         data = request.json
-        time = data.get('Time')
+        Time = data.get('Time')
         Prev = data.get('Prev')
-        Remov = data.get('Remov')
-        output = CompressionFunction(time, Prev, Remov)
+        Fixed = data.get('Fixed')
+        output = CompressionFunction(Time, Prev, Fixed)
         return jsonify(output)
     else:
         return 'COME with a POST request rascal !!'

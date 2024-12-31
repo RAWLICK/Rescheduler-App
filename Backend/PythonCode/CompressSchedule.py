@@ -108,15 +108,17 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     Pinned_Work = Input_Pin_Work.split(",")[:]
     Pinned_Work_List = list(Work[int(x)] for x in (Pinned_Work))
 
+    # Then making a list of Starting Time of those Fixed Works naming "Pinned_Work_StartTiming"
+    # Then making a list of Ending Time of those Fixed Works naming "Pinned_Work_EndTiming"
 
     Pinned_Work_StartTiming = list(Start[int(x)] for x in (Pinned_Work))
     print("Pinned Work StartTiming", Pinned_Work_StartTiming)
     Pinned_Work_EndTiming = list(End[int(x)] for x in (Pinned_Work))
+    print("So your Pinned Works are", Pinned_Work_List)
 
-    # print("So your Pinned Works are", Pinned_Work_List)
-    # print("So your Pinned Works timing are", Pinned_Work_StartTiming)
+    # Ensures that the Time_Duration on which the cur_time falls get automatically chosen and get compressed in the upcoming to-be made schedule.
+    # This below boolean list is a list of lot of "FALSE" but one "TRUE" which is used to know about that Time_Duration which is falling at present
 
-    # Ensures that the Time_Duration on which the cur_time falls get automatically chosen and get compressed in the schedule.
     boolean_list = []
     for i in range (0, len(Start)):
         if (cur_time >= Start[i] and cur_time < End[i]):
@@ -124,14 +126,21 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
         else: 
             boolean_list.append("False")
 
+    # Now making a Fragment_Dictionary in which the fragments will be divided on the basis of works present between every fixed time.
+    # First fragment will be manually named containing Previous Work List and List of work from current Time Duration Work to First Fixed Work
+
     Fragment_Dictionary = {}
     Fragment_Dictionary.update({"Fragment_" + str(1) : Prev_Work_List + list(Work[boolean_list.index("True"): int(Pinned_Work[0])])})
+
+    # Now rest of the fragments will be managed with for loop
 
     for i in range(0, len(Pinned_Work_List)-1):
         Fragment_Dictionary.update({"Fragment_" + str(i+2) : list(Work[int(Pinned_Work[i])+1 : int(Pinned_Work[i+1])])})
     print(Fragment_Dictionary)
     print("\n")
     # Output: {'Fragment_1': ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break'], 'Fragment_2': ['Sona', 'Work 5', 'Work 5 Break'], 'Fragment_3': ['Work 6', 'Free 1'], 'Fragment_4': ['Free 2']}
+
+    # Nested Fragments List as by name is a list with some sublists rather than a Dictionary from above "Fragment_Dictionary". It in contrast just doesn't mention the Fragment Number.  
 
     Nested_Fragments_List = []
     for i in Fragment_Dictionary:
@@ -140,9 +149,14 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     print("\n")
     # Output: [['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break'], ['Sona', 'Work 5', 'Work 5 Break'], ['Work 6', 'Free 1'], ['Free 2']]
 
+    # Complete_Fragments is the next step where the sublists of Nested Fragment List gets combined and make one list.
+
     Complete_Fragments = [item for sublist in Nested_Fragments_List for item in sublist]
     print("Complete Fragments: ", Complete_Fragments)
     print("\n")
+    
+    # LenTills_Dictionary is a dictionary that counts the len value of works (number of works) till each fixed timing
+    # LenTills_List is same as above but in list format
 
     LenTills_Addition = 0
     LenTills_Dictionary = {}
