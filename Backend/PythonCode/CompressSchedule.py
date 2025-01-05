@@ -7,59 +7,103 @@ from functools import reduce
 from datetime import timedelta
 from flask import jsonify
 
-def CompressionFunction(currentTime, PriorSelections, FixedSelections):
+def CompressionFunction(
+        # ImportedDataFrame, 
+        currentTime, 
+        PriorSelections, 
+        FixedSelections):
+
+    # ImportedDataFrameJS = ImportedDataFrame
+    ImportedDataFrameJS = [{
+        "StartTime":"06:00",
+        "EndTime":"07:00",
+        "Work":"Physics",
+        "StartAngle":180,
+        "EndAngle":210,
+        "TaskDate":"01/01/2025",
+        "Slice_Color":"Green"
+    },
+    {
+        "StartTime":"07:00",
+        "EndTime":"08:00",
+        "Work":"Chemistry",
+        "StartAngle":210,
+        "EndAngle":240,
+        "TaskDate":"01/01/2025",
+        "Slice_Color":"Blue"
+    }
+    ]
+
+    lodaDataframe = pd.DataFrame([
+        {
+            "StartTime": "05:30",
+            "EndTime": "06:30",
+            "Work": "Work 0",
+            "TaskDate": "01/01/2025"
+        }
+    ])
+    for i in ImportedDataFrameJS:
+        newObject = {
+            "StartTime": i["StartTime"],
+            "EndTime": i["EndTime"],
+            "Work": i["Work"],
+            "TaskDate": i["TaskDate"]
+        }
+        lodaDataframe = pd.concat([lodaDataframe, pd.DataFrame([newObject])], ignore_index=True)
+
+    print(lodaDataframe)
 
     # dataframe = pd.read_excel('C:/Users/Dell/Desktop/Rescheduler/Backend/PythonCode/Schedule.xlsx')
     dataframe = pd.DataFrame([
         {
-            "Start": "11/4/2023  5:30:00",
-            "End": "11/4/2023  6:30:00",
-            "Work": "Exercise"
+            "StartTime": "11/4/2023  05:30:00",
+            "EndTime": "11/4/2023  06:30:00",
+            "Work": "Work 0"
         },
         {
-            "Start": "11/4/2023  6:30:00",
-            "End": "11/4/2023  7:30:00",
-            "Work": "Nahana, Puja, Mewa"
-        },
-        {
-            "Start": "11/4/2023  7:30:00",
-            "End": "11/4/2023  8:30:00",
+            "StartTime": "11/4/2023  06:30:00",
+            "EndTime": "11/4/2023  07:30:00",
             "Work": "Work 1"
         },
         {
-            "Start": "11/4/2023  8:30:00",
-            "End": "11/4/2023  9:30:00",
+            "StartTime": "11/4/2023  07:30:00",
+            "EndTime": "11/4/2023  08:30:00",
             "Work": "Work 2"
         },
         {
-            "Start": "11/4/2023  9:30:00",
-            "End": "11/4/2023  10:30:00",
+            "StartTime": "11/4/2023  08:30:00",
+            "EndTime": "11/4/2023  09:30:00",
             "Work": "Work 3"
         },
         {
-            "Start": "11/4/2023  10:30:00",
-            "End": "11/4/2023  11:30:00",
+            "StartTime": "11/4/2023  09:30:00",
+            "EndTime": "11/4/2023  10:30:00",
             "Work": "Work 4"
         },
         {
-            "Start": "11/4/2023  11:30:00",
-            "End": "11/4/2023  12:30:00",
+            "StartTime": "11/4/2023  10:30:00",
+            "EndTime": "11/4/2023  11:30:00",
             "Work": "Work 5"
         },
         {
-            "Start": "11/4/2023  12:30:00",
-            "End": "11/4/2023  13:30:00",
+            "StartTime": "11/4/2023  11:30:00",
+            "EndTime": "11/4/2023  12:30:00",
             "Work": "Work 6"
         },
         {
-            "Start": "11/4/2023  13:30:00",
-            "End": "11/4/2023  14:30:00",
+            "StartTime": "11/4/2023  12:30:00",
+            "EndTime": "11/4/2023  13:30:00",
             "Work": "Work 7"
         },
         {
-            "Start": "11/4/2023  14:30:00",
-            "End": "11/4/2023  15:30:00",
+            "StartTime": "11/4/2023  13:30:00",
+            "EndTime": "11/4/2023  14:30:00",
             "Work": "Work 8"
+        },
+        {
+            "StartTime": "11/4/2023  14:30:00",
+            "EndTime": "11/4/2023  15:30:00",
+            "Work": "Work 9"
         }
     ])
 
@@ -69,9 +113,28 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
 
     # Picking out the Work, StartTiming and End Timing from the dataframe and converting StartTiming and End Timing in datetime format so that it can be compared within
 
+    WorkDataFrame = dataframe['Work']
+
     Work = list(dataframe['Work'])
-    Start = list(datetime.strptime(x, "%m/%d/%Y %H:%M:%S") for x in dataframe['Start'])
-    End = list(datetime.strptime(x, "%m/%d/%Y %H:%M:%S") for x in dataframe['End'])
+    Start = list(datetime.strptime(x, "%m/%d/%Y %H:%M:%S") for x in dataframe['StartTime'])
+    End = list(datetime.strptime(x, "%m/%d/%Y %H:%M:%S") for x in dataframe['EndTime'])
+
+    # These below are the works which has to be removed from the schedule 
+    # We have used for loop with reverse=True because we don't want to mess with the index value when one of the value gets removed which doesn't happen when removed from the last
+
+    print("So what are the upcoming works which you want to remove?")
+    print(WorkDataFrame)
+    RemovingSelections = "8"
+    Input_Removing_Work = RemovingSelections
+    Removing_Work = Input_Removing_Work.split(",")[:]
+    Removing_Work_List = list(Work[int(x)] for x in (Removing_Work))
+    print("So the works which you are Removing are: ", Removing_Work_List)
+    print("\n")
+
+    for i in sorted(Removing_Work, reverse=True):
+        del Work[int(i)]
+        del Start[int(i)]
+        del End[int(i)]
 
     # Entering the current time and converting it in datetime format
 
@@ -85,7 +148,8 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     # This data is asked through index number and holded in "Input_Prev_Work", then "Input_Prev_Work" is filtered from string of commas and holded as "Prev_Work".
 
     print("Which past things, you want ahead according to number?")
-    print(Work)                                                              
+    print(WorkDataFrame)                                               
+    print("\n")               
     Input_Prev_Work = PriorSelections
     Prev_Work = Input_Prev_Work.split(",")[:]
 
@@ -94,6 +158,7 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     # Now Prev_Work_List is added in Complete_Fragments because Complete_Fragements in itself means containing all items
     
     print("So you want", list(Work[int(x)] for x in (Prev_Work)))
+    print("\n")
     Prev_Work_List = list(Work[int(x)] for x in (Prev_Work))
     Complete_Fragments = Prev_Work_List[:]
 
@@ -103,7 +168,8 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     # Then making a list of those split pieces named "Pinned_Work_List"
 
     print("So what will be the pinned times in Schedule")
-    print(Work)
+    print(WorkDataFrame)
+    print("\n")
     Input_Pin_Work = FixedSelections
     Pinned_Work = Input_Pin_Work.split(",")[:]
     Pinned_Work_List = list(Work[int(x)] for x in (Pinned_Work))
@@ -112,9 +178,10 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     # Then making a list of Ending Time of those Fixed Works naming "Pinned_Work_EndTiming"
 
     Pinned_Work_StartTiming = list(Start[int(x)] for x in (Pinned_Work))
-    print("Pinned Work StartTiming", Pinned_Work_StartTiming)
+    # print("Pinned Work StartTiming", Pinned_Work_StartTiming)
     Pinned_Work_EndTiming = list(End[int(x)] for x in (Pinned_Work))
     print("So your Pinned Works are", Pinned_Work_List)
+    print("\n")
 
     # Ensures that the Time_Duration on which the cur_time falls get automatically chosen and get compressed in the upcoming to-be made schedule.
     # This below boolean list is a list of lot of "FALSE" but one "TRUE" which is used to know about that Time_Duration which is falling at present
@@ -155,6 +222,7 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     print("Complete Fragments: ", Complete_Fragments)
     print("\n")
     
+    # LenTills_Addition tells us, how many of the works we have actually covered with respect to fixed timing while going on with the "for loop"
     # LenTills_Dictionary is a dictionary that counts the len value of works (number of works) till each fixed timing
     # LenTills_List is same as above but in list format
 
@@ -172,12 +240,17 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     # Output: [7, 10, 12, 13]
     print("\n")
 
+    # "LenBtwPins_Dictionary" tells us about len value like "LenTills_Dictionary" but in contrast it mention the len value of works present between each fixed timings rather than from the start.
+
     LenBtwPins_Dictionary = {}
     for i in range(0, len(Nested_Fragments_List)):
         LenBtwPins_Dictionary.update({"LenBtwPin" + str(i+1) : len(Nested_Fragments_List[i])})
     print("LenBtwPins_Dictionary: ", LenBtwPins_Dictionary)
     print("\n")
     # Output: {'LenBtwPin1': 7, 'LenBtwPin2': 3, 'LenBtwPin3': 2, 'LenBtwPin4': 1}
+
+    # "Fragment_Dur_Dict" is Duration between each fragment (fragment on basis of pinned timing) in form of a Dictionary
+    # First update of this dictionary is done manually and then it went on with loop.
 
     Fragment_Dur_Dict = {}
     Fragment_Dur_Dict.update({"Fragment_" + str(1) + "_Duration" : Pinned_Work_StartTiming[0] - cur_time})
@@ -188,6 +261,8 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     print("\n")
     # Output: {'Fragment_1_Duration': Timedelta('0 days 03:00:00'), 'Fragment_2_Duration': Timedelta('0 days 03:00:00'), 'Fragment_3_Duration': Timedelta('0 days 04:00:00'), 'Fragment_4_Duration': Timedelta('0 days 01:30:00')}
 
+    # "Total_Fragment_Duration" is the sum of duration of all the fragments present.
+
     Total_Fragment_Duration = timedelta(0)
     for i in Fragment_Dur_Dict:
         Total_Fragment_Duration += Fragment_Dur_Dict[i]
@@ -195,7 +270,11 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     print("\n")
     # Output: 0 days 11:30:00
 
-    # #Finding the ratios
+    # Finding the ratios
+    # Time_Interval is the duration difference between each work in terms of minutes.
+    # Time_Interval_List is the list of "Time_Interval" from above.
+    # Time_Interval_List_Ratio is finding the ratio of each "Time_Interval" comparing from the whole "Time_Interval_List" with help of HCF (Highest Common Factor) so to find the real value of each work.
+
     Time_Interval_List = []
     Time_Interval_List_Ratio = []
 
@@ -206,7 +285,7 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     # Output: [60, 60, 60,..]
     print("\n")
 
-    # # Here reduce plays role of iteration(ek ek karke dena because there is a whole list present)
+    # Here reduce plays role of iteration(ek ek karke dena because there is a whole list present)
     Hcf = reduce(math.gcd, Time_Interval_List)
     for i in Time_Interval_List:
         Ratio = i/Hcf
@@ -215,7 +294,7 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     # Output: [4, 4, 4,..]
     print("\n")
 
-    # Complete_Fragments_Index vo saare kaam ka index hai jo ki left out hai karne ko
+    # Complete_Fragments_Index vo saare kaam ka index hai jo ki left out hai karne ko (Hindi_Lang)
     Complete_Fragments_Index = []
     List_Work = list(Work)
     for i in Complete_Fragments:
@@ -224,7 +303,7 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     # Output: [2, 4, 5, 6, 7, 8, 9, 11, 12, 13, 15, 16, 18]
     print("\n")
 
-    # Required_Ratio_List tells vo left out kaam jinka ratio jaanna hai, naki sabka.
+    # Required_Ratio_List tells vo left out kaam jinka ratio jaanna hai, naki sabka (Hindi_Lang)
     Required_Ratio_List = []
     for i in Complete_Fragments_Index:
         Required_Ratio_List.append(Time_Interval_List_Ratio[i])
@@ -240,14 +319,14 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     print("\n")
     # Output: 54
 
-    # Duration_According_Ratio tells what time should be given to each work according to ratio so that it get completed
+    # Duration_According_Ratio tells what time should be given to each work in minutes according to ratio so that it get completed
     #  on time
     Duration_According_Ratio = []
     for i in Required_Ratio_List:
         Duration_According_Ratio.append(round(i/Sum_Of_Ratios * (Total_Fragment_Duration.total_seconds() / 60)))
     print("Duration According Ratio: ",Duration_According_Ratio)
     print("\n")
-    # # Output: [51, 51, 26...]
+    # Output: [51, 51, 26...]
 
     # Sum_Dur_Acc_Rat is the sum of Duration_According_Ratio
     Sum_Dur_Acc_Rat = 0
@@ -255,7 +334,7 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
         Sum_Dur_Acc_Rat += i
     print("Sum_Dur_Acc_Rat: ", Sum_Dur_Acc_Rat, "minutes")
     print("\n")
-    # # Output: 691
+    # Output: 691
 
     # This part of code will ensure that the Sum of Ratios would not cross the line or say the "Proposed Left Time" or "Total Fragment Duration"
     if (Sum_Dur_Acc_Rat > (Total_Fragment_Duration.total_seconds() / 60)):
@@ -292,6 +371,7 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
     Updated_LenTills_Dictionary = {}
     Updated_LenTills_List = []
 
+    # Initially whole Updated_LenTills_Dictionary is made set to 0 and will make an increase as the schedule will start compressing with the loop
     for i in range(0, len(Nested_Fragments_List)):
         Updated_LenTills_Dictionary.update({"Updated_LenTillPin" + str(i+1) : 0})
     print("Updated_LenTills_Dictionary: ", Updated_LenTills_Dictionary)
@@ -303,7 +383,8 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
         Updated_LenTills_List.clear()
         for i in Updated_LenTills_Dictionary.values():
             Updated_LenTills_List.append(i)
-        
+            
+    # Calling the function to execute
     updateLenTillsList(Updated_LenTills_Dictionary, Updated_LenTills_List)
     print("Updated_LenTills_List: ", Updated_LenTills_List)
     # Output: [0, 0, 0, 0]
@@ -477,7 +558,7 @@ def CompressionFunction(currentTime, PriorSelections, FixedSelections):
 
     return DataFrame_Dict
 
-CompressionFunction("4/11/23 10:30:00", "0,1", "8")
+CompressionFunction("4/11/23 10:30:00", "0,1,2,3,4", "6,8")
 
 
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import { useState, useEffect, memo, useRef, useCallback } from 'react';
 import ClockImage from '../Images/AnalogClockImage.png'
 // import Holder from '../Images/Holder.png'
@@ -44,6 +44,9 @@ import CalenderView from '../Screens/CalenderView'
 import TaskCompletionBoard from '../Screens/TaskCompletionBoard';
 import { ScheduleArrayItem } from '../Screens/AddTiming';
 import { combineSlices } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux' 
+import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
+import { RootState } from '../../app/Store';
 
 const Clock = () => {
   const [hourRotation, setHourRotation] = useState(0);
@@ -80,7 +83,7 @@ const Clock = () => {
   );
 };
 
-type LowerAreaPropsType = {
+type RescheduleButtonAreaPropsType = {
   rescheduleStatus: string, 
   DialogBackButton: () => void, 
   DialogTitle: string, 
@@ -98,8 +101,15 @@ type LowerAreaPropsType = {
   RescheduleButtonClick: () => void
 }
 
-// Reschedule Button wala
-const LowerArea = (props: LowerAreaPropsType) => {
+type BottomOptionsAreaPropsType = {
+  ScheduleTableButton: () => Promise<void>,
+  ScheduleTableSheet: RefObject<TrueSheet>,
+  CalenderButton: () => Promise<void>,
+  CalenderSheet: RefObject<TrueSheet>
+  navigation: NavigationProp<any, any>
+}
+
+const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
   return (
     <View style={[styles.LowerArea]}>
       <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
@@ -119,7 +129,7 @@ const LowerArea = (props: LowerAreaPropsType) => {
           blurType="dark"
           blurAmount={50}
           reducedTransparencyFallbackColor="black"
-        />
+          />
         <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
           <TouchableOpacity onPress={props.DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Image source={LeftArrow} style={{height: 17, width: 17}}/>
@@ -169,9 +179,48 @@ const LowerArea = (props: LowerAreaPropsType) => {
   )
 };
 
+const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
+  return (
+    <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',marginRight: 60, marginLeft: 60}}>
+      <View style={{backgroundColor: '#BFB8E9', flexDirection: 'row', paddingTop: 8, paddingBottom: 8, borderRadius: 10, elevation: 5}}>
+        <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={props.ScheduleTableButton}>
+          <Image source={ScheduleTableIcon} style={{width: 35, height: 35}}/>
+        </TouchableOpacity>
+        <TrueSheet
+          ref={props.ScheduleTableSheet}
+          sizes={['auto', 'large']}
+          cornerRadius={24}
+        >
+          <ScheduleTable/>
+        </TrueSheet>
+
+        <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={props.CalenderButton}>
+          <Image source={CalenderIcon} style={{width: 29, height: 29}}/>
+        </TouchableOpacity>
+        <TrueSheet
+        ref={props.CalenderSheet}
+        sizes={['auto', 'large']}
+        cornerRadius={24}
+        >
+          <CalenderView/>
+        </TrueSheet>
+
+        <TouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
+        onPress={()=> props.navigation.navigate('StackScreens', {screen: 'AddTimingStack'})}>
+          <View style={{}}>
+            <Image style={styles.AddIcon} source={AddIcon}/>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <TaskCompletionBoard/>
+    </View>
+  )
+};
+
 const Schedule: React.FC = () => {
     const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
+    // const navigation = useNavigation<CombinedNavigationProp>();
     const [hourRotation, setHourRotation] = useState(0)
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
@@ -191,26 +240,16 @@ const Schedule: React.FC = () => {
     const [serverResponseMessage, setServerResponseMessage] = useState('')
     const ScheduleTableSheet = useRef<TrueSheet>(null);
     const CalenderSheet = useRef<TrueSheet>(null);
-
-    let ScheduleArray: ScheduleArrayItem[] = [];
-    let Message: string = '';
-
-    if (route.params && 'ScheduleArray' in route.params && 'Message' in route.params) {
-      ScheduleArray = route.params.ScheduleArray;
-      Message = route.params.Message;
-      
-    } else {
-      console.log("ScheduleArray or Message is not available in route params.");
-    }
-    
-    const safeScheduleArray: ScheduleArrayItem[] = ScheduleArray ?? []
+    const dispatch = useDispatch();
+    const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
 
     const data = {
-      "StartTime": safeScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
-      "EndTime": safeScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
-      "Work": safeScheduleArray.map((item: ScheduleArrayItem) => item.Work),
-      "StartAngle": safeScheduleArray.map((item: ScheduleArrayItem) => item.StartAngle),
-      "EndAngle": safeScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
+      "StartTime": ScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
+      "EndTime": ScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
+      "Work": ScheduleArray.map((item: ScheduleArrayItem) => item.Work),
+      "StartAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.StartAngle),
+      "EndAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
+      "TaskDate": ScheduleArray.map((item: ScheduleArrayItem) => item.TaskDate),
       "Slice_Color": [
       "rgba(175, 193, 85, 0.5)",
       "rgba(182, 108, 239, 0.5)",
@@ -471,12 +510,12 @@ const Schedule: React.FC = () => {
 
     const sendNameToBackend = async () => {
       try {
-        const response = await fetch('http://192.168.29.107:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
+        const response = await fetch('http://192.168.240.92:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
           method: 'POST', // Specify the request method
           headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
-          body: JSON.stringify({ "Time": "4/11/23 10:30:00", "Prev": "0,1", "Fixed": "8"}), // Convert the request payload to JSON.
+          body: JSON.stringify({ "DataFrame": JSON.stringify(ScheduleArray), "Time": "4/11/23 10:30:00", "Prev": "0,1", "Fixed": "8"}), // Convert the request payload to JSON.
         })
   
         if (!response.ok) {  // Handle HTTP errors
@@ -535,6 +574,7 @@ const Schedule: React.FC = () => {
     }
 
     async function CalenderButton () {
+      console.log("Lauda Lassan Calender Button")
       await CalenderSheet.current?.present();
     }
 
@@ -566,49 +606,48 @@ const Schedule: React.FC = () => {
       )
     };
 
-    // Sabse niche wala
-    const BottomArea = () => {
-      return (
-        <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',marginRight: 60, marginLeft: 60}}>
-          <View style={{backgroundColor: '#BFB8E9', flexDirection: 'row', paddingTop: 8, paddingBottom: 8, borderRadius: 10, elevation: 5}}>
-            <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={ScheduleTableButton}>
-              <Image source={ScheduleTableIcon} style={{width: 35, height: 35}}/>
-            </TouchableOpacity>
-            <TrueSheet
-              ref={ScheduleTableSheet}
-              // sizes={['auto', 'large']}
-              sizes={['auto', 'large']}
-              cornerRadius={24}
-            >
-              {/* <ScheduleTable/> */}
-            </TrueSheet>
+    // const BottomOptionsArea = () => {
+    //   return (
+    //     <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',marginRight: 60, marginLeft: 60}}>
+    //       <View style={{backgroundColor: '#BFB8E9', flexDirection: 'row', paddingTop: 8, paddingBottom: 8, borderRadius: 10, elevation: 5}}>
+    //         <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={ScheduleTableButton}>
+    //           <Image source={ScheduleTableIcon} style={{width: 35, height: 35}}/>
+    //         </TouchableOpacity>
+    //         <TrueSheet
+    //           ref={ScheduleTableSheet}
+    //           // sizes={['auto', 'large']}
+    //           sizes={['auto', 'large']}
+    //           cornerRadius={24}
+    //         >
+    //           <ScheduleTable/>
+    //         </TrueSheet>
 
-            <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={CalenderButton}>
-              <Image source={CalenderIcon} style={{width: 29, height: 29}}/>
-            </TouchableOpacity>
-            <TrueSheet
-            ref={CalenderSheet}
-            sizes={['auto', 'large']}
-            cornerRadius={24}
-            >
-              <CalenderView/>
-            </TrueSheet>
+    //         <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={CalenderButton}>
+    //           <Image source={CalenderIcon} style={{width: 29, height: 29}}/>
+    //         </TouchableOpacity>
+    //         <TrueSheet
+    //         ref={CalenderSheet}
+    //         sizes={['auto', 'large']}
+    //         cornerRadius={24}
+    //         >
+    //           <CalenderView/>
+    //         </TrueSheet>
 
-            <TouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
-            onPress={()=> navigation.navigate('StackScreens', {screen: 'AddTimingStack'})}>
-              <View style={{}}>
-                <Image style={styles.AddIcon} source={AddIcon}/>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <TaskCompletionBoard/>
-        </View>
-      )
-    };
+    //         <TouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
+    //         onPress={()=> navigation.navigate('StackScreens', {screen: 'AddTimingStack'})}>
+    //           <View style={{}}>
+    //             <Image style={styles.AddIcon} source={AddIcon}/>
+    //           </View>
+    //         </TouchableOpacity>
+    //       </View>
+    //       <TaskCompletionBoard/>
+    //     </View>
+    //   )
+    // };
 
-    // useEffect(() => {
-    //   ClockArea();
-    // }, [ScheduleArray])
+    useEffect(() => {
+      console.log('ScheduleArray (Schedule.tsx): ', JSON.stringify(ScheduleArray));
+    }, [ScheduleArray]);
     
 
     return (
@@ -643,9 +682,24 @@ const Schedule: React.FC = () => {
             
             </View>
 
-            <LowerArea rescheduleStatus={rescheduleStatus} DialogBackButton={DialogBackButton} DialogTitle={DialogTitle} data={data} hourRotation={hourRotation} checked={checked} handleCheckboxChange={handleCheckboxChange} RescheduleButtonClick={RescheduleButtonClick}/>
+            <RescheduleButtonArea
+             rescheduleStatus={rescheduleStatus} 
+             DialogBackButton={DialogBackButton} 
+             DialogTitle={DialogTitle} 
+             data={data} 
+             hourRotation={hourRotation} 
+             checked={checked} 
+             handleCheckboxChange={handleCheckboxChange} 
+             RescheduleButtonClick={RescheduleButtonClick}
+            />
 
-            <BottomArea/>
+            <BottomOptionsArea
+              ScheduleTableButton={ScheduleTableButton}
+              ScheduleTableSheet={ScheduleTableSheet}
+              CalenderButton={CalenderButton}
+              CalenderSheet={CalenderSheet}
+              navigation={navigation}
+            />
             {/* <Taskbar activeState='Schedule'/> */}
           </View>
         </View>

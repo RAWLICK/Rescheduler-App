@@ -21,10 +21,11 @@ collection = db['Archit Gupta']  # Collection name
 def compress():
     if request.method == 'POST':
         data = request.json
+        DataFrame = data.get('DataFrame')
         Time = data.get('Time')
         Prev = data.get('Prev')
         Fixed = data.get('Fixed')
-        output = CompressionFunction(Time, Prev, Fixed)
+        output = CompressionFunction(DataFrame, Time, Prev, Fixed)
         return jsonify(output)
     else:
         return 'COME with a POST request rascal !!'

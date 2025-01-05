@@ -34,6 +34,9 @@ import Animated, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import ExistingSubjects from './ExistingSubjects';
+import { useDispatch, useSelector } from 'react-redux' 
+import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
+import { RootState } from '../../app/Store';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PanGesture = ReturnType<typeof Gesture.Pan>;
@@ -356,6 +359,8 @@ export interface ScheduleArrayItem {
   Work: string;
   StartAngle: number;
   EndAngle: number;
+  TaskDate: string;
+  Slice_Color: string;
 }
 import {CombinedNavigationProp} from '../../App';
 
@@ -378,7 +383,9 @@ const AddTiming = () => {
   const [WorkToDo, setWorkToDo] = useState('');
   const [StartAngle, setStartAngle] = useState<number>();
   const [EndAngle, setEndAngle] = useState<number>();
-  const [ScheduleArray, setScheduleArray] = useState<ScheduleArrayItem[]>([]);
+  const dispatch = useDispatch();
+  const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
+  // const [ScheduleArray, setScheduleArray] = useState<ScheduleArrayItem[]>([]);
 
   let currentDate = new Date();
   let currentHours = currentDate.getHours().toString().padStart(2, '0');
@@ -567,52 +574,55 @@ const AddTiming = () => {
       Work: WorkToDo,
       StartAngle: StartAngle ?? 0,
       EndAngle: EndAngle ?? 0,
+      TaskDate: TaskDate,
+      Slice_Color: color
     };
-    setScheduleArray(prevSelections => {
-      const UpdatedScheduleArray = [...prevSelections, newTask];
-      return UpdatedScheduleArray.sort((a, b) => a.StartAngle - b.StartAngle);
-    });
+    // setScheduleArray(prevSelections => {
+    //   const UpdatedScheduleArray = [...prevSelections, newTask];
+    //   return UpdatedScheduleArray.sort((a, b) => a.StartAngle - b.StartAngle);
+    // });
+    dispatch(addScheduleObject(newTask));
   };
 
   useEffect(() => {
     console.log('ScheduleArray (AddTiming.tsx): ', ScheduleArray);
-    // console.log('Message [AddTiming.tsx]: ', Message);
   }, [ScheduleArray]);
 
-  const saveStateToStorage = async (ScheduleArray: ScheduleArrayItem[]) => {
-    try {
-      await AsyncStorage.setItem(
-        'savedSchedule',
-        JSON.stringify(ScheduleArray),
-      );
-    } catch (error) {
-      console.log('Error saving data ', error);
-    }
-  };
+  // const saveStateToStorage = async (ScheduleArray: ScheduleArrayItem[]) => {
+  //   try {
+  //     await AsyncStorage.setItem(
+  //       'savedSchedule',
+  //       JSON.stringify(ScheduleArray),
+  //     );
+  //   } catch (error) {
+  //     console.log('Error saving data ', error);
+  //   }
+  // };
 
-  const loadStateFromStorage = async () => {
-    try {
-      const savedSchedule = await AsyncStorage.getItem('savedSchedule');
-      if (savedSchedule !== null) {
-        setScheduleArray(JSON.parse(savedSchedule));
-      }
-    } catch (error) {
-      console.log('Error Loading Data: ', error);
-    }
-  };
+  // const loadStateFromStorage = async () => {
+  //   try {
+  //     const savedSchedule = await AsyncStorage.getItem('savedSchedule');
+  //     if (savedSchedule !== null) {
+  //       console.log("Saved Schedule: ", savedSchedule)
+  //       dispatch(addScheduleObject(JSON.parse(savedSchedule)));
+  //     }
+  //   } catch (error) {
+  //     console.log('Error Loading Data: ', error);
+  //   }
+  // };
 
-  useEffect(() => {
-    return () => {
-      saveStateToStorage(ScheduleArray); // Saving Data when component gets unmounted
-    };
-  }, [ScheduleArray]);
+  // useEffect(() => {
+  //   return () => {
+  //     saveStateToStorage(ScheduleArray); // Saving Data when component gets unmounted
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    loadStateFromStorage();
-  }, []);
+  // useEffect(() => {
+  //   loadStateFromStorage();
+  // }, []);
 
 
-  module.exports = {ScheduleArray};
+  // module.exports = {ScheduleArray};
 
   return (
     <SafeAreaView style={styles.safeView}>

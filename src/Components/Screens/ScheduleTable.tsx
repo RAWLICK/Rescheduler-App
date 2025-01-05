@@ -5,25 +5,30 @@ import Remove from '../Images/Remove.png'
 import { NavigationContainer, CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ScheduleArrayItem } from './AddTiming';
+import { useDispatch, useSelector } from 'react-redux'
+import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
+import { RootState } from '../../app/Store';
 
 const TopTab = createMaterialTopTabNavigator();
 
 export const ManualScheduleTable = () => {
-  const {ScheduleArray} = require('./AddTiming')
-  console.log("ScheduleArray [ScheduleTable.tsx]: ", ScheduleArray)
+  const dispatch = useDispatch();
+  const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
+  // const {ScheduleArray} = require('./AddTiming')
   // const safeScheduleArray : [] = ScheduleArray ?? []
-  const [safeScheduleArray, setSafeScheduleArray] = useState<ScheduleArrayItem[]>(ScheduleArray ?? [])
+  // const [safeScheduleArray, setSafeScheduleArray] = useState<ScheduleArrayItem[]>(ScheduleArray ?? [])
 
   // function setScheduleArrayFunction() {
   //   return safeScheduleArray
   // }
 
   const data = {
-    "StartTime": safeScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
-    "EndTime": safeScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
-    "Work": safeScheduleArray.map((item: ScheduleArrayItem) => item.Work),
-    "StartAngle": safeScheduleArray.map((item: ScheduleArrayItem) => item.StartAngle),
-    "EndAngle": safeScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
+    "StartTime": ScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
+    "EndTime": ScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
+    "Work": ScheduleArray.map((item: ScheduleArrayItem) => item.Work),
+    "StartAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.StartAngle),
+    "EndAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
+    "TaskDate": ScheduleArray.map((item: ScheduleArrayItem) => item.TaskDate),
     "Slice_Color": [
     "rgba(175, 193, 85, 0.5)",
     "rgba(182, 108, 239, 0.5)",
@@ -65,14 +70,11 @@ export const ManualScheduleTable = () => {
     }
   }
 
-  // useEffect(() => {
-  //   console.log("safeScheduleArray in Time Table", safeScheduleArray)
-  // }, [])
-
   function DeleteTask(name: string) {
-    let EditedArray = safeScheduleArray.filter((obj: ScheduleArrayItem) => obj.Work !== name)
-    setSafeScheduleArray(EditedArray)
-    console.log("Edited Array: ", EditedArray)
+    // let EditedArray = safeScheduleArray.filter((obj: ScheduleArrayItem) => obj.Work !== name)
+    // setSafeScheduleArray(EditedArray)
+    // console.log("Edited Array: ", EditedArray)
+    dispatch(removeScheduleObject(name));
   }
   return (
     <View style={{backgroundColor: '#e7e7e7'}}>
@@ -95,7 +97,9 @@ export const ManualScheduleTable = () => {
                 <Text style={{color: 'black', fontFamily: 'sf-pro-display-medium', fontSize: 10}}>{TwelveHourFormat(startTime)} - {TwelveHourFormat(endTime)}</Text>
               </View>
             </View>
-            <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}} onPress={() => DeleteTask(angleWork)}>
+            <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}
+             onPress={() => DeleteTask(angleWork)}
+             >
               <Image source={Remove} style={{height: 20, width: 20}}/>
             </TouchableOpacity>
           </View>
@@ -116,11 +120,10 @@ export const CompressedScheduleTable = () => {
 }
 
 const ScheduleTable = () => {
-  // console.log("Rendering Schedule Table")
   return (
       // <TopTab.Navigator initialRouteName="Manual Table"
       // screenOptions={({ route }) => ({
-      //   tabBarStyle: { borderRadius: 10, height: 40 }, // Background color of the tab bar
+      //   tabBarStyle: { borderRadius: 10, height: 50 }, // Background color of the tab bar
       //   tabBarIndicatorStyle: { display: 'none' }, // Indicator style
       //   tabBarLabelStyle: { fontSize: 14, fontFamily: 'sf-pro-display-heavy'}, // Text style of tab labels
       //   tabBarActiveTintColor: 'black', // Active tab text color

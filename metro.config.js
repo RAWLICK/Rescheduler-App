@@ -14,9 +14,12 @@ const config = {
         /node_modules\/.*\/node_modules\/.*/, // Prevent nested `node_modules` from being watched
       ]),
     },
+    transformer: {
+      enableFlipper: false,  // Disable Flipper for debugging
+    },
     watchFolders: [
       './src', // Explicitly watch only the `src` directory (or your app code directory)
-    ],
+    ]
   };
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);
