@@ -83,6 +83,17 @@ const Clock = () => {
   );
 };
 
+type UpperAreaPropsType = {
+  currentHourTime: number, 
+  currentMinTime: number, 
+  currentMonth: number, 
+  currentDay: number, 
+  Work: string, 
+  timeStart: string, 
+  timeEnd: string,
+  TwelveHourFormat: (time: string) => string
+}
+
 type RescheduleButtonAreaPropsType = {
   rescheduleStatus: string, 
   DialogBackButton: () => void, 
@@ -108,6 +119,64 @@ type BottomOptionsAreaPropsType = {
   CalenderSheet: RefObject<TrueSheet>
   navigation: NavigationProp<any, any>
 }
+
+const UpperArea = (props: UpperAreaPropsType) => {
+  const currentHourMinTime = `${props.currentHourTime.toString().padStart(2, '0')}:${props.currentMinTime.toString().padStart(2, '0')}`
+  const stringToMonthConverter = (currentMonth: number) => {
+    switch (currentMonth) {
+      case 1:
+        return 'January';
+      case 2:
+        return 'February';
+      case 3:
+        return 'March';
+      case 4:
+        return 'April';
+      case 5:
+        return 'May';
+      case 6:
+        return 'June';
+      case 7:
+        return 'July';
+      case 8:
+        return 'August';
+      case 9:
+        return 'September';
+      case 10:
+        return 'October';
+      case 11:
+        return 'November';
+      case 12:
+        return 'December';
+      default:
+        return '';
+    }
+  }
+  return (
+    <View style={styles.UpperArea}>
+      <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 0.5}}>
+          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{props.TwelveHourFormat(currentHourMinTime)}</Text>
+        </View>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{stringToMonthConverter(props.currentMonth)} {props.currentDay.toString().padStart(2, '0')}</Text>
+        </View>
+      </View>
+
+      <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5, elevation: 5}}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'grey',  borderBottomWidth: 0.5}}>
+          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{props.Work} (1h 21mins)</Text>
+        </View>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}}>
+          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{props.timeStart} - {props.timeEnd}</Text>
+        </View>
+      </View>
+      {/* {infoVisible && (
+        <AngleInfo/>
+      )} */}
+    </View>
+  )
+};
 
 const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
   return (
@@ -221,6 +290,12 @@ const Schedule: React.FC = () => {
     const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
     // const navigation = useNavigation<CombinedNavigationProp>();
+    const currentDate = new Date();
+    const currentHourTime = currentDate.getHours();
+    const currentMinTime = currentDate.getMinutes();
+    const currentSecTime = currentDate.getSeconds();
+    const currentDay = currentDate.getDate();
+    const currentMonth = currentDate.getMonth() + 1;
     const [hourRotation, setHourRotation] = useState(0)
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
@@ -275,17 +350,14 @@ const Schedule: React.FC = () => {
     }
     
     interface ApiDataType {
-      "Durations": string;
-      "End_Timing": string;
-      "Start_Timing": string;
-      "Work": string;
+      "Durations": string[];
+      "End_Timing": string[];
+      "Start_Timing": string[];
+      "Work": string[];
+      "Start_Angle": number[];
+      "End_Angle": number[];
     }
-    const [ApiData, setApiData] = useState<ApiDataType>({
-      "Durations": "[]",
-      "End_Timing": "[]", 
-      "Start_Timing": "[]", 
-      "Work": "[]"
-    })
+    const [ApiData, setApiData] = useState<ApiDataType>()
     
     const [PriorSelections, setPriorSelections] = useState<number[]>([])
     const [FixedSelections, setFixedSelections] = useState<number[]>([])
@@ -306,7 +378,6 @@ const Schedule: React.FC = () => {
       return () => clearInterval(intervalId);
     }, []);
 
-    
     // const [sound, setSound] = useState<Sound | null>(null);
     // const playSound = () => {
     //   const newSound = new Sound(ChainSound, Sound.MAIN_BUNDLE, (error) => {
@@ -386,6 +457,23 @@ const Schedule: React.FC = () => {
     // useEffect(() => {
     //   console.log("Data (In Schedule.tsx): ", data)
     // }, [])
+
+    const TwelveHourFormat = (time: string) => {
+      let NumberHour = Number(time.split(':', 1))
+      let MinuteHour = Number(time.slice(3, 5))
+      if (NumberHour > 12) {
+        return `${(NumberHour - 12).toString().padStart(2, '0')}:${time.slice(3, 5)} PM`
+      }
+      else if (NumberHour == 12 && MinuteHour >= 0) {
+        return `${time} PM`
+      }
+      else if (time.length > 5) {
+        return time
+      }
+      else {
+        return `${time} AM`
+      }
+    }
     
     const SingleAngle = useCallback(() => {
       const hardRadius = 150;
@@ -438,13 +526,16 @@ const Schedule: React.FC = () => {
               console.log(startAngle);
               console.log(endAngle);
               setInfoVisible(true);
-              settimeStart(startTime);
-              settimeEnd(endTime);
+              settimeStart(TwelveHourFormat(startTime));
+              settimeEnd(TwelveHourFormat(endTime));
               setWork(angleWork);
               // setduration(angleDuration);
               setangleColor(sectorColor);
               setStrokeStatus(true);
-              console.log(angleColor);
+              console.log("Work: ", Work);
+              console.log("timeStart: ", timeStart);
+              console.log("timeEnd: ", timeEnd);
+              // console.log(angleColor);
             };
   
             const anglePressOut = () => {
@@ -510,12 +601,12 @@ const Schedule: React.FC = () => {
 
     const sendNameToBackend = async () => {
       try {
-        const response = await fetch('http://192.168.240.92:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
+        const response = await fetch('http://192.168.156.92:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
           method: 'POST', // Specify the request method
           headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
-          body: JSON.stringify({ "DataFrame": JSON.stringify(ScheduleArray), "Time": "4/11/23 10:30:00", "Prev": "0,1", "Fixed": "8"}), // Convert the request payload to JSON.
+          body: JSON.stringify({ "ImportedDataFrame": JSON.stringify(ScheduleArray), "currentTime": "05/01/2025 09:00", "PriorSelections": "0,1", "FixedSelections": "5", "RemovingSelections": "1"}), // Convert the request payload to JSON.
         })
   
         if (!response.ok) {  // Handle HTTP errors
@@ -538,7 +629,6 @@ const Schedule: React.FC = () => {
     }
 
     const RescheduleButtonClick = () => {
-      console.log("Data: ", data)
       rescheduleStatus === 'off' && setRescheduleStatus('PriorStage') 
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
@@ -574,37 +664,11 @@ const Schedule: React.FC = () => {
     }
 
     async function CalenderButton () {
-      console.log("Lauda Lassan Calender Button")
       await CalenderSheet.current?.present();
     }
 
     // Nested Components (Composition)
-    const UpperArea = () => {
-      return (
-        <View style={styles.UpperArea}>
-          <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 0.5}}>
-              <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>08:24 AM</Text>
-            </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>September 24</Text>
-            </View>
-          </View>
-
-          <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5, elevation: 5}}>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'grey',  borderBottomWidth: 0.5}}>
-              <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Chemistry Work (1h 21mins)</Text>
-            </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}}>
-              <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>09:21 AM - 10:30 AM</Text>
-            </View>
-          </View>
-          {/* {infoVisible && (
-            <AngleInfo/>
-          )} */}
-        </View>
-      )
-    };
+  
 
     // const BottomOptionsArea = () => {
     //   return (
@@ -646,7 +710,7 @@ const Schedule: React.FC = () => {
     // };
 
     useEffect(() => {
-      console.log('ScheduleArray (Schedule.tsx): ', JSON.stringify(ScheduleArray));
+      // console.log('ScheduleArray (Schedule.tsx): ', JSON.stringify(ScheduleArray));
     }, [ScheduleArray]);
     
 
@@ -671,7 +735,17 @@ const Schedule: React.FC = () => {
             <Navbar/>
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
-            <UpperArea/>
+            <UpperArea
+              currentHourTime={currentHourTime}
+              currentMinTime={currentMinTime}
+              currentDay={currentDay}
+              currentMonth={currentMonth}
+              TwelveHourFormat={TwelveHourFormat}
+              Work={Work}
+              timeStart={timeStart}
+              timeEnd={timeEnd}
+
+            />
   
             <View style={styles.ClockArea}>
               <Clock/>

@@ -6,130 +6,111 @@ import math
 from functools import reduce
 from datetime import timedelta
 from flask import jsonify
+import json
 
 def CompressionFunction(
-        # ImportedDataFrame, 
+        ImportedDataFrame, 
         currentTime, 
         PriorSelections, 
-        FixedSelections):
+        FixedSelections,
+        RemovingSelections):
 
-    # ImportedDataFrameJS = ImportedDataFrame
-    ImportedDataFrameJS = [{
-        "StartTime":"06:00",
-        "EndTime":"07:00",
-        "Work":"Physics",
-        "StartAngle":180,
-        "EndAngle":210,
-        "TaskDate":"01/01/2025",
-        "Slice_Color":"Green"
-    },
-    {
-        "StartTime":"07:00",
-        "EndTime":"08:00",
-        "Work":"Chemistry",
-        "StartAngle":210,
-        "EndAngle":240,
-        "TaskDate":"01/01/2025",
-        "Slice_Color":"Blue"
-    }
-    ]
+    ImportedDataFrame = '[{"StartTime":"06:00","EndTime":"07:00","Work":"Physics","StartAngle":180,"EndAngle":210,"TaskDate":"05/01/2025","Slice_Color":"Green"},{"StartTime":"07:00","EndTime":"08:00","Work":"Chemistry","StartAngle":210,"EndAngle":240,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"08:00","EndTime":"09:00","Work":"Maths","StartAngle":240,"EndAngle":270,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"09:00","EndTime":"10:00","Work":"Biology","StartAngle":270,"EndAngle":300,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"10:00","EndTime":"11:00","Work":"SST","StartAngle":300,"EndAngle":330,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"11:00","EndTime":"12:30","Work":"Economics","StartAngle":330,"EndAngle":375,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"12:30","EndTime":"13:30","Work":"Sanskrit","StartAngle":375,"EndAngle":405,"TaskDate":"05/01/2025","Slice_Color":"blue"}]'
 
-    lodaDataframe = pd.DataFrame([
-        {
-            "StartTime": "05:30",
-            "EndTime": "06:30",
-            "Work": "Work 0",
-            "TaskDate": "01/01/2025"
-        }
-    ])
-    for i in ImportedDataFrameJS:
+    # Converting ImportedDataframe into a dataframe which this Compress Function can consume accordingly
+    # Remember to use single quote (') and double quotes(") seperately in fString instead of same to avoid any error.
+    # json.loads() helps us changing the stringified ImportedDataFrame back into a list of dictionaries
+
+    dataframe = pd.DataFrame([])
+    for i in json.loads(ImportedDataFrame):
+        TaskDate = i["TaskDate"]
+        print("TaskDate: ", TaskDate)
         newObject = {
-            "StartTime": i["StartTime"],
-            "EndTime": i["EndTime"],
-            "Work": i["Work"],
-            "TaskDate": i["TaskDate"]
+            "StartTime": f"{i['TaskDate']} {i['StartTime']}",
+            "EndTime": f"{i['TaskDate']} {i['EndTime']}",
+            "Work": i["Work"]
         }
-        lodaDataframe = pd.concat([lodaDataframe, pd.DataFrame([newObject])], ignore_index=True)
+        dataframe = pd.concat([dataframe, pd.DataFrame([newObject])], ignore_index=True)
+    print("Below is dataframe: ")
+    print(dataframe)
 
-    print(lodaDataframe)
-
-    # dataframe = pd.read_excel('C:/Users/Dell/Desktop/Rescheduler/Backend/PythonCode/Schedule.xlsx')
-    dataframe = pd.DataFrame([
+    dataframetwo = pd.DataFrame([
         {
-            "StartTime": "11/4/2023  05:30:00",
-            "EndTime": "11/4/2023  06:30:00",
+            "StartTime": "4/11/2023  05:30",
+            "EndTime": "4/11/2023  06:30",
             "Work": "Work 0"
         },
         {
-            "StartTime": "11/4/2023  06:30:00",
-            "EndTime": "11/4/2023  07:30:00",
+            "StartTime": "4/11/2023  06:30",
+            "EndTime": "4/11/2023  07:30",
             "Work": "Work 1"
         },
         {
-            "StartTime": "11/4/2023  07:30:00",
-            "EndTime": "11/4/2023  08:30:00",
+            "StartTime": "4/11/2023  07:30",
+            "EndTime": "4/11/2023  08:30",
             "Work": "Work 2"
         },
         {
-            "StartTime": "11/4/2023  08:30:00",
-            "EndTime": "11/4/2023  09:30:00",
+            "StartTime": "4/11/2023  08:30",
+            "EndTime": "4/11/2023  09:30",
             "Work": "Work 3"
         },
         {
-            "StartTime": "11/4/2023  09:30:00",
-            "EndTime": "11/4/2023  10:30:00",
+            "StartTime": "4/11/2023  09:30",
+            "EndTime": "4/11/2023  10:30",
             "Work": "Work 4"
         },
         {
-            "StartTime": "11/4/2023  10:30:00",
-            "EndTime": "11/4/2023  11:30:00",
+            "StartTime": "4/11/2023  10:30",
+            "EndTime": "4/11/2023  11:30",
             "Work": "Work 5"
         },
         {
-            "StartTime": "11/4/2023  11:30:00",
-            "EndTime": "11/4/2023  12:30:00",
+            "StartTime": "4/11/2023  11:30",
+            "EndTime": "4/11/2023  12:30",
             "Work": "Work 6"
         },
         {
-            "StartTime": "11/4/2023  12:30:00",
-            "EndTime": "11/4/2023  13:30:00",
+            "StartTime": "4/11/2023  12:30",
+            "EndTime": "4/11/2023  13:30",
             "Work": "Work 7"
         },
         {
-            "StartTime": "11/4/2023  13:30:00",
-            "EndTime": "11/4/2023  14:30:00",
+            "StartTime": "4/11/2023  13:30",
+            "EndTime": "4/11/2023  14:30",
             "Work": "Work 8"
         },
         {
-            "StartTime": "11/4/2023  14:30:00",
-            "EndTime": "11/4/2023  15:30:00",
+            "StartTime": "4/11/2023  14:30",
+            "EndTime": "4/11/2023  15:30",
             "Work": "Work 9"
+        },
+        {
+            "StartTime": "4/11/2023  15:30",
+            "EndTime": "4/11/2023  15:30",
+            "Work": "Sleep"
         }
     ])
-
-    # Work = dataframe['Work']
-    # Start = dataframe['Start']
-    # End = dataframe['End']
 
     # Picking out the Work, StartTiming and End Timing from the dataframe and converting StartTiming and End Timing in datetime format so that it can be compared within
 
     WorkDataFrame = dataframe['Work']
 
     Work = list(dataframe['Work'])
-    Start = list(datetime.strptime(x, "%m/%d/%Y %H:%M:%S") for x in dataframe['StartTime'])
-    End = list(datetime.strptime(x, "%m/%d/%Y %H:%M:%S") for x in dataframe['EndTime'])
+    Start = list(datetime.strptime(x, "%d/%m/%Y %H:%M") for x in dataframe['StartTime'])
+    End = list(datetime.strptime(x, "%d/%m/%Y %H:%M") for x in dataframe['EndTime'])
 
     # These below are the works which has to be removed from the schedule 
     # We have used for loop with reverse=True because we don't want to mess with the index value when one of the value gets removed which doesn't happen when removed from the last
 
     print("So what are the upcoming works which you want to remove?")
     print(WorkDataFrame)
-    RemovingSelections = "8"
-    Input_Removing_Work = RemovingSelections
-    Removing_Work = Input_Removing_Work.split(",")[:]
-    Removing_Work_List = list(Work[int(x)] for x in (Removing_Work))
-    print("So the works which you are Removing are: ", Removing_Work_List)
-    print("\n")
+    if (RemovingSelections != ""):
+        Input_Removing_Work = RemovingSelections
+        Removing_Work = Input_Removing_Work.split(",")[:]
+        Removing_Work_List = list(Work[int(x)] for x in (Removing_Work))
+        print("So the works which you are Removing are: ", Removing_Work_List)
+        print("\n")
 
     for i in sorted(Removing_Work, reverse=True):
         del Work[int(i)]
@@ -139,9 +120,9 @@ def CompressionFunction(
     # Entering the current time and converting it in datetime format
 
     print("What is the time, where you want the change?[In HH:MM]")
-    print("Example Time:   4/11/23 10:00:00")
+    print("Example Time:   4/11/2023 10:00:00")
     inp_time = currentTime
-    cur_time = datetime.strptime(inp_time, "%d/%m/%y %H:%M:%S")
+    cur_time = datetime.strptime(inp_time, "%d/%m/%Y %H:%M")
 
     # Now asking the user which are those works which he wants and is currently present before the current time.
     # User's input was stored in "PriorSelections" which was passed as a parameter
@@ -149,18 +130,19 @@ def CompressionFunction(
 
     print("Which past things, you want ahead according to number?")
     print(WorkDataFrame)                                               
-    print("\n")               
-    Input_Prev_Work = PriorSelections
-    Prev_Work = Input_Prev_Work.split(",")[:]
+    print("\n") 
+    if (PriorSelections != ""):              
+        Input_Prev_Work = PriorSelections
+        Prev_Work = Input_Prev_Work.split(",")[:]
 
-    # Then "Prev_Work" is converted into a list of those actual Previous Works known as "Prev_Work_List" to be accessible forth
-    # Complete_Fragements is actually sum of all fragments which are divided on the basis of Pinned Works
-    # Now Prev_Work_List is added in Complete_Fragments because Complete_Fragements in itself means containing all items
-    
-    print("So you want", list(Work[int(x)] for x in (Prev_Work)))
-    print("\n")
-    Prev_Work_List = list(Work[int(x)] for x in (Prev_Work))
-    Complete_Fragments = Prev_Work_List[:]
+        # Then "Prev_Work" is converted into a list of those actual Previous Works known as "Prev_Work_List" to be accessible forth
+        # Complete_Fragements is actually sum of all fragments which are divided on the basis of Pinned Works
+        # Now Prev_Work_List is added in Complete_Fragments because Complete_Fragements in itself means containing all items
+        
+        print("So you want", list(Work[int(x)] for x in (Prev_Work)))
+        print("\n")
+        Prev_Work_List = list(Work[int(x)] for x in (Prev_Work))
+        Complete_Fragments = Prev_Work_List[:]
 
     # Now asking user which are those works timings which he didn't want change on course of compression of timings
     # User's input was stored in "FixedSelections" which was passed as a parameter
@@ -170,18 +152,19 @@ def CompressionFunction(
     print("So what will be the pinned times in Schedule")
     print(WorkDataFrame)
     print("\n")
-    Input_Pin_Work = FixedSelections
-    Pinned_Work = Input_Pin_Work.split(",")[:]
-    Pinned_Work_List = list(Work[int(x)] for x in (Pinned_Work))
+    if (FixedSelections != ""):
+        Input_Pin_Work = FixedSelections
+        Pinned_Work = Input_Pin_Work.split(",")[:]
+        Pinned_Work_List = list(Work[int(x)] for x in (Pinned_Work))
 
-    # Then making a list of Starting Time of those Fixed Works naming "Pinned_Work_StartTiming"
-    # Then making a list of Ending Time of those Fixed Works naming "Pinned_Work_EndTiming"
+        # Then making a list of Starting Time of those Fixed Works naming "Pinned_Work_StartTiming"
+        # Then making a list of Ending Time of those Fixed Works naming "Pinned_Work_EndTiming"
 
-    Pinned_Work_StartTiming = list(Start[int(x)] for x in (Pinned_Work))
-    # print("Pinned Work StartTiming", Pinned_Work_StartTiming)
-    Pinned_Work_EndTiming = list(End[int(x)] for x in (Pinned_Work))
-    print("So your Pinned Works are", Pinned_Work_List)
-    print("\n")
+        Pinned_Work_StartTiming = list(Start[int(x)] for x in (Pinned_Work))
+        # print("Pinned Work StartTiming", Pinned_Work_StartTiming)
+        Pinned_Work_EndTiming = list(End[int(x)] for x in (Pinned_Work))
+        print("So your Pinned Works are", Pinned_Work_List)
+        print("\n")
 
     # Ensures that the Time_Duration on which the cur_time falls get automatically chosen and get compressed in the upcoming to-be made schedule.
     # This below boolean list is a list of lot of "FALSE" but one "TRUE" which is used to know about that Time_Duration which is falling at present
@@ -200,6 +183,9 @@ def CompressionFunction(
     Fragment_Dictionary.update({"Fragment_" + str(1) : Prev_Work_List + list(Work[boolean_list.index("True"): int(Pinned_Work[0])])})
 
     # Now rest of the fragments will be managed with for loop
+    # Pinned_Work is actually a list of numbers not string of works.
+    # int(Pinned_Work[i])+1 is used to increase the number obtained from Pinned_Work by 1, while
+    # int(Pinned_Work[i+1]) is used to move to the next index of Pinned_Work
 
     for i in range(0, len(Pinned_Work_List)-1):
         Fragment_Dictionary.update({"Fragment_" + str(i+2) : list(Work[int(Pinned_Work[i])+1 : int(Pinned_Work[i+1])])})
@@ -555,10 +541,10 @@ def CompressionFunction(
         "Work": Updated_Complete_Fragments,
         "Durations": Updated_Dur_Acc_Rat
     }
-
+    print("DataFrame_Dict: ", DataFrame_Dict)
     return DataFrame_Dict
 
-CompressionFunction("4/11/23 10:30:00", "0,1,2,3,4", "6,8")
+# CompressionFunction("05/01/2025 09:00", "0,1", "5", "1")
 
 
 

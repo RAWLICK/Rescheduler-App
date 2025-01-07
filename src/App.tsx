@@ -29,7 +29,8 @@ import { ManualScheduleTable } from './Components/Screens/ScheduleTable';
 import { CompressedScheduleTable } from './Components/Screens/ScheduleTable';
 import ScheduleTable from './Components/Screens/ScheduleTable';
 import { Provider } from 'react-redux';
-import { Store } from './app/Store'
+import { PersistGate } from 'redux-persist/integration/react';
+import { Store, persistor } from './app/Store'
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -123,7 +124,7 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='SignInStack'>
+      <Stack.Navigator initialRouteName='AddTimingStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -184,14 +185,16 @@ function App(): React.JSX.Element {
 
   return (
     <Provider store={Store}>
-    <NavigationContainer>
-      <NativeStack.Navigator initialRouteName="DrawerScreens">
-        <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
-        <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
-        {/* <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false }}/> */}
-        {/* <NativeStack.Screen name="TopTabScreens" component={ScheduleTable} options={{ headerShown: false, animation:'slide_from_right' }}/> */}
-      </NativeStack.Navigator>
-    </NavigationContainer>
+      <PersistGate loading={null} persistor={persistor}>
+        <NavigationContainer>
+          <NativeStack.Navigator initialRouteName="DrawerScreens">
+            <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
+            <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
+            {/* <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false }}/> */}
+            {/* <NativeStack.Screen name="TopTabScreens" component={ScheduleTable} options={{ headerShown: false, animation:'slide_from_right' }}/> */}
+          </NativeStack.Navigator>
+        </NavigationContainer>
+      </PersistGate>
     </Provider>
   );
 }

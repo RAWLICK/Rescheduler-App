@@ -1,20 +1,22 @@
 // nanoid helps in generating unique IDs.
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 import { combineReducers } from "@reduxjs/toolkit";
+import { ScheduleArrayItem } from "../Components/Screens/AddTiming";
 
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
-    ScheduleArrayInitialState: [
+    ScheduleArrayInitialState:
+     [
         {
             "StartTime": "06:00",
             "EndTime": "07:00",
             "Work": "Physics",
             "StartAngle": 180,
             "EndAngle": 210,
-            "TaskDate": "01/01/2025",
+            "TaskDate": "05/01/2025",
             "Slice_Color": "Green"
         }
-    ]
+    ] as ScheduleArrayItem[]
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -43,6 +45,9 @@ export const ScheduleArraySlice = createSlice({
             }
             state.ScheduleArrayInitialState.push(ScheduleObject)
         },
+        replaceScheduleArray: (state, action) => {
+            state.ScheduleArrayInitialState = action.payload
+        },
         removeScheduleObject: (state, action) => {
             state.ScheduleArrayInitialState = state.ScheduleArrayInitialState.filter((item) => item.Work !== action.payload)
         }
@@ -50,7 +55,7 @@ export const ScheduleArraySlice = createSlice({
 })
 
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
-export const { addScheduleObject, removeScheduleObject } = ScheduleArraySlice.actions
+export const { addScheduleObject, replaceScheduleArray, removeScheduleObject } = ScheduleArraySlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 

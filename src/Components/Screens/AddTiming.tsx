@@ -35,7 +35,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import ExistingSubjects from './ExistingSubjects';
 import { useDispatch, useSelector } from 'react-redux' 
-import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
+import { addScheduleObject, replaceScheduleArray, removeScheduleObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -577,10 +577,6 @@ const AddTiming = () => {
       TaskDate: TaskDate,
       Slice_Color: color
     };
-    // setScheduleArray(prevSelections => {
-    //   const UpdatedScheduleArray = [...prevSelections, newTask];
-    //   return UpdatedScheduleArray.sort((a, b) => a.StartAngle - b.StartAngle);
-    // });
     dispatch(addScheduleObject(newTask));
   };
 
@@ -602,9 +598,15 @@ const AddTiming = () => {
   // const loadStateFromStorage = async () => {
   //   try {
   //     const savedSchedule = await AsyncStorage.getItem('savedSchedule');
+  //     console.log("savedSchedule: ", savedSchedule);
   //     if (savedSchedule !== null) {
-  //       console.log("Saved Schedule: ", savedSchedule)
-  //       dispatch(addScheduleObject(JSON.parse(savedSchedule)));
+  //       // const array = JSON.parse(savedSchedule);
+  //       // console.log("Saved Schedule: ", savedSchedule)
+  //       // for (let index = 0; index < array.length; index++) {
+  //       //   const element = array[index];
+  //       //   dispatch(addScheduleObject(element));
+  //       // }
+  //       dispatch(replaceScheduleArray(JSON.parse(savedSchedule)));
   //     }
   //   } catch (error) {
   //     console.log('Error Loading Data: ', error);
