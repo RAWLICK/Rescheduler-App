@@ -180,18 +180,43 @@ def CompressionFunction(
     # First fragment will be manually named containing Previous Work List and List of work from current Time Duration Work to First Fixed Work
 
     Fragment_Dictionary = {}
-    Fragment_Dictionary.update({"Fragment_" + str(1) : Prev_Work_List + list(Work[boolean_list.index("True"): int(Pinned_Work[0])])})
 
-    # Now rest of the fragments will be managed with for loop
-    # Pinned_Work is actually a list of numbers not string of works.
-    # int(Pinned_Work[i])+1 is used to increase the number obtained from Pinned_Work by 1, while
-    # int(Pinned_Work[i+1]) is used to move to the next index of Pinned_Work
+    # Work[boolean_list.index("True"): ] means selecting till last
 
-    for i in range(0, len(Pinned_Work_List)-1):
-        Fragment_Dictionary.update({"Fragment_" + str(i+2) : list(Work[int(Pinned_Work[i])+1 : int(Pinned_Work[i+1])])})
-    print(Fragment_Dictionary)
-    print("\n")
-    # Output: {'Fragment_1': ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break'], 'Fragment_2': ['Sona', 'Work 5', 'Work 5 Break'], 'Fragment_3': ['Work 6', 'Free 1'], 'Fragment_4': ['Free 2']}
+    if (PriorSelections == "" and FixedSelections == ""):
+        Fragment_Dictionary.update({"Fragment_" + str(1) : list(Work[boolean_list.index("True"): ])})
+        print(Fragment_Dictionary)
+        print("\n")
+        # Output: {'Fragment_1': ['Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break', 'Sona', 'Work 5', 'Work 5 Break', 'Work 6', 'Free 1', 'Free 2']}  
+
+    elif (PriorSelections != "" and FixedSelections == ""):
+        Fragment_Dictionary.update({"Fragment_" + str(1) : Prev_Work_List + list(Work[boolean_list.index("True"): ])})
+        print(Fragment_Dictionary)
+        print("\n")
+        # Output: {'Fragment_1': ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break', 'Sona', 'Work 5', 'Work 5 Break', 'Work 6', 'Free 1', 'Free 2']}  
+
+    elif (PriorSelections == "" and FixedSelections != ""):
+        Fragment_Dictionary.update({"Fragment_" + str(1) : list(Work[boolean_list.index("True"): int(Pinned_Work[0])])})
+
+        # Now rest of the fragments will be managed with for loop
+        # Pinned_Work is actually a list of numbers not string of works.
+        # int(Pinned_Work[i])+1 is used to increase the number obtained from Pinned_Work by 1, while
+        # int(Pinned_Work[i+1]) is used to move to the next index of Pinned_Work
+
+        for i in range(0, len(Pinned_Work_List)-1):
+            Fragment_Dictionary.update({"Fragment_" + str(i+2) : list(Work[int(Pinned_Work[i])+1 : int(Pinned_Work[i+1])])})
+        print(Fragment_Dictionary)
+        print("\n")
+        # Output: {'Fragment_1': ['Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break'], 'Fragment_2': ['Sona', 'Work 5', 'Work 5 Break'], 'Fragment_3': ['Work 6', 'Free 1'], 'Fragment_4': ['Free 2']}
+
+    elif (PriorSelections != "" and FixedSelections != ""):
+        Fragment_Dictionary.update({"Fragment_" + str(1) : Prev_Work_List + list(Work[boolean_list.index("True"): int(Pinned_Work[0])])})
+
+        for i in range(0, len(Pinned_Work_List)-1):
+            Fragment_Dictionary.update({"Fragment_" + str(i+2) : list(Work[int(Pinned_Work[i])+1 : int(Pinned_Work[i+1])])})
+        print(Fragment_Dictionary)
+        print("\n")
+        # Output: {'Fragment_1': ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break'], 'Fragment_2': ['Sona', 'Work 5', 'Work 5 Break'], 'Fragment_3': ['Work 6', 'Free 1'], 'Fragment_4': ['Free 2']}
 
     # Nested Fragments List as by name is a list with some sublists rather than a Dictionary from above "Fragment_Dictionary". It in contrast just doesn't mention the Fragment Number.  
 
@@ -200,7 +225,7 @@ def CompressionFunction(
         Nested_Fragments_List.append(Fragment_Dictionary[i])
     print("Nested_Fragments_List: ", Nested_Fragments_List)
     print("\n")
-    # Output: [['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break'], ['Sona', 'Work 5', 'Work 5 Break'], ['Work 6', 'Free 1'], ['Free 2']]
+    # Output: [['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break'], ['Sona', 'Work 5', 'Work 5 Break'], ['Work 6', 'Free 1'], ['Free 2']] or may vary according to the parameters passed.
 
     # Complete_Fragments is the next step where the sublists of Nested Fragment List gets combined and make one list.
 

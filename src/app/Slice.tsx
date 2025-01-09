@@ -2,21 +2,15 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 import { combineReducers } from "@reduxjs/toolkit";
 import { ScheduleArrayItem } from "../Components/Screens/AddTiming";
-
+import ExistingSubjects from "../Components/Screens/ExistingSubjects";
+export type ExistingSubjectsArrayItem = {
+    Work: string;
+    Slice_Color: string;
+}
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
-    ScheduleArrayInitialState:
-     [
-        {
-            "StartTime": "06:00",
-            "EndTime": "07:00",
-            "Work": "Physics",
-            "StartAngle": 180,
-            "EndAngle": 210,
-            "TaskDate": "05/01/2025",
-            "Slice_Color": "Green"
-        }
-    ] as ScheduleArrayItem[]
+    ScheduleArrayInitialState: [] as ScheduleArrayItem[],
+    ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[]
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -44,23 +38,41 @@ export const ScheduleArraySlice = createSlice({
                 "Slice_Color":action.payload.Slice_Color
             }
             state.ScheduleArrayInitialState.push(ScheduleObject)
-        },
-        replaceScheduleArray: (state, action) => {
-            state.ScheduleArrayInitialState = action.payload
+            state.ScheduleArrayInitialState.sort((a, b) => a.StartAngle - b.StartAngle)
         },
         removeScheduleObject: (state, action) => {
             state.ScheduleArrayInitialState = state.ScheduleArrayInitialState.filter((item) => item.Work !== action.payload)
+            state.ScheduleArrayInitialState.sort((a, b) => a.StartAngle - b.StartAngle)
         }
     }
 })
 
+export const ExistingSubjectsArraySlice = createSlice({
+    name: 'ExistingSubjectsArray',
+    initialState,
+    reducers: {
+        addExistingSubjectsObject: (state, action) => {
+            const ExistingSubjectsObject = {
+                "Work": action.payload.Work,
+                "Slice_Color": action.payload.Slice_Color
+            }
+            state.ExistingSubjectsArrayInitialState.push(ExistingSubjectsObject)
+        },
+        removeExistingSubjectsObject: (state, action) => {
+            state.ExistingSubjectsArrayInitialState = state.ExistingSubjectsArrayInitialState.filter((item) => item.Work !== action.payload)
+        }
+    }
+})    
+
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
-export const { addScheduleObject, replaceScheduleArray, removeScheduleObject } = ScheduleArraySlice.actions
+export const { addScheduleObject, removeScheduleObject } = ScheduleArraySlice.actions
+export const { addExistingSubjectsObject, removeExistingSubjectsObject } = ExistingSubjectsArraySlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 
 const rootReducer = combineReducers({
-    ScheduleArraySliceReducer: ScheduleArraySlice.reducer
+    ScheduleArraySliceReducer: ScheduleArraySlice.reducer,
+    ExistingSubjectsArraySliceReducer: ExistingSubjectsArraySlice.reducer
 })
 
 export { rootReducer };

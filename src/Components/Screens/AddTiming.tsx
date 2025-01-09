@@ -35,7 +35,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import ExistingSubjects from './ExistingSubjects';
 import { useDispatch, useSelector } from 'react-redux' 
-import { addScheduleObject, replaceScheduleArray, removeScheduleObject } from '../../app/Slice';
+import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -150,7 +150,7 @@ const AreaOne = (props: GroupPropsType) => {
             justifyContent: 'center',
             alignItems: 'flex-start',
           }}>
-          <Text style={styles.OptionText}>Color</Text>
+          <Text style={styles.OptionText}>Color Assigned</Text>
         </View>
         <View
           style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>

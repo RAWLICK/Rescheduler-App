@@ -31,6 +31,7 @@ import ScheduleTable from './Components/Screens/ScheduleTable';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Store, persistor } from './app/Store'
+import AppDistributor from './Components/Drawer/AppDistributor';
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -53,6 +54,7 @@ type DrawerParamList = {
   };
   SettingsDrawer: undefined;
   PartneredLibrariesDrawer: undefined;
+  AppDistributor: undefined;
 };
 
 type TabParamList = {
@@ -140,6 +142,7 @@ function App(): React.JSX.Element {
       <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
       <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/>
       <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
+      <Drawer.Screen name="AppDistributor" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
     </Drawer.Navigator>
     )
   }

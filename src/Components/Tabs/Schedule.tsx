@@ -47,6 +47,8 @@ import { combineSlices } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux' 
 import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
+import { data } from '../../Functions/Animated-Bar-Chart/constants';
+type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 const Clock = () => {
   const [hourRotation, setHourRotation] = useState(0);
@@ -91,6 +93,7 @@ type UpperAreaPropsType = {
   Work: string, 
   timeStart: string, 
   timeEnd: string,
+  duration: string,
   TwelveHourFormat: (time: string) => string
 }
 
@@ -108,7 +111,7 @@ type RescheduleButtonAreaPropsType = {
   }, 
   hourRotation: number, 
   checked: boolean, 
-  handleCheckboxChange: (index: number) => void, 
+  handleCheckboxChange: (index: number, checked: boolean) => void,
   RescheduleButtonClick: () => void
 }
 
@@ -116,7 +119,9 @@ type BottomOptionsAreaPropsType = {
   ScheduleTableButton: () => Promise<void>,
   ScheduleTableSheet: RefObject<TrueSheet>,
   CalenderButton: () => Promise<void>,
-  CalenderSheet: RefObject<TrueSheet>
+  CalenderSheet: RefObject<TrueSheet>,
+  selectedDate: string,
+  setSelectedDate: SetState<string>
   navigation: NavigationProp<any, any>
 }
 
@@ -165,7 +170,7 @@ const UpperArea = (props: UpperAreaPropsType) => {
 
       <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5, elevation: 5}}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'grey',  borderBottomWidth: 0.5}}>
-          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{props.Work} (1h 21mins)</Text>
+          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{props.Work} {props.duration}</Text>
         </View>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}}>
           <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{props.timeStart} - {props.timeEnd}</Text>
@@ -210,27 +215,28 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
         </View>
         <View style={{flex: 5, paddingLeft: 20, paddingBottom: 5}}>
           <ScrollView>
-          {props.data['StartAngle'].filter((Start: number) => {
+          {props.data['StartAngle'].filter((StartAngle: number) => {
           if (props.rescheduleStatus == 'PriorStage') {
-            return Start <= props.hourRotation
+            return StartAngle <= props.hourRotation
           }
-          else{
-            return Start > props.hourRotation
+          else if (props.rescheduleStatus == 'FixingStage') {
+            return StartAngle > props.hourRotation
           }}
-          ).map((Start:number, i:number) => {
+          ).map((Start:number) => {
+            const indexValue = props.data['StartAngle'].indexOf(Start);
             return(
-              <View style={{margin: 5}} key={i}>
+              <View style={{margin: 5}} key={indexValue}>
                 <BouncyCheckbox
                   size={25}
-                  isChecked={props.checked}
+                  isChecked={false}
                   fillColor="#2173BD"
                   // unFillColor="#FFFFFF"
-                  text={String(props.data['Work'][i])}
+                  text={String(props.data['Work'][indexValue])}
                   iconStyle={{ borderColor: "red" }}
                   innerIconStyle={{ borderWidth: 2 }}
                   textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff', textDecorationLine: 'none' }}
                   // onPress={(isChecked: boolean) => {console.log(isChecked)}}
-                  onPress={() => props.handleCheckboxChange(i)}
+                  onPress={() => props.handleCheckboxChange(indexValue, props.checked)}
                 />
               </View>
             )})}
@@ -271,7 +277,10 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
         sizes={['auto', 'large']}
         cornerRadius={24}
         >
-          <CalenderView/>
+          <CalenderView
+           selectedDate={props.selectedDate} 
+           setSelectedDate={props.setSelectedDate}
+          />
         </TrueSheet>
 
         <TouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
@@ -296,19 +305,18 @@ const Schedule: React.FC = () => {
     const currentSecTime = currentDate.getSeconds();
     const currentDay = currentDate.getDate();
     const currentMonth = currentDate.getMonth() + 1;
+    const [selectedDate, setSelectedDate] = useState('');
     const [hourRotation, setHourRotation] = useState(0)
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
-    const [infoVisible, setInfoVisible] = useState(false)
     const [timeStart, settimeStart] = useState('')
     const [timeEnd, settimeEnd] = useState('')
-    const [duration, setduration] = useState<number>()
+    const [duration, setduration] = useState('')
     const [Work, setWork] = useState('')
     const [angleColor, setangleColor] = useState('')
     const [tintstatus, setTintStatus] = useState(false)
     const [strokeStatus, setStrokeStatus] = useState(false)
     const [rescheduleStatus, setRescheduleStatus] = useState('off')
-    // const rescheduleStatus = useRef('off')
     const [DialogTitle, setDialogTitle] = useState('')
     const [checked, setChecked] = useState(false);
     // const width = Dimensions.get('window').width;  // For Carousel
@@ -317,7 +325,7 @@ const Schedule: React.FC = () => {
     const CalenderSheet = useRef<TrueSheet>(null);
     const dispatch = useDispatch();
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
-
+    
     const data = {
       "StartTime": ScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
       "EndTime": ScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
@@ -372,7 +380,7 @@ const Schedule: React.FC = () => {
         const hRotation = 30 * hTime + 0.5 * mTime;
   
         setHourRotation(hRotation);
-      }, 3600000);
+      }, 1000);
   
       // Clean up the interval on unmount
       return () => clearInterval(intervalId);
@@ -474,6 +482,40 @@ const Schedule: React.FC = () => {
         return `${time} AM`
       }
     }
+
+    function angleToTime(angle: number) {
+      // Each hour represents 30 degrees (360 degrees / 12 hours)
+      const hours = Math.floor(angle / 30);
+      
+      // Each degree represents 2 minutes (360 degrees / 12 hours / 60 minutes)
+      const minutes = Math.floor((angle % 30) * 2);
+
+      if (minutes == 0 && hours == 1) {
+        return `${hours} hour`;
+      }
+      else if (hours == 0 && minutes == 1) {
+        return `${minutes} minute`;
+      }
+      else if (hours == 0 && minutes > 1) {
+        return `${minutes} minutes`;
+      }
+      else if (minutes == 0 && hours > 1) {
+        return `${hours} hours`;
+      }
+      else if (hours == 1 && minutes == 1) {
+        return `${hours} hour and ${minutes} minute`;
+      }
+      else if (hours == 1 && minutes > 1) {
+        return `${hours} hour and ${minutes} minutes`;
+      }
+      else if (hours > 1 && minutes == 1 ) {
+        return `${hours}hours ${minutes} minute`;
+      }
+      else {
+        return `${hours} hours and ${minutes} minutes`;
+      }
+  }
+
     
     const SingleAngle = useCallback(() => {
       const hardRadius = 150;
@@ -513,33 +555,43 @@ const Schedule: React.FC = () => {
               <Stop offset="50%" stopColor="red" stopOpacity="0" />
             </LinearGradient>
           </Defs> */}
-          {data['StartAngle'].map((startAngle:number, i:number) => {
-            const endAngle = data['EndAngle'][i];
-            const sectorColor = data['Slice_Color'][i];
-            const startTime = data['StartTime'][i]
-            const endTime = data['EndTime'][i]
-            // const angleDuration = data['Duration'][i]
-            const angleWork = data['Work'][i]
-  
+          {data['TaskDate'].filter(
+            (TaskDate: string) => TaskDate === selectedDate
+          ).map((TaskDate:string, i:number) => {
+            const indexNumber = data['TaskDate'].indexOf(TaskDate);
+            const startAngle = data['StartAngle'][indexNumber];
+            const endAngle = data['EndAngle'][indexNumber];
+            const sectorColor = data['Slice_Color'][indexNumber];
+            const startTime = data['StartTime'][indexNumber]
+            const endTime = data['EndTime'][indexNumber]
+            const angleDuration = angleToTime(endAngle - startAngle)
+            const angleWork = data['Work'][indexNumber]
+            useEffect(() => {
+              if (hourRotation >= startAngle && hourRotation <= endAngle) {
+                setWork(angleWork);
+                setduration(`(${angleDuration})`);
+                settimeStart(TwelveHourFormat(startTime));
+                settimeEnd(TwelveHourFormat(endTime));
+              }
+            }, [ScheduleArray])
+            
             const angleOnPress = () => {
               console.log('Pressed onOP');
-              console.log(startAngle);
-              console.log(endAngle);
-              setInfoVisible(true);
               settimeStart(TwelveHourFormat(startTime));
               settimeEnd(TwelveHourFormat(endTime));
               setWork(angleWork);
-              // setduration(angleDuration);
+              setduration(`(${angleDuration})`);
               setangleColor(sectorColor);
               setStrokeStatus(true);
-              console.log("Work: ", Work);
-              console.log("timeStart: ", timeStart);
-              console.log("timeEnd: ", timeEnd);
               // console.log(angleColor);
             };
   
             const anglePressOut = () => {
-              setInfoVisible(false)
+              console.log('OnOP Released');
+              setWork('Free Time');
+              setduration("");
+              settimeStart("");
+              settimeEnd("");
             }
             return(
               <Path
@@ -564,7 +616,7 @@ const Schedule: React.FC = () => {
           )}
         </Svg>
       );
-    }, [ScheduleArray]);
+    }, [ScheduleArray, selectedDate]);
   
     const AngleInfo = () => {
       return(
@@ -635,25 +687,47 @@ const Schedule: React.FC = () => {
       rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('off'))
     }
 
-    const handleCheckboxChange = (index: number) => {
+    const handleCheckboxChange = async (index: number, checked: boolean) => {
+      setChecked(!checked)
       if (rescheduleStatus == 'PriorStage') {
-        setPriorSelections((prevSelections) => {
-          const newSelections = [...prevSelections, index]
-          return newSelections;
+        console.log("Checked: ", checked)
+        await setPriorSelections((prevSelections) => {
+          if (checked) {
+            const newSelections = [...prevSelections, index]
+            return newSelections;
+          } 
+          else {
+            const newSelections = prevSelections.filter((item) => item !== index);
+            return newSelections;
+          }
         })
         console.log("PriorSelectionList: ", PriorSelections)
       }
       else if (rescheduleStatus == 'FixingStage') {
-        setFixedSelections((prevSelections) => {
-          const newSelections = [...prevSelections, index]
-          return newSelections;
+        console.log("Checked: ", checked)
+        await setFixedSelections((prevSelections) => {
+          if (checked) {
+            const newSelections = [...prevSelections, index]
+            return newSelections;
+          } 
+          else {
+            const newSelections = prevSelections.filter((item) => item !== index);
+            return newSelections;
+          }
         })
         console.log("FixedSelectionList: ", FixedSelections)
       }
       else if (rescheduleStatus == 'RemovingStage') {
-        setRemovingSelections((prevSelections) => {
-          const newSelections = [...prevSelections, index]
-          return newSelections;
+        console.log("Checked: ", checked)
+        await setRemovingSelections((prevSelections) => {
+          if (checked) {
+            const newSelections = [...prevSelections, index]
+            return newSelections;
+          } 
+          else {
+            const newSelections = prevSelections.filter((item) => item !== index);
+            return newSelections;
+          }
         })
         console.log("RemovingSelectionList: ", RemovingSelections)
       }
@@ -666,54 +740,12 @@ const Schedule: React.FC = () => {
     async function CalenderButton () {
       await CalenderSheet.current?.present();
     }
-
-    // Nested Components (Composition)
-  
-
-    // const BottomOptionsArea = () => {
-    //   return (
-    //     <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',marginRight: 60, marginLeft: 60}}>
-    //       <View style={{backgroundColor: '#BFB8E9', flexDirection: 'row', paddingTop: 8, paddingBottom: 8, borderRadius: 10, elevation: 5}}>
-    //         <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={ScheduleTableButton}>
-    //           <Image source={ScheduleTableIcon} style={{width: 35, height: 35}}/>
-    //         </TouchableOpacity>
-    //         <TrueSheet
-    //           ref={ScheduleTableSheet}
-    //           // sizes={['auto', 'large']}
-    //           sizes={['auto', 'large']}
-    //           cornerRadius={24}
-    //         >
-    //           <ScheduleTable/>
-    //         </TrueSheet>
-
-    //         <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={CalenderButton}>
-    //           <Image source={CalenderIcon} style={{width: 29, height: 29}}/>
-    //         </TouchableOpacity>
-    //         <TrueSheet
-    //         ref={CalenderSheet}
-    //         sizes={['auto', 'large']}
-    //         cornerRadius={24}
-    //         >
-    //           <CalenderView/>
-    //         </TrueSheet>
-
-    //         <TouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
-    //         onPress={()=> navigation.navigate('StackScreens', {screen: 'AddTimingStack'})}>
-    //           <View style={{}}>
-    //             <Image style={styles.AddIcon} source={AddIcon}/>
-    //           </View>
-    //         </TouchableOpacity>
-    //       </View>
-    //       <TaskCompletionBoard/>
-    //     </View>
-    //   )
-    // };
-
+    
     useEffect(() => {
       // console.log('ScheduleArray (Schedule.tsx): ', JSON.stringify(ScheduleArray));
-    }, [ScheduleArray]);
+      console.log("Date selected in Schedule.tsx: ", selectedDate)
+    }, [selectedDate]);
     
-
     return (
       <SafeAreaView style={styles.safeView}>
       {/* <GestureHandlerRootView>
@@ -744,7 +776,7 @@ const Schedule: React.FC = () => {
               Work={Work}
               timeStart={timeStart}
               timeEnd={timeEnd}
-
+              duration={duration}
             />
   
             <View style={styles.ClockArea}>
@@ -773,6 +805,8 @@ const Schedule: React.FC = () => {
               CalenderButton={CalenderButton}
               CalenderSheet={CalenderSheet}
               navigation={navigation}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
             />
             {/* <Taskbar activeState='Schedule'/> */}
           </View>

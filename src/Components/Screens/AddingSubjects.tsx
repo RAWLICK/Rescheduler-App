@@ -10,11 +10,23 @@ import {
 import React from 'react';
 import { useState } from 'react';
 import ChevronLeft from '../Images/ChevronLeft.png';
+import { useDispatch, useSelector } from 'react-redux' 
+import { addExistingSubjectsObject, removeExistingSubjectsObject } from '../../app/Slice';
+import { RootState } from '../../app/Store';
 
 const AddingSubjects = () => {
+  const dispatch = useDispatch();
   const [SubjectName, setSubjectName] = useState('');
-  const [SmallNote, setSmallNote] = useState('')
+  // const [SmallNote, setSmallNote] = useState('')
   const color = 'blue';
+
+  const ExistingSubjectSaveButton = () => {
+    const newExistingSubject = {
+      "Work": SubjectName,
+      "Slice_Color": color
+    }
+    dispatch(addExistingSubjectsObject(newExistingSubject));
+  }   
   return (
     <View
       style={{
@@ -36,7 +48,7 @@ const AddingSubjects = () => {
           Adding Subject
         </Text>
       </View>
-      <View style={{ height: 200, rowGap: 1 }}>
+      <View style={{ height: 130, rowGap: 1 }}>
         <View style={[styles.UpperOption, { flex: 2 }]}>
           <View
             style={{
@@ -54,14 +66,14 @@ const AddingSubjects = () => {
         </View>
 
 
-        <TouchableOpacity style={[styles.MiddleOption, { flex: 2 }]}>
+        <TouchableOpacity style={[styles.BottomOption, { flex: 2 }]}>
           <View
             style={{
               flex: 1,
               justifyContent: 'center',
               alignItems: 'flex-start',
             }}>
-            <Text style={styles.OptionText}>Color</Text>
+            <Text style={styles.OptionText}>Color Assigned</Text>
           </View>
           <View
             style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end' }}>
@@ -74,7 +86,7 @@ const AddingSubjects = () => {
         </TouchableOpacity>
 
 
-        <View style={[styles.BottomOption, { flex: 3 }]}>
+        {/* <View style={[styles.BottomOption, { flex: 3 }]}>
           <TextInput
             multiline
             numberOfLines={2}
@@ -86,10 +98,10 @@ const AddingSubjects = () => {
             onChangeText={setSmallNote}
             placeholder="Add a Note"
             placeholderTextColor="#9D9EA0"></TextInput>
-        </View>
+        </View> */}
       </View>
       <View style={{ height: 50, padding: 5 }}>
-        <View style={styles.SaveButtonBox}>
+        <TouchableOpacity style={styles.SaveButtonBox} onPress={ExistingSubjectSaveButton}>
           <Text
             style={{
               fontFamily: 'futura-no-2-medium-dee',
@@ -98,7 +110,7 @@ const AddingSubjects = () => {
             }}>
             Save
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

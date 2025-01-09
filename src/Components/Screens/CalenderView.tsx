@@ -3,9 +3,20 @@ import React from 'react'
 import { useState } from 'react';
 // import Navbar from './Navbar'
 import {Calendar, CalendarList, Agenda, DateData} from 'react-native-calendars';
+type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-const Calender = () => {
+type CalenderViewProps = {
+  selectedDate: string
+  setSelectedDate: SetState<string>
+}
+const CalenderView = (props: CalenderViewProps) => {
   const [selected, setSelected] = useState('');
+  const dmyFormatConverter = (date: string) => {
+    const [year, month, day] = date.split('-');
+    return `${day}/${month}/${year}`;
+  }
+  props.setSelectedDate(dmyFormatConverter(selected));
+  console.log("Selected Date: ", props.selectedDate);
   return (
     <View>
       <Calendar
@@ -43,4 +54,4 @@ const Calender = () => {
   )
 }
 
-export default Calender
+export default CalenderView
