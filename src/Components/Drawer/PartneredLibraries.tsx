@@ -44,5 +44,5 @@ const styles = StyleSheet.create({
         fontFamily: 'sf-pro-display-bold',
         fontSize: 18,
         paddingLeft: width * 0.12
-    },
+    }
 })

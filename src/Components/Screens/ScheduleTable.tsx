@@ -11,16 +11,13 @@ import { RootState } from '../../app/Store';
 
 const TopTab = createMaterialTopTabNavigator();
 
-export const ManualScheduleTable = () => {
+type ManualScheduleTablePropsType = {
+  selectedDate: string
+}
+
+export const ManualScheduleTable = (props: ManualScheduleTablePropsType) => {
   const dispatch = useDispatch();
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
-  // const {ScheduleArray} = require('./AddTiming')
-  // const safeScheduleArray : [] = ScheduleArray ?? []
-  // const [safeScheduleArray, setSafeScheduleArray] = useState<ScheduleArrayItem[]>(ScheduleArray ?? [])
-
-  // function setScheduleArrayFunction() {
-  //   return safeScheduleArray
-  // }
 
   const data = {
     "StartTime": ScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
@@ -71,9 +68,6 @@ export const ManualScheduleTable = () => {
   }
 
   function DeleteTask(name: string) {
-    // let EditedArray = safeScheduleArray.filter((obj: ScheduleArrayItem) => obj.Work !== name)
-    // setSafeScheduleArray(EditedArray)
-    // console.log("Edited Array: ", EditedArray)
     dispatch(removeScheduleObject(name));
   }
   return (
@@ -83,12 +77,15 @@ export const ManualScheduleTable = () => {
       </View>
       <View style={styles.ScheduleArea}>
         <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>
-        {data['StartAngle'].map((startAngle, index) => { 
-          const startTime = data['StartTime'][index]
-          const endTime = data['EndTime'][index]
-          const angleWork = data['Work'][index]
+        {data['TaskDate'].filter(
+            (TaskDate: string) => TaskDate === props.selectedDate
+          ).map((TaskDate:string, i:number) => {
+          const indexNumber = data['TaskDate'].indexOf(TaskDate); 
+          const startTime = data['StartTime'][indexNumber]
+          const endTime = data['EndTime'][indexNumber]
+          const angleWork = data['Work'][indexNumber]
           return (
-          <View style={styles.Schedules} key={index}>
+          <View style={styles.Schedules} key={indexNumber}>
             <View style={{flex: 0.8, padding: 10, paddingLeft: 30}}>
               <View style={{flex: 0.6, justifyContent: 'center'}}>
                 <Text style={{color: 'black', fontFamily: 'sf-pro-display-medium', fontSize: 18}}>{angleWork}</Text>
@@ -118,8 +115,11 @@ export const CompressedScheduleTable = () => {
     </View>
   )
 }
+type ScheduleTablePropsType = {
+  selectedDate: string
+}
 
-const ScheduleTable = () => {
+const ScheduleTable = (props: ScheduleTablePropsType) => {
   return (
       // <TopTab.Navigator initialRouteName="Manual Table"
       // screenOptions={({ route }) => ({
@@ -134,7 +134,7 @@ const ScheduleTable = () => {
       //   <TopTab.Screen name="Manual Table" component={ManualScheduleTable}/>
       //   <TopTab.Screen name="Rescheduled Table" component={CompressedScheduleTable}/>
       // </TopTab.Navigator>
-    <ManualScheduleTable/>
+    <ManualScheduleTable selectedDate={props.selectedDate}/>
   )
 }
 

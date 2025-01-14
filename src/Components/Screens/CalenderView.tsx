@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // import Navbar from './Navbar'
 import {Calendar, CalendarList, Agenda, DateData} from 'react-native-calendars';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -15,8 +15,14 @@ const CalenderView = (props: CalenderViewProps) => {
     const [year, month, day] = date.split('-');
     return `${day}/${month}/${year}`;
   }
-  props.setSelectedDate(dmyFormatConverter(selected));
-  console.log("Selected Date: ", props.selectedDate);
+
+  // Putted it in useEffect to avoid infinite loop or "Unable to update a component while rendering a different component" error
+  useEffect(() => {
+    if (selected != '') {
+      props.setSelectedDate(dmyFormatConverter(selected));
+    }
+  }, [selected])
+  
   return (
     <View>
       <Calendar

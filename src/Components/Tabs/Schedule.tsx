@@ -42,6 +42,7 @@ import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
 import CalenderView from '../Screens/CalenderView'
 import TaskCompletionBoard from '../Screens/TaskCompletionBoard';
+import { TaskCompletionPopUp } from '../Screens/TaskCompletionBoard';
 import { ScheduleArrayItem } from '../Screens/AddTiming';
 import { combineSlices } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux' 
@@ -112,7 +113,8 @@ type RescheduleButtonAreaPropsType = {
   hourRotation: number, 
   checked: boolean, 
   handleCheckboxChange: (index: number, checked: boolean) => void,
-  RescheduleButtonClick: () => void
+  RescheduleButtonClick: () => void,
+  selectedDate: string
 }
 
 type BottomOptionsAreaPropsType = {
@@ -216,6 +218,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
         <View style={{flex: 5, paddingLeft: 20, paddingBottom: 5}}>
           <ScrollView>
           {props.data['StartAngle'].filter((StartAngle: number) => {
+          const indexNumber = props.data['StartAngle'].indexOf(StartAngle);
           if (props.rescheduleStatus == 'PriorStage') {
             return StartAngle <= props.hourRotation
           }
@@ -266,7 +269,9 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
           sizes={['auto', 'large']}
           cornerRadius={24}
         >
-          <ScheduleTable/>
+          <ScheduleTable
+          selectedDate={props.selectedDate}
+          />
         </TrueSheet>
 
         <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={props.CalenderButton}>
@@ -305,14 +310,15 @@ const Schedule: React.FC = () => {
     const currentSecTime = currentDate.getSeconds();
     const currentDay = currentDate.getDate();
     const currentMonth = currentDate.getMonth() + 1;
-    const [selectedDate, setSelectedDate] = useState('');
+    const currentYear = currentDate.getFullYear();
+    const [selectedDate, setSelectedDate] = useState(`${currentDay.toString().padStart(2, '0')}/${currentMonth.toString().padStart(2, '0')}/${currentYear}`);
     const [hourRotation, setHourRotation] = useState(0)
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
     const [timeStart, settimeStart] = useState('')
     const [timeEnd, settimeEnd] = useState('')
     const [duration, setduration] = useState('')
-    const [Work, setWork] = useState('')
+    const [Work, setWork] = useState('Free Time')
     const [angleColor, setangleColor] = useState('')
     const [tintstatus, setTintStatus] = useState(false)
     const [strokeStatus, setStrokeStatus] = useState(false)
@@ -516,7 +522,6 @@ const Schedule: React.FC = () => {
       }
   }
 
-    
     const SingleAngle = useCallback(() => {
       const hardRadius = 150;
       const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
@@ -572,6 +577,12 @@ const Schedule: React.FC = () => {
                 setduration(`(${angleDuration})`);
                 settimeStart(TwelveHourFormat(startTime));
                 settimeEnd(TwelveHourFormat(endTime));
+              }
+              else if (hourRotation < startAngle || hourRotation > endAngle) {
+                setWork('Free Time');
+                setduration("");
+                settimeStart("");
+                settimeEnd("");
               }
             }, [ScheduleArray])
             
@@ -743,8 +754,7 @@ const Schedule: React.FC = () => {
     
     useEffect(() => {
       // console.log('ScheduleArray (Schedule.tsx): ', JSON.stringify(ScheduleArray));
-      console.log("Date selected in Schedule.tsx: ", selectedDate)
-    }, [selectedDate]);
+    }, []);
     
     return (
       <SafeAreaView style={styles.safeView}>
@@ -797,6 +807,7 @@ const Schedule: React.FC = () => {
              checked={checked} 
              handleCheckboxChange={handleCheckboxChange} 
              RescheduleButtonClick={RescheduleButtonClick}
+             selectedDate={selectedDate}
             />
 
             <BottomOptionsArea
