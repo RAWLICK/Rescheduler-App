@@ -35,6 +35,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   Modal,
+  Platform,
   Button,
   Dimensions
 } from 'react-native';
@@ -163,19 +164,19 @@ const UpperArea = (props: UpperAreaPropsType) => {
     <View style={styles.UpperArea}>
       <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 0.5}}>
-          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{props.TwelveHourFormat(currentHourMinTime)}</Text>
+          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.TwelveHourFormat(currentHourMinTime)}</Text>
         </View>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{stringToMonthConverter(props.currentMonth)} {props.currentDay.toString().padStart(2, '0')}</Text>
+          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{stringToMonthConverter(props.currentMonth)} {props.currentDay.toString().padStart(2, '0')}</Text>
         </View>
       </View>
 
       <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5, elevation: 5}}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'grey',  borderBottomWidth: 0.5}}>
-          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{props.Work} {props.duration}</Text>
+          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.Work} {props.duration}</Text>
         </View>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}}>
-          <Text style={{color: 'black', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>{props.timeStart} - {props.timeEnd}</Text>
+          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.timeStart} - {props.timeEnd}</Text>
         </View>
       </View>
       {/* {infoVisible && (
@@ -191,27 +192,27 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
       <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
         <Text style={[{fontFamily: 'Geizer', fontSize: 30, color: 'white'}]}>Reschedule</Text>
       </TouchableOpacity>
-      <Modal visible={props.rescheduleStatus !== 'off'}>
+      <Modal transparent= {true} visible={props.rescheduleStatus !== 'off'} animationType='fade'>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <BlurView
           style={styles.blurStyle}
           blurType="light"
           blurAmount={10}
-          reducedTransparencyFallbackColor="light"
+          // reducedTransparencyFallbackColor="light"
         />
-        <Animated.View style={[styles.selectionDialogBox]}>
+        <View style={[styles.selectionDialogBox]}>
         <BlurView
           style={styles.blurStyle}
           blurType="dark"
           blurAmount={50}
-          reducedTransparencyFallbackColor="black"
+          // reducedTransparencyFallbackColor="black"
           />
         <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
           <TouchableOpacity onPress={props.DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Image source={LeftArrow} style={{height: 17, width: 17}}/>
           </TouchableOpacity>
           <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{props.DialogTitle}</Text>
+            <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>{props.DialogTitle}</Text>
           </View>
           <View style={{flex: 1}}></View>
         </View>
@@ -247,10 +248,10 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           </View>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
             <TouchableOpacity onPress={() => props.RescheduleButtonClick()}>
-              <Text style={{color: '#457fdf', fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
+              <Text style={{color: '#457fdf', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
             </TouchableOpacity>
           </View>
-        </Animated.View>
+        </View>
       </View>
     </Modal>
     </View>
@@ -831,7 +832,7 @@ const Schedule: React.FC = () => {
   const styles = StyleSheet.create({
     safeView: {
       flex: 1,
-      backgroundColor: 'white'
+      backgroundColor: 'green'
     },
   
     mainStyle: {
@@ -1002,12 +1003,12 @@ const Schedule: React.FC = () => {
 
     selectionDialogBox: {
       flexDirection: 'column',
-      backgroundColor: 'black',
       height: 320,
       width: 320,
       borderRadius: 20,
-      opacity: 0.85,
       overflow: 'hidden'
+      // backgroundColor: 'black',       // Disabled because of iOS
+      // opacity: 0.85,                  // Disabled because of iOS
     },
 
     blurStyle: {

@@ -107,6 +107,7 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation project(':notifee_react-native')
 
     // Disable Flipper in debug builds
     debugImplementation("com.facebook.flipper:flipper-noop:0.125.0")

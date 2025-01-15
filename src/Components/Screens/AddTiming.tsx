@@ -9,6 +9,7 @@ import {
   TextInput,
   Switch,
   StatusBar,
+  Platform,
   Button,
 } from 'react-native';
 import React from 'react';
@@ -274,7 +275,7 @@ const AreaTwo = (props: GroupPropsType) => {
           <Text
             style={[
               styles.OptionText,
-              {fontFamily: 'futura-no2-d-demibold', color: '#000000'},
+              {fontFamily: Platform.OS === 'ios' ? 'FuturaNo2D-DemiBold' : 'futura-no2-d-demibold', color: '#000000'},
             ]}>
             Duration ({props.Duration})
           </Text>
@@ -783,7 +784,7 @@ const styles = StyleSheet.create({
   },
   DurationLabels: {
     marginRight: 44,
-    fontFamily: 'futura-no-2-medium-dee',
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
     color: '#9D9EA0',
   },
   DurationLabelBox: {flexDirection: 'row', marginTop: 7},
@@ -813,7 +814,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   TimingEndText: {
-    fontFamily: 'futura-no2-d-demibold',
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2D-DemiBold' : 'futura-no2-d-demibold',
     fontSize: 16,
     color: '#9D9EA0',
   },
@@ -828,7 +829,7 @@ const styles = StyleSheet.create({
   },
   ArrowImage: {height: 17, width: 17},
   TimingStartText: {
-    fontFamily: 'futura-no2-d-demibold',
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2D-DemiBold' : 'futura-no2-d-demibold',
     fontSize: 16,
     color: '#9D9EA0',
   },
@@ -853,7 +854,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   MonthText: {
-    fontFamily: 'futura-no-2-medium-dee',
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
     fontSize: 17,
     color: '#9D9EA0',
   },
@@ -867,7 +868,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   DateText: {
-    fontFamily: 'futura-no-2-medium-dee',
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
     fontSize: 17,
     color: '#9D9EA0',
   },
@@ -899,7 +900,7 @@ const styles = StyleSheet.create({
   BackButtonBox: {flex: 1, justifyContent: 'center', alignItems: 'flex-start'},
   safeView: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#1B1B1D',
   },
 
   mainStyle: {
@@ -968,7 +969,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 15,
     paddingLeft: 20,
     paddingRight: 20,
-    fontFamily: 'futura-no-2-medium-dee',
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
     fontSize: 16,
   },
 
@@ -1006,7 +1007,7 @@ const styles = StyleSheet.create({
     // fontWeight: 'bold',
     // fontWeight: '',
     color: '#9D9EA0',
-    fontFamily: 'futura-no-2-medium-dee',
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
     // fontFamily: 'sf-pro-display-medium'
   },
 });

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Platform } from 'react-native'
 import React from 'react'
 import { useEffect, useState } from 'react'
 import Remove from '../Images/Remove.png'
@@ -88,10 +88,10 @@ export const ManualScheduleTable = (props: ManualScheduleTablePropsType) => {
           <View style={styles.Schedules} key={indexNumber}>
             <View style={{flex: 0.8, padding: 10, paddingLeft: 30}}>
               <View style={{flex: 0.6, justifyContent: 'center'}}>
-                <Text style={{color: 'black', fontFamily: 'sf-pro-display-medium', fontSize: 18}}>{angleWork}</Text>
+                <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 18}}>{angleWork}</Text>
               </View>
               <View style={{flex: 0.4, justifyContent: 'center'}}>
-                <Text style={{color: 'black', fontFamily: 'sf-pro-display-medium', fontSize: 10}}>{TwelveHourFormat(startTime)} - {TwelveHourFormat(endTime)}</Text>
+                <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 10}}>{TwelveHourFormat(startTime)} - {TwelveHourFormat(endTime)}</Text>
               </View>
             </View>
             <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
 
   Heading: {
     color: 'black',
-    fontFamily: 'sf-pro-display-bold',
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
     fontSize: 20
   },
 

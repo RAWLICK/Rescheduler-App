@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native'
 import React from 'react'
 import { useState } from 'react'
 import DrawerImage from '../Images/Drawer.png'
@@ -24,12 +24,12 @@ const Navbar = () => {
         <Image source={DrawerImage} style={styles.DrawerImage}/>
       </TouchableOpacity>
       <View style={{flex: 4, flexDirection: 'row', alignItems: 'center'}}>
-        <Text style={{color: '#6A1293', fontFamily: 'sf-pro-display-heavy', fontSize: 20}}>Re</Text>
-        <Text style={{fontFamily: 'sf-pro-display-heavy', fontSize: 20, color: '#FFFFFF'}}>scheduler</Text>
+        <Text style={{color: '#6A1293', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20}}>Re</Text>
+        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20, color: '#FFFFFF'}}>scheduler</Text>
       </View>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginRight: 10}}>
         <Image source={StreakFire} style={styles.ThreeDotsImage}/>
-        <Text style={{fontFamily: 'sf-pro-display-heavy', fontSize: 20, color: '#6A1293'}}>1</Text>
+        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20, color: '#6A1293'}}>1</Text>
       </View>
     </View>
   )

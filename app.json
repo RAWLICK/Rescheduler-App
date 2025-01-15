@@ -1,4 +1,7 @@
 {
   "name": "Rescheduler",
-  "displayName": "Rescheduler"
+  "displayName": "Rescheduler",
+  "plugins": [
+    "@notifee/react-native"
+  ]
 }

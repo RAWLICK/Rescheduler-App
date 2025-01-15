@@ -25,6 +25,9 @@ import AnimatedFire from '../Images/AnimatedFire.json';
 import TickAnimation from '../Images/TickAnimation.json';
 import ConfettiAnimation from '../Images/ConfettiAnimation.json';
 import LinearGradient from 'react-native-linear-gradient';
+import notifee from '@notifee/react-native';
+import { AndroidColor } from '@notifee/react-native';
+// import AppIcon from '../Images/AppIcon.png'
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 type TaskCompletionPopUpPropsType = {
@@ -175,7 +178,33 @@ const TaskCompletionBoard = () => {
     return boardIsVisible;
   }
 
+  async function onDisplayNotification() {
+    // Request permissions (required for iOS)
+    await notifee.requestPermission()
+
+    // Create a channel (required for Android)
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: 'Schedule got Messed Up?',
+      body: 'Easily reschedule your messed up routine using Rescheduler ',
+      android: {
+        channelId,
+        // smallIcon: 'appicon', // optional, defaults to 'ic_launcher'.
+        // pressAction is needed if you want the notification to open the app when pressed
+        pressAction: {
+          id: 'default',
+        },
+      },
+    });
+  }
+
   const OkBoardClick = () => {
+    onDisplayNotification();
     setBoardIsVisible(false);
     setPopUpIsVisible(true);
   }
@@ -185,20 +214,20 @@ const TaskCompletionBoard = () => {
   }
   return (
     <GestureHandlerRootView>
-    <Modal visible={true} animationType='fade'>
+    <Modal visible={false} animationType='fade' transparent={true}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <BlurView
           style={styles.blurStyle}
           blurType="light"
           blurAmount={10}
-          reducedTransparencyFallbackColor="light"
+          // reducedTransparencyFallbackColor="light"
         />
             <View style={{height: height * 0.5, width: width * 0.8, borderRadius: 15, overflow: 'hidden', borderWidth: 1, borderColor: 'grey'}}>
             <BlurView
               style={styles.blurStyle}
               blurType="dark"
               blurAmount={50}
-              reducedTransparencyFallbackColor="black"
+              // reducedTransparencyFallbackColor="black"
             />
                 <View style={{flex: 1, borderBottomWidth: 1, borderColor: 'grey', flexDirection: 'row'}}>
                     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
