@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, Keyboard, Platform } from 'react-native'
 import React from 'react'
 import { useRef } from 'react'
 import { useState } from 'react'
@@ -69,9 +69,10 @@ const ExistingSubjects = () => {
     "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Work),
     "Slice_Color": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Slice_Color)
   }
-  const subjects = ['Physics', 'Chemistry', 'Maths']
   const AddingSubjectsSheet = useRef<TrueSheet>(null);
   const [EditDialogBoxStatus, setEditDialogBoxStatus] = useState(false)
+
+  const WorkLength = data["Work"].length
   
   async function AddingSubjectsButton () {
     setEditDialogBoxStatus(false);
@@ -89,10 +90,13 @@ const ExistingSubjects = () => {
   return (
     <View style={{ backgroundColor: '#1b1b1d', padding: 30, paddingTop: 40}}>
       <View style={{ height: 50 }}>
-        <Text style={{ fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 20 }}>Existing Subjects</Text>
+        <Text style={{ fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 20 }}>Subjects in Stats</Text>
       </View>
       <View style={{ rowGap: 1 }}>
-        <TouchableOpacity style={[styles.UpperOption, { backgroundColor: '#c454fc', height: height * 0.06, alignItems: 'center', columnGap: 5 }]} onPress={AddingSubjectsButton}>
+        <TouchableOpacity style={[
+          WorkLength != 0 && styles.UpperOption,
+          WorkLength == 0 && styles.OnlyOption,
+          { backgroundColor: '#c454fc', height: height * 0.06, alignItems: 'center', columnGap: 5 }]} onPress={AddingSubjectsButton}>
           <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
             <Image source={AddTwo} style={{ height: 25, width: 25}} />
           </View>
@@ -102,8 +106,8 @@ const ExistingSubjects = () => {
         </TouchableOpacity>
         {data["Work"].map((work, index) => (
           <View key={index} style={[
-            index == 2 && styles.BottomOption,
-            index >= 0 && index < 2 && styles.MiddleOption,
+            index == (WorkLength-1) && styles.BottomOption,
+            index >= 0 && index < (WorkLength-1) && styles.MiddleOption,
             // styles.UpperOption, 
             { backgroundColor: '#222328', height: height * 0.06, alignItems: 'center', columnGap: 5 }
           ]}>
@@ -213,4 +217,17 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
   },
+  OnlyOption: {
+    // flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#222328',
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    paddingLeft: 20,
+    paddingRight: 20,
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
+    fontSize: 16,
+  }
 })

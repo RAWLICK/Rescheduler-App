@@ -11,9 +11,9 @@ app = Flask(__name__)
 CORS(app)
 
 # MongoDB configuration
-client = MongoClient("mongodb://localhost:27017/")
-db = client['JDA-Library']  # Database name
-collection = db['Archit Gupta']  # Collection name
+client = MongoClient("mongodb+srv://archit_gupta_0019:My_Lord%3B7@rescheduler.kmyql.mongodb.net/")
+db = client['Users-Information']  # Database name
+collection = db['Librarians Info']  # Collection name
 
 # In the backend API case, ensure to have a 3rd device to share the same network in both PC and real device emulator and also ensure that Windows Firewall is closed.
 

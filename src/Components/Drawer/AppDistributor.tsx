@@ -8,6 +8,8 @@ import { Table, Row, Rows, TableWrapper, Cell } from 'react-native-table-compone
 import RemoveIcon from '../Images/Remove.png'
 import { set } from 'date-fns';
 import { Filter } from 'react-native-svg';
+import LinearGradient from 'react-native-linear-gradient';
+import AddIcon from '../Images/Add.png'
 const { width, height } = Dimensions.get('window');
 interface Item {
     id: number;
@@ -40,30 +42,30 @@ const AppDistributor = () => {
     const studentData = [
       ['Chomu', '1234567890', '5',],
       ['Archit', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3',],
-      ['Rahul Gupta', '9123456789', '3',]
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Sachin Tendulkar', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3'],
+      ['Kartavya Chauhan', '9876543210', '3'],
+      ['Rahul Gupta', '9123456789', '3']
     ]
     // Filter logic
     
@@ -72,7 +74,7 @@ const AppDistributor = () => {
       tableData: studentData
     })
 
-    const filteredData = studentData.length > prevCount.current.length
+    const filteredData = studentSearch.length > prevCount.current.length
     ? dataThree.tableData.filter((item) => 
       item[0].toLowerCase().includes(studentSearch.toLowerCase())
     )
@@ -88,15 +90,14 @@ const AppDistributor = () => {
       })
     }, [studentSearch])
 
-    const element = (data, index) => (
-      <TouchableOpacity>
+    const DeleteFunction = (data, index) => (
+      <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center'}}>
         <View style={styles.btn}>
           <Image source={RemoveIcon} style={{height: 20, width: 20}} />
         </View>
       </TouchableOpacity>
     );
 
-    
   return (
     <SafeAreaView style={styles.safeView}>
       <StatusBar
@@ -107,46 +108,44 @@ const AppDistributor = () => {
           <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center'}}>
               <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 17}}>App Distributor</Text>
           </View>
-          <View style={{flex: 1, padding: 10, paddingRight: width * 0.04, paddingLeft: width * 0.04, rowGap: 15}}>
-              <View style={{}}>
+          <View style={{flex: 1, padding: 10, paddingRight: width * 0.04, paddingLeft: width * 0.04}}>
+              <View style={{marginBottom: 15}}>
                   <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 30, color: 'black'}}>Students Enrolled</Text>
               </View>
-              <View>
-                  <View style={styles.container}>
-                      {renderLabel()}
-                      <Dropdown
-                      style={[styles.dropdown, isFocus && { borderColor: '#C88CE1', borderWidth: 2 }]}
-                      placeholderStyle={styles.placeholderStyle}
-                      selectedTextStyle={styles.selectedTextStyle}
-                      inputSearchStyle={styles.inputSearchStyle}
-                      iconStyle={styles.iconStyle}
-                      data={data}
-                      itemTextStyle={{fontFamily: 'sf-pro-display-bold', height: 20}}
-                      itemContainerStyle={{borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
-                      containerStyle={{borderRadius: 10}}
-                      // search
-                      maxHeight={300}
-                      labelField="label"
-                      valueField="value"
-                      placeholder={!isFocus ? 'Select item' : '...'}
-                      searchPlaceholder="Search..."
-                      value={value}
-                      onFocus={() => setIsFocus(true)}
-                      onBlur={() => setIsFocus(false)}
-                      onChange={item => {
-                          setValue(item.value);
-                          setIsFocus(false);
-                      }}
-                      renderLeftIcon={() => (
-                          <Image
-                          source={LibraryIcon}
-                          style={styles.icon}
-                          />
-                      )}
+              <View style={styles.container}>
+                  {renderLabel()}
+                  <Dropdown
+                  style={[styles.dropdown, isFocus && { borderColor: '#C88CE1', borderWidth: 2 }]}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={data}
+                  itemTextStyle={{fontFamily: 'sf-pro-display-bold', height: 20}}
+                  itemContainerStyle={{borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
+                  containerStyle={{borderRadius: 10}}
+                  // search
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={!isFocus ? 'Select item' : '...'}
+                  searchPlaceholder="Search..."
+                  value={value}
+                  onFocus={() => setIsFocus(true)}
+                  onBlur={() => setIsFocus(false)}
+                  onChange={item => {
+                      setValue(item.value);
+                      setIsFocus(false);
+                  }}
+                  renderLeftIcon={() => (
+                      <Image
+                      source={LibraryIcon}
+                      style={styles.icon}
                       />
-                  </View>
+                  )}
+                  />
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 15}}>
                   <Image source={SearchIcon} style={{height: 25, width: 25, position: 'absolute', marginLeft: 10}} />
                   <TextInput
                   style={styles.input}
@@ -183,7 +182,7 @@ const AppDistributor = () => {
                     <TableWrapper key={index} style={styles.row}>
                       {
                         rowData.map((cellData, cellIndex) => (
-                          <Cell key={cellIndex} data={cellIndex === 2 ? element(cellData, index) : cellData} textStyle={styles.text}/>
+                          <Cell key={cellIndex} data={cellIndex === 2 ? DeleteFunction(cellData, index) : cellData} textStyle={styles.text}/>
                         ))
                       }
                     </TableWrapper>
@@ -193,10 +192,16 @@ const AppDistributor = () => {
               </ScrollView>
             </View>
 
+            <LinearGradient colors={['#fff1c1', '#fede71']} style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#fede71', marginBottom: 15, height: 40, borderBottomLeftRadius: 10, borderBottomRightRadius: 10}}>
+              <TouchableOpacity>
+                <Image source={AddIcon} style={{height: 20, width: 20}}/>
+              </TouchableOpacity>
+            </LinearGradient>
+
             <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 40, backgroundColor: '#bb43f3', borderRadius: 10, borderRightWidth: 3,
             borderLeftWidth: 3,
             borderBottomWidth: 3,
-            borderColor: '#841AB6'}}>
+            borderColor: '#841AB6', marginBottom: 15}}>
               <Text style={{fontFamily: 'sf-pro-display-bold', color: '#f2f2f3'}}>Subscribe Plan</Text>
             </View>
 
@@ -239,7 +244,8 @@ const styles = StyleSheet.create({
         paddingLeft: width * 0.12
     },
     container: {
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        marginBottom: 15
       },
       dropdown: {
         height: 50,
@@ -313,10 +319,10 @@ const styles = StyleSheet.create({
         color: 'gray',
       },
       
-      containerThree: { flex: 0.8, backgroundColor: '#fff' },
+      containerThree: { height: 400, backgroundColor: '#fff'},
       head: { height: 40, backgroundColor: '#808B97' },
-      text: { margin: 6, fontFamily: 'sf-pro-display-bold' },
+      text: { margin: 8, marginLeft: 30, fontFamily: 'sf-pro-display-bold' },
       row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
-      btn: { width: 58, height: 18, borderRadius: 2, justifyContent: 'center', alignItems: 'center' },
+      btn: { width: 18, height: 18, borderRadius: 2, justifyContent: 'center', alignItems: 'center', },
       btnText: { textAlign: 'center', color: '#fff'}
 })

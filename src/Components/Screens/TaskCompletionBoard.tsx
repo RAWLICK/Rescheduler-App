@@ -18,7 +18,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux' 
 import { addExistingSubjectsObject, removeExistingSubjectsObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
-const { width, height } = Dimensions.get('window');
 import { ExistingSubjectsArrayItem } from '../../app/Slice';
 import LottieView from 'lottie-react-native';
 import AnimatedFire from '../Images/AnimatedFire.json';
@@ -27,7 +26,8 @@ import ConfettiAnimation from '../Images/ConfettiAnimation.json';
 import LinearGradient from 'react-native-linear-gradient';
 import notifee from '@notifee/react-native';
 import { AndroidColor } from '@notifee/react-native';
-// import AppIcon from '../Images/AppIcon.png'
+import { TimerPickerModal } from "react-native-timer-picker";
+const { width, height } = Dimensions.get('window');
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 type TaskCompletionPopUpPropsType = {
@@ -72,6 +72,73 @@ export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
   )
 }
 
+type DurationBoxPropsType = {
+  showPicker: boolean,
+  setShowPicker: SetState<boolean>,
+  alarmString: string | null
+  setAlarmString: SetState<string | null>
+}
+const DurationBox = (props: DurationBoxPropsType) => {
+  const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
+    return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
+  }
+  return (
+    <View style={{backgroundColor: "#514242", alignItems: "center", justifyContent: "center"}}>
+        {/* <Text style={{fontSize: 18, color: "#F1F1F1"}}>
+            {alarmStringExample !== null
+                ? "Alarm set for"
+                : "No alarm set"}
+        </Text>
+        <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => props.setShowPicker(true)}>
+            <View style={{alignItems: "center"}}>
+                {props.alarmString !== null ? (
+                    <Text style={{color: "#F1F1F1", fontSize: 48}}>
+                        {props.alarmString}
+                    </Text>
+                ) : null}
+                <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => props.setShowPicker(true)}>
+                    <View style={{marginTop: 30}}>
+                        <Text
+                            style={{
+                                paddingVertical: 10,
+                                paddingHorizontal: 18,
+                                borderWidth: 1,
+                                borderRadius: 10,
+                                fontSize: 16,
+                                overflow: "hidden",
+                                borderColor: "#C2C2C2",
+                                color: "#C2C2C2"
+                                }}>
+                            Set Alarm 🔔
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+        </TouchableOpacity> */}
+        <TimerPickerModal
+            hideSeconds
+            visible={props.showPicker}
+            setIsVisible={props.setShowPicker}
+            onConfirm={(pickedDuration) => {
+              props.setAlarmString(formatTime(pickedDuration));
+              props.setShowPicker(false);
+            }}
+            modalTitle="Duration"
+            onCancel={() => props.setShowPicker(false)}
+            closeOnOverlayPress
+            LinearGradient={LinearGradient}
+            styles={{ theme: "dark" }}
+            modalProps={{ overlayOpacity: 0.2 }}
+            
+        />
+     </View>
+  )
+}
+
 const TaskCompletionBoard = () => {
   const dispatch = useDispatch();
   const currentDate = new Date();
@@ -85,6 +152,8 @@ const TaskCompletionBoard = () => {
   const StartRadar = useSharedValue<number>(0);
   const MovedRadar = useSharedValue<number>(0);
   const FinalRadar = useSharedValue<number>(75.35);
+  const [showPicker, setShowPicker] = useState(false);
+  const [alarmString, setAlarmString] = useState<string | null>(null);
   const durationRanges = [
     {max: 17.52, duration: '15 min', boxNum: 0},
     {max: 37.21, duration: '30 min', boxNum: 1},
@@ -203,6 +272,10 @@ const TaskCompletionBoard = () => {
     });
   }
 
+  function DurationClick () {
+    setShowPicker(true);
+  }
+
   const OkBoardClick = () => {
     onDisplayNotification();
     setBoardIsVisible(false);
@@ -231,8 +304,9 @@ const TaskCompletionBoard = () => {
             />
                 <View style={{flex: 1, borderBottomWidth: 1, borderColor: 'grey', flexDirection: 'row'}}>
                     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-                        <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>Work Done VS Planned </Text>
-                        <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>(11)</Text>
+                        <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>Work Done </Text>
+                        <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#af9afb'}}>VS</Text>
+                        <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}> Planned</Text>
                     </View>
                 </View>
                 <View style={{flex: 10}}>
@@ -243,8 +317,13 @@ const TaskCompletionBoard = () => {
                             <View>
                                 <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{work}</Text>
                             </View>
-                            <View style={{backgroundColor: '#43464d', width: 150, height: 25, justifyContent: 'center', alignItems: 'center', borderRadius: 5}}>
-                                <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>25%  of  1hr 30m</Text>
+                            <View style={{backgroundColor: '#43464d', width: 150, height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5, flexDirection: 'row'}}>
+                              <View>
+                                <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>25%  of  </Text>
+                              </View>
+                              <TouchableOpacity style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}} onPress={DurationClick}>
+                                <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>1h 30min</Text>
+                              </TouchableOpacity>
                             </View>
                         </View>
                         <View>
@@ -318,6 +397,12 @@ const TaskCompletionBoard = () => {
             </View>
         </View>
     </Modal>
+    <DurationBox
+      showPicker={showPicker}
+      setShowPicker={setShowPicker}
+      alarmString={alarmString}
+      setAlarmString={setAlarmString}
+    />
     <TaskCompletionPopUp
       popUpIsVisible={popUpIsVisible}
       setPopUpIsVisible={setPopUpIsVisible}

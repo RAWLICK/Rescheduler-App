@@ -170,7 +170,7 @@ const AreaOne = (props: GroupPropsType) => {
             justifyContent: 'center',
             alignItems: 'flex-start',
           }}>
-          <Text style={styles.OptionText}>Add from Existing Work</Text>
+          <Text style={styles.OptionText}>Add from Subjects in Stats</Text>
         </View>
         <TouchableOpacity style={styles.AllDayToggleButtonBox}>
           <Switch
@@ -323,7 +323,7 @@ const AreaTwo = (props: GroupPropsType) => {
 
       <View style={styles.BottomOption}>
         <View style={styles.AllDayFeatureBox}>
-          <Text style={styles.OptionText}>All Day</Text>
+          <Text style={styles.OptionText}>Mini Alarm</Text>
         </View>
         <View style={styles.AllDayToggleButtonBox}>
           <Switch
@@ -585,48 +585,6 @@ const AddTiming = () => {
     console.log('ScheduleArray (AddTiming.tsx): ', ScheduleArray);
   }, [ScheduleArray]);
 
-  // const saveStateToStorage = async (ScheduleArray: ScheduleArrayItem[]) => {
-  //   try {
-  //     await AsyncStorage.setItem(
-  //       'savedSchedule',
-  //       JSON.stringify(ScheduleArray),
-  //     );
-  //   } catch (error) {
-  //     console.log('Error saving data ', error);
-  //   }
-  // };
-
-  // const loadStateFromStorage = async () => {
-  //   try {
-  //     const savedSchedule = await AsyncStorage.getItem('savedSchedule');
-  //     console.log("savedSchedule: ", savedSchedule);
-  //     if (savedSchedule !== null) {
-  //       // const array = JSON.parse(savedSchedule);
-  //       // console.log("Saved Schedule: ", savedSchedule)
-  //       // for (let index = 0; index < array.length; index++) {
-  //       //   const element = array[index];
-  //       //   dispatch(addScheduleObject(element));
-  //       // }
-  //       dispatch(replaceScheduleArray(JSON.parse(savedSchedule)));
-  //     }
-  //   } catch (error) {
-  //     console.log('Error Loading Data: ', error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   return () => {
-  //     saveStateToStorage(ScheduleArray); // Saving Data when component gets unmounted
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   loadStateFromStorage();
-  // }, []);
-
-
-  // module.exports = {ScheduleArray};
-
   return (
     <SafeAreaView style={styles.safeView}>
       <StatusBar
@@ -773,7 +731,7 @@ const AddTiming = () => {
 
 const styles = StyleSheet.create({
   AllDayToggleButtonBox: {
-    flex: 1,
+    flex: 0.5,
     justifyContent: 'center',
     alignItems: 'flex-end',
   },
