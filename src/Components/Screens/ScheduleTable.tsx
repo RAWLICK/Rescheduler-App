@@ -20,6 +20,7 @@ export const ManualScheduleTable = (props: ManualScheduleTablePropsType) => {
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
 
   const data = {
+    "uniqueID": ScheduleArray.map((item: ScheduleArrayItem) => item.uniqueID),
     "StartTime": ScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
     "EndTime": ScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
     "Work": ScheduleArray.map((item: ScheduleArrayItem) => item.Work),
@@ -77,15 +78,17 @@ export const ManualScheduleTable = (props: ManualScheduleTablePropsType) => {
       </View>
       <View style={styles.ScheduleArea}>
         <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>
-        {data['TaskDate'].filter(
-            (TaskDate: string) => TaskDate === props.selectedDate
-          ).map((TaskDate:string, i:number) => {
-          const indexNumber = data['TaskDate'].indexOf(TaskDate); 
-          const startTime = data['StartTime'][indexNumber]
-          const endTime = data['EndTime'][indexNumber]
-          const angleWork = data['Work'][indexNumber]
+        {/* Below is a very complex filtering and mapping possible with the effort of ChatGPT */}
+        {data['TaskDate']
+        .map((TaskDate:string, index:number) => ({TaskDate, index}))
+        .filter(({TaskDate}) => TaskDate === props.selectedDate)
+        .map(({index}) => {
+          const uniqueID = data['uniqueID'][index]
+          const startTime = data['StartTime'][index]
+          const endTime = data['EndTime'][index]
+          const angleWork = data['Work'][index]
           return (
-          <View style={styles.Schedules} key={indexNumber}>
+          <View style={styles.Schedules} key={uniqueID}>
             <View style={{flex: 0.8, padding: 10, paddingLeft: 30}}>
               <View style={{flex: 0.6, justifyContent: 'center'}}>
                 <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 18}}>{angleWork}</Text>
@@ -95,7 +98,7 @@ export const ManualScheduleTable = (props: ManualScheduleTablePropsType) => {
               </View>
             </View>
             <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}
-             onPress={() => DeleteTask(angleWork)}
+             onPress={() => DeleteTask(uniqueID)}
              >
               <Image source={Remove} style={{height: 20, width: 20}}/>
             </TouchableOpacity>

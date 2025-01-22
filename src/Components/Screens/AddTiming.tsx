@@ -35,9 +35,12 @@ import Animated, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import ExistingSubjects from './ExistingSubjects';
+import SwipeRight from '../Images/swipe-right.png'
 import { useDispatch, useSelector } from 'react-redux' 
 import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
+// import { nanoid } from 'nanoid';
+import { nanoid} from "@reduxjs/toolkit";
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PanGesture = ReturnType<typeof Gesture.Pan>;
@@ -117,31 +120,39 @@ const AreaOne = (props: GroupPropsType) => {
   return (
     <>
     <View style={[styles.areaOne, props.AddFromExistingWorkButton && {height: 150}]}>
-      <TouchableOpacity style={styles.UpperOption} onPress={ExistingSubjectButton}>
+      <View style={styles.UpperOption}>
+        {!props.AddFromExistingWorkButton ? (
         <View
           style={{
             flex: 1,
-            justifyContent: 'center',
-            alignItems: 'flex-start',
+            justifyContent: 'center'
           }}>
-          {!props.AddFromExistingWorkButton ? (
             <TextInput
             style={styles.OptionText}
             value={props.WorkToDo}
             onChangeText={props.setWorkToDo}
             placeholder="Work"
             placeholderTextColor="#9D9EA0"></TextInput>
-          ) : (
-            <Text style={styles.OptionText}>Work</Text>
-          )}
         </View>
-        <View
-          style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-          {props.AddFromExistingWorkButton && 
-            <Image source={ChevronRight} style={{height: 17, width: 17}} />
-          }
-        </View>
-      </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'flex-start'
+            }}
+            onPress={ExistingSubjectButton}
+            >
+              <Text style={styles.OptionText}>{props.WorkToDo}</Text>
+          </TouchableOpacity>
+        )}
+        
+        {props.AddFromExistingWorkButton && 
+          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}} onPress={ExistingSubjectButton}>
+              <Image source={ChevronRight} style={{height: 17, width: 17}} />
+          </TouchableOpacity>
+        }
+      </View>
 
       {!props.AddFromExistingWorkButton && 
       <TouchableOpacity style={styles.MiddleOption}>
@@ -188,7 +199,11 @@ const AreaOne = (props: GroupPropsType) => {
       sizes={['auto', 'large']}
       cornerRadius={24}
       >
-        <ExistingSubjects/>
+        <ExistingSubjects 
+        WorkToDo={props.WorkToDo}
+        setWorkToDo={props.setWorkToDo}
+        ExistingSubjectSheet={ExistingSubjectSheet}
+        />
       </TrueSheet>
     </>
   );
@@ -198,6 +213,14 @@ const AreaTwo = (props: GroupPropsType) => {
   return (
     <View style={styles.areaTwo}>
       <View style={styles.UpperOption}>
+        <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'flex-start'}}>
+          <Text style={styles.OptionText}>Previous Schedule</Text>
+        </View>
+        <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-end'}}>
+          <Image source={SwipeRight} style={{height: 35, width: 35}}/>
+        </View>
+      </View>
+      <View style={styles.MiddleOption}>
         <View style={styles.DateHeadingBox}>
           <Text style={styles.OptionText}>Date</Text>
         </View>
@@ -355,6 +378,7 @@ const AreaThree = (props: GroupPropsType) => {
 };
 
 export interface ScheduleArrayItem {
+  uniqueID: string;
   StartTime: string;
   EndTime: string;
   Work: string;
@@ -381,7 +405,7 @@ const AddTiming = () => {
   const [EndTime, setEndTime] = useState('');
   const [TaskDate, setTaskDate] = useState('');
   const [Duration, setDuration] = useState('1h');
-  const [WorkToDo, setWorkToDo] = useState('');
+  const [WorkToDo, setWorkToDo] = useState('Work');
   const [StartAngle, setStartAngle] = useState<number>();
   const [EndAngle, setEndAngle] = useState<number>();
   const dispatch = useDispatch();
@@ -570,6 +594,7 @@ const AddTiming = () => {
 
   const SaveButton = () => {
     let newTask = {
+      uniqueID: nanoid(10),
       StartTime: StartTime,
       EndTime: EndTime,
       Work: WorkToDo,
@@ -939,7 +964,7 @@ const styles = StyleSheet.create({
   },
 
   areaTwo: {
-    height: 370,
+    height: 462,
     padding: 10,
     paddingBottom: 15,
     paddingTop: 15,

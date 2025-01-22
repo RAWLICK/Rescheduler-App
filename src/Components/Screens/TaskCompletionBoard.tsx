@@ -83,59 +83,22 @@ const DurationBox = (props: DurationBoxPropsType) => {
     return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
   }
   return (
-    <View style={{backgroundColor: "#514242", alignItems: "center", justifyContent: "center"}}>
-        {/* <Text style={{fontSize: 18, color: "#F1F1F1"}}>
-            {alarmStringExample !== null
-                ? "Alarm set for"
-                : "No alarm set"}
-        </Text>
-        <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => props.setShowPicker(true)}>
-            <View style={{alignItems: "center"}}>
-                {props.alarmString !== null ? (
-                    <Text style={{color: "#F1F1F1", fontSize: 48}}>
-                        {props.alarmString}
-                    </Text>
-                ) : null}
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => props.setShowPicker(true)}>
-                    <View style={{marginTop: 30}}>
-                        <Text
-                            style={{
-                                paddingVertical: 10,
-                                paddingHorizontal: 18,
-                                borderWidth: 1,
-                                borderRadius: 10,
-                                fontSize: 16,
-                                overflow: "hidden",
-                                borderColor: "#C2C2C2",
-                                color: "#C2C2C2"
-                                }}>
-                            Set Alarm 🔔
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
-        </TouchableOpacity> */}
-        <TimerPickerModal
-            hideSeconds
-            visible={props.showPicker}
-            setIsVisible={props.setShowPicker}
-            onConfirm={(pickedDuration) => {
-              props.setAlarmString(formatTime(pickedDuration));
-              props.setShowPicker(false);
-            }}
-            modalTitle="Duration"
-            onCancel={() => props.setShowPicker(false)}
-            closeOnOverlayPress
-            LinearGradient={LinearGradient}
-            styles={{ theme: "dark" }}
-            modalProps={{ overlayOpacity: 0.2 }}
-            
-        />
-     </View>
+      <TimerPickerModal
+          hideSeconds
+          padHoursWithZero
+          visible={props.showPicker}
+          setIsVisible={props.setShowPicker}
+          onConfirm={(pickedDuration) => {
+            props.setAlarmString(formatTime(pickedDuration));
+            props.setShowPicker(false);
+          }}
+          modalTitle="Duration"
+          onCancel={() => props.setShowPicker(false)}
+          closeOnOverlayPress
+          LinearGradient={LinearGradient}
+          styles={{ theme: "dark" }}
+          modalProps={{ overlayOpacity: 0.2 }}
+      />
   )
 }
 

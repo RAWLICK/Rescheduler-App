@@ -182,7 +182,9 @@ const AppDistributor = () => {
                     <TableWrapper key={index} style={styles.row}>
                       {
                         rowData.map((cellData, cellIndex) => (
-                          <Cell key={cellIndex} data={cellIndex === 2 ? DeleteFunction(cellData, index) : cellData} textStyle={styles.text}/>
+                          <Cell key={cellIndex} data={cellIndex === 2 ? DeleteFunction(cellData, index) : cellData}
+                           textStyle={styles.text}
+                          />
                         ))
                       }
                     </TableWrapper>

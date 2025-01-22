@@ -1,5 +1,5 @@
 // nanoid helps in generating unique IDs.
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createSlice} from "@reduxjs/toolkit";
 import { combineReducers } from "@reduxjs/toolkit";
 import { ScheduleArrayItem } from "../Components/Screens/AddTiming";
 import ExistingSubjects from "../Components/Screens/ExistingSubjects";
@@ -29,6 +29,7 @@ export const ScheduleArraySlice = createSlice({
     reducers: {
         addScheduleObject: (state, action) => {
             const ScheduleObject = {
+                "uniqueID": action.payload.uniqueID,
                 "StartTime": action.payload.StartTime,
                 "EndTime": action.payload.EndTime,
                 "Work": action.payload.Work,
@@ -38,12 +39,42 @@ export const ScheduleArraySlice = createSlice({
                 "Slice_Color":action.payload.Slice_Color
             }
             state.ScheduleArrayInitialState.push(ScheduleObject)
-            state.ScheduleArrayInitialState.sort((a, b) => a.StartAngle - b.StartAngle)
+            state.ScheduleArrayInitialState.sort((a, b) => {
+                const formatDate = (dateStr: string) => {
+                    const [day, month, year] = dateStr.split("-"); // Split dd-mm-yyyy
+                    return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+                };
+        
+                const dateA = formatDate(a.TaskDate);
+                const dateB = formatDate(b.TaskDate);
+        
+                // Compare TaskDate first
+                if (dateA < dateB) return -1;
+                if (dateA > dateB) return 1;
+        
+                // If TaskDate is the same, compare StartAngle
+                return a.StartAngle - b.StartAngle;
+            });
         },
         removeScheduleObject: (state, action) => {
-            state.ScheduleArrayInitialState = state.ScheduleArrayInitialState.filter((item) => item.Work !== action.payload)
-            state.ScheduleArrayInitialState.sort((a, b) => a.StartAngle - b.StartAngle)
-        }
+            state.ScheduleArrayInitialState = state.ScheduleArrayInitialState.filter((item) => item.uniqueID !== action.payload)
+            state.ScheduleArrayInitialState.sort((a, b) => {
+                const formatDate = (dateStr: string) => {
+                    const [day, month, year] = dateStr.split("-"); // Split dd-mm-yyyy
+                    return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+                };
+        
+                const dateA = formatDate(a.TaskDate);
+                const dateB = formatDate(b.TaskDate);
+        
+                // Compare TaskDate first
+                if (dateA < dateB) return -1;
+                if (dateA > dateB) return 1;
+        
+                // If TaskDate is the same, compare StartAngle
+                return a.StartAngle - b.StartAngle;
+            });
+        },
     }
 })
 
@@ -54,7 +85,8 @@ export const ExistingSubjectsArraySlice = createSlice({
         addExistingSubjectsObject: (state, action) => {
             const ExistingSubjectsObject = {
                 "Work": action.payload.Work,
-                "Slice_Color": action.payload.Slice_Color
+                "Slice_Color": action.payload.Slice_Color,
+                "Duration": action.payload.Duration
             }
             state.ExistingSubjectsArrayInitialState.push(ExistingSubjectsObject)
         },

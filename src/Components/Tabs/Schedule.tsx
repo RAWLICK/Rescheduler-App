@@ -23,6 +23,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import { RouteProp } from '@react-navigation/native';
 import { CombinedNavigationProp, CombinedRouteProp } from '../../App';
+import { nanoid } from 'nanoid';
 
 import {
   SafeAreaView,
@@ -109,6 +110,7 @@ type RescheduleButtonAreaPropsType = {
     Work: string[];
     StartAngle: number[];
     EndAngle: number[];
+    TaskDate: string[]
     Slice_Color: string[];
   }, 
   hourRotation: number, 
@@ -218,16 +220,23 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
         </View>
         <View style={{flex: 5, paddingLeft: 20, paddingBottom: 5}}>
           <ScrollView>
-          {props.data['StartAngle'].filter((StartAngle: number) => {
-          const indexNumber = props.data['StartAngle'].indexOf(StartAngle);
+          {props.data['StartAngle']
+          .map((StartAngle: number, index: number) => ({
+            StartAngle, 
+            TaskDate: props.data['TaskDate'][index]
+          }))
+          .filter(({StartAngle, TaskDate}) => {
           if (props.rescheduleStatus == 'PriorStage') {
-            return StartAngle <= props.hourRotation
+            return StartAngle <= props.hourRotation && TaskDate == props.selectedDate
           }
           else if (props.rescheduleStatus == 'FixingStage') {
-            return StartAngle > props.hourRotation
-          }}
-          ).map((Start:number) => {
-            const indexValue = props.data['StartAngle'].indexOf(Start);
+            return StartAngle > props.hourRotation && TaskDate == props.selectedDate
+          }
+          else if (props.rescheduleStatus == 'RemovingStage') {
+            return StartAngle > props.hourRotation && TaskDate == props.selectedDate
+          }})
+          .map(({StartAngle}) => {
+            const indexValue = props.data['StartAngle'].indexOf(StartAngle);
             return(
               <View style={{margin: 5}} key={indexValue}>
                 <BouncyCheckbox
@@ -334,6 +343,7 @@ const Schedule: React.FC = () => {
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     
     const data = {
+      "uniqueID": ScheduleArray.map((item: ScheduleArrayItem) => item.uniqueID),
       "StartTime": ScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
       "EndTime": ScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
       "Work": ScheduleArray.map((item: ScheduleArrayItem) => item.Work),
@@ -521,7 +531,7 @@ const Schedule: React.FC = () => {
       else {
         return `${hours} hours and ${minutes} minutes`;
       }
-  }
+    }
 
     const SingleAngle = useCallback(() => {
       const hardRadius = 150;
@@ -561,17 +571,19 @@ const Schedule: React.FC = () => {
               <Stop offset="50%" stopColor="red" stopOpacity="0" />
             </LinearGradient>
           </Defs> */}
-          {data['TaskDate'].filter(
-            (TaskDate: string) => TaskDate === selectedDate
-          ).map((TaskDate:string, i:number) => {
-            const indexNumber = data['TaskDate'].indexOf(TaskDate);
-            const startAngle = data['StartAngle'][indexNumber];
-            const endAngle = data['EndAngle'][indexNumber];
-            const sectorColor = data['Slice_Color'][indexNumber];
-            const startTime = data['StartTime'][indexNumber]
-            const endTime = data['EndTime'][indexNumber]
+          {/* Below is a very complex filtering and mapping possible with the effort of ChatGPT */}
+          {data['TaskDate']
+          .map((TaskDate:string, index:number) => ({TaskDate, index}))
+          .filter(({TaskDate}) => TaskDate === selectedDate)
+          .map(({index}) => {
+            const uniqueID = data['uniqueID'][index]
+            const startAngle = data['StartAngle'][index];
+            const endAngle = data['EndAngle'][index];
+            const sectorColor = data['Slice_Color'][index];
+            const startTime = data['StartTime'][index]
+            const endTime = data['EndTime'][index]
             const angleDuration = angleToTime(endAngle - startAngle)
-            const angleWork = data['Work'][indexNumber]
+            const angleWork = data['Work'][index]
             useEffect(() => {
               if (hourRotation >= startAngle && hourRotation <= endAngle) {
                 setWork(angleWork);
@@ -585,7 +597,7 @@ const Schedule: React.FC = () => {
                 settimeStart("");
                 settimeEnd("");
               }
-            }, [ScheduleArray])
+            }, [ScheduleArray, currentSecTime])
             
             const angleOnPress = () => {
               console.log('Pressed onOP');
@@ -607,7 +619,7 @@ const Schedule: React.FC = () => {
             }
             return(
               <Path
-                key={i}
+                key={uniqueID}
                 d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, endAngle, startAngle)}
                 fill={sectorColor}  
                 onPressIn={()=> angleOnPress()}
@@ -628,7 +640,7 @@ const Schedule: React.FC = () => {
           )}
         </Svg>
       );
-    }, [ScheduleArray, selectedDate]);
+    }, [ScheduleArray, selectedDate, currentMinTime]);
   
     const AngleInfo = () => {
       return(
@@ -688,8 +700,10 @@ const Schedule: React.FC = () => {
     };
 
     const DialogBackButton = () => {
-      setRescheduleStatus('off');
-      setTintStatus(false);
+      rescheduleStatus === 'PriorStage' && setRescheduleStatus('off')
+      rescheduleStatus === 'FixingStage' && setRescheduleStatus('PriorStage')
+      rescheduleStatus === 'RemovingStage' && setRescheduleStatus('FixingStage')
+      ;
     }
 
     const RescheduleButtonClick = () => {

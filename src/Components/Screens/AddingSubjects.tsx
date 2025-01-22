@@ -13,20 +13,56 @@ import ChevronLeft from '../Images/ChevronLeft.png';
 import { useDispatch, useSelector } from 'react-redux' 
 import { addExistingSubjectsObject, removeExistingSubjectsObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
+import LinearGradient from 'react-native-linear-gradient';
+import { TimerPickerModal } from "react-native-timer-picker";
+type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+type DurationBoxPropsType = {
+  showPicker: boolean,
+  setShowPicker: SetState<boolean>,
+  durationString: string | null
+  setDurationString: SetState<string | null>
+}
+
+const DurationBox = (props: DurationBoxPropsType) => {
+  const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
+    return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
+  }
+  return (
+      <TimerPickerModal
+          hideSeconds
+          padHoursWithZero
+          visible={props.showPicker}
+          setIsVisible={props.setShowPicker}
+          onConfirm={(pickedDuration) => {
+            props.setDurationString(formatTime(pickedDuration));
+            props.setShowPicker(false);
+          }}
+          modalTitle="Duration"
+          onCancel={() => props.setShowPicker(false)}
+          closeOnOverlayPress
+          LinearGradient={LinearGradient}
+          styles={{ theme: "dark" }}
+          modalProps={{ overlayOpacity: 0.2 }}
+      />
+  )
+}
 
 const AddingSubjects = () => {
   const dispatch = useDispatch();
   const [SubjectName, setSubjectName] = useState('');
-  // const [SmallNote, setSmallNote] = useState('')
   const color = 'blue';
+  const [showPicker, setShowPicker] = useState(false);
+  const [durationString, setDurationString] = useState<string | null>(null);
 
   const ExistingSubjectSaveButton = () => {
     const newExistingSubject = {
       "Work": SubjectName,
-      "Slice_Color": color
+      "Slice_Color": color,
+      "Duration": durationString
     }
     dispatch(addExistingSubjectsObject(newExistingSubject));
   }   
+
   return (
     <View
       style={{
@@ -48,7 +84,7 @@ const AddingSubjects = () => {
           Adding Subject
         </Text>
       </View>
-      <View style={{ height: 130, rowGap: 1 }}>
+      <View style={{ height: 195, rowGap: 1 }}>
         <View style={[styles.UpperOption, { flex: 2 }]}>
           <View
             style={{
@@ -64,6 +100,23 @@ const AddingSubjects = () => {
               placeholderTextColor="#9D9EA0"></TextInput>
           </View>
         </View>
+
+        <TouchableOpacity style={[styles.MiddleOption, { flex: 2 }]}>
+          <View
+            style={{
+              flex: 0.7,
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+            }}>
+            <Text style={styles.OptionText}>Duration</Text>
+          </View>
+          <TouchableOpacity onPress={() => setShowPicker(true)}
+            style={{ flex: 0.3, justifyContent: 'center', paddingTop: 15, paddingBottom: 15, paddingLeft: 15 }}>
+            <View style={{flex: 1,backgroundColor: 'grey', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{fontFamily: 'sf-pro-display-bold', color: '#d8d0d0'}}>10 hr 30 min</Text>
+            </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
 
 
         <TouchableOpacity style={[styles.BottomOption, { flex: 2 }]}>
@@ -112,6 +165,12 @@ const AddingSubjects = () => {
           </Text>
         </TouchableOpacity>
       </View>
+      <DurationBox
+      showPicker={showPicker}
+      setShowPicker={setShowPicker}
+      durationString={durationString}
+      setDurationString={setDurationString}
+      />
     </View>
   );
 };
