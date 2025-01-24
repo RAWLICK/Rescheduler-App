@@ -1,4 +1,4 @@
-import { Modal, StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native'
+import { Modal, StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground, StatusBar } from 'react-native'
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { BlurView } from "@react-native-community/blur";
@@ -27,6 +27,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import notifee from '@notifee/react-native';
 import { AndroidColor } from '@notifee/react-native';
 import { TimerPickerModal } from "react-native-timer-picker";
+import DemoLandingPage from '../Images/DemoLandingPage.jpeg';
 const { width, height } = Dimensions.get('window');
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -147,6 +148,7 @@ const TaskCompletionBoard = () => {
     .onChange(event => {
       MovedRadar.value = event.translationX;
       FinalRadar.value = StartRadar.value + MovedRadar.value;
+      console.log(FinalRadar.value)
       // runOnJS helps in running code on JavaScript thread instead on UI Thread
 
       const foundRange = durationRanges.find(
@@ -182,7 +184,7 @@ const TaskCompletionBoard = () => {
     });
 
   const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{translateX: clamp(FinalRadar.value, 10, 310)}],
+    transform: [{translateX: clamp(FinalRadar.value, 0, 283)}],
   }));
   
 
@@ -249,117 +251,118 @@ const TaskCompletionBoard = () => {
     setPopUpIsVisible(false);
   }
   return (
-    <GestureHandlerRootView>
-    <Modal visible={false} animationType='fade' transparent={true}>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <ImageBackground
+        source={DemoLandingPage}
+        style={[styles.ImageBackgroundViewStyle]}
+        imageStyle={{resizeMode: 'cover'}}>
         <BlurView
-          style={styles.blurStyle}
-          blurType="light"
-          blurAmount={10}
-          // reducedTransparencyFallbackColor="light"
+        style={styles.blurStyle}
+        blurType="light"
+        blurAmount={10}
+        // reducedTransparencyFallbackColor="black"
         />
-            <View style={{height: height * 0.5, width: width * 0.8, borderRadius: 15, overflow: 'hidden', borderWidth: 1, borderColor: 'grey'}}>
-            <BlurView
-              style={styles.blurStyle}
-              blurType="dark"
-              blurAmount={50}
-              // reducedTransparencyFallbackColor="black"
-            />
-                <View style={{flex: 1, borderBottomWidth: 1, borderColor: 'grey', flexDirection: 'row'}}>
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-                        <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>Work Done </Text>
-                        <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#af9afb'}}>VS</Text>
-                        <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}> Planned</Text>
-                    </View>
-                </View>
-                <View style={{flex: 10}}>
-                  <ScrollView>
-                    {data["Work"].map((work, index) => (
-                    <View key={work} style={{padding: 5, paddingLeft: 15, paddingRight: 15, rowGap: 15, borderBottomWidth: 1, borderColor: 'grey'}}>
-                        <View style={{flexDirection: 'row', columnGap: 10, alignItems: 'center', height: 30}}>
-                            <View>
-                                <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{work}</Text>
-                            </View>
-                            <View style={{backgroundColor: '#43464d', width: 150, height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5, flexDirection: 'row'}}>
-                              <View>
-                                <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>25%  of  </Text>
-                              </View>
-                              <TouchableOpacity style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}} onPress={DurationClick}>
-                                <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>1h 30min</Text>
-                              </TouchableOpacity>
-                            </View>
-                        </View>
-                        <View>
-                            <View style={{flexDirection: 'row'}}>
-                                {DurationBoxes.map((index, i) => {
-                                return (
-                                    <View
-                                    key={i}
-                                    style={[
-                                        {
-                                        backgroundColor: '#9D9EA0',
-                                        height: 10,
-                                        width: "25%",
-                                        marginRight: 2,
-                                        },
-                                        i == 0
-                                        ? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4}
-                                        : {},
-                                        i == 3
-                                        ? {borderTopRightRadius: 4, borderBottomRightRadius: 4}
-                                        : {},
-                                        /*CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}*/
-                                    ]}></View>
-                                );
-                                })}
-                            </View>
-                            <GestureDetector gesture={pan}>
-                                <Animated.View
-                                style={[
-                                    {
-                                    backgroundColor: 'white',
-                                    height: 20,
-                                    width: 20,
-                                    borderRadius: 10,
-                                    position: 'absolute',
-                                    top: -4,
-                                    },
-                                    animatedStyles,
-                                ]}
-                                />
-                            </GestureDetector>
-
-                            <View style={{flexDirection: 'row', marginTop: 7}}>
-                                {DurationTag.map((tag, i) => {
-                                return (
-                                    <Text
-                                    key={i}
-                                    style={[
-                                        {
-                                        marginRight: '15%',
-                                        fontFamily: 'futura-no-2-medium-dee',
-                                        color: '#9D9EA0',
-                                        },
-                                        tag != '0%' ? {marginRight: '18%'} : {}
-                                    ]}>
-                                    {tag}
-                                    </Text>
-                                );
-                                })}
-                            </View>
-                        </View>
-                    </View>
-                  ))}
-                </ScrollView>
-                <View style={{height: height * 0.057, padding: 10}}>
-                  <TouchableOpacity onPress= {OkBoardClick} style={{flex: 1, backgroundColor: '#457fdf', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{fontFamily: 'sf-pro-display-bold', color: '#333333'}}>Done</Text>
-                  </TouchableOpacity>
-                </View>
+          <View style={{height: height * 0.5, width: width * 0.8, borderRadius: 15, overflow: 'hidden', borderWidth: 1, borderColor: 'grey'}}>
+          <BlurView
+            style={styles.blurStyle}
+            blurType="dark"
+            blurAmount={50}
+            // reducedTransparencyFallbackColor="black"
+          />
+            <View style={{flex: 1, borderBottomWidth: 1, borderColor: 'grey', flexDirection: 'row'}}>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+                    <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>Work Done </Text>
+                    <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#af9afb'}}>VS</Text>
+                    <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}> Planned</Text>
                 </View>
             </View>
+            <View style={{flex: 10}}>
+              <ScrollView>
+                {data["Work"].map((work, index) => (
+                <View key={work} style={{padding: 5, paddingLeft: 15, paddingRight: 15, rowGap: 15, borderBottomWidth: 1, borderColor: 'grey'}}>
+                    <View style={{flexDirection: 'row', columnGap: 10, alignItems: 'center', height: 30}}>
+                        <View>
+                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{work}</Text>
+                        </View>
+                        <View style={{backgroundColor: '#43464d', width: 150, height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5, flexDirection: 'row'}}>
+                          <View>
+                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>25%  of  </Text>
+                          </View>
+                          <TouchableOpacity style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}} onPress={DurationClick}>
+                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>1h 30min</Text>
+                          </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View>
+                        <View style={{flexDirection: 'row'}}>
+                            {DurationBoxes.map((index, i) => {
+                            return (
+                                <View
+                                key={i}
+                                style={[
+                                    {
+                                    backgroundColor: '#9D9EA0',
+                                    height: 10,
+                                    width: "25%",
+                                    marginRight: 2,
+                                    },
+                                    i == 0
+                                    ? {borderTopLeftRadius: 4, borderBottomLeftRadius: 4}
+                                    : {},
+                                    i == 3
+                                    ? {borderTopRightRadius: 4, borderBottomRightRadius: 4}
+                                    : {},
+                                    /*CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}*/
+                                ]}></View>
+                            );
+                            })}
+                        </View>
+                        <GestureDetector gesture={pan}>
+                            <Animated.View
+                            style={[
+                                {
+                                backgroundColor: 'white',
+                                height: 20,
+                                width: 20,
+                                borderRadius: 10,
+                                position: 'absolute',
+                                top: -4,
+                                },
+                                animatedStyles,
+                            ]}
+                            />
+                        </GestureDetector>
+
+                        <View style={{flexDirection: 'row', marginTop: 7}}>
+                            {DurationTag.map((tag, i) => {
+                            return (
+                                <Text
+                                key={i}
+                                style={[
+                                    {
+                                    marginRight: '15%',
+                                    fontFamily: 'futura-no-2-medium-dee',
+                                    color: '#9D9EA0',
+                                    },
+                                    tag != '0%' ? {marginRight: '18%'} : {}
+                                ]}>
+                                {tag}
+                                </Text>
+                            );
+                            })}
+                        </View>
+                    </View>
+                </View>
+              ))}
+            </ScrollView>
+            <View style={{height: height * 0.057, padding: 10}}>
+              <TouchableOpacity onPress= {OkBoardClick} style={{flex: 1, backgroundColor: '#457fdf', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{fontFamily: 'sf-pro-display-bold', color: '#333333'}}>Done</Text>
+              </TouchableOpacity>
+            </View>
+            </View>
         </View>
-    </Modal>
+      </ImageBackground>
     <DurationBox
       showPicker={showPicker}
       setShowPicker={setShowPicker}
@@ -392,5 +395,10 @@ const styles = StyleSheet.create({
     confettiLottie: {
       width: 35, // Adjust width as needed
       height: 35, // Adjust height as needed
+    },
+    ImageBackgroundViewStyle: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
     },
 })

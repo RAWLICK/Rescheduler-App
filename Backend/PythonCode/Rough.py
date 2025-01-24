@@ -9,13 +9,77 @@ from flask import jsonify
 import json
 
 def CompressionFunction(
-        ImportedDataFrame, 
+        # ImportedDataFrame, 
         currentTime, 
         PriorSelections, 
         FixedSelections,
         RemovingSelections):
 
-    ImportedDataFrame = '[{"StartTime":"06:00","EndTime":"07:00","Work":"Physics","StartAngle":180,"EndAngle":210,"TaskDate":"05/01/2025","Slice_Color":"Green"},{"StartTime":"07:00","EndTime":"08:00","Work":"Chemistry","StartAngle":210,"EndAngle":240,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"08:00","EndTime":"09:00","Work":"Maths","StartAngle":240,"EndAngle":270,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"09:00","EndTime":"10:00","Work":"Biology","StartAngle":270,"EndAngle":300,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"10:00","EndTime":"11:00","Work":"SST","StartAngle":300,"EndAngle":330,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"11:00","EndTime":"12:30","Work":"Economics","StartAngle":330,"EndAngle":375,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"12:30","EndTime":"13:30","Work":"Sanskrit","StartAngle":375,"EndAngle":405,"TaskDate":"05/01/2025","Slice_Color":"blue"}]'
+    ImportedDataFrame = json.dumps([
+        {
+            "StartTime": "06:00",
+            "EndTime": "07:00",
+            "Work": "Physics",
+            "StartAngle": 180,
+            "EndAngle": 210,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "Green"
+        },
+        {
+            "StartTime": "07:00",
+            "EndTime": "08:00",
+            "Work": "Chemistry",
+            "StartAngle": 210,
+            "EndAngle": 240,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
+        {
+            "StartTime": "08:00",
+            "EndTime": "09:00",
+            "Work": "Maths",
+            "StartAngle": 240,
+            "EndAngle": 270,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
+        {
+            "StartTime": "09:00",
+            "EndTime": "10:00",
+            "Work": "Biology",
+            "StartAngle": 270,
+            "EndAngle": 300,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
+        {
+            "StartTime": "10:00",
+            "EndTime": "11:00",
+            "Work": "SST",
+            "StartAngle": 300,
+            "EndAngle": 330,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
+        {
+            "StartTime": "11:00",
+            "EndTime": "12:30",
+            "Work": "Economics",
+            "StartAngle": 330,
+            "EndAngle": 375,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
+        {
+            "StartTime": "12:30",
+            "EndTime": "13:30",
+            "Work": "Sanskrit",
+            "StartAngle": 375,
+            "EndAngle": 405,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        }
+    ])
 
     # Converting ImportedDataframe into a dataframe which this Compress Function can consume accordingly
     # Remember to use single quote (') and double quotes(") seperately in fString instead of same to avoid any error.
@@ -54,10 +118,12 @@ def CompressionFunction(
         print("So the works which you are Removing are: ", Removing_Work_List)
         print("\n")
 
-    for i in sorted(Removing_Work, reverse=True):
-        del Work[int(i)]
-        del Start[int(i)]
-        del End[int(i)]
+        for i in sorted(Removing_Work, reverse=True):
+            del Work[int(i)]
+            del Start[int(i)]
+            del End[int(i)]
+        
+        Original_End = list(datetime.strptime(x, "%d/%m/%Y %H:%M") for x in dataframe['EndTime'])
 
     # Entering the current time and converting it in datetime format
 
@@ -177,7 +243,7 @@ def CompressionFunction(
 
     if (FixedSelections == ""):
         Total_Fragment_Duration = timedelta(0)
-        Total_Fragment_Duration = End[-1] - cur_time
+        Total_Fragment_Duration = Original_End[-1] - cur_time
         print("Total_Fragment_Duration(Total Time Left): ", Total_Fragment_Duration)
         print("\n")
         # Output: 0 days 11:30:00
@@ -190,7 +256,7 @@ def CompressionFunction(
         Time_Interval_List = []
         Time_Interval_List_Ratio = []
 
-        for i in range(0, len(Start)-1):
+        for i in range(0, len(Start)):
             Time_Interval = End[i] - Start[i]
             Time_Interval_List.append(int(Time_Interval.total_seconds() / 60))
         print("Time Interval List: ", Time_Interval_List)
@@ -259,6 +325,20 @@ def CompressionFunction(
         # print("TimeDelta_Minutes: ",TimeDelta_Minutes)
         # Output: [datetime.timedelta(seconds=3060), datetime.timedelta(seconds=3060),...]
 
+        # Adding The Starting Time
+        Compressed_Data = [[cur_time, cur_time + TimeDelta_Minutes[0], Complete_Fragments[0]]]
+
+        # Making the DataFrame
+        Compressed_DataFrame = pd.DataFrame(Compressed_Data, columns=['Start_', 'End_', 'Work_'])
+
+        for i in range(1, len(Complete_Fragments)):
+            newData = [[Compressed_DataFrame.End_[i-1], Compressed_DataFrame.End_[i-1] + TimeDelta_Minutes[i], Complete_Fragments[i]]]
+            # upper_part = Compressed_DataFrame.loc[:i - 1]
+            # lower_part = Compressed_DataFrame.loc[i:]
+            Compressed_DataFrame = pd.concat([Compressed_DataFrame, pd.DataFrame(newData, columns=['Start_', 'End_', 'Work_'], index=[i])], ignore_index=True)
+
+        #Sorting the rows on the basis of 'Start_' column with respect to time and resetting the index of dataframe.
+        Compressed_DataFrame = Compressed_DataFrame.sort_values(by='Start_').reset_index(drop=True)
 
 
     else: 
@@ -318,7 +398,7 @@ def CompressionFunction(
         Time_Interval_List = []
         Time_Interval_List_Ratio = []
 
-        for i in range(0, len(Start)-1):
+        for i in range(0, len(Start)):
             Time_Interval = End[i] - Start[i]
             Time_Interval_List.append(int(Time_Interval.total_seconds() / 60))
         print("Time Interval List: ", Time_Interval_List)
@@ -445,6 +525,9 @@ def CompressionFunction(
             
             # Adding the timings between Pinned_Timing 1 in a very wise way. Understand it Carefully. Thanks ChatGPT
             # We have used such type of range to cover the portion between start and First Pinned_work.
+
+            # The if statement has been used with 1 in for loop because of which the else statement is used to remove that 1 value and make a standard for loop for rest of the works after Pinned work 1
+
             if (len(Updated_Complete_Fragments) == len(Complete_Fragments)):
                 for i in range(1, LenTills_Dictionary[key1]):
                     newData = [[Compressed_DataFrame.End_[i-1], Compressed_DataFrame.End_[i-1] + TimeDelta_Minutes[i], Complete_Fragments[i]]]
@@ -475,7 +558,7 @@ def CompressionFunction(
                             Compressed_DataFrame.Start_[j+1] += Pinned_Time_Diff
                             Compressed_DataFrame.End_[j+1] += Pinned_Time_Diff
                             # Making a broken and adjusted copy of a work(Work 5) which was colliding with Pinned Work 2
-                    newData = [[Compressed_DataFrame.End_[i+1], Compressed_DataFrame.End_[i+1] + Intersec_Diff, Compressed_DataFrame.Work_[i]]]
+                    newData = [[Compressed_DataFrame.End_[i+1], Compressed_DataFrame.End_[i+1] + Intersec_Diff, f"{Compressed_DataFrame.Work_[i]} (Part 2)"]]
                     upper_part = Compressed_DataFrame.loc[:i + 1]
                     lower_part = Compressed_DataFrame.loc[i + 2:]
                     Compressed_DataFrame = pd.concat([upper_part, pd.DataFrame(newData, columns=['Start_', 'End_', 'Work_']), lower_part], ignore_index=True)
@@ -580,18 +663,30 @@ def CompressionFunction(
         Start_Angle.append(30*Start_Hour + 0.5*Start_Min)
         End_Angle.append(30*End_Hour + 0.5*End_Min)
 
-    DataFrame_Dict = {
-        "Start_Angle": Start_Angle,
-        "End_Angle": End_Angle,
-        "Start_Timing": Start_Timing,
-        "End_Timing": End_Timing,
-        "Work": Updated_Complete_Fragments,
-        "Durations": Updated_Dur_Acc_Rat
-    }
+    if(FixedSelections == ""):
+        DataFrame_Dict = {
+            "Start_Angle": Start_Angle,
+            "End_Angle": End_Angle,
+            "Start_Timing": Start_Timing,
+            "End_Timing": End_Timing,
+            "Work": Complete_Fragments,
+            "Durations": Duration_According_Ratio
+        }
+    else:
+        DataFrame_Dict = {
+            "Start_Angle": Start_Angle,
+            "End_Angle": End_Angle,
+            "Start_Timing": Start_Timing,
+            "End_Timing": End_Timing,
+            "Work": Updated_Complete_Fragments,
+            "Durations": Updated_Dur_Acc_Rat
+        }
     print("DataFrame_Dict: ", DataFrame_Dict)
+    print(Compressed_DataFrame)
     return DataFrame_Dict
 
-# CompressionFunction("05/01/2025 09:00", "0,1", "5", "1")
+# CompressionFunction("05/01/2025 10:00", "0,1", "5", "1")
+CompressionFunction("05/01/2025 10:00", "0,1,2,3", "4,6", "")
 
 
 

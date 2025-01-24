@@ -5,7 +5,7 @@ import { ScheduleArrayItem } from "../Components/Screens/AddTiming";
 import ExistingSubjects from "../Components/Screens/ExistingSubjects";
 export type ExistingSubjectsArrayItem = {
     Work: string;
-    Slice_Color: string;
+    Duration: string
 }
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
@@ -85,7 +85,6 @@ export const ExistingSubjectsArraySlice = createSlice({
         addExistingSubjectsObject: (state, action) => {
             const ExistingSubjectsObject = {
                 "Work": action.payload.Work,
-                "Slice_Color": action.payload.Slice_Color,
                 "Duration": action.payload.Duration
             }
             state.ExistingSubjectsArrayInitialState.push(ExistingSubjectsObject)

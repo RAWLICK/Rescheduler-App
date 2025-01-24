@@ -11,9 +11,12 @@ import { createMaterialTopTabNavigator, MaterialTopTabNavigationProp } from '@re
 import AddTiming from './Components/Screens/AddTiming';
 import Calender from './Components/Screens/CalenderView';
 import Statistics from './Components/Tabs/Statistics';
+import TaskCompletionBoard from './Components/Screens/TaskCompletionBoard';
 import OtpVerificaton from './Components/Authentication/OtpVerificaton';
 import Settings from './Components/Drawer/Settings';
 import PartneredLibraries from './Components/Drawer/PartneredLibraries';
+import AppDistributor from './Components/Drawer/AppDistributor';
+import AdminPanel from './Components/Drawer/AdminPanel';
 import RoughComponent from './Components/Rough Work/RoughComponent';
 import RoughComponentTwo from './Components/Rough Work/RoughComponentTwo';
 import Navbar from './Components/Navbar/Navbar';
@@ -31,7 +34,6 @@ import ScheduleTable from './Components/Screens/ScheduleTable';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Store, persistor } from './app/Store'
-import AppDistributor from './Components/Drawer/AppDistributor';
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -44,6 +46,7 @@ type StackParamList = {
   SignInStack: undefined;
   SignUpStack: undefined;
   OtpVerificationStack: undefined;
+  TaskCompletionBoardStack: undefined;
   // RoughCompTwo: undefined;
 };
 
@@ -54,7 +57,8 @@ type DrawerParamList = {
   };
   SettingsDrawer: undefined;
   PartneredLibrariesDrawer: undefined;
-  AppDistributor: undefined;
+  AppDistributorDrawer: undefined;
+  AdminPanelDrawer: undefined;
 };
 
 type TabParamList = {
@@ -126,11 +130,12 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='AddTimingStack'>
+      <Stack.Navigator initialRouteName='TaskCompletionBoardStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
         <Stack.Screen name="OtpVerificationStack" component={OtpVerificaton} options={{ headerShown: false }} />
+        <Stack.Screen name="TaskCompletionBoardStack" component={TaskCompletionBoard} options={{ headerShown: false }} />
         {/* <Stack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
       </Stack.Navigator>
     );
@@ -142,14 +147,15 @@ function App(): React.JSX.Element {
       <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
       <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/>
       <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
-      <Drawer.Screen name="AppDistributor" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
+      <Drawer.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
+      <Drawer.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
     </Drawer.Navigator>
     )
   }
 
   function Tabs() {
     return (
-      <Tab.Navigator initialRouteName="ScheduleTab"
+      <Tab.Navigator initialRouteName="StatisticsTab"
        screenOptions={ ({route}) => ({
         tabBarButton: (props) => {
           const {onPress, accessibilityState} = props;
@@ -193,8 +199,6 @@ function App(): React.JSX.Element {
           <NativeStack.Navigator initialRouteName="DrawerScreens">
             <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
             <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
-            {/* <NativeStack.Screen name="TabScreens" component={Tabs} options={{ headerShown: false }}/> */}
-            {/* <NativeStack.Screen name="TopTabScreens" component={ScheduleTable} options={{ headerShown: false, animation:'slide_from_right' }}/> */}
           </NativeStack.Navigator>
         </NavigationContainer>
       </PersistGate>

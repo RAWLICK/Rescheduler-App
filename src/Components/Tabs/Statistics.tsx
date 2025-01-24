@@ -10,6 +10,7 @@ import BoldChevronDown from '../Images/BoldChevronDown.png'
 import LockImage from '../Images/Lock.png'
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from "@react-native-community/blur";
+import AddTwo from "../Images/AddTwo.png"
 import {
   SafeAreaView,
   ScrollView,
@@ -33,29 +34,39 @@ const Statistics = () => {
   
   return (
     <SafeAreaView style={styles.safeView}>
+    <StatusBar
+      translucent={true}
+      backgroundColor="#D2CFE4" // Make the status bar transparent
+      barStyle="dark-content"
+    />
       <View style={styles.mainStyle}>
         <View style={styles.heading}>
 
         </View>
 
-        <View>
-          <View style={{justifyContent: 'center', alignItems: 'center', height: 40, flexDirection: 'row'}}>
-            <TouchableOpacity onPress={() => setWeekChange(WeekChange - 1)}>
-              <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
-            </TouchableOpacity>
-            <View style={{marginLeft: 15, marginRight: 15}}>
-              <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>This Week</Text>
-            </View>
-            <TouchableOpacity onPress={() => setWeekChange(WeekChange + 1)}>
-              <Image source={ChevronRightBlack} style={{height: 15, width: 15}}/>
-            </TouchableOpacity>
+        <View style={{justifyContent: 'center', alignItems: 'center', height: 40, flexDirection: 'row'}}>
+          <TouchableOpacity onPress={() => setWeekChange(WeekChange - 1)}>
+            <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
+          </TouchableOpacity>
+          <View style={{marginLeft: 15, marginRight: 15}}>
+            <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>This Week</Text>
           </View>
+          <TouchableOpacity onPress={() => setWeekChange(WeekChange + 1)}>
+            <Image source={ChevronRightBlack} style={{height: 15, width: 15}}/>
+          </TouchableOpacity>
+        </View>
+        <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10}}>
           <View style={styles.weekReport}>
             <WeeklyBarChart/>
           </View>
-          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', margin: 10, borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }}>
+          <View style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: 5}}>
+            <Image source={AddTwo} style={{height: 20, width: 20}}/>
+            <Text style={{color: 'white', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Add Subjects in Stats</Text>
+          </View>
+
+          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>More Analytics</Text>
+              <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Week Analytics</Text>
             </View>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
               <Image source={ChevronRightBlack} style={{height: 20, width: 20}}/>
@@ -63,7 +74,7 @@ const Statistics = () => {
           </TouchableOpacity>
         </View>
 
-        <View>
+        <View style={{marginTop: 10}}>
           <View style={{justifyContent: 'center', alignItems: 'center', height: 40, flexDirection: 'row'}}>
             <TouchableOpacity onPress={() => setMonthChange(MonthChange - 1)}>
               <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
@@ -76,93 +87,104 @@ const Statistics = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={[styles.monthReport]}>
-          <View style={styles.monthGraphSheet}>
-          {new Array(2).fill(null).map((__, index) => {
-            const props = {
-              activeStrokeWidth: 8,
-              inActiveStrokeWidth: 8,
-              inActiveStrokeOpacity: 0.3
-            };
-            const fuckrad = 8;
-            return (
-              <View key={index} style={{margin: 8, marginTop: 15}}>
-                <CircularProgressBase
-                {...props}
-                value={80}
-                radius={fuckrad * 7}
-                activeStrokeColor={'#e84118'}
-                inActiveStrokeColor={'#e84118'}
-              >
-                <CircularProgressBase
+        <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10}}>
+          <View style={[styles.monthReport]}>
+            <View style={styles.monthGraphSheet}>
+            {new Array(2).fill(null).map((__, index) => {
+              const props = {
+                activeStrokeWidth: 8,
+                inActiveStrokeWidth: 8,
+                inActiveStrokeOpacity: 0.3
+              };
+              const fuckrad = 8;
+              return (
+                <View key={index} style={{margin: 8, marginTop: 15}}>
+                  <CircularProgressBase
                   {...props}
-                  value={87}
-                  radius={fuckrad * 6}
-                  activeStrokeColor={'#badc58'}
-                  inActiveStrokeColor={'#badc58'}
+                  value={80}
+                  radius={fuckrad * 7}
+                  activeStrokeColor={'#e84118'}
+                  inActiveStrokeColor={'#e84118'}
                 >
                   <CircularProgressBase
                     {...props}
-                    value={62}
-                    radius={fuckrad * 5}
-                    activeStrokeColor={'#18dcff'}
-                    inActiveStrokeColor={'#18dcff'}
+                    value={87}
+                    radius={fuckrad * 6}
+                    activeStrokeColor={'#badc58'}
+                    inActiveStrokeColor={'#badc58'}
                   >
                     <CircularProgressBase
                       {...props}
-                      value={48}
-                      radius={fuckrad * 4}
-                      activeStrokeColor={'#b233ff'}
-                      inActiveStrokeColor={'#b233ff'}
+                      value={62}
+                      radius={fuckrad * 5}
+                      activeStrokeColor={'#18dcff'}
+                      inActiveStrokeColor={'#18dcff'}
                     >
                       <CircularProgressBase
                         {...props}
-                        value={47}
-                        radius={fuckrad * 3}
-                        activeStrokeColor={'#ff5733'}
-                        inActiveStrokeColor={'#ff5733'}
+                        value={48}
+                        radius={fuckrad * 4}
+                        activeStrokeColor={'#b233ff'}
+                        inActiveStrokeColor={'#b233ff'}
                       >
                         <CircularProgressBase
                           {...props}
-                          value={50}
-                          radius={fuckrad * 2}
-                          activeStrokeColor={'#33ff96'}
-                          inActiveStrokeColor={'#33ff96'}
+                          value={47}
+                          radius={fuckrad * 3}
+                          activeStrokeColor={'#ff5733'}
+                          inActiveStrokeColor={'#ff5733'}
                         >
                           <CircularProgressBase
                             {...props}
-                            value={39}
-                            radius={fuckrad}
-                            activeStrokeColor={'#33acff'}
-                            inActiveStrokeColor={'#33acff'}
+                            value={50}
+                            radius={fuckrad * 2}
+                            activeStrokeColor={'#33ff96'}
+                            inActiveStrokeColor={'#33ff96'}
                           >
+                            <CircularProgressBase
+                              {...props}
+                              value={39}
+                              radius={fuckrad}
+                              activeStrokeColor={'#33acff'}
+                              inActiveStrokeColor={'#33acff'}
+                            >
+                            </CircularProgressBase>
                           </CircularProgressBase>
                         </CircularProgressBase>
                       </CircularProgressBase>
                     </CircularProgressBase>
                   </CircularProgressBase>
-                </CircularProgressBase>
-                </CircularProgressBase>
-                <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
-                  <Text style={{fontFamily: 'sf-pro-display-medium'}}>1st Week</Text>
+                  </CircularProgressBase>
+                  <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
+                    <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>1st Week</Text>
+                  </View>
                 </View>
-              </View>
-            )
-          })}
-          </View>
-          <TouchableOpacity style={{backgroundColor: '#6f6f6f', flex: 0.1, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
-            <Image source={BoldChevronDown} style={{height: 15, width: 15}}/>
-          </TouchableOpacity>
-        </View>
-        <View style={{marginTop: 20, marginRight: 5, marginLeft: 5}}>
-          <View style={{marginBottom: 10, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{fontFamily: 'sf-pro-display-medium', color: '#000'}}>Reach Streak of 10 to unlock new Insights</Text>
-          </View>
-          <LinearGradient colors={['#ffffff', '#D2CFE4']} style={{borderRadius: 10}}>
-            <View style={{height: 100, borderRadius: 10, borderColor: '#6B1294', borderTopWidth: 5, justifyContent: 'center', alignItems: 'center'}}>
-              <Image source={LockImage} style={{height: 15, width: 15}}/>
+              )
+            })}
             </View>
-          </LinearGradient>
+            <TouchableOpacity style={{backgroundColor: '#6f6f6f', flex: 0.1, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+              <Image source={BoldChevronDown} style={{height: 15, width: 15}}/>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }}>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+              <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Month Analytics</Text>
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+              <Image source={ChevronRightBlack} style={{height: 20, width: 20}}/>
+            </View>
+          </TouchableOpacity>
+          <View style={{marginTop: 10}}>
+            <View style={{marginBottom: 10, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{fontFamily: 'sf-pro-display-medium', color: '#000'}}>Reach Streak of 10 to unlock new Insights</Text>
+            </View>
+            <LinearGradient colors={['#ffffff', '#D2CFE4']} style={{borderRadius: 10}}>
+              <View style={{height: 100, borderRadius: 10, borderColor: '#6B1294', borderTopWidth: 5, justifyContent: 'center', alignItems: 'center'}}>
+                <Image source={LockImage} style={{height: 15, width: 15}}/>
+              </View>
+            </LinearGradient>
+          </View>
         </View>
       </View>
       {/* <Taskbar activeState={'Statistics'}/> */}
@@ -173,7 +195,7 @@ const Statistics = () => {
 const styles = StyleSheet.create({
   safeView: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: '#D2CFE4'
   },
 
   mainStyle: {
@@ -189,8 +211,6 @@ const styles = StyleSheet.create({
   weekReport: {
     backgroundColor: '#3E3649',
     height: 210,
-    marginRight: 5,
-    marginLeft: 5,
     borderRadius: 10,
     flexDirection: 'row',
     paddingBottom: 20
@@ -206,8 +226,6 @@ const styles = StyleSheet.create({
   monthReport: {
     backgroundColor: '#000',
     height: 180,
-    marginRight: 5,
-    marginLeft: 5,
     borderRadius: 20,
     flexDirection: 'column'
     

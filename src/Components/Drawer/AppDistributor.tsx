@@ -23,7 +23,7 @@ const AppDistributor = () => {
     ];
     const [studentSearch, setStudentSearch] = useState("")
     const prevCount = useRef('');
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState("");
     const [isFocus, setIsFocus] = useState(false);
     const renderLabel = () => {
         if (value || isFocus) {

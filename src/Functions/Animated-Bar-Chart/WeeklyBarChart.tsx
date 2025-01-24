@@ -20,7 +20,7 @@ export default function WeeklyBarChart() {
           <View key={index}>
             <SingleBarChart value={subject.value}/>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{fontSize: 5}}>{subject.name}</Text>
+              <Text style={{fontSize: 7, color: 'white'}}>{subject.name}</Text>
             </View>
           </View>
         )

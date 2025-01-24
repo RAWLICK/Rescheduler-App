@@ -37,6 +37,8 @@ import {
   TouchableOpacity,
   Modal,
   Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
   Button,
   Dimensions
 } from 'react-native';
@@ -117,7 +119,8 @@ type RescheduleButtonAreaPropsType = {
   checked: boolean, 
   handleCheckboxChange: (index: number, checked: boolean) => void,
   RescheduleButtonClick: () => void,
-  selectedDate: string
+  selectedDate: string,
+  handleOutsidePress: () => void
 }
 
 type BottomOptionsAreaPropsType = {
@@ -195,6 +198,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
         <Text style={[{fontFamily: 'Geizer', fontSize: 30, color: 'white'}]}>Reschedule</Text>
       </TouchableOpacity>
       <Modal transparent= {true} visible={props.rescheduleStatus !== 'off'} animationType='fade'>
+      <TouchableWithoutFeedback onPress={props.handleOutsidePress}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <BlurView
           style={styles.blurStyle}
@@ -249,7 +253,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
                   innerIconStyle={{ borderWidth: 2 }}
                   textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff', textDecorationLine: 'none' }}
                   // onPress={(isChecked: boolean) => {console.log(isChecked)}}
-                  onPress={() => props.handleCheckboxChange(indexValue, props.checked)}
+                  onPress={(isChecked: boolean) => props.handleCheckboxChange(indexValue, isChecked)}
                 />
               </View>
             )})}
@@ -262,6 +266,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           </View>
         </View>
       </View>
+    </TouchableWithoutFeedback>
     </Modal>
     </View>
   )
@@ -305,7 +310,6 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
           </View>
         </TouchableOpacity>
       </View>
-      <TaskCompletionBoard/>
     </View>
   )
 };
@@ -663,13 +667,13 @@ const Schedule: React.FC = () => {
     
     useEffect(() => {
       if (rescheduleStatus === 'PriorStage') {
-        setDialogTitle('Choose Prior Work');
+        setDialogTitle('Any Prior Work to Choose ?');
       }
       else if (rescheduleStatus === 'FixingStage') {
-        setDialogTitle('Choose the ones to be Fixed');
+        setDialogTitle('Any Work to remain fixed ?');
       }
       else if (rescheduleStatus === 'RemovingStage') {
-        setDialogTitle('Choose Removing Work');
+        setDialogTitle('Any Work to be Removed ?');
       }
     }, [rescheduleStatus]);
 
@@ -713,46 +717,49 @@ const Schedule: React.FC = () => {
       rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('off'))
     }
 
-    const handleCheckboxChange = async (index: number, checked: boolean) => {
-      setChecked(!checked)
+    const handleOutsidePress = () => {
+      Keyboard.dismiss();                   // Close keyboard if open
+      setRescheduleStatus("off")        // Close modal
+    };
+
+    const handleCheckboxChange = (index: number, checked: boolean) => {
       if (rescheduleStatus == 'PriorStage') {
         console.log("Checked: ", checked)
-        await setPriorSelections((prevSelections) => {
+        setPriorSelections((prevSelections) => {
           if (checked) {
             const newSelections = [...prevSelections, index]
-            return newSelections;
+            return newSelections.sort((a, b) => a - b);
           } 
           else {
             const newSelections = prevSelections.filter((item) => item !== index);
-            return newSelections;
+            return newSelections.sort((a, b) => a - b);
           }
         })
-        console.log("PriorSelectionList: ", PriorSelections)
       }
       else if (rescheduleStatus == 'FixingStage') {
         console.log("Checked: ", checked)
-        await setFixedSelections((prevSelections) => {
+        setFixedSelections((prevSelections) => {
           if (checked) {
             const newSelections = [...prevSelections, index]
-            return newSelections;
+            return newSelections.sort((a, b) => a - b);
           } 
           else {
             const newSelections = prevSelections.filter((item) => item !== index);
-            return newSelections;
+            return newSelections.sort((a, b) => a - b);
           }
         })
         console.log("FixedSelectionList: ", FixedSelections)
       }
       else if (rescheduleStatus == 'RemovingStage') {
         console.log("Checked: ", checked)
-        await setRemovingSelections((prevSelections) => {
+        setRemovingSelections((prevSelections) => {
           if (checked) {
             const newSelections = [...prevSelections, index]
-            return newSelections;
+            return newSelections.sort((a, b) => a - b);
           } 
           else {
             const newSelections = prevSelections.filter((item) => item !== index);
-            return newSelections;
+            return newSelections.sort((a, b) => a - b);
           }
         })
         console.log("RemovingSelectionList: ", RemovingSelections)
@@ -768,8 +775,24 @@ const Schedule: React.FC = () => {
     }
     
     useEffect(() => {
-      // console.log('ScheduleArray (Schedule.tsx): ', JSON.stringify(ScheduleArray));
-    }, []);
+      console.log("PriorSelectionList: ", PriorSelections)
+    }, [PriorSelections]);
+    useEffect(() => {
+      console.log("FixedSelectionsList: ", FixedSelections)
+    }, [FixedSelections]);
+    useEffect(() => {
+      console.log("RemovingSelectionsList: ", RemovingSelections)
+    }, [RemovingSelections]);
+    
+    // Clearing the Arrays so that on reselection, the index doesn't get double assigned
+    useEffect(() => {
+      if (rescheduleStatus == 'off') {
+        setPriorSelections([])
+        setFixedSelections([])
+        setRemovingSelections([])
+      }
+    }, [rescheduleStatus])
+    
     
     return (
       <SafeAreaView style={styles.safeView}>
@@ -814,6 +837,7 @@ const Schedule: React.FC = () => {
             </View>
 
             <RescheduleButtonArea
+            handleOutsidePress={handleOutsidePress}
              rescheduleStatus={rescheduleStatus} 
              DialogBackButton={DialogBackButton} 
              DialogTitle={DialogTitle} 

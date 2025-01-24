@@ -73,7 +73,7 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
   const data = {
     "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Work),
-    "Slice_Color": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Slice_Color)
+    "Duration": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Duration)
   }
   const AddingSubjectsSheet = useRef<TrueSheet>(null);
   const [EditDialogBoxStatus, setEditDialogBoxStatus] = useState(false)
@@ -124,14 +124,6 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
             // styles.UpperOption, 
             { backgroundColor: '#222328', height: height * 0.06, alignItems: 'center', columnGap: 5 }
           ]}>
-            <View
-              style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
-              <View
-                style={[
-                  styles.angleInfoColor,
-                  { backgroundColor: `blue` },
-                ]}></View>
-            </View>
             <TouchableOpacity style={{flex: 0.8}} onPress={() => SubjectApplyingButton(work)}>
               <Text style={{ fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 15 }}>{work}</Text>
             </TouchableOpacity>
