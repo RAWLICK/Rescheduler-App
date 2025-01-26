@@ -24,10 +24,76 @@ import {
   Dimensions,
   Modal
 } from 'react-native';
+import { startOfWeek, endOfWeek, eachDayOfInterval, subWeeks, addWeeks, addMonths, subMonths } from 'date-fns';
 
 const Statistics = () => {
   const [WeekChange, setWeekChange] = useState<number>(0);
   const [MonthChange, setMonthChange] = useState<number>(0)
+  const currentDate = new Date();
+  const currentWeekStartDate = startOfWeek(currentDate, { weekStartsOn: 1 });
+  const currentWeekEndDate = endOfWeek(currentDate, { weekStartsOn: 1 });
+  const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(currentWeekStartDate)
+  const [WeekTitle, setWeekTitle] = useState('This Week')
+  // const DatesBetween = eachDayOfInterval({start: currentWeekStartDate, end: currentWeekEndDate})
+  // const AddingWeeks = addWeeks(currentWeekStartDate, 1)
+  // const SubtractWeeks = subWeeks(selectedWeekStart, 1)
+
+  const WordMonth = (date: number) => {
+    let MonthExtract = date;
+    const Months = [
+      'Jan',
+      'Feb',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'Aug',
+      'Sept',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return Months[MonthExtract];
+  };
+
+  function DayToWeekTitle(date: Date) {
+    const numberDate = date.getDate();
+    const month = date.getMonth();
+    return `Week of ${numberDate} ${WordMonth(month)}`
+  }
+
+  function DaytoStringDate(date: Date) {
+    const numberDate = date.getDate();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    return `${numberDate}/${month+1}/${year}`
+  }
+
+  function IncreaseWeekButton () {
+    const IncreasedWeekStart = addWeeks(selectedWeekStart, 1)
+    setSelectedWeekStart(IncreasedWeekStart)
+    if (DaytoStringDate(IncreasedWeekStart) == DaytoStringDate(currentWeekStartDate)) {
+      setWeekTitle("This Week")
+    } else {
+      setWeekTitle(DayToWeekTitle(IncreasedWeekStart))
+    }
+  }
+
+  function DecreaseWeekButton () {
+    const DecreasedWeekStart = subWeeks(selectedWeekStart, 1)
+    setSelectedWeekStart(DecreasedWeekStart)
+    if (DaytoStringDate(DecreasedWeekStart) === DaytoStringDate(currentWeekStartDate)) {
+      setWeekTitle("This Week")
+    } else {
+    setWeekTitle(DayToWeekTitle(DecreasedWeekStart))
+    }
+  }
+
+  // useEffect(() => {
+  //   console.log(selectedWeekStart)
+  // }, [selectedWeekStart])
+  
 
 
   module.exports = {WeekChange}
@@ -45,14 +111,17 @@ const Statistics = () => {
         </View>
 
         <View style={{justifyContent: 'center', alignItems: 'center', height: 40, flexDirection: 'row'}}>
-          <TouchableOpacity onPress={() => setWeekChange(WeekChange - 1)}>
+          <TouchableOpacity onPress={DecreaseWeekButton}>
             <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
           </TouchableOpacity>
           <View style={{marginLeft: 15, marginRight: 15}}>
-            <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>This Week</Text>
+            <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>{WeekTitle}</Text>
           </View>
-          <TouchableOpacity onPress={() => setWeekChange(WeekChange + 1)}>
-            <Image source={ChevronRightBlack} style={{height: 15, width: 15}}/>
+          <TouchableOpacity onPress={IncreaseWeekButton} disabled={DaytoStringDate(selectedWeekStart) == DaytoStringDate(currentWeekStartDate)}>
+            <Image source={ChevronRightBlack}
+              style={[{height: 15, width: 15 },
+              DaytoStringDate(selectedWeekStart) == DaytoStringDate(currentWeekStartDate) && {opacity: 0.3}
+            ]}/>
           </TouchableOpacity>
         </View>
         <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10}}>
