@@ -34,6 +34,7 @@ import ScheduleTable from './Components/Screens/ScheduleTable';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Store, persistor } from './app/Store'
+import OnBoardingScreen from './Components/Authentication/OnBoardingScreen';
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -47,6 +48,7 @@ type StackParamList = {
   SignUpStack: undefined;
   OtpVerificationStack: undefined;
   TaskCompletionBoardStack: undefined;
+  OnBoardingScreenStack: undefined;
   // RoughCompTwo: undefined;
 };
 
@@ -130,12 +132,13 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='TaskCompletionBoardStack'>
+      <Stack.Navigator initialRouteName='OnBoardingScreenStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
         <Stack.Screen name="OtpVerificationStack" component={OtpVerificaton} options={{ headerShown: false }} />
         <Stack.Screen name="TaskCompletionBoardStack" component={TaskCompletionBoard} options={{ headerShown: false }} />
+        <Stack.Screen name="OnBoardingScreenStack" component={OnBoardingScreen} options={{ headerShown: false }} />
         {/* <Stack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
       </Stack.Navigator>
     );

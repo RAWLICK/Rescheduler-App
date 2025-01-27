@@ -1,0 +1,19 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Gradient Background -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:startColor="#0a0404"
+                android:endColor="#9e00ff"
+                android:angle="90" />
+        </shape>
+    </item>
+
+    <!-- Centered Logo -->
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/reschedulerremovebg" /> <!-- Replace with your logo -->
+    </item>
+</layer-list>

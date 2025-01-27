@@ -10,9 +10,11 @@ const add = addWeeks(start, 1)
 const subtract = subWeeks(start, 1)
 console.log("subtract: ", subtract)
 // const between = eachDayOfInterval({start: startOfWeek, endOfWeek})
-const demoData =
+// #e68eff
+export const demoData =
  [ 
-    {
+    {   
+        "uniqueID": "7g3ca85f6h",
         "Subject": "Chemistry",
         "Current_Duration": "1h",
         "Dataframe": [
@@ -31,6 +33,7 @@ const demoData =
         ]
     },
     {
+        "uniqueID": "b30v6s9f1j",
         "Subject": "Maths",
         "Current_Duration": "2h",
         "Dataframe": [
@@ -49,6 +52,7 @@ const demoData =
         ]
     },
     {
+        "uniqueID": "nn77d4x0g5",
         "Subject": "Biology",
         "Current_Duration": "1h 30min",
         "Dataframe": [
@@ -67,6 +71,7 @@ const demoData =
         ]
     },
     {
+        "uniqueID": "k3x04f17f5",
         "Subject": "History",
         "Current_Duration": "0h 30min",
         "Dataframe": [
@@ -85,6 +90,7 @@ const demoData =
         ]
     },
     {
+        "uniqueID": "j22s886d51",
         "Subject": "Economics",
         "Current_Duration": "1h 15min",
         "Dataframe": [
@@ -103,6 +109,7 @@ const demoData =
         ]
     },
     {
+        "uniqueID": "871v6d45nn",
         "Subject": "Civics",
         "Current_Duration": "1h",
         "Dataframe": [
@@ -127,6 +134,7 @@ const demoData =
         ]
     },
     {
+        "uniqueID": "982bx673f5",
         "Subject": "Geography",
         "Current_Duration": "10min",
         "Dataframe": [

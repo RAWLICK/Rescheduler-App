@@ -2,6 +2,18 @@ import { StyleSheet, Text, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { BACKGROUND_COLOR, data } from './constants.ts'
 import SingleBarChart from './SingleBarChart.tsx'
+import { demoData } from './constants.ts'
+type DemoDataItemPropsType = {
+  uniqueID: string;
+  Subject: string;
+  Current_Duration: string;
+  Dataframe: {
+      Date: string;
+      Percentage: string;
+      Duration: string;
+      "Work-Done-For": string;
+  }[];
+}
 
 export default function WeeklyBarChart() {
   const [WeekChangeImport, setWeekChangeImport ] = useState<number>(0)
@@ -25,6 +37,12 @@ export default function WeeklyBarChart() {
           </View>
         )
       })}
+      {/* {demoData.map((eachItem: DemoDataItemPropsType, index: number) => ({eachItem, index}))
+      .filter(({eachItem}) => eachItem["Dataframe"]["Date"] ) => {
+        return (
+
+        )
+      }} */}
     </View>
     </>
   )
