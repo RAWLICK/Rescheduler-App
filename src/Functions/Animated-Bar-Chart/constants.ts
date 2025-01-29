@@ -8,7 +8,6 @@ const end = endOfWeek(new Date, { weekStartsOn: 1 });
 const between = eachDayOfInterval({start, end})
 const add = addWeeks(start, 1)
 const subtract = subWeeks(start, 1)
-console.log("subtract: ", subtract)
 // const between = eachDayOfInterval({start: startOfWeek, endOfWeek})
 // #e68eff
 export const demoData =
@@ -19,13 +18,13 @@ export const demoData =
         "Current_Duration": "1h",
         "Dataframe": [
             {
-                "Date": "12/02/2025",
+                "Date": "27/01/2025",
                 "Percentage": "100%",
                 "Duration": "1h",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "13/02/2025",
+                "Date": "28/01/2025",
                 "Percentage": "50%",
                 "Duration": "1h",
                 "Work-Done-For": "30min"
@@ -38,13 +37,13 @@ export const demoData =
         "Current_Duration": "2h",
         "Dataframe": [
             {
-                "Date": "12/02/2025",
+                "Date": "27/01/2025",
                 "Percentage": "100%",
                 "Duration": "1h",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "13/02/2025",
+                "Date": "28/01/2025",
                 "Percentage": "50%",
                 "Duration": "2h",
                 "Work-Done-For": "60min"
@@ -57,13 +56,13 @@ export const demoData =
         "Current_Duration": "1h 30min",
         "Dataframe": [
             {
-                "Date": "12/02/2025",
+                "Date": "27/01/2025",
                 "Percentage": "100%",
                 "Duration": "1h 30min",
                 "Work-Done-For": "90min"
             },
             {
-                "Date": "13/02/2025",
+                "Date": "29/01/2025",
                 "Percentage": "50%",
                 "Duration": "1h",
                 "Work-Done-For": "30min"
@@ -76,13 +75,13 @@ export const demoData =
         "Current_Duration": "0h 30min",
         "Dataframe": [
             {
-                "Date": "12/02/2025",
+                "Date": "28/01/2025",
                 "Percentage": "100%",
                 "Duration": "1h 30min",
                 "Work-Done-For": "90min"
             },
             {
-                "Date": "13/02/2025",
+                "Date": "29/01/2025",
                 "Percentage": "50%",
                 "Duration": "0h 30min",
                 "Work-Done-For": "15min"
@@ -95,13 +94,13 @@ export const demoData =
         "Current_Duration": "1h 15min",
         "Dataframe": [
             {
-                "Date": "12/02/2025",
+                "Date": "27/01/2025",
                 "Percentage": "100%",
                 "Duration": "1h 15min",
                 "Work-Done-For": "75min"
             },
             {
-                "Date": "13/02/2025",
+                "Date": "28/01/2025",
                 "Percentage": "50%",
                 "Duration": "1h 15min",
                 "Work-Done-For": "37min"
@@ -114,19 +113,19 @@ export const demoData =
         "Current_Duration": "1h",
         "Dataframe": [
             {
-                "Date": "12/02/2025",
+                "Date": "27/01/2025",
                 "Percentage": "100%",
                 "Duration": "1h",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "13/02/2025",
+                "Date": "28/01/2025",
                 "Percentage": "0%",
                 "Duration": "1h",
                 "Work-Done-For": "0min"
             },
             {
-                "Date": "16/02/2025",
+                "Date": "29/01/2025",
                 "Percentage": "75%",
                 "Duration": "1h",
                 "Work-Done-For": "45min"
@@ -139,19 +138,19 @@ export const demoData =
         "Current_Duration": "10min",
         "Dataframe": [
             {
-                "Date": "12/02/2025",
+                "Date": "27/01/2025",
                 "Percentage": "50%",
                 "Duration": "10min",
                 "Work-Done-For": "5min"
             },
             {
-                "Date": "13/02/2025",
+                "Date": "28/01/2025",
                 "Percentage": "25%",
                 "Duration": "10min",
                 "Work-Done-For": "3min"
             },
             {
-                "Date": "19/02/2025",
+                "Date": "29/01/2025",
                 "Percentage": "100%",
                 "Duration": "1hr",
                 "Work-Done-For": "60min"
@@ -160,6 +159,7 @@ export const demoData =
     }
 
  ]
+
 
 // const mondayFromThreeWeeksAgo = startOfWeek(
 //     new Date().getTime() - 86400000 * 21,

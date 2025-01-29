@@ -547,6 +547,36 @@ const Schedule: React.FC = () => {
           y: centerY + (radius * Math.sin(angleInRadians))
         };
       };
+
+      {data['TaskDate']
+        .map((TaskDate:string, index:number) => ({TaskDate, index}))
+        .filter(({TaskDate}) => TaskDate === selectedDate)
+        .map(({index}) => {
+          const uniqueID = data['uniqueID'][index]
+          const startAngle = data['StartAngle'][index];
+          const endAngle = data['EndAngle'][index];
+          const sectorColor = data['Slice_Color'][index];
+          const startTime = data['StartTime'][index]
+          const endTime = data['EndTime'][index]
+          const angleDuration = angleToTime(endAngle - startAngle)
+          const angleWork = data['Work'][index]
+          useEffect(() => {
+            if (hourRotation >= startAngle && hourRotation <= endAngle) {
+              setWork(angleWork);
+              setduration(`(${angleDuration})`);
+              settimeStart(TwelveHourFormat(startTime));
+              settimeEnd(TwelveHourFormat(endTime));
+              return;
+            }
+            else if (hourRotation < startAngle || hourRotation > endAngle) {
+              setWork('Free Time else if wala');
+              setduration("");
+              settimeStart("");
+              settimeEnd("");
+            }
+          }, [ScheduleArray, currentSecTime])}
+      )}
+
   
       // Polar coordinates represent a point in a plane using a distance from a reference point (called the radius) and an angle from a reference direction.
       // Cartesian coordinates represent a point in a plane using an x-coordinate and a y-coordinate.
@@ -575,7 +605,7 @@ const Schedule: React.FC = () => {
               <Stop offset="50%" stopColor="red" stopOpacity="0" />
             </LinearGradient>
           </Defs> */}
-          {/* Below is a very complex filtering and mapping possible with the effort of ChatGPT */}
+
           {data['TaskDate']
           .map((TaskDate:string, index:number) => ({TaskDate, index}))
           .filter(({TaskDate}) => TaskDate === selectedDate)
@@ -588,20 +618,6 @@ const Schedule: React.FC = () => {
             const endTime = data['EndTime'][index]
             const angleDuration = angleToTime(endAngle - startAngle)
             const angleWork = data['Work'][index]
-            useEffect(() => {
-              if (hourRotation >= startAngle && hourRotation <= endAngle) {
-                setWork(angleWork);
-                setduration(`(${angleDuration})`);
-                settimeStart(TwelveHourFormat(startTime));
-                settimeEnd(TwelveHourFormat(endTime));
-              }
-              else if (hourRotation < startAngle || hourRotation > endAngle) {
-                setWork('Free Time');
-                setduration("");
-                settimeStart("");
-                settimeEnd("");
-              }
-            }, [ScheduleArray, currentSecTime])
             
             const angleOnPress = () => {
               console.log('Pressed onOP');
@@ -636,12 +652,6 @@ const Schedule: React.FC = () => {
                 // strokeWidth="4"
               />
           )})}
-          {tintstatus && (
-            <Path
-            d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, data["EndAngle"][14], hourRotation)}
-            fill= "rgba(0, 0, 0, 0.5)"
-          />
-          )}
         </Svg>
       );
     }, [ScheduleArray, selectedDate, currentMinTime]);

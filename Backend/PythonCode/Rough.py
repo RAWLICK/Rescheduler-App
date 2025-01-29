@@ -340,7 +340,7 @@ def CompressionFunction(
         #Sorting the rows on the basis of 'Start_' column with respect to time and resetting the index of dataframe.
         Compressed_DataFrame = Compressed_DataFrame.sort_values(by='Start_').reset_index(drop=True)
 
-
+    # Here else is for, if the paramters have values for fixedTimings
     else: 
         # LenTills_Addition tells us, how many of the works we have actually covered with respect to fixed timing while going on with the "for loop"
         # LenTills_Dictionary is a dictionary that counts the len value of works (number of works) till each fixed timing
@@ -377,6 +377,10 @@ def CompressionFunction(
 
         for i in range(0, len(Pinned_Work_List)-1):
             Fragment_Dur_Dict.update({"Fragment_" + str(i+2) + "_Duration" : Pinned_Work_StartTiming[i+1] - Pinned_Work_EndTiming[i]})
+
+        # This Last Update actually ensures that Total_Fragment_Duration covers till the end of the original schedule including the timings of Removed Works
+        Fragment_Dur_Dict.update({"Fragment_Last_Duration" : Original_End[-1] - Pinned_Work_EndTiming[-1]})
+
         print("Fragment_Dur_Dict: ",Fragment_Dur_Dict)
         print("\n")
         # Output: {'Fragment_1_Duration': Timedelta('0 days 03:00:00'), 'Fragment_2_Duration': Timedelta('0 days 03:00:00'), 'Fragment_3_Duration': Timedelta('0 days 04:00:00'), 'Fragment_4_Duration': Timedelta('0 days 01:30:00')}
@@ -686,7 +690,7 @@ def CompressionFunction(
     return DataFrame_Dict
 
 # CompressionFunction("05/01/2025 10:00", "0,1", "5", "1")
-CompressionFunction("05/01/2025 10:00", "0,1,2,3", "4,6", "")
+CompressionFunction("05/01/2025 10:00", "0,1,2,3", "5", "6")
 
 
 

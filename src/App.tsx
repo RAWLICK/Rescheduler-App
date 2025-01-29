@@ -158,7 +158,7 @@ function App(): React.JSX.Element {
 
   function Tabs() {
     return (
-      <Tab.Navigator initialRouteName="StatisticsTab"
+      <Tab.Navigator initialRouteName="ScheduleTab"
        screenOptions={ ({route}) => ({
         tabBarButton: (props) => {
           const {onPress, accessibilityState} = props;

@@ -33,6 +33,7 @@ const Statistics = () => {
   const currentWeekStartDate = startOfWeek(currentDate, { weekStartsOn: 1 });
   const currentWeekEndDate = endOfWeek(currentDate, { weekStartsOn: 1 });
   const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(currentWeekStartDate)
+  const [selectedWeekEnd, setselectedWeekEnd] = useState<Date>(currentWeekEndDate)
   const [WeekTitle, setWeekTitle] = useState('This Week')
   // const DatesBetween = eachDayOfInterval({start: currentWeekStartDate, end: currentWeekEndDate})
   // const AddingWeeks = addWeeks(currentWeekStartDate, 1)
@@ -73,6 +74,7 @@ const Statistics = () => {
   function IncreaseWeekButton () {
     const IncreasedWeekStart = addWeeks(selectedWeekStart, 1)
     setSelectedWeekStart(IncreasedWeekStart)
+    setselectedWeekEnd(endOfWeek(IncreasedWeekStart, {weekStartsOn: 1}))
     if (DaytoStringDate(IncreasedWeekStart) == DaytoStringDate(currentWeekStartDate)) {
       setWeekTitle("This Week")
     } else {
@@ -83,6 +85,7 @@ const Statistics = () => {
   function DecreaseWeekButton () {
     const DecreasedWeekStart = subWeeks(selectedWeekStart, 1)
     setSelectedWeekStart(DecreasedWeekStart)
+    setselectedWeekEnd(endOfWeek(DecreasedWeekStart, {weekStartsOn: 1}))
     if (DaytoStringDate(DecreasedWeekStart) === DaytoStringDate(currentWeekStartDate)) {
       setWeekTitle("This Week")
     } else {
@@ -126,7 +129,10 @@ const Statistics = () => {
         </View>
         <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10}}>
           <View style={styles.weekReport}>
-            <WeeklyBarChart/>
+            <WeeklyBarChart
+              selectedWeekStart={selectedWeekStart}
+              selectedWeekEnd={selectedWeekEnd}
+            />
           </View>
           <View style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: 5}}>
             <Image source={AddTwo} style={{height: 20, width: 20}}/>
