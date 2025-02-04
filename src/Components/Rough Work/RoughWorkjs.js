@@ -1,15 +1,39 @@
-// function StringDateToDateConvert(stringDate) {
-//     let [day, month, year] = stringDate.split('/')
-//     const createdDate = new Date(Date.UTC(year, month - 1, day))
-//     console.log(typeof(year))
-// }
-// StringDateToDateConvert("12/07/2025")
+function elaborateDuration(duration) {
+    if (duration.includes('min') && !duration.includes('h')) {
+        const addingHour = 0
+        const addingMinute = Number(duration.split(' ')[0])
+        console.log("addingHour: ", addingHour)
+        console.log("addingMinute: ", addingMinute)
+        return [addingHour, addingMinute]
+    }
+    else if (duration.includes('h') && !duration.includes('min')) {
+        const addingHour = Number(duration.split('h')[0])
+        const addingMinute = 0
+        console.log("addingHour: ", addingHour)
+        console.log("addingMinute: ", addingMinute)
+        return [addingHour, addingMinute]
+    }
+    else {
+        const addingHour = Number(duration.split('h')[0])
+        const addingMinute = Number(duration.slice(3, 5))
+        console.log("addingHour: ", addingHour)
+        console.log("addingMinute: ", addingMinute)
+        return [addingHour, addingMinute]
+    }
+  }
 
-// function SlicingMins (duration) {
-//     const number = duration.split('min')[0]
-//     console.log(number)
-// }
+function AdjustedEndTime (StartTime) {
+    const StartHour = Number(StartTime.split(":")[0])
+    const StartMin = Number(StartTime.split(":")[1])
+    const [addHour, addMinute] = elaborateDuration('1h 15 min');
+    let EndHour = StartHour + addHour
+    let EndMin = StartMin + addMinute
+    if (EndMin >= 60) {
+        EndHour += 1;
+        EndMin -= 60;
+    }
+    console.log(`${EndHour}:${EndMin}`)
+    return `${EndHour}:${EndMin}`
+}
 
-a = [50, 70, 90, 100, 20]
-const max = Math.max(...a)
-console.log(max)
+AdjustedEndTime('5:59')

@@ -11,6 +11,7 @@ import {
   StatusBar,
   Platform,
   Button,
+  Alert
 } from 'react-native';
 import React from 'react';
 import {useState, useEffect, useRef} from 'react';
@@ -35,6 +36,7 @@ import Animated, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import ExistingSubjects from './ExistingSubjects';
+import PreviousSchedule from './PreviousSchedule';
 import SwipeRight from '../Images/swipe-right.png'
 import { useDispatch, useSelector } from 'react-redux' 
 import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
@@ -47,6 +49,8 @@ type PanGesture = ReturnType<typeof Gesture.Pan>;
 
 // Nested Components (Composition)
 type GroupPropsType = {
+  PrevScheduleStatus: boolean,
+  setPrevScheduleStatus: SetState<boolean>;
   AddFromExistingWorkButton: boolean;
   setAddFromExistingWorkButton: SetState<boolean>;
   AddFromExistingWorkToggleSwitch: () => void;
@@ -212,14 +216,18 @@ const AreaOne = (props: GroupPropsType) => {
 const AreaTwo = (props: GroupPropsType) => {
   return (
     <View style={styles.areaTwo}>
-      <View style={styles.UpperOption}>
+      <TouchableOpacity style={styles.UpperOption} onPress={() => props.setPrevScheduleStatus(true)}>
         <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'flex-start'}}>
           <Text style={styles.OptionText}>Previous Schedule</Text>
+          <PreviousSchedule
+            PrevScheduleStatus={props.PrevScheduleStatus}
+            setPrevScheduleStatus={props.setPrevScheduleStatus}
+          />
         </View>
         <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-end'}}>
           <Image source={SwipeRight} style={{height: 35, width: 35}}/>
         </View>
-      </View>
+      </TouchableOpacity>
       <View style={styles.MiddleOption}>
         <View style={styles.DateHeadingBox}>
           <Text style={styles.OptionText}>Date</Text>
@@ -294,7 +302,7 @@ const AreaTwo = (props: GroupPropsType) => {
           styles.MiddleOption,
           {flex: 2, flexDirection: 'column', justifyContent: 'center'},
         ]}>
-        <View style={styles.DurationTagLineBox}>
+        <View style={[styles.DurationTagLineBox, props.PrevScheduleStatus == true ? {backgroundColor: 'black'}: {backgroundColor: '#9D9EA0'}]}>
           <Text
             style={[
               styles.OptionText,
@@ -390,7 +398,7 @@ export interface ScheduleArrayItem {
 import {CombinedNavigationProp} from '../../App';
 
 const AddTiming = () => {
-  const [AddFromExistingWorkButton, setAddFromExistingWorkButton] = useState(false)
+  const [AddFromExistingWorkButton, setAddFromExistingWorkButton] = useState(true)
   const AddFromExistingWorkToggleSwitch = () => setAddFromExistingWorkButton(previousState => !previousState)
   const Message = 'Keep Faith';
   const navigation = useNavigation<CombinedNavigationProp>();
@@ -408,6 +416,7 @@ const AddTiming = () => {
   const [WorkToDo, setWorkToDo] = useState('Work');
   const [StartAngle, setStartAngle] = useState<number>();
   const [EndAngle, setEndAngle] = useState<number>();
+  const [PrevScheduleStatus, setPrevScheduleStatus] = useState(false)
   const dispatch = useDispatch();
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
   // const [ScheduleArray, setScheduleArray] = useState<ScheduleArrayItem[]>([]);
@@ -469,6 +478,24 @@ const AddTiming = () => {
     ];
     return Months[MonthExtract];
   };
+
+  function elaborateDuration(duration: string) {
+    if (duration.includes('min') && !duration.includes('h')) {
+        const addingHour = 0
+        const addingMinute = Number(duration.split(' ')[0])
+        return [addingHour, addingMinute]
+    }
+    else if (duration.includes('h') && !duration.includes('min')) {
+        const addingHour = Number(duration.split('h')[0])
+        const addingMinute = 0
+        return [addingHour, addingMinute]
+    }
+    else {
+        const addingHour = Number(duration.split('h')[0])
+        const addingMinute = Number(duration.slice(3, 5))
+        return [addingHour, addingMinute]
+    }
+  }
 
   const handleConfirm = (date: Date) => {
     // .padStart is added to provide a leading 0 to a singular number
@@ -537,6 +564,22 @@ const AddTiming = () => {
     setEndAngle(EndDegree);
   };
 
+  function AdjustedEndTime (StartTime: string) {
+    const StartHour = Number(StartTime.split(":")[0])
+    const StartMin = Number(StartTime.split(":")[1])
+    const [addHour, addMinute] = elaborateDuration(Duration);
+    let EndHour = StartHour + addHour
+    let EndMin = StartMin + addMinute
+    if (EndMin >= 60) {
+        EndHour += 1;
+        EndMin -= 60;
+    }
+    if (EndHour >= 24) {
+      EndHour -= 24
+    }
+    return `${EndHour.toString().padStart(2, '0')}:${EndMin.toString().padStart(2, '0')}`
+  }
+
   const pan = Gesture.Pan()
     .onBegin(() => {
       StartRadar.value = FinalRadar.value;
@@ -584,10 +627,13 @@ const AddTiming = () => {
 
   useEffect(() => {
     setStartTime(currentTime);
-    setEndTime(currentTime);
     setTaskDate(currentDateandMonth);
   }, []);
 
+  useEffect(() => {
+    setEndTime(AdjustedEndTime(StartTime));
+  }, [StartTime, Duration])
+  
   useEffect(() => {
     degreeConverter(StartTime, EndTime);
   }, [StartTime, EndTime]);
@@ -603,7 +649,12 @@ const AddTiming = () => {
       TaskDate: TaskDate,
       Slice_Color: color
     };
-    dispatch(addScheduleObject(newTask));
+    if (StartTime.split(":")[0] > EndTime.split(":")[0]) {
+      Alert.alert("Invalid TimeZone", "Your Start Time is ahead of End Time")
+    }
+    else {
+      dispatch(addScheduleObject(newTask));
+    }
   };
 
   useEffect(() => {
@@ -623,6 +674,8 @@ const AddTiming = () => {
         {/* <PanGestureHandler> */}
         <View style={styles.mainStyle}>
           <HeaderPanel
+            PrevScheduleStatus={PrevScheduleStatus}
+            setPrevScheduleStatus={setPrevScheduleStatus}
             AddFromExistingWorkButton={AddFromExistingWorkButton}
             setAddFromExistingWorkButton={setAddFromExistingWorkButton}
             AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
@@ -655,6 +708,8 @@ const AddTiming = () => {
 
           <ScrollView>
             <AreaOne
+              PrevScheduleStatus={PrevScheduleStatus}
+              setPrevScheduleStatus={setPrevScheduleStatus}
               AddFromExistingWorkButton={AddFromExistingWorkButton}
               setAddFromExistingWorkButton={setAddFromExistingWorkButton}
               AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
@@ -686,6 +741,8 @@ const AddTiming = () => {
             />
 
             <AreaTwo
+              PrevScheduleStatus={PrevScheduleStatus}
+              setPrevScheduleStatus={setPrevScheduleStatus}
               AddFromExistingWorkButton={AddFromExistingWorkButton}
               setAddFromExistingWorkButton={setAddFromExistingWorkButton}
               AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
@@ -717,6 +774,8 @@ const AddTiming = () => {
             />
 
             <AreaThree
+              PrevScheduleStatus={PrevScheduleStatus}
+              setPrevScheduleStatus={setPrevScheduleStatus}
               AddFromExistingWorkButton={AddFromExistingWorkButton}
               setAddFromExistingWorkButton={setAddFromExistingWorkButton}
               AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
@@ -777,7 +836,7 @@ const styles = StyleSheet.create({
     width: 20,
     borderRadius: 10,
     position: 'absolute',
-    top: 73,
+    top: 76,
   },
   DurationPerPiece: {
     backgroundColor: '#9D9EA0',

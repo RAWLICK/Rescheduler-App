@@ -120,6 +120,7 @@ type RescheduleButtonAreaPropsType = {
   handleCheckboxChange: (index: number, checked: boolean) => void,
   RescheduleButtonClick: () => void,
   selectedDate: string,
+  currentDateStringFormat: string,
   handleOutsidePress: () => void
 }
 
@@ -229,15 +230,25 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
             StartAngle, 
             TaskDate: props.data['TaskDate'][index]
           }))
+          .filter(({TaskDate}) => {
+            // console.log("Taskdate: ", TaskDate)
+            // console.log(TaskDate == props.currentDateStringFormat)
+
+            return TaskDate == props.currentDateStringFormat
+          })
           .filter(({StartAngle, TaskDate}) => {
           if (props.rescheduleStatus == 'PriorStage') {
-            return StartAngle <= props.hourRotation && TaskDate == props.selectedDate
+            // console.log("TaskDate: ", TaskDate)
+            // console.log("currentDateStringFormat: ", props.currentDateStringFormat)
+            return StartAngle <= props.hourRotation
           }
           else if (props.rescheduleStatus == 'FixingStage') {
-            return StartAngle > props.hourRotation && TaskDate == props.selectedDate
+            // console.log("This is fixing stage")
+            return StartAngle > props.hourRotation && TaskDate == props.currentDateStringFormat
           }
           else if (props.rescheduleStatus == 'RemovingStage') {
-            return StartAngle > props.hourRotation && TaskDate == props.selectedDate
+            // console.log("This is removing one")
+            return StartAngle > props.hourRotation && TaskDate == props.currentDateStringFormat
           }})
           .map(({StartAngle}) => {
             const indexValue = props.data['StartAngle'].indexOf(StartAngle);
@@ -325,8 +336,9 @@ const Schedule: React.FC = () => {
     const currentDay = currentDate.getDate();
     const currentMonth = currentDate.getMonth() + 1;
     const currentYear = currentDate.getFullYear();
-    const [selectedDate, setSelectedDate] = useState(`${currentDay.toString().padStart(2, '0')}/${currentMonth.toString().padStart(2, '0')}/${currentYear}`);
-    const [hourRotation, setHourRotation] = useState(0)
+    const currentDateStringFormat = (`${currentDay.toString().padStart(2, '0')}/${currentMonth.toString().padStart(2, '0')}/${currentYear}`)
+    const [selectedDate, setSelectedDate] = useState(currentDateStringFormat);
+    const [hourRotation, setHourRotation] = useState(0);
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
     const [timeStart, settimeStart] = useState('')
@@ -547,36 +559,6 @@ const Schedule: React.FC = () => {
           y: centerY + (radius * Math.sin(angleInRadians))
         };
       };
-
-      {data['TaskDate']
-        .map((TaskDate:string, index:number) => ({TaskDate, index}))
-        .filter(({TaskDate}) => TaskDate === selectedDate)
-        .map(({index}) => {
-          const uniqueID = data['uniqueID'][index]
-          const startAngle = data['StartAngle'][index];
-          const endAngle = data['EndAngle'][index];
-          const sectorColor = data['Slice_Color'][index];
-          const startTime = data['StartTime'][index]
-          const endTime = data['EndTime'][index]
-          const angleDuration = angleToTime(endAngle - startAngle)
-          const angleWork = data['Work'][index]
-          useEffect(() => {
-            if (hourRotation >= startAngle && hourRotation <= endAngle) {
-              setWork(angleWork);
-              setduration(`(${angleDuration})`);
-              settimeStart(TwelveHourFormat(startTime));
-              settimeEnd(TwelveHourFormat(endTime));
-              return;
-            }
-            else if (hourRotation < startAngle || hourRotation > endAngle) {
-              setWork('Free Time else if wala');
-              setduration("");
-              settimeStart("");
-              settimeEnd("");
-            }
-          }, [ScheduleArray, currentSecTime])}
-      )}
-
   
       // Polar coordinates represent a point in a plane using a distance from a reference point (called the radius) and an angle from a reference direction.
       // Cartesian coordinates represent a point in a plane using an x-coordinate and a y-coordinate.
@@ -629,21 +611,14 @@ const Schedule: React.FC = () => {
               setStrokeStatus(true);
               // console.log(angleColor);
             };
-  
-            const anglePressOut = () => {
-              console.log('OnOP Released');
-              setWork('Free Time');
-              setduration("");
-              settimeStart("");
-              settimeEnd("");
-            }
+
             return(
               <Path
                 key={uniqueID}
                 d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, endAngle, startAngle)}
                 fill={sectorColor}  
                 onPressIn={()=> angleOnPress()}
-                onPressOut={()=> anglePressOut()}
+                onPressOut={LabelChanging}
                 // stroke={strokeStatus? '#000000' : 'none'}
                 // strokeDasharray="5,10"  // 10 units of stroke, 5 units of gap
                 // strokeDashoffset="0"    // Start from the beginning of the path
@@ -721,7 +696,10 @@ const Schedule: React.FC = () => {
     }
 
     const RescheduleButtonClick = () => {
-      rescheduleStatus === 'off' && setRescheduleStatus('PriorStage') 
+      rescheduleStatus === 'off' &&  setRescheduleStatus('PriorStage') 
+      if (rescheduleStatus === 'off') {
+        setSelectedDate(currentDateStringFormat);
+      }
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
       rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('off'))
@@ -776,6 +754,35 @@ const Schedule: React.FC = () => {
       }
     };
 
+    function LabelChanging() {
+      for (let index = 0; index < data["TaskDate"].length; index++) {
+        const uniqueID = data['uniqueID'][index]
+        const startAngle = data['StartAngle'][index];
+        const endAngle = data['EndAngle'][index];
+        const sectorColor = data['Slice_Color'][index];
+        const startTime = data['StartTime'][index]
+        const endTime = data['EndTime'][index]
+        const angleDuration = angleToTime(endAngle - startAngle)
+        const angleWork = data['Work'][index]
+        const TaskDate = data['TaskDate'][index]
+        if (TaskDate === selectedDate) {
+          if (hourRotation >= startAngle && hourRotation <= endAngle) {
+            setWork(angleWork);
+            setduration(`(${angleDuration})`);
+            settimeStart(TwelveHourFormat(startTime));
+            settimeEnd(TwelveHourFormat(endTime));
+            break;
+          }
+          else if (hourRotation < startAngle || hourRotation > endAngle) {
+            setWork('Free Time');
+            setduration("");
+            settimeStart("");
+            settimeEnd("");
+          }
+        }
+      }
+    }
+
     async function ScheduleTableButton () {
       await ScheduleTableSheet.current?.present();
     }
@@ -784,15 +791,15 @@ const Schedule: React.FC = () => {
       await CalenderSheet.current?.present();
     }
     
-    useEffect(() => {
-      console.log("PriorSelectionList: ", PriorSelections)
-    }, [PriorSelections]);
-    useEffect(() => {
-      console.log("FixedSelectionsList: ", FixedSelections)
-    }, [FixedSelections]);
-    useEffect(() => {
-      console.log("RemovingSelectionsList: ", RemovingSelections)
-    }, [RemovingSelections]);
+    // useEffect(() => {
+    //   console.log("PriorSelectionList: ", PriorSelections)
+    // }, [PriorSelections]);
+    // useEffect(() => {
+    //   console.log("FixedSelectionsList: ", FixedSelections)
+    // }, [FixedSelections]);
+    // useEffect(() => {
+    //   console.log("RemovingSelectionsList: ", RemovingSelections)
+    // }, [RemovingSelections]);
     
     // Clearing the Arrays so that on reselection, the index doesn't get double assigned
     useEffect(() => {
@@ -802,6 +809,11 @@ const Schedule: React.FC = () => {
         setRemovingSelections([])
       }
     }, [rescheduleStatus])
+
+    useEffect(() => {
+      LabelChanging();
+    }, [ScheduleArray, currentMinTime])
+    
     
     
     return (
@@ -847,6 +859,7 @@ const Schedule: React.FC = () => {
             </View>
 
             <RescheduleButtonArea
+             currentDateStringFormat={currentDateStringFormat}
             handleOutsidePress={handleOutsidePress}
              rescheduleStatus={rescheduleStatus} 
              DialogBackButton={DialogBackButton} 

@@ -121,11 +121,11 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
           <View key={index} style={[
             index == (WorkLength-1) && styles.BottomOption,
             index >= 0 && index < (WorkLength-1) && styles.MiddleOption,
-            // styles.UpperOption, 
-            { backgroundColor: '#222328', height: height * 0.06, alignItems: 'center', columnGap: 5 }
+            { backgroundColor: '#222328', height: height * 0.06, alignItems: 'center', columnGap: 5, paddingLeft: 20,
+              paddingRight: 10 }
           ]}>
-            <TouchableOpacity style={{flex: 0.8}} onPress={() => SubjectApplyingButton(work)}>
-              <Text style={{ fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 15 }}>{work}</Text>
+            <TouchableOpacity style={{flex: 0.9}} onPress={() => SubjectApplyingButton(work)}>
+              <Text style={{ fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 15}}>{work}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}} onPress={() => SubjectSettingButton(work)}>
               <Image source={ThreeDotsTwo} style={{ height: 20, width: 20}} />

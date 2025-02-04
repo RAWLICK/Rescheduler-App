@@ -88,19 +88,14 @@ def CompressionFunction(
     dataframe = pd.DataFrame([])
     for i in json.loads(ImportedDataFrame):
         TaskDate = i["TaskDate"]
-        print("TaskDate: ", TaskDate)
         newObject = {
             "StartTime": f"{i['TaskDate']} {i['StartTime']}",
             "EndTime": f"{i['TaskDate']} {i['EndTime']}",
             "Work": i["Work"]
         }
         dataframe = pd.concat([dataframe, pd.DataFrame([newObject])], ignore_index=True)
-    print("Below is dataframe: ")
-    print(dataframe)
 
     # Picking out the Work, StartTiming and End Timing from the dataframe and converting StartTiming and End Timing in datetime format so that it can be compared within
-
-    WorkDataFrame = dataframe['Work']
 
     Work = list(dataframe['Work'])
     Start = list(datetime.strptime(x, "%d/%m/%Y %H:%M") for x in dataframe['StartTime'])
@@ -109,12 +104,11 @@ def CompressionFunction(
     # These below are the works which has to be removed from the schedule 
     # We have used for loop with reverse=True because we don't want to mess with the index value when one of the value gets removed which doesn't happen when removed from the last
 
-    print("So what are the upcoming works which you want to remove?")
-    print(WorkDataFrame)
     if (RemovingSelections != ""):
         Input_Removing_Work = RemovingSelections
         Removing_Work = Input_Removing_Work.split(",")[:]
         Removing_Work_List = list(Work[int(x)] for x in (Removing_Work))
+        print("\n")
         print("So the works which you are Removing are: ", Removing_Work_List)
         print("\n")
 
@@ -126,19 +120,13 @@ def CompressionFunction(
         Original_End = list(datetime.strptime(x, "%d/%m/%Y %H:%M") for x in dataframe['EndTime'])
 
     # Entering the current time and converting it in datetime format
-
-    print("What is the time, where you want the change?[In HH:MM]")
-    print("Example Time:   4/11/2023 10:00:00")
     inp_time = currentTime
     cur_time = datetime.strptime(inp_time, "%d/%m/%Y %H:%M")
 
     # Now asking the user which are those works which he wants and is currently present before the current time.
     # User's input was stored in "PriorSelections" which was passed as a parameter
     # This data is asked through index number and holded in "Input_Prev_Work", then "Input_Prev_Work" is filtered from string of commas and holded as "Prev_Work".
-
-    print("Which past things, you want ahead according to number?")
-    print(WorkDataFrame)                                               
-    print("\n") 
+                        
     if (PriorSelections != ""):              
         Input_Prev_Work = PriorSelections
         Prev_Work = Input_Prev_Work.split(",")[:]
@@ -146,7 +134,7 @@ def CompressionFunction(
         # Then "Prev_Work" is converted into a list of those actual Previous Works known as "Prev_Work_List" to be accessible forth
         # Complete_Fragements is actually sum of all fragments which are divided on the basis of Pinned Works
         # Now Prev_Work_List is added in Complete_Fragments because Complete_Fragements in itself means containing all items
-        
+        print("\n")
         print("So you want", list(Work[int(x)] for x in (Prev_Work)))
         print("\n")
         Prev_Work_List = list(Work[int(x)] for x in (Prev_Work))
@@ -157,9 +145,6 @@ def CompressionFunction(
     # Then splitting the "Input_Pin_Work" with comma to filter it making it "Pinned Work"
     # Then making a list of those split pieces named "Pinned_Work_List"
 
-    print("So what will be the pinned times in Schedule")
-    print(WorkDataFrame)
-    print("\n")
     if (FixedSelections != ""):
         Input_Pin_Work = FixedSelections
         Pinned_Work = Input_Pin_Work.split(",")[:]
@@ -213,6 +198,8 @@ def CompressionFunction(
 
         for i in range(0, len(Pinned_Work_List)-1):
             Fragment_Dictionary.update({"Fragment_" + str(i+2) : list(Work[int(Pinned_Work[i])+1 : int(Pinned_Work[i+1])])})
+
+        Fragment_Dictionary.update({"Last_Fragment" : list(Work[int(Pinned_Work[-1])+1 : ])})
         print(Fragment_Dictionary)
         print("\n")
         # Output: {'Fragment_1': ['Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break'], 'Fragment_2': ['Sona', 'Work 5', 'Work 5 Break'], 'Fragment_3': ['Work 6', 'Free 1'], 'Fragment_4': ['Free 2']}
@@ -222,6 +209,8 @@ def CompressionFunction(
 
         for i in range(0, len(Pinned_Work_List)-1):
             Fragment_Dictionary.update({"Fragment_" + str(i+2) : list(Work[int(Pinned_Work[i])+1 : int(Pinned_Work[i+1])])})
+
+        Fragment_Dictionary.update({"Last_Fragment" : list(Work[int(Pinned_Work[-1])+1 : ])})
         print(Fragment_Dictionary)
         print("\n")
         # Output: {'Fragment_1': ['Work 1', 'Work 2', 'Work 2 Break', 'Work 3', 'Work 3 Break', 'Work 4', 'Work 4 Break'], 'Fragment_2': ['Sona', 'Work 5', 'Work 5 Break'], 'Fragment_3': ['Work 6', 'Free 1'], 'Fragment_4': ['Free 2']}
@@ -379,7 +368,10 @@ def CompressionFunction(
             Fragment_Dur_Dict.update({"Fragment_" + str(i+2) + "_Duration" : Pinned_Work_StartTiming[i+1] - Pinned_Work_EndTiming[i]})
 
         # This Last Update actually ensures that Total_Fragment_Duration covers till the end of the original schedule including the timings of Removed Works
-        Fragment_Dur_Dict.update({"Fragment_Last_Duration" : Original_End[-1] - Pinned_Work_EndTiming[-1]})
+        if (RemovingSelections != ""):
+            Fragment_Dur_Dict.update({"Fragment_Last_Duration" : Original_End[-1] - Pinned_Work_EndTiming[-1]})
+        elif (RemovingSelections == ""):
+            Fragment_Dur_Dict.update({"Fragment_Last_Duration" : End[-1] - Pinned_Work_EndTiming[-1]})
 
         print("Fragment_Dur_Dict: ",Fragment_Dur_Dict)
         print("\n")
@@ -556,11 +548,14 @@ def CompressionFunction(
                 if(Compressed_DataFrame.End_[i] > Compressed_DataFrame.Start_[i+1]):
                     Pinned_Time_Diff = Compressed_DataFrame.End_[i+1] - Compressed_DataFrame.Start_[i+1]
                     Intersec_Diff = Compressed_DataFrame.End_[i] - Compressed_DataFrame.Start_[i+1]
-                    Compressed_DataFrame.End_[i] -= Intersec_Diff
+
+                    # Used .loc[] here instead of (Compressed_DataFrame.End_[i] -= Intersec_Diff) because this beside method is called chain-indexing which may actually modify the copy of the dataframe instead of modifying the original. In Future, this rule will become strict
+
+                    Compressed_DataFrame.loc[i, "End_"] -= Intersec_Diff
                     for j in range(0, len(Compressed_DataFrame['Start_'])-1):
                         if(Compressed_DataFrame.End_[j] > Compressed_DataFrame.Start_[j+1]):
-                            Compressed_DataFrame.Start_[j+1] += Pinned_Time_Diff
-                            Compressed_DataFrame.End_[j+1] += Pinned_Time_Diff
+                            Compressed_DataFrame.loc[j+1, "Start_"] += Pinned_Time_Diff
+                            Compressed_DataFrame.loc[j+1, "End_"] += Pinned_Time_Diff
                             # Making a broken and adjusted copy of a work(Work 5) which was colliding with Pinned Work 2
                     newData = [[Compressed_DataFrame.End_[i+1], Compressed_DataFrame.End_[i+1] + Intersec_Diff, f"{Compressed_DataFrame.Work_[i]} (Part 2)"]]
                     upper_part = Compressed_DataFrame.loc[:i + 1]
@@ -587,6 +582,7 @@ def CompressionFunction(
                 # print("Updated_LenTills_Dictionary[key2]: ", Updated_LenTills_Dictionary[key2])
                 # print("LenBtwPins_Dictionary[btwKey]: ", LenBtwPins_Dictionary[btwKey])
                 print("Updated_LenTills_List: ", Updated_LenTills_List)
+                print('\n')
                 print("Updated Complete Fragments: ", Updated_Complete_Fragments)
                 # Output: ['Work 1', 'Work 2', 'Work 2 Break',..]
                 print('\n')
@@ -604,7 +600,7 @@ def CompressionFunction(
                     Updated_TimDel_Min.append(timedelta(minutes=int(Updated_Dur_Acc_Rat[i])))
                 # print("Updated_TimeDel_Min: ", Updated_TimDel_Min)
                 # Output: [datetime.timedelta(seconds=3060), datetime.timedelta(seconds=3060),..]
-                print("\n")
+                # print("\n")
             else:
                 # print("\n")
                 print("Structured Code: ", "(", LenKey, ")")
@@ -623,6 +619,7 @@ def CompressionFunction(
                 Updated_Complete_Fragments[Updated_LenTills_List[LenKey-1]: Updated_LenTills_List[LenKey-1] + LenBtwPins_Dictionary[btwKey]] = Compressed_DataFrame.Work_[Updated_LenTills_List[LenKey-1]: Updated_LenTills_List[LenKey]]
 
                 print("Updated_LenTills_List: ", Updated_LenTills_List)
+                print("\n")
                 print("Updated Complete Fragments: ", Updated_Complete_Fragments)
 
                 # print("LenKey: ", LenKey)
@@ -690,7 +687,7 @@ def CompressionFunction(
     return DataFrame_Dict
 
 # CompressionFunction("05/01/2025 10:00", "0,1", "5", "1")
-CompressionFunction("05/01/2025 10:00", "0,1,2,3", "5", "6")
+CompressionFunction("05/01/2025 10:00", "0,1,2,3", "5", "")
 
 
 

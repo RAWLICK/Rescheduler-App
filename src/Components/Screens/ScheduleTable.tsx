@@ -68,8 +68,8 @@ export const ManualScheduleTable = (props: ManualScheduleTablePropsType) => {
     }
   }
 
-  function DeleteTask(name: string) {
-    dispatch(removeScheduleObject(name));
+  function DeleteTask(id: string) {
+    dispatch(removeScheduleObject(id));
   }
   return (
     <View style={{backgroundColor: '#e7e7e7'}}>

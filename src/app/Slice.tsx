@@ -41,7 +41,7 @@ export const ScheduleArraySlice = createSlice({
             state.ScheduleArrayInitialState.push(ScheduleObject)
             state.ScheduleArrayInitialState.sort((a, b) => {
                 const formatDate = (dateStr: string) => {
-                    const [day, month, year] = dateStr.split("-"); // Split dd-mm-yyyy
+                    const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
                     return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
                 };
         
@@ -49,6 +49,13 @@ export const ScheduleArraySlice = createSlice({
                 const dateB = formatDate(b.TaskDate);
         
                 // Compare TaskDate first
+                // 1.   return -1:
+                // •	Indicates that dateA should come before dateB in the sorted array.
+                // 2.	return 1:
+                // •	Indicates that dateA should come after dateB in the sorted array.
+                // 3.	return 0:
+                // •	Indicates that dateA and dateB are considered equal in the sorting order.
+            
                 if (dateA < dateB) return -1;
                 if (dateA > dateB) return 1;
         
@@ -60,7 +67,7 @@ export const ScheduleArraySlice = createSlice({
             state.ScheduleArrayInitialState = state.ScheduleArrayInitialState.filter((item) => item.uniqueID !== action.payload)
             state.ScheduleArrayInitialState.sort((a, b) => {
                 const formatDate = (dateStr: string) => {
-                    const [day, month, year] = dateStr.split("-"); // Split dd-mm-yyyy
+                    const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
                     return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
                 };
         
