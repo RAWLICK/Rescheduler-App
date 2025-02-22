@@ -1,39 +1,30 @@
-function elaborateDuration(duration) {
-    if (duration.includes('min') && !duration.includes('h')) {
-        const addingHour = 0
-        const addingMinute = Number(duration.split(' ')[0])
-        console.log("addingHour: ", addingHour)
-        console.log("addingMinute: ", addingMinute)
-        return [addingHour, addingMinute]
-    }
-    else if (duration.includes('h') && !duration.includes('min')) {
-        const addingHour = Number(duration.split('h')[0])
-        const addingMinute = 0
-        console.log("addingHour: ", addingHour)
-        console.log("addingMinute: ", addingMinute)
-        return [addingHour, addingMinute]
-    }
-    else {
-        const addingHour = Number(duration.split('h')[0])
-        const addingMinute = Number(duration.slice(3, 5))
-        console.log("addingHour: ", addingHour)
-        console.log("addingMinute: ", addingMinute)
-        return [addingHour, addingMinute]
-    }
-  }
-
-function AdjustedEndTime (StartTime) {
-    const StartHour = Number(StartTime.split(":")[0])
-    const StartMin = Number(StartTime.split(":")[1])
-    const [addHour, addMinute] = elaborateDuration('1h 15 min');
-    let EndHour = StartHour + addHour
-    let EndMin = StartMin + addMinute
-    if (EndMin >= 60) {
-        EndHour += 1;
-        EndMin -= 60;
-    }
-    console.log(`${EndHour}:${EndMin}`)
-    return `${EndHour}:${EndMin}`
+const dmyFormatConverter = (date) => {
+    const [year, month, day] = date.split('-');
+    return `${day}/${month}/${year}`;
 }
 
-AdjustedEndTime('5:59')
+const ymdFormatConverter = (date) => {
+    const [day, month, year] = date.split('/');
+    return `${year}-${month}-${day}`;
+}
+
+targetDate = "04/05/2025"
+dateArray = ["01/01/2025", "02/01/2025", "03/01/2025", "04/01/2025", "09/02/2025"]
+
+function PastMostRecentDate(targetDate, dateArray) {
+    let remainingDate = []
+    for (let index = 0; index < dateArray.length; index++) {
+        const element = new Date(ymdFormatConverter(dateArray[index]));
+        if (element < new Date(ymdFormatConverter(targetDate))) {
+            remainingDate.push(element)
+        }
+    }
+    const latestDate = new Date(Math.max(Number(...remainingDate)));
+    const day = latestDate.getDate()
+    const month = latestDate.getMonth()
+    const fullYear = latestDate.getFullYear()
+    const convertedLatestDate = `${day.toString().padStart(2, '0')}/${(month+1).toString().padStart(2, '0')}/${fullYear}`
+    console.log(convertedLatestDate)
+}
+
+PastMostRecentDate(targetDate, dateArray);

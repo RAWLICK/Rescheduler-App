@@ -138,8 +138,7 @@ const TaskCompletionBoard = () => {
   ];
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
   const data = {
-      "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Work),
-      "Slice_Color": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Slice_Color)
+      "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Work)
   }
   const pan = Gesture.Pan()
     .onBegin(() => {

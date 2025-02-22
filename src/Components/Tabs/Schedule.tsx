@@ -814,8 +814,6 @@ const Schedule: React.FC = () => {
       LabelChanging();
     }, [ScheduleArray, currentMinTime])
     
-    
-    
     return (
       <SafeAreaView style={styles.safeView}>
       {/* <GestureHandlerRootView>

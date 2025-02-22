@@ -11,6 +11,7 @@ import {
   StatusBar,
   Platform,
   Button,
+  Keyboard,
   Alert
 } from 'react-native';
 import React from 'react';
@@ -49,7 +50,7 @@ type PanGesture = ReturnType<typeof Gesture.Pan>;
 
 // Nested Components (Composition)
 type GroupPropsType = {
-  PrevScheduleStatus: boolean,
+  PrevScheduleStatus: boolean;
   setPrevScheduleStatus: SetState<boolean>;
   AddFromExistingWorkButton: boolean;
   setAddFromExistingWorkButton: SetState<boolean>;
@@ -222,6 +223,9 @@ const AreaTwo = (props: GroupPropsType) => {
           <PreviousSchedule
             PrevScheduleStatus={props.PrevScheduleStatus}
             setPrevScheduleStatus={props.setPrevScheduleStatus}
+            navigation={props.navigation}
+            ScheduleArray={props.ScheduleArray}
+            Message={props.Message}
           />
         </View>
         <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-end'}}>

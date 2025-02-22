@@ -7,6 +7,7 @@ const AdminPanel = () => {
     const [distributorName, setDistributorName] = useState("")
     const [distributionName, setDistributionName] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
+    const [numberOfBranch, setNumberOfBranch] = useState("1")
     const DistributionTypeData = [
         { label: 'Library', value: '1' }
     ];
@@ -17,6 +18,11 @@ const AdminPanel = () => {
     ];
     const [CityValue, setCityValue] = useState("");
     const [isCityFocus, setIsCityFocus] = useState(false);
+    const [StateValue, setStateValue] = useState("");
+    const [isStateFocus, setIsStateFocus] = useState(false);
+    const StateData = [
+        { label: 'Uttar Pradesh', value: '1' }
+    ];
     return (
         <SafeAreaView style={styles.safeView}>
             <StatusBar
@@ -138,6 +144,56 @@ const AdminPanel = () => {
                         }}
                         />
                     </View>
+
+                    <View>
+                        <Dropdown
+                        style={[styles.dropdown]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={StateData}
+                        itemTextStyle={{fontFamily: 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
+                        itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
+                        containerStyle={{borderRadius: 10}}
+                        // search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={!isStateFocus ? 'Select State' : 'Select State'}
+                        searchPlaceholder="Search..."
+                        value={StateValue}
+                        onFocus={() => setIsStateFocus(true)}
+                        onBlur={() => setIsStateFocus(false)}
+                        onChange={item => {
+                            setCityValue(item.value);
+                            setIsStateFocus(false);
+                        }}
+                        />
+                    </View>
+
+                    <View style={[styles.MiddleOption, { height: 65 }]}>
+                        <View
+                        style={{
+                            flex: 1,
+                            // justifyContent: 'center',
+                            alignItems: 'center',
+                            flexDirection: 'row',
+                        }}>
+                            <View style={{flex: 0.8}}>
+                                <Text style={styles.OptionText}>Total Number of Branches</Text>
+                            </View>
+                            <View style={{flex: 0.2, alignItems: 'center', backgroundColor: '#9D9EA0', borderRadius: 10, margin: 10}}>
+                                <TextInput
+                                    style={[styles.OptionText, {color: 'black'}]}
+                                    value={numberOfBranch}
+                                    onChangeText={setNumberOfBranch}
+                                    // placeholder=""
+                                    placeholderTextColor="#9D9EA0">
+                                </TextInput>
+                            </View>
+                        </View>
+                    </View>
                 </View>
             </View>
         </SafeAreaView>
@@ -251,7 +307,7 @@ const styles = StyleSheet.create({
       },
       iconStyle: {
         width: 20,
-        height: 20,
+        height: 20
       },
       inputSearchStyle: {
         height: 40,
