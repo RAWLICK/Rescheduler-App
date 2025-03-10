@@ -17,6 +17,7 @@ def CompressionFunction(
 
     ImportedDataFrame = json.dumps([
         {
+            # 0
             "StartTime": "06:00",
             "EndTime": "07:00",
             "Work": "Physics",
@@ -26,6 +27,7 @@ def CompressionFunction(
             "Slice_Color": "Green"
         },
         {
+            # 1
             "StartTime": "07:00",
             "EndTime": "08:00",
             "Work": "Chemistry",
@@ -35,6 +37,7 @@ def CompressionFunction(
             "Slice_Color": "blue"
         },
         {
+            # 2
             "StartTime": "08:00",
             "EndTime": "09:00",
             "Work": "Maths",
@@ -44,6 +47,7 @@ def CompressionFunction(
             "Slice_Color": "blue"
         },
         {
+            # 3
             "StartTime": "09:00",
             "EndTime": "10:00",
             "Work": "Biology",
@@ -53,6 +57,7 @@ def CompressionFunction(
             "Slice_Color": "blue"
         },
         {
+            # 4
             "StartTime": "10:00",
             "EndTime": "11:00",
             "Work": "SST",
@@ -62,6 +67,7 @@ def CompressionFunction(
             "Slice_Color": "blue"
         },
         {
+            # 5
             "StartTime": "11:00",
             "EndTime": "12:30",
             "Work": "Economics",
@@ -71,6 +77,7 @@ def CompressionFunction(
             "Slice_Color": "blue"
         },
         {
+            # 6
             "StartTime": "12:30",
             "EndTime": "13:30",
             "Work": "Sanskrit",
@@ -78,7 +85,57 @@ def CompressionFunction(
             "EndAngle": 405,
             "TaskDate": "05/01/2025",
             "Slice_Color": "blue"
-        }
+        },
+        {
+            # 7
+            "StartTime": "13:30",
+            "EndTime": "14:30",
+            "Work": "Business",
+            "StartAngle": 405,
+            "EndAngle": 435,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
+        {
+            # 8
+            "StartTime": "14:30",
+            "EndTime": "15:30",
+            "Work": "Art",
+            "StartAngle": 435,
+            "EndAngle": 465,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
+        {
+            # 9
+            "StartTime": "15:30",
+            "EndTime": "16:30",
+            "Work": "Sports",
+            "StartAngle": 465,
+            "EndAngle": 495,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
+        {
+            # 10
+            "StartTime": "16:30",
+            "EndTime": "17:30",
+            "Work": "Cooking",
+            "StartAngle": 495,
+            "EndAngle": 525,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
+        {
+            # 11
+            "StartTime": "17:30",
+            "EndTime": "18:30",
+            "Work": "Hindi",
+            "StartAngle": 525,
+            "EndAngle": 555,
+            "TaskDate": "05/01/2025",
+            "Slice_Color": "blue"
+        },
     ])
 
     # Converting ImportedDataframe into a dataframe which this Compress Function can consume accordingly
@@ -687,7 +744,19 @@ def CompressionFunction(
     return DataFrame_Dict
 
 # CompressionFunction("05/01/2025 10:00", "0,1", "5", "1")
-CompressionFunction("05/01/2025 10:00", "0,1,2,3", "5", "")
+CompressionFunction("05/01/2025 10:00", "0,1,2", "5, 8", "")
+# 0 - Physics
+# 1 - Chemistry
+# 2 - Maths
+# 3 - Biology
+# 4 - SST - Time
+# 5 - Economics
+# 6 - Sanskrit
+# 7 - Business
+# 8 - Art
+# 9 - Sports
+# 10 - Cooking
+# 11 - Hindi
 
 
 

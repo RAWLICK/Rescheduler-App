@@ -233,17 +233,17 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           .filter(({TaskDate}) => {
             // console.log("Taskdate: ", TaskDate)
             // console.log(TaskDate == props.currentDateStringFormat)
-
             return TaskDate == props.currentDateStringFormat
           })
           .filter(({StartAngle, TaskDate}) => {
           if (props.rescheduleStatus == 'PriorStage') {
             // console.log("TaskDate: ", TaskDate)
             // console.log("currentDateStringFormat: ", props.currentDateStringFormat)
-            return StartAngle <= props.hourRotation
+            return StartAngle <= props.hourRotation && TaskDate == props.currentDateStringFormat
           }
           else if (props.rescheduleStatus == 'FixingStage') {
             // console.log("This is fixing stage")
+            // console.log("TaskDate: ", TaskDate)
             return StartAngle > props.hourRotation && TaskDate == props.currentDateStringFormat
           }
           else if (props.rescheduleStatus == 'RemovingStage') {
@@ -386,7 +386,47 @@ const Schedule: React.FC = () => {
       "rgba(57, 190, 200, 0.5)",
       "rgba(28, 79, 20, 0.5)",
       "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)"
+      "rgba(191, 115, 181, 0.5)",
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
     ],
     }
     
@@ -589,8 +629,9 @@ const Schedule: React.FC = () => {
           </Defs> */}
 
           {data['TaskDate']
-          .map((TaskDate:string, index:number) => ({TaskDate, index}))
+          .map((TaskDate:string, index:number) => ({TaskDate, index, StartAngle: data['StartAngle'][index]}))
           .filter(({TaskDate}) => TaskDate === selectedDate)
+          // .filter()
           .map(({index}) => {
             const uniqueID = data['uniqueID'][index]
             const startAngle = data['StartAngle'][index];

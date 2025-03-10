@@ -18,13 +18,13 @@ export const demoData =
         "Current_Duration": "1h",
         "Dataframe": [
             {
-                "Date": "27/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "100%",
                 "Duration": "1h",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "28/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "50%",
                 "Duration": "1h",
                 "Work-Done-For": "30min"
@@ -37,13 +37,13 @@ export const demoData =
         "Current_Duration": "2h",
         "Dataframe": [
             {
-                "Date": "27/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "100%",
                 "Duration": "1h",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "28/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "50%",
                 "Duration": "2h",
                 "Work-Done-For": "60min"
@@ -56,13 +56,13 @@ export const demoData =
         "Current_Duration": "1h 30min",
         "Dataframe": [
             {
-                "Date": "27/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "100%",
                 "Duration": "1h 30min",
                 "Work-Done-For": "90min"
             },
             {
-                "Date": "29/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "50%",
                 "Duration": "1h",
                 "Work-Done-For": "30min"
@@ -75,13 +75,13 @@ export const demoData =
         "Current_Duration": "0h 30min",
         "Dataframe": [
             {
-                "Date": "28/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "100%",
                 "Duration": "1h 30min",
                 "Work-Done-For": "90min"
             },
             {
-                "Date": "29/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "50%",
                 "Duration": "0h 30min",
                 "Work-Done-For": "15min"
@@ -94,13 +94,13 @@ export const demoData =
         "Current_Duration": "1h 15min",
         "Dataframe": [
             {
-                "Date": "27/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "100%",
                 "Duration": "1h 15min",
                 "Work-Done-For": "75min"
             },
             {
-                "Date": "28/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "50%",
                 "Duration": "1h 15min",
                 "Work-Done-For": "37min"
@@ -113,19 +113,19 @@ export const demoData =
         "Current_Duration": "1h",
         "Dataframe": [
             {
-                "Date": "27/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "100%",
                 "Duration": "1h",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "28/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "0%",
                 "Duration": "1h",
                 "Work-Done-For": "0min"
             },
             {
-                "Date": "29/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "75%",
                 "Duration": "1h",
                 "Work-Done-For": "45min"
@@ -138,19 +138,19 @@ export const demoData =
         "Current_Duration": "10min",
         "Dataframe": [
             {
-                "Date": "27/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "50%",
                 "Duration": "10min",
                 "Work-Done-For": "5min"
             },
             {
-                "Date": "28/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "25%",
                 "Duration": "10min",
                 "Work-Done-For": "3min"
             },
             {
-                "Date": "29/01/2025",
+                "Date": "01/03/2025",
                 "Percentage": "100%",
                 "Duration": "1hr",
                 "Work-Done-For": "60min"

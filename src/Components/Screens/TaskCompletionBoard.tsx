@@ -14,6 +14,7 @@ import {
     useAnimatedStyle,
     clamp,
     runOnJS,
+    withSpring
   } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux' 
 import { addExistingSubjectsObject, removeExistingSubjectsObject } from '../../app/Slice';
@@ -113,9 +114,9 @@ const TaskCompletionBoard = () => {
   const DurationBoxes = [0, 1, 2, 3];
   const DurationTag = ['0%', '25%', '50%', '75%', '✓'];
   const [Duration, setDuration] = useState('1h');
-  const StartRadar = useSharedValue<number>(0);
-  const MovedRadar = useSharedValue<number>(0);
-  const FinalRadar = useSharedValue<number>(75.35);
+  // const StartRadar = useSharedValue<number>(0);
+  // const MovedRadar = useSharedValue<number>(0);
+  // const FinalRadar = useSharedValue<number>(75.35);
   const [showPicker, setShowPicker] = useState(false);
   const [alarmString, setAlarmString] = useState<string | null>(null);
   const durationRanges = [
@@ -140,52 +141,6 @@ const TaskCompletionBoard = () => {
   const data = {
       "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Work)
   }
-  const pan = Gesture.Pan()
-    .onBegin(() => {
-      StartRadar.value = FinalRadar.value;
-    })
-    .onChange(event => {
-      MovedRadar.value = event.translationX;
-      FinalRadar.value = StartRadar.value + MovedRadar.value;
-      console.log(FinalRadar.value)
-      // runOnJS helps in running code on JavaScript thread instead on UI Thread
-
-      const foundRange = durationRanges.find(
-        range => FinalRadar.value <= range.max,
-      );
-
-      if (foundRange) {
-        runOnJS(setDuration)(foundRange.duration);
-
-        // runOnJS(setCoveredDurBoxes)((prevSelections) => {
-        //   // Check if the foundRange.boxNum is already in the previous selections
-        //   if (!prevSelections.includes(foundRange.boxNum)) {
-        //     const newSelections = [...prevSelections, foundRange.boxNum];
-        //     console.log("New Selections: ", newSelections)
-        //     return newSelections;
-        //   }
-        //   return prevSelections;
-        // })
-
-        // if (!CoveredDurBoxes.includes(foundRange.boxNum)) {
-        // runOnJS(setCoveredDurBoxes)((prevSelections) => {
-        //   const newSelections = [...prevSelections, foundRange.boxNum]
-        //   console.log("New Selections: ", newSelections)
-        //   return newSelections;
-        // })
-        // }
-        // playSound();
-      }
-    })
-
-    .onFinalize(() => {
-      // console.log("Pressed onFinalize")
-    });
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{translateX: clamp(FinalRadar.value, 0, 283)}],
-  }));
-  
 
   const TaskCompletionBoardVisibility = () => {
     useEffect(() => {
@@ -277,7 +232,102 @@ const TaskCompletionBoard = () => {
             </View>
             <View style={{flex: 10}}>
               <ScrollView>
-                {data["Work"].map((work, index) => (
+                {data["Work"].map((work, index) => {
+                  const StartRadar = useSharedValue<number>(0);
+                  const MovedRadar = useSharedValue<number>(0);
+                  const FinalRadar = useSharedValue<number>(65);
+                  const [percentage, setPercentage] = useState(25)
+
+                  const pan = Gesture.Pan()
+                  .onBegin(() => {
+                    StartRadar.value = FinalRadar.value;
+                  })
+                  .onChange(event => {
+                    MovedRadar.value = event.translationX;
+                    FinalRadar.value = StartRadar.value + MovedRadar.value;
+                    if (MovedRadar.value > 0) {
+                      if (FinalRadar.value <= 0) {
+                        FinalRadar.value = withSpring(0)
+                        runOnJS(setPercentage)(0)
+                      }
+                      else if (FinalRadar.value > 0 && FinalRadar.value < 65) {
+                        FinalRadar.value = withSpring(65)
+                        runOnJS(setPercentage)(25)
+                      }
+                      else if (FinalRadar.value > 65 && FinalRadar.value < 137) {
+                        FinalRadar.value = withSpring(137)
+                        runOnJS(setPercentage)(50)
+                      }
+                      else if (FinalRadar.value > 137 && FinalRadar.value < 217) {
+                        FinalRadar.value = withSpring(217)
+                        runOnJS(setPercentage)(75)
+                      }
+                      else if (FinalRadar.value > 217 && FinalRadar.value < 292) {
+                        FinalRadar.value = withSpring(292)
+                        runOnJS(setPercentage)(100)
+                      }
+                    }
+                    else {
+                      if (FinalRadar.value > 0 && FinalRadar.value < 65) {
+                        FinalRadar.value = withSpring(0)
+                        runOnJS(setPercentage)(0)
+                      }
+                      else if (FinalRadar.value > 65 && FinalRadar.value < 137) {
+                        FinalRadar.value = withSpring(65)
+                        runOnJS(setPercentage)(25)
+                      }
+                      else if (FinalRadar.value > 137 && FinalRadar.value < 217) {
+                        FinalRadar.value = withSpring(137)
+                        runOnJS(setPercentage)(50)
+                      }
+                      else if (FinalRadar.value > 217 && FinalRadar.value < 292) {
+                        FinalRadar.value = withSpring(217)
+                        runOnJS(setPercentage)(75)
+                      }
+                      else if (FinalRadar.value >= 292) {
+                        FinalRadar.value = withSpring(292)
+                        runOnJS(setPercentage)(100)
+                      }
+                    }
+                    // runOnJS helps in running code on JavaScript thread instead on UI Thread
+
+                    const foundRange = durationRanges.find(
+                      range => FinalRadar.value <= range.max,
+                    );
+
+                    if (foundRange) {
+                      runOnJS(setDuration)(foundRange.duration);
+
+                      // runOnJS(setCoveredDurBoxes)((prevSelections) => {
+                      //   // Check if the foundRange.boxNum is already in the previous selections
+                      //   if (!prevSelections.includes(foundRange.boxNum)) {
+                      //     const newSelections = [...prevSelections, foundRange.boxNum];
+                      //     console.log("New Selections: ", newSelections)
+                      //     return newSelections;
+                      //   }
+                      //   return prevSelections;
+                      // })
+
+                      // if (!CoveredDurBoxes.includes(foundRange.boxNum)) {
+                      // runOnJS(setCoveredDurBoxes)((prevSelections) => {
+                      //   const newSelections = [...prevSelections, foundRange.boxNum]
+                      //   console.log("New Selections: ", newSelections)
+                      //   return newSelections;
+                      // })
+                      // }
+                      // playSound();
+                    }
+                  })
+                
+                  .onFinalize(() => {
+                    // console.log("Pressed onFinalize")
+                  });
+
+                const animatedStyles = useAnimatedStyle(() => ({
+                  transform: [{translateX: clamp(FinalRadar.value, 0, 283)}],
+                }));
+
+                return (
                 <View key={work} style={{padding: 5, paddingLeft: 15, paddingRight: 15, rowGap: 15, borderBottomWidth: 1, borderColor: 'grey'}}>
                     <View style={{flexDirection: 'row', columnGap: 10, alignItems: 'center', height: 30}}>
                         <View>
@@ -285,7 +335,7 @@ const TaskCompletionBoard = () => {
                         </View>
                         <View style={{backgroundColor: '#43464d', width: 150, height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5, flexDirection: 'row'}}>
                           <View>
-                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>25%  of  </Text>
+                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{percentage}%  of  </Text>
                           </View>
                           <TouchableOpacity style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}} onPress={DurationClick}>
                             <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>1h 30min</Text>
@@ -352,7 +402,7 @@ const TaskCompletionBoard = () => {
                         </View>
                     </View>
                 </View>
-              ))}
+              )})}
             </ScrollView>
             <View style={{height: height * 0.057, padding: 10}}>
               <TouchableOpacity onPress= {OkBoardClick} style={{flex: 1, backgroundColor: '#457fdf', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>

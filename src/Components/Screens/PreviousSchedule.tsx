@@ -98,7 +98,6 @@ const PreviousSchedule = (props: PreviousSchedulePropsType) => {
     const month = latestDate.getMonth()
     const fullYear = latestDate.getFullYear()
     const convertedLatestDate = `${day.toString().padStart(2, '0')}/${(month+1).toString().padStart(2, '0')}/${fullYear}`
-    console.log("LatestDate: ", convertedLatestDate)
     return convertedLatestDate
   }
 
