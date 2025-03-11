@@ -228,43 +228,36 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           {props.data['StartAngle']
           .map((StartAngle: number, index: number) => ({
             StartAngle, 
-            TaskDate: props.data['TaskDate'][index]
+            TaskDate: props.data['TaskDate'][index],
+            index // Store the original index
           }))
           .filter(({TaskDate}) => {
-            // console.log("Taskdate: ", TaskDate)
-            // console.log(TaskDate == props.currentDateStringFormat)
             return TaskDate == props.currentDateStringFormat
           })
-          .filter(({StartAngle, TaskDate}) => {
+          .filter(({StartAngle}) => {
           if (props.rescheduleStatus == 'PriorStage') {
-            // console.log("TaskDate: ", TaskDate)
-            // console.log("currentDateStringFormat: ", props.currentDateStringFormat)
-            return StartAngle <= props.hourRotation && TaskDate == props.currentDateStringFormat
+            return StartAngle <= props.hourRotation 
           }
           else if (props.rescheduleStatus == 'FixingStage') {
-            // console.log("This is fixing stage")
-            // console.log("TaskDate: ", TaskDate)
-            return StartAngle > props.hourRotation && TaskDate == props.currentDateStringFormat
+            return StartAngle > props.hourRotation 
           }
           else if (props.rescheduleStatus == 'RemovingStage') {
-            // console.log("This is removing one")
-            return StartAngle > props.hourRotation && TaskDate == props.currentDateStringFormat
+            return StartAngle > props.hourRotation
           }})
-          .map(({StartAngle}) => {
-            const indexValue = props.data['StartAngle'].indexOf(StartAngle);
+          .map(({index}) => {
             return(
-              <View style={{margin: 5}} key={indexValue}>
+              <View style={{margin: 5}} key={index}>
                 <BouncyCheckbox
                   size={25}
                   isChecked={false}
                   fillColor="#2173BD"
                   // unFillColor="#FFFFFF"
-                  text={String(props.data['Work'][indexValue])}
+                  text={String(props.data['Work'][index])}
                   iconStyle={{ borderColor: "red" }}
                   innerIconStyle={{ borderWidth: 2 }}
                   textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff', textDecorationLine: 'none' }}
                   // onPress={(isChecked: boolean) => {console.log(isChecked)}}
-                  onPress={(isChecked: boolean) => props.handleCheckboxChange(indexValue, isChecked)}
+                  onPress={(isChecked: boolean) => props.handleCheckboxChange(index, isChecked)}
                 />
               </View>
             )})}
