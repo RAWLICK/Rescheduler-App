@@ -103,6 +103,9 @@ type UpperAreaPropsType = {
 }
 
 type RescheduleButtonAreaPropsType = {
+  PriorSelections: number[];
+  FixedSelections: number[];
+  RemovingSelections: number[];
   rescheduleStatus: string, 
   DialogBackButton: () => void, 
   DialogTitle: string, 
@@ -234,17 +237,24 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           .filter(({TaskDate}) => {
             return TaskDate == props.currentDateStringFormat
           })
-          .filter(({StartAngle}) => {
+          .map(({TaskDate, index, StartAngle}, newIndex) => ({  // newIndex is made to index 0, 1 instead of 52, 53 etc.
+            TaskDate, index, StartAngle, newIndex
+          }))
+          .filter(({index, StartAngle}) => {
           if (props.rescheduleStatus == 'PriorStage') {
             return StartAngle <= props.hourRotation 
           }
           else if (props.rescheduleStatus == 'FixingStage') {
-            return StartAngle > props.hourRotation 
+            if (!props.RemovingSelections.includes(index)) {    // Prevent Fixed and Removing list getting common
+              return StartAngle > props.hourRotation 
+            }
           }
           else if (props.rescheduleStatus == 'RemovingStage') {
-            return StartAngle > props.hourRotation
+            if (!props.FixedSelections.includes(index)) {       // Prevent Fixed and Removing list getting common
+              return StartAngle > props.hourRotation 
+            }
           }})
-          .map(({index}) => {
+          .map(({index, newIndex}) => {
             return(
               <View style={{margin: 5}} key={index}>
                 <BouncyCheckbox
@@ -257,7 +267,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
                   innerIconStyle={{ borderWidth: 2 }}
                   textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff', textDecorationLine: 'none' }}
                   // onPress={(isChecked: boolean) => {console.log(isChecked)}}
-                  onPress={(isChecked: boolean) => props.handleCheckboxChange(index, isChecked)}
+                  onPress={(isChecked: boolean) => props.handleCheckboxChange(newIndex, isChecked)}
                 />
               </View>
             )})}
@@ -350,6 +360,7 @@ const Schedule: React.FC = () => {
     const CalenderSheet = useRef<TrueSheet>(null);
     const dispatch = useDispatch();
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
+    const TodayScheduleArray: ScheduleArrayItem[] = [];
     
     const data = {
       "uniqueID": ScheduleArray.map((item: ScheduleArrayItem) => item.uniqueID),
@@ -360,6 +371,166 @@ const Schedule: React.FC = () => {
       "EndAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
       "TaskDate": ScheduleArray.map((item: ScheduleArrayItem) => item.TaskDate),
       "Slice_Color": [
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
+      "rgba(175, 193, 85, 0.5)",
+      "rgba(182, 108, 239, 0.5)",
+      "rgba(78, 161, 40, 0.5)",
+      "rgba(71, 214, 63, 0.5)",
+      "rgba(19, 249, 16, 0.5)",
+      "rgba(69, 221, 118, 0.5)", 
+      "rgba(17, 150, 214, 0.5) ",
+      "rgba(174, 182, 155, 0.5)",
+      "rgba(54, 147, 187, 0.5) ",
+      "rgba(49, 107, 93, 0.5)",
+      "rgba(12, 248, 250, 0.5) ",
+      "rgba(146, 120, 43, 0.5)", 
+      "rgba(38, 3, 93, 0.5)",
+      "rgba(240, 19, 80, 0.5)",
+      "rgba(227, 127, 0, 0.5)",
+      "rgba(38, 131, 56, 0.5)",
+      "rgba(57, 190, 200, 0.5)",
+      "rgba(28, 79, 20, 0.5)",
+      "rgba(82, 176, 27, 0.5)",
+      "rgba(191, 115, 181, 0.5)",
       "rgba(175, 193, 85, 0.5)",
       "rgba(182, 108, 239, 0.5)",
       "rgba(78, 161, 40, 0.5)",
@@ -696,6 +867,13 @@ const Schedule: React.FC = () => {
       }
     }, [rescheduleStatus]);
 
+    for (let index = 0; index < ScheduleArray.length; index++) {
+      const eachWork = ScheduleArray[index];
+      if (eachWork["TaskDate"] == currentDateStringFormat) {
+        TodayScheduleArray.push(eachWork)
+      }
+    }
+
     // In the backend API case, ensure to have a 3rd device to share the same network in both PC and real device emulator and also ensure that Windows Firewall is closed.
 
     const sendNameToBackend = async () => {
@@ -705,7 +883,7 @@ const Schedule: React.FC = () => {
           headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
-          body: JSON.stringify({ "ImportedDataFrame": JSON.stringify(ScheduleArray), "currentTime": "05/01/2025 09:00", "PriorSelections": "0,1", "FixedSelections": "5", "RemovingSelections": "1"}), // Convert the request payload to JSON.
+          body: JSON.stringify({ "ImportedDataFrame": JSON.stringify(TodayScheduleArray), "currentTime": "05/01/2025 09:00", "PriorSelections": "0,1", "FixedSelections": "5", "RemovingSelections": "1"}), // Convert the request payload to JSON.
         })
   
         if (!response.ok) {  // Handle HTTP errors
@@ -746,7 +924,6 @@ const Schedule: React.FC = () => {
 
     const handleCheckboxChange = (index: number, checked: boolean) => {
       if (rescheduleStatus == 'PriorStage') {
-        console.log("Checked: ", checked)
         setPriorSelections((prevSelections) => {
           if (checked) {
             const newSelections = [...prevSelections, index]
@@ -759,7 +936,6 @@ const Schedule: React.FC = () => {
         })
       }
       else if (rescheduleStatus == 'FixingStage') {
-        console.log("Checked: ", checked)
         setFixedSelections((prevSelections) => {
           if (checked) {
             const newSelections = [...prevSelections, index]
@@ -770,10 +946,9 @@ const Schedule: React.FC = () => {
             return newSelections.sort((a, b) => a - b);
           }
         })
-        console.log("FixedSelectionList: ", FixedSelections)
+        // console.log("FixedSelectionList: ", FixedSelections)
       }
       else if (rescheduleStatus == 'RemovingStage') {
-        console.log("Checked: ", checked)
         setRemovingSelections((prevSelections) => {
           if (checked) {
             const newSelections = [...prevSelections, index]
@@ -784,7 +959,7 @@ const Schedule: React.FC = () => {
             return newSelections.sort((a, b) => a - b);
           }
         })
-        console.log("RemovingSelectionList: ", RemovingSelections)
+        // console.log("RemovingSelectionList: ", RemovingSelections)
       }
     };
 
@@ -825,15 +1000,15 @@ const Schedule: React.FC = () => {
       await CalenderSheet.current?.present();
     }
     
-    // useEffect(() => {
-    //   console.log("PriorSelectionList: ", PriorSelections)
-    // }, [PriorSelections]);
-    // useEffect(() => {
-    //   console.log("FixedSelectionsList: ", FixedSelections)
-    // }, [FixedSelections]);
-    // useEffect(() => {
-    //   console.log("RemovingSelectionsList: ", RemovingSelections)
-    // }, [RemovingSelections]);
+    useEffect(() => {
+      console.log("PriorSelectionList: ", PriorSelections)
+    }, [PriorSelections]);
+    useEffect(() => {
+      console.log("FixedSelectionsList: ", FixedSelections)
+    }, [FixedSelections]);
+    useEffect(() => {
+      console.log("RemovingSelectionsList: ", RemovingSelections)
+    }, [RemovingSelections]);
     
     // Clearing the Arrays so that on reselection, the index doesn't get double assigned
     useEffect(() => {
@@ -846,6 +1021,7 @@ const Schedule: React.FC = () => {
 
     useEffect(() => {
       LabelChanging();
+      console.log("Today's ScheduleArray: ", TodayScheduleArray)
     }, [ScheduleArray, currentMinTime])
     
     return (
@@ -891,6 +1067,9 @@ const Schedule: React.FC = () => {
             </View>
 
             <RescheduleButtonArea
+             PriorSelections={PriorSelections}
+             FixedSelections={FixedSelections}
+             RemovingSelections={RemovingSelections}
              currentDateStringFormat={currentDateStringFormat}
             handleOutsidePress={handleOutsidePress}
              rescheduleStatus={rescheduleStatus} 
