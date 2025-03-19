@@ -8,16 +8,30 @@ import { ScheduleArrayItem } from './AddTiming';
 import { useDispatch, useSelector } from 'react-redux'
 import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
+import { ApiDataType } from '../Tabs/Schedule';
 
 const TopTab = createMaterialTopTabNavigator();
 
-type ManualScheduleTablePropsType = {
+type ScheduleTablePropsType = {
+  ApiData: ApiDataType;
+  rescheduleStatus: string;
   selectedDate: string
 }
 
-export const ManualScheduleTable = (props: ManualScheduleTablePropsType) => {
+const ScheduleTable = (props: ScheduleTablePropsType) => {
   const dispatch = useDispatch();
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
+  const [Title, setTitle] = useState('')
+
+  useEffect(() => {
+    if (props.rescheduleStatus == 'rescheduled') {
+      setTitle('Rescheduled Table')
+    }
+    else {
+      setTitle('Schedule Table')
+    }
+  }, [props.rescheduleStatus])
+  
 
   const data = {
     "uniqueID": ScheduleArray.map((item: ScheduleArrayItem) => item.uniqueID),
@@ -74,12 +88,13 @@ export const ManualScheduleTable = (props: ManualScheduleTablePropsType) => {
   return (
     <View style={{backgroundColor: '#e7e7e7'}}>
       <View style={styles.HeadingArea}>
-        <Text style={styles.Heading}>Schedule Table</Text>
+        <Text style={styles.Heading}>{Title}</Text>
       </View>
       <View style={styles.ScheduleArea}>
         <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>
         {/* Below is a very complex filtering and mapping possible with the effort of ChatGPT */}
-        {data['TaskDate']
+        {props.rescheduleStatus == 'off' && ( 
+        data['TaskDate']
         .map((TaskDate:string, index:number) => ({TaskDate, index}))
         .filter(({TaskDate}) => TaskDate === props.selectedDate)
         .map(({index}) => {
@@ -104,40 +119,37 @@ export const ManualScheduleTable = (props: ManualScheduleTablePropsType) => {
             </TouchableOpacity>
           </View>
           )
-        })}
+        }))}
+
+        {props.rescheduleStatus == 'rescheduled' && ( 
+        props.ApiData['Start_Angle']
+        .map((Start_Angle:number, index:number) => ({Start_Angle, index}))
+        .map(({Start_Angle, index}) => {
+          // const uniqueID = data['uniqueID'][index]
+          const startTime = props.ApiData['Start_Timing'][index]
+          const endTime = props.ApiData['End_Timing'][index]
+          const angleWork = props.ApiData['Work'][index]
+          return (
+          <View style={styles.Schedules} key={Start_Angle}>
+            <View style={{flex: 0.8, padding: 10, paddingLeft: 30}}>
+              <View style={{flex: 0.6, justifyContent: 'center'}}>
+                <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 18}}>{angleWork}</Text>
+              </View>
+              <View style={{flex: 0.4, justifyContent: 'center'}}>
+                <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 10}}>{TwelveHourFormat(startTime)} - {TwelveHourFormat(endTime)}</Text>
+              </View>
+            </View>
+            {/* <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}
+             onPress={() => DeleteTask(uniqueID)}
+             >
+              <Image source={Remove} style={{height: 20, width: 20}}/>
+            </TouchableOpacity> */}
+          </View>
+          )
+        }))}
         </ScrollView>
       </View>
     </View>
-  )
-}
-
-export const CompressedScheduleTable = () => {
-  return (
-    <View>
-      <Text>CompressedScheduleTable</Text>
-    </View>
-  )
-}
-type ScheduleTablePropsType = {
-  selectedDate: string
-}
-
-const ScheduleTable = (props: ScheduleTablePropsType) => {
-  return (
-      // <TopTab.Navigator initialRouteName="Manual Table"
-      // screenOptions={({ route }) => ({
-      //   tabBarStyle: { borderRadius: 10, height: 50 }, // Background color of the tab bar
-      //   tabBarIndicatorStyle: { display: 'none' }, // Indicator style
-      //   tabBarLabelStyle: { fontSize: 14, fontFamily: 'sf-pro-display-heavy'}, // Text style of tab labels
-      //   tabBarActiveTintColor: 'black', // Active tab text color
-      //   tabBarInactiveTintColor: 'gray', // Inactive tab text color
-      //   tabBarPressColor: 'rgba(255, 255, 255, 0.5)', // Ripple effect color on Android
-      // })}
-      // >
-      //   <TopTab.Screen name="Manual Table" component={ManualScheduleTable}/>
-      //   <TopTab.Screen name="Rescheduled Table" component={CompressedScheduleTable}/>
-      // </TopTab.Navigator>
-    <ManualScheduleTable selectedDate={props.selectedDate}/>
   )
 }
 

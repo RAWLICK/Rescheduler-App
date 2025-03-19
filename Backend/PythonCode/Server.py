@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from CompressSchedule import CompressionFunction
+# from Rough import CompressionFunction
 from flask_cors import CORS
 from pymongo import MongoClient
 
@@ -21,7 +22,7 @@ collection = db['Librarians Info']  # Collection name
 def compress():
     if request.method == 'POST':
         data = request.json
-        ImportedDataFrame = data.get('DataFrame')
+        ImportedDataFrame = data.get('ImportedDataFrame')
         currentTime = data.get('currentTime')
         PriorSelections = data.get('PriorSelections')
         FixedSelections = data.get('FixedSelections')

@@ -55,6 +55,15 @@ import { RootState } from '../../app/Store';
 import { data } from '../../Functions/Animated-Bar-Chart/constants';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
+export interface ApiDataType {
+  "Durations": string[];
+  "End_Timing": string[];
+  "Start_Timing": string[];
+  "Work": string[];
+  "Start_Angle": number[];
+  "End_Angle": number[];
+}
+
 const Clock = () => {
   const [hourRotation, setHourRotation] = useState(0);
   const [minuteRotation, setMinuteRotation] = useState(0);
@@ -103,6 +112,7 @@ type UpperAreaPropsType = {
 }
 
 type RescheduleButtonAreaPropsType = {
+  ResButtonTitle: string;
   PriorSelections: number[];
   FixedSelections: number[];
   RemovingSelections: number[];
@@ -128,6 +138,8 @@ type RescheduleButtonAreaPropsType = {
 }
 
 type BottomOptionsAreaPropsType = {
+  ApiData: ApiDataType
+  rescheduleStatus: string;
   ScheduleTableButton: () => Promise<void>,
   ScheduleTableSheet: RefObject<TrueSheet>,
   CalenderButton: () => Promise<void>,
@@ -199,9 +211,9 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
   return (
     <View style={[styles.LowerArea]}>
       <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
-        <Text style={[{fontFamily: 'Geizer', fontSize: 30, color: 'white'}]}>Reschedule</Text>
+        <Text style={[{fontFamily: 'Geizer', fontSize: 30, color: 'white'}]}>{props.ResButtonTitle}</Text>
       </TouchableOpacity>
-      <Modal transparent= {true} visible={props.rescheduleStatus !== 'off'} animationType='fade'>
+      <Modal transparent= {true} visible={props.rescheduleStatus !== 'off' && props.rescheduleStatus !== 'rescheduled'} animationType='fade'>
       <TouchableWithoutFeedback onPress={props.handleOutsidePress}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <BlurView
@@ -299,6 +311,8 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
           cornerRadius={24}
         >
           <ScheduleTable
+          ApiData={props.ApiData}
+          rescheduleStatus={props.rescheduleStatus}
           selectedDate={props.selectedDate}
           />
         </TrueSheet>
@@ -353,6 +367,7 @@ const Schedule: React.FC = () => {
     const [strokeStatus, setStrokeStatus] = useState(false)
     const [rescheduleStatus, setRescheduleStatus] = useState('off')
     const [DialogTitle, setDialogTitle] = useState('')
+    const [ResButtonTitle, setResButtonTitle] = useState('Reschedule')
     const [checked, setChecked] = useState(false);
     // const width = Dimensions.get('window').width;  // For Carousel
     const [serverResponseMessage, setServerResponseMessage] = useState('')
@@ -593,16 +608,8 @@ const Schedule: React.FC = () => {
       "rgba(191, 115, 181, 0.5)",
     ],
     }
-    
-    interface ApiDataType {
-      "Durations": string[];
-      "End_Timing": string[];
-      "Start_Timing": string[];
-      "Work": string[];
-      "Start_Angle": number[];
-      "End_Angle": number[];
-    }
-    const [ApiData, setApiData] = useState<ApiDataType>()
+  
+    const [ApiData, setApiData] = useState<ApiDataType>({} as ApiDataType)
     
     const [PriorSelections, setPriorSelections] = useState<number[]>([])
     const [FixedSelections, setFixedSelections] = useState<number[]>([])
@@ -792,7 +799,8 @@ const Schedule: React.FC = () => {
             </LinearGradient>
           </Defs> */}
 
-          {data['TaskDate']
+          {rescheduleStatus == "off" && (
+          data['TaskDate']
           .map((TaskDate:string, index:number) => ({TaskDate, index, StartAngle: data['StartAngle'][index]}))
           .filter(({TaskDate}) => TaskDate === selectedDate)
           // .filter()
@@ -831,10 +839,55 @@ const Schedule: React.FC = () => {
                 // stroke="url(#grad)"     //<Defs> Part
                 // strokeWidth="4"
               />
-          )})}
+          )}))}
+
+          {rescheduleStatus == "rescheduled" && (
+          ApiData['Start_Angle']
+          .map((Start_Angle:number, index:number) => ({Start_Angle, index,
+            //  StartAngle: data['StartAngle'][index]
+            }))
+          // .filter(({TaskDate}) => TaskDate === selectedDate)
+          // .filter()
+          .map(({index}) => {
+            // const uniqueID = data['uniqueID'][index]
+            const startAngle = ApiData['Start_Angle'][index];
+            const endAngle = ApiData['End_Angle'][index];
+            const sectorColor = data['Slice_Color'][index];
+            const startTime = ApiData['Start_Timing'][index]
+            const endTime = ApiData['End_Timing'][index]
+            const angleDuration = angleToTime(endAngle - startAngle)
+            const angleWork = ApiData['Work'][index]
+            
+            const angleOnPress = () => {
+              console.log('Pressed onOP');
+              settimeStart(TwelveHourFormat(startTime));
+              settimeEnd(TwelveHourFormat(endTime));
+              setWork(angleWork);
+              setduration(`(${angleDuration})`);
+              setangleColor(sectorColor);
+              setStrokeStatus(true);
+              // console.log(angleColor);
+            };
+
+            return(
+              <Path
+                // key={uniqueID}
+                key={startAngle}
+                d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, endAngle, startAngle)}
+                fill={sectorColor}  
+                onPressIn={()=> angleOnPress()}
+                onPressOut={LabelChanging}
+                // stroke={strokeStatus? '#000000' : 'none'}
+                // strokeDasharray="5,10"  // 10 units of stroke, 5 units of gap
+                // strokeDashoffset="0"    // Start from the beginning of the path
+
+                // stroke="url(#grad)"     //<Defs> Part
+                // strokeWidth="4"
+              />
+          )}))}
         </Svg>
       );
-    }, [ScheduleArray, selectedDate, currentMinTime]);
+    }, [ScheduleArray, selectedDate, currentMinTime, rescheduleStatus]);
   
     const AngleInfo = () => {
       return(
@@ -878,12 +931,13 @@ const Schedule: React.FC = () => {
 
     const sendNameToBackend = async () => {
       try {
-        const response = await fetch('http://192.168.156.92:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
+        const response = await fetch('http://192.168.42.92:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
           method: 'POST', // Specify the request method
           headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
-          body: JSON.stringify({ "ImportedDataFrame": JSON.stringify(TodayScheduleArray), "currentTime": "05/01/2025 09:00", "PriorSelections": "0,1", "FixedSelections": "5", "RemovingSelections": "1"}), // Convert the request payload to JSON.
+          // body: JSON.stringify({ "ImportedDataFrame": JSON.stringify(TodayScheduleArray), "currentTime": "05/01/2025 09:00", "PriorSelections": "0,1", "FixedSelections": "5", "RemovingSelections": "1"}), // Convert the request payload to JSON.
+          body: JSON.stringify({ "ImportedDataFrame": JSON.stringify(TodayScheduleArray), "currentTime": `${currentDateStringFormat} ${currentHourTime}:${currentMinTime}`, "PriorSelections": `${PriorSelections}`, "FixedSelections": `${FixedSelections}`, "RemovingSelections": `${RemovingSelections}`}), // Convert the request payload to JSON.
         })
   
         if (!response.ok) {  // Handle HTTP errors
@@ -893,7 +947,7 @@ const Schedule: React.FC = () => {
         const fetched_data = await response.json(); // Parse JSON response
         setApiData(fetched_data)
         setServerResponseMessage(fetched_data.message);  // Update state with server response
-        console.log("API_DATA: ", JSON.stringify(ApiData))
+        // console.log("API_DATA: ", JSON.stringify(ApiData))
       } catch (error) {
         console.error('Catch Error: ', error);
         setServerResponseMessage('Failed to connect to the backend');  // Handle network error
@@ -914,7 +968,8 @@ const Schedule: React.FC = () => {
       }
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
-      rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('off'))
+      rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('rescheduled')).then(() => setResButtonTitle('Back To Normal'))
+      rescheduleStatus == 'rescheduled' && setRescheduleStatus('off')
     }
 
     const handleOutsidePress = () => {
@@ -1013,6 +1068,7 @@ const Schedule: React.FC = () => {
     // Clearing the Arrays so that on reselection, the index doesn't get double assigned
     useEffect(() => {
       if (rescheduleStatus == 'off') {
+        setResButtonTitle('Reschedule');
         setPriorSelections([])
         setFixedSelections([])
         setRemovingSelections([])
@@ -1021,8 +1077,15 @@ const Schedule: React.FC = () => {
 
     useEffect(() => {
       LabelChanging();
-      console.log("Today's ScheduleArray: ", TodayScheduleArray)
     }, [ScheduleArray, currentMinTime])
+
+    useEffect(() => {
+      console.log("Today's ScheduleArray: ", TodayScheduleArray)
+    }, [ScheduleArray])
+
+    useEffect(() => {
+      console.log("API_DATA: ", JSON.stringify(ApiData))
+    }, [ApiData])
     
     return (
       <SafeAreaView style={styles.safeView}>
@@ -1067,11 +1130,12 @@ const Schedule: React.FC = () => {
             </View>
 
             <RescheduleButtonArea
+             ResButtonTitle={ResButtonTitle}
              PriorSelections={PriorSelections}
              FixedSelections={FixedSelections}
              RemovingSelections={RemovingSelections}
              currentDateStringFormat={currentDateStringFormat}
-            handleOutsidePress={handleOutsidePress}
+             handleOutsidePress={handleOutsidePress}
              rescheduleStatus={rescheduleStatus} 
              DialogBackButton={DialogBackButton} 
              DialogTitle={DialogTitle} 
@@ -1084,6 +1148,8 @@ const Schedule: React.FC = () => {
             />
 
             <BottomOptionsArea
+              ApiData={ApiData}
+              rescheduleStatus={rescheduleStatus}
               ScheduleTableButton={ScheduleTableButton}
               ScheduleTableSheet={ScheduleTableSheet}
               CalenderButton={CalenderButton}

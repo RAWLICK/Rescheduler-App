@@ -15,11 +15,13 @@ def CompressionFunction(
         FixedSelections,
         RemovingSelections):
 
-    ImportedDataFrame = '[{"StartTime":"06:00","EndTime":"07:00","Work":"Physics","StartAngle":180,"EndAngle":210,"TaskDate":"05/01/2025","Slice_Color":"Green"},{"StartTime":"07:00","EndTime":"08:00","Work":"Chemistry","StartAngle":210,"EndAngle":240,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"08:00","EndTime":"09:00","Work":"Maths","StartAngle":240,"EndAngle":270,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"09:00","EndTime":"10:00","Work":"Biology","StartAngle":270,"EndAngle":300,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"10:00","EndTime":"11:00","Work":"SST","StartAngle":300,"EndAngle":330,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"11:00","EndTime":"12:30","Work":"Economics","StartAngle":330,"EndAngle":375,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"12:30","EndTime":"13:30","Work":"Sanskrit","StartAngle":375,"EndAngle":405,"TaskDate":"05/01/2025","Slice_Color":"blue"}]'
+    # ImportedDataFrame = '[{"StartTime":"06:00","EndTime":"07:00","Work":"Physics","StartAngle":180,"EndAngle":210,"TaskDate":"05/01/2025","Slice_Color":"Green"},{"StartTime":"07:00","EndTime":"08:00","Work":"Chemistry","StartAngle":210,"EndAngle":240,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"08:00","EndTime":"09:00","Work":"Maths","StartAngle":240,"EndAngle":270,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"09:00","EndTime":"10:00","Work":"Biology","StartAngle":270,"EndAngle":300,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"10:00","EndTime":"11:00","Work":"SST","StartAngle":300,"EndAngle":330,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"11:00","EndTime":"12:30","Work":"Economics","StartAngle":330,"EndAngle":375,"TaskDate":"05/01/2025","Slice_Color":"blue"},{"StartTime":"12:30","EndTime":"13:30","Work":"Sanskrit","StartAngle":375,"EndAngle":405,"TaskDate":"05/01/2025","Slice_Color":"blue"}]'
 
     # Converting ImportedDataframe into a dataframe which this Compress Function can consume accordingly
     # Remember to use single quote (') and double quotes(") seperately in fString instead of same to avoid any error.
     # json.loads() helps us changing the stringified ImportedDataFrame back into a list of dictionaries
+
+    print(ImportedDataFrame)
 
     dataframe = pd.DataFrame([])
     for i in json.loads(ImportedDataFrame):
@@ -112,10 +114,10 @@ def CompressionFunction(
         print("So the works which you are Removing are: ", Removing_Work_List)
         print("\n")
 
-    for i in sorted(Removing_Work, reverse=True):
-        del Work[int(i)]
-        del Start[int(i)]
-        del End[int(i)]
+        for i in sorted(Removing_Work, reverse=True):
+            del Work[int(i)]
+            del Start[int(i)]
+            del End[int(i)]
 
     # Entering the current time and converting it in datetime format
 
@@ -175,6 +177,13 @@ def CompressionFunction(
             boolean_list.append("True")
         else: 
             boolean_list.append("False")
+    if("True" not in boolean_list):
+        boolean_list = []
+        for i in range (0, len(Start)):
+            if (Start[i] > cur_time and "True" not in boolean_list):
+                boolean_list.append("True")
+            else:
+                boolean_list.append("False")
 
     # Now making a Fragment_Dictionary in which the fragments will be divided on the basis of works present between every fixed time.
     # First fragment will be manually named containing Previous Work List and List of work from current Time Duration Work to First Fixed Work
