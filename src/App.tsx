@@ -28,8 +28,8 @@ import RescheduleIcon from './Components/Images/Reschedule.png'
 import StatisticsIcon from './Components/Images/Statistics.png'
 import { ScheduleArrayItem } from './Components/Screens/AddTiming';
 
-import { ManualScheduleTable } from './Components/Screens/ScheduleTable';
-import { CompressedScheduleTable } from './Components/Screens/ScheduleTable';
+// import { ManualScheduleTable } from './Components/Screens/ScheduleTable';
+// import { CompressedScheduleTable } from './Components/Screens/ScheduleTable';
 import ScheduleTable from './Components/Screens/ScheduleTable';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';

@@ -252,17 +252,17 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           .map(({TaskDate, index, StartAngle}, newIndex) => ({  // newIndex is made to index 0, 1 instead of 52, 53 etc.
             TaskDate, index, StartAngle, newIndex
           }))
-          .filter(({index, StartAngle}) => {
+          .filter(({index, StartAngle, newIndex}) => {
           if (props.rescheduleStatus == 'PriorStage') {
             return StartAngle <= props.hourRotation 
           }
           else if (props.rescheduleStatus == 'FixingStage') {
-            if (!props.RemovingSelections.includes(index)) {    // Prevent Fixed and Removing list getting common
+            if (!props.RemovingSelections.includes(newIndex)) {    // Prevent Fixed and Removing list getting common
               return StartAngle > props.hourRotation 
             }
           }
           else if (props.rescheduleStatus == 'RemovingStage') {
-            if (!props.FixedSelections.includes(index)) {       // Prevent Fixed and Removing list getting common
+            if (!props.FixedSelections.includes(newIndex)) {       // Prevent Fixed and Removing list getting common
               return StartAngle > props.hourRotation 
             }
           }})
@@ -278,7 +278,6 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
                   iconStyle={{ borderColor: "red" }}
                   innerIconStyle={{ borderWidth: 2 }}
                   textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff', textDecorationLine: 'none' }}
-                  // onPress={(isChecked: boolean) => {console.log(isChecked)}}
                   onPress={(isChecked: boolean) => props.handleCheckboxChange(newIndex, isChecked)}
                 />
               </View>
@@ -801,9 +800,11 @@ const Schedule: React.FC = () => {
 
           {rescheduleStatus == "off" && (
           data['TaskDate']
-          .map((TaskDate:string, index:number) => ({TaskDate, index, StartAngle: data['StartAngle'][index]}))
+          .map((TaskDate:string, index:number) =>
+          ({TaskDate, index, StartAngle: data['StartAngle'][index], EndAngle: data['EndAngle'][index]}))
           .filter(({TaskDate}) => TaskDate === selectedDate)
-          // .filter()
+          .filter(({EndAngle}) => EndAngle > hourRotation)
+          .filter(({StartAngle}) => StartAngle < hourRotation + 360)
           .map(({index}) => {
             const uniqueID = data['uniqueID'][index]
             const startAngle = data['StartAngle'][index];
@@ -843,11 +844,9 @@ const Schedule: React.FC = () => {
 
           {rescheduleStatus == "rescheduled" && (
           ApiData['Start_Angle']
-          .map((Start_Angle:number, index:number) => ({Start_Angle, index,
-            //  StartAngle: data['StartAngle'][index]
-            }))
-          // .filter(({TaskDate}) => TaskDate === selectedDate)
-          // .filter()
+          .map((Start_Angle:number, index:number) => ({Start_Angle, index, End_Angle: ApiData['End_Angle'][index]}))
+          .filter(({End_Angle}) => End_Angle > hourRotation)
+          .filter(({Start_Angle}) => Start_Angle < hourRotation + 360)
           .map(({index}) => {
             // const uniqueID = data['uniqueID'][index]
             const startAngle = ApiData['Start_Angle'][index];
@@ -931,7 +930,7 @@ const Schedule: React.FC = () => {
 
     const sendNameToBackend = async () => {
       try {
-        const response = await fetch('http://192.168.42.92:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
+        const response = await fetch('http://192.168.176.92:5000/', {  // Replace localhost with your computer's IP address if testing on a real device
           method: 'POST', // Specify the request method
           headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
@@ -955,10 +954,10 @@ const Schedule: React.FC = () => {
     };
 
     const DialogBackButton = () => {
-      rescheduleStatus === 'PriorStage' && setRescheduleStatus('off')
-      rescheduleStatus === 'FixingStage' && setRescheduleStatus('PriorStage')
-      rescheduleStatus === 'RemovingStage' && setRescheduleStatus('FixingStage')
-      ;
+      setRescheduleStatus('off')
+      // rescheduleStatus === 'PriorStage' && setRescheduleStatus('off')
+      // rescheduleStatus === 'FixingStage' && setRescheduleStatus('PriorStage')
+      // rescheduleStatus === 'RemovingStage' && setRescheduleStatus('FixingStage')
     }
 
     const RescheduleButtonClick = () => {
@@ -1019,17 +1018,43 @@ const Schedule: React.FC = () => {
     };
 
     function LabelChanging() {
-      for (let index = 0; index < data["TaskDate"].length; index++) {
-        const uniqueID = data['uniqueID'][index]
-        const startAngle = data['StartAngle'][index];
-        const endAngle = data['EndAngle'][index];
-        const sectorColor = data['Slice_Color'][index];
-        const startTime = data['StartTime'][index]
-        const endTime = data['EndTime'][index]
-        const angleDuration = angleToTime(endAngle - startAngle)
-        const angleWork = data['Work'][index]
-        const TaskDate = data['TaskDate'][index]
-        if (TaskDate === selectedDate) {
+      if (rescheduleStatus != "rescheduled") {
+        for (let index = 0; index < data["TaskDate"].length; index++) {
+          const uniqueID = data['uniqueID'][index]
+          const startAngle = data['StartAngle'][index];
+          const endAngle = data['EndAngle'][index];
+          const sectorColor = data['Slice_Color'][index];
+          const startTime = data['StartTime'][index]
+          const endTime = data['EndTime'][index]
+          const angleDuration = angleToTime(endAngle - startAngle)
+          const angleWork = data['Work'][index]
+          const TaskDate = data['TaskDate'][index]
+          if (TaskDate === selectedDate) {
+            if (hourRotation >= startAngle && hourRotation <= endAngle) {
+              setWork(angleWork);
+              setduration(`(${angleDuration})`);
+              settimeStart(TwelveHourFormat(startTime));
+              settimeEnd(TwelveHourFormat(endTime));
+              break;
+            }
+            else if (hourRotation < startAngle || hourRotation > endAngle) {
+              setWork('Free Time');
+              setduration("");
+              settimeStart("");
+              settimeEnd("");
+            }
+          }
+        }
+      }
+      else if (rescheduleStatus == 'rescheduled') {
+        for (let index = 0; index < ApiData["Start_Angle"].length; index++) {
+          // const uniqueID = data['uniqueID'][index]
+          const startAngle = ApiData['Start_Angle'][index];
+          const endAngle = ApiData['End_Angle'][index];
+          const startTime = ApiData['Start_Timing'][index]
+          const endTime = ApiData['End_Timing'][index]
+          const angleDuration = angleToTime(endAngle - startAngle)
+          const angleWork = ApiData['Work'][index]
           if (hourRotation >= startAngle && hourRotation <= endAngle) {
             setWork(angleWork);
             setduration(`(${angleDuration})`);
@@ -1077,7 +1102,7 @@ const Schedule: React.FC = () => {
 
     useEffect(() => {
       LabelChanging();
-    }, [ScheduleArray, currentMinTime])
+    }, [ScheduleArray, currentMinTime, rescheduleStatus])
 
     useEffect(() => {
       console.log("Today's ScheduleArray: ", TodayScheduleArray)

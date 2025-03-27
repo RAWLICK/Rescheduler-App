@@ -7,6 +7,8 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { ScheduleArrayItem } from './AddTiming';
 import { useDispatch, useSelector } from 'react-redux'
 import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
+import BlueAlarm from '../Images/Alarm_Clock_Blue.png'
+import GreyAlarm from '../Images/Alarm_Clock_Grey.png'
 import { RootState } from '../../app/Store';
 import { ApiDataType } from '../Tabs/Schedule';
 
@@ -139,11 +141,11 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
                 <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 10}}>{TwelveHourFormat(startTime)} - {TwelveHourFormat(endTime)}</Text>
               </View>
             </View>
-            {/* <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}
-             onPress={() => DeleteTask(uniqueID)}
+            <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}
+            //  onPress={() => DeleteTask(uniqueID)}
              >
-              <Image source={Remove} style={{height: 20, width: 20}}/>
-            </TouchableOpacity> */}
+              <Image source={GreyAlarm} style={{height: 25, width: 25}}/>
+            </TouchableOpacity>
           </View>
           )
         }))}
