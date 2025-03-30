@@ -11,6 +11,8 @@ import LockImage from '../Images/Lock.png'
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from "@react-native-community/blur";
 import AddTwo from "../Images/AddTwo.png"
+import LeftArrow from '../Images/LeftArrow.png'
+import RightArrowTwo from '../Images/RightArrowTwo.png'
 import {
   SafeAreaView,
   ScrollView,
@@ -22,9 +24,97 @@ import {
   ImageBackground,
   TouchableOpacity,
   Dimensions,
-  Modal
+  Modal,
+  Platform
 } from 'react-native';
-import { startOfWeek, endOfWeek, eachDayOfInterval, subWeeks, addWeeks, addMonths, subMonths } from 'date-fns';
+import { startOfWeek, endOfWeek, eachDayOfInterval, subWeeks, addWeeks, addMonths, subMonths, getMonth, getYear } from 'date-fns';
+import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
+type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+
+type WeeklyAnalyticsModalPropsType = {
+  selectedWeekStart: Date
+  selectedWeekEnd: Date
+  WeekTitle: string
+  WeekAnalyticsStatus: boolean
+  setWeekAnalyticsStatus: SetState<boolean>
+}
+
+const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
+  function StringDateToDateConvert(stringDate: string) {
+    // + converts string to number
+    let [day, month, year] = stringDate.split('/')
+    const createdDate = new Date(Date.UTC(+year, +month - 1, +day))
+    return createdDate
+  }
+  return (
+    <Modal transparent= {true} visible={props.WeekAnalyticsStatus} animationType='fade'>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <BlurView
+          style={styles.blurStyle}
+          blurType="light"
+          blurAmount={10}
+          // reducedTransparencyFallbackColor="light"
+        />
+        <View style={[styles.selectionDialogBox]}>
+            <BlurView
+            style={styles.blurStyle}
+            blurType="dark"
+            blurAmount={50}
+            // reducedTransparencyFallbackColor="black"
+            />
+            <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
+              <TouchableOpacity onPress={() => props.setWeekAnalyticsStatus(false)} style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
+                <Image source={LeftArrow} style={{height: 17, width: 17}}/>
+              </TouchableOpacity>
+              <View style={{flex: 0.8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+                  <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>{props.WeekTitle}</Text>
+              </View>
+              <View style={{flex: 0.1}}>
+  
+              </View>
+            </View>
+            <View style={{flex: 7, paddingLeft: 10,paddingRight: 10, paddingTop: 10}}>
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {demoData.map((eachSubject, index) => {
+                  // Filter the Dataframe for dates within the range
+                  const filteredDataframe = eachSubject.Dataframe.filter((eachDataframeObject) => {
+                    const date = StringDateToDateConvert(eachDataframeObject.Date);
+                    return date >= props.selectedWeekStart && date <= props.selectedWeekEnd;
+                  });
+                  // console.log("Filtered Dataframe: ", filteredDataframe)
+                  // Extract Work-Done-For values from filtered Dataframe
+                  const workDoneValues = filteredDataframe.map((eachDataframeObject) => eachDataframeObject["Work-Done-For"]);
+          
+                  // You can calculate a specific value (e.g., total, average, etc.)
+                  const totalWorkDone = workDoneValues.reduce((total, value) => {
+                    // Convert "60min" to a number (60)
+                    const numericValue = parseInt(value.replace("min", ""), 10);
+                    return total + numericValue;
+                  },0);
+                  return (
+                  <View key={index} style={{height: 40, borderRadius: 10, backgroundColor: '#8a8a8a', flexDirection: 'row', paddingLeft: 20, paddingRight: 20, marginBottom: 5}}>
+                      <View style={{flex: 0.4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                          <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{eachSubject.Subject}</Text>
+                      </View>
+                      <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}>
+                        <Image source={RightArrowTwo} style={{height: 25, width: 25}}/>
+                      </View>
+                      <View style={{flex: 0.4, justifyContent: 'center', alignItems: 'flex-end'}}>
+                          <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{totalWorkDone} mins</Text>
+                      </View>
+                  </View>
+                )})}
+              </ScrollView>
+            </View>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
+const MonthlyAnalyticsModal = () => {
+
+}
 
 const Statistics = () => {
   const [WeekChange, setWeekChange] = useState<number>(0);
@@ -34,7 +124,13 @@ const Statistics = () => {
   const currentWeekEndDate = endOfWeek(currentDate, { weekStartsOn: 1 });
   const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(currentWeekStartDate)
   const [selectedWeekEnd, setselectedWeekEnd] = useState<Date>(currentWeekEndDate)
+  const currentMonth = getMonth(currentDate)
+  const [SelectedMonth, setSelectedMonth] = useState<number>(currentMonth)
   const [WeekTitle, setWeekTitle] = useState('This Week')
+  const [MonthTitle, setMonthTitle] = useState('This Month')
+  const [WeeklyAnalyticsStatus, setWeeklyAnalyticsStatus] = useState(false)
+  const [MontlyAnalyticsStatus, setMontlyAnalyticsStatus] = useState(false)
+  const currentYear = getYear(currentDate)
   // const DatesBetween = eachDayOfInterval({start: currentWeekStartDate, end: currentWeekEndDate})
   // const AddingWeeks = addWeeks(currentWeekStartDate, 1)
   // const SubtractWeeks = subWeeks(selectedWeekStart, 1)
@@ -42,18 +138,18 @@ const Statistics = () => {
   const WordMonth = (date: number) => {
     let MonthExtract = date;
     const Months = [
-      'Jan',
-      'Feb',
+      'January',
+      'February',
       'March',
       'April',
       'May',
       'June',
       'July',
-      'Aug',
-      'Sept',
-      'Oct',
-      'Nov',
-      'Dec',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return Months[MonthExtract];
   };
@@ -61,7 +157,7 @@ const Statistics = () => {
   function DayToWeekTitle(date: Date) {
     const numberDate = date.getDate();
     const month = date.getMonth();
-    return `Week of ${numberDate} ${WordMonth(month)}`
+    return `Week from ${numberDate} ${WordMonth(month)}`
   }
 
   function DaytoStringDate(date: Date) {
@@ -93,12 +189,32 @@ const Statistics = () => {
     }
   }
 
+  function IncreaseMonthButton () {
+    let IncreasedMonth = SelectedMonth + 1
+    setSelectedMonth(SelectedMonth + 1)
+    if (IncreasedMonth == currentMonth) {
+      setMonthTitle("This Month")
+    }
+    else {
+      setMonthTitle(WordMonth(IncreasedMonth))
+    }
+  }
+
+  function DecreaseMonthButton () {
+    let DecreasedMonth = SelectedMonth - 1
+    setSelectedMonth(SelectedMonth - 1)
+    if (DecreasedMonth == currentMonth) {
+      setMonthTitle("This Month")
+    }
+    else {
+      setMonthTitle(WordMonth(DecreasedMonth))
+    }
+  }
+
   // useEffect(() => {
   //   console.log(selectedWeekStart)
   // }, [selectedWeekStart])
   
-
-
   module.exports = {WeekChange}
   
   return (
@@ -139,7 +255,7 @@ const Statistics = () => {
             <Text style={{color: 'white', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Add Subjects in Stats</Text>
           </View>
 
-          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }}>
+          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }} onPress={() => setWeeklyAnalyticsStatus(true)}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
               <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Week Analytics</Text>
             </View>
@@ -147,18 +263,28 @@ const Statistics = () => {
               <Image source={ChevronRightBlack} style={{height: 20, width: 20}}/>
             </View>
           </TouchableOpacity>
+          
+          <WeeklyAnalyticsModal
+          selectedWeekStart={selectedWeekStart}
+          selectedWeekEnd={selectedWeekEnd}
+          WeekTitle={WeekTitle}
+          WeekAnalyticsStatus={WeeklyAnalyticsStatus}
+          setWeekAnalyticsStatus={setWeeklyAnalyticsStatus}
+          />
         </View>
 
         <View style={{marginTop: 10}}>
           <View style={{justifyContent: 'center', alignItems: 'center', height: 40, flexDirection: 'row'}}>
-            <TouchableOpacity onPress={() => setMonthChange(MonthChange - 1)}>
+            <TouchableOpacity onPress={DecreaseMonthButton}>
               <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
             </TouchableOpacity>
             <View style={{marginLeft: 15, marginRight: 15}}>
-              <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>This Month</Text>
+              <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>{MonthTitle}</Text>
             </View>
-            <TouchableOpacity onPress={() => setMonthChange(MonthChange + 1)}>
-              <Image source={ChevronRightBlack} style={{height: 15, width: 15}}/>
+            <TouchableOpacity onPress={IncreaseMonthButton} disabled={currentMonth == SelectedMonth}>
+              <Image source={ChevronRightBlack} style={[{height: 15, width: 15 },
+              currentMonth == SelectedMonth && {opacity: 0.3}
+            ]}/>
             </TouchableOpacity>
           </View>
         </View>
@@ -268,6 +394,15 @@ const Statistics = () => {
 }
 
 const styles = StyleSheet.create({
+  selectionDialogBox: {
+    flexDirection: 'column',
+    height: 400,
+    width: 320,
+    borderRadius: 20,
+    overflow: 'hidden'
+    // backgroundColor: 'black',       // Disabled because of iOS
+    // opacity: 0.85,                  // Disabled because of iOS
+  },
   safeView: {
     flex: 1,
     backgroundColor: '#D2CFE4'

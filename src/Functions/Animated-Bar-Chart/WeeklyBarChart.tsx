@@ -67,8 +67,8 @@ export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
   }
   useEffect(() => {
     FindingMaxMinuteOfWeek(props.selectedWeekStart, props.selectedWeekEnd);
-    console.log(MaxValueGot)
-  }, [])
+    // console.log(MaxValueGot)
+  }, [props.selectedWeekStart])
 
   useEffect(() => {
     console.log("maxMinThisWeek: ", maxMinThisWeek)
@@ -84,7 +84,7 @@ export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
           const date = StringDateToDateConvert(eachDataframeObject.Date);
           return date >= props.selectedWeekStart && date <= props.selectedWeekEnd;
         });
-
+        // console.log("Filtered Dataframe: ", filteredDataframe)
         // Extract Work-Done-For values from filtered Dataframe
         const workDoneValues = filteredDataframe.map((eachDataframeObject) => eachDataframeObject["Work-Done-For"]);
 
@@ -94,10 +94,9 @@ export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
           const numericValue = parseInt(value.replace("min", ""), 10);
           return total + numericValue;
         },0);
-
         return (
           <View key={index}>
-            <SingleBarChart value={totalWorkDone/MaxValueGot}/>
+            <SingleBarChart value={totalWorkDone/(maxMinThisWeek + 50)}/>
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               <Text style={{ fontSize: 7, color: "white" }}>{eachSubject.Subject}</Text>
             </View>

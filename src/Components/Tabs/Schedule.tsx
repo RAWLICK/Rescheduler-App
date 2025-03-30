@@ -100,6 +100,7 @@ const Clock = () => {
 };
 
 type UpperAreaPropsType = {
+  rescheduleStatus: string,
   currentHourTime: number, 
   currentMinTime: number, 
   currentMonth: number, 
@@ -1134,6 +1135,7 @@ const Schedule: React.FC = () => {
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
             <UpperArea
+              rescheduleStatus={rescheduleStatus}
               currentHourTime={currentHourTime}
               currentMinTime={currentMinTime}
               currentDay={currentDay}

@@ -1,8 +1,5 @@
-function listToStringConverter(list) {
-    stringList = `${list}`
-    console.log(stringList)
-}
+import { startOfWeek, endOfWeek, eachDayOfInterval, subWeeks, addWeeks, addMonths, subMonths, getMonth } from 'date-fns';
+const currentDate = new Date();
 
-listA = [1, 2, 3]
-
-listToStringConverter(listA)
+const currentMonth = getMonth(currentDate)
+console.log("Current Month: ", currentMonth)

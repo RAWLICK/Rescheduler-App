@@ -1,13 +1,15 @@
 import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { Dropdown } from 'react-native-element-dropdown';
+import Normal_Plus from '../Images/Normal_Plus.png'
+import NormalMinus from '../Images/NormalMinus.png'
 const { width, height } = Dimensions.get('window');
 
 const AdminPanel = () => {
     const [distributorName, setDistributorName] = useState("")
     const [distributionName, setDistributionName] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
-    const [numberOfBranch, setNumberOfBranch] = useState("1")
+    const [numberOfBranch, setNumberOfBranch] = useState(1)
     const DistributionTypeData = [
         { label: 'Library', value: '1' }
     ];
@@ -33,16 +35,16 @@ const AdminPanel = () => {
                 <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Admin Panel</Text>
                 </View>
-                <View 
+                <ScrollView
                 style={{
-                    flex: 1,
+                    // flex: 1,
                     backgroundColor: '#1b1b1d',
                     padding: 30,
                     paddingRight: 15,
                     paddingLeft: 15,
-                    paddingBottom: 15,
-                    rowGap: 3
+                    paddingBottom: 15
                 }}>
+                    <View style={{rowGap: 3}}>
                     <View style={[styles.UpperOption, { height: 65 }]}>
                         <View
                         style={{
@@ -180,21 +182,38 @@ const AdminPanel = () => {
                             alignItems: 'center',
                             flexDirection: 'row',
                         }}>
-                            <View style={{flex: 0.8}}>
+                            <View style={{flex: 0.7}}>
                                 <Text style={styles.OptionText}>Total Number of Branches</Text>
                             </View>
-                            <View style={{flex: 0.2, alignItems: 'center', backgroundColor: '#9D9EA0', borderRadius: 10, margin: 10}}>
-                                <TextInput
-                                    style={[styles.OptionText, {color: 'black'}]}
-                                    value={numberOfBranch}
-                                    onChangeText={setNumberOfBranch}
-                                    // placeholder=""
-                                    placeholderTextColor="#9D9EA0">
-                                </TextInput>
+                            <View style={{flex: 0.3, alignItems: 'center', borderRadius: 10, margin: 10, flexDirection: 'row', columnGap: 25}}>
+                                <TouchableOpacity onPress={() => numberOfBranch > 1 ? setNumberOfBranch(numberOfBranch - 1) : setNumberOfBranch(numberOfBranch)}>
+                                    <Image source={NormalMinus} style={{height: 20, width: 20}}/>
+                                </TouchableOpacity>
+                                <View style={{backgroundColor: '#9D9EA0', padding: 5, borderRadius: 3}}>
+                                    <Text>{numberOfBranch}</Text>
+                                </View>
+                                <TouchableOpacity onPress={() => setNumberOfBranch(numberOfBranch + 1)}>
+                                    <Image source={Normal_Plus} style={{height: 20, width: 20}}/>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>
-                </View>
+                    {new Array(numberOfBranch - 1).fill(null).map(( __, dayIndex) => {
+                    // const [AnotherBranches, setAnotherBranches] = useState("")
+                    return (
+                        <View key={dayIndex} style={[styles.MiddleOption, { height: 65 }]}>
+                            {/* <TextInput
+                            style={styles.OptionText}
+                            value={AnotherBranches}
+                            onChangeText={setAnotherBranches}
+                            placeholder="Second Branch Name"
+                            placeholderTextColor="#9D9EA0">
+                            </TextInput> */}
+                        </View>
+                    )
+                    })}
+                    </View>
+                </ScrollView>
             </View>
         </SafeAreaView>
     )

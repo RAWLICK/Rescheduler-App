@@ -612,6 +612,7 @@ def CompressionFunction(
             # We have used j for loop so to add those Pinned Time Diff without disturbing the break used in i's for loop.
 
             for i in range(0, LenTills_Dictionary[key1] + Pinned_Timing_Reached + New_Data_Created): 
+                print("Error understanding: ", LenTills_Dictionary[key1] + Pinned_Timing_Reached + New_Data_Created)
                 if(Compressed_DataFrame.End_[i] > Compressed_DataFrame.Start_[i+1]):
                     Pinned_Time_Diff = Compressed_DataFrame.End_[i+1] - Compressed_DataFrame.Start_[i+1]
                     Intersec_Diff = Compressed_DataFrame.End_[i] - Compressed_DataFrame.Start_[i+1]

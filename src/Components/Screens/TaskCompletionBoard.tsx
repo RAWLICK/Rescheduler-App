@@ -79,6 +79,8 @@ type DurationBoxPropsType = {
   setShowPicker: SetState<boolean>,
   alarmString: string | null
   setAlarmString: SetState<string | null>
+  DurationBoxValue: string | null
+  setDurationBoxValue: SetState<string | null>
 }
 const DurationBox = (props: DurationBoxPropsType) => {
   const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
@@ -93,6 +95,8 @@ const DurationBox = (props: DurationBoxPropsType) => {
           onConfirm={(pickedDuration) => {
             props.setAlarmString(formatTime(pickedDuration));
             props.setShowPicker(false);
+            props.setDurationBoxValue(formatTime(pickedDuration))
+            console.log("Duration Value: ", props.DurationBoxValue)
           }}
           modalTitle="Duration"
           onCancel={() => props.setShowPicker(false)}
@@ -114,9 +118,6 @@ const TaskCompletionBoard = () => {
   const DurationBoxes = [0, 1, 2, 3];
   const DurationTag = ['0%', '25%', '50%', '75%', '✓'];
   const [Duration, setDuration] = useState('1h');
-  // const StartRadar = useSharedValue<number>(0);
-  // const MovedRadar = useSharedValue<number>(0);
-  // const FinalRadar = useSharedValue<number>(75.35);
   const [showPicker, setShowPicker] = useState(false);
   const [alarmString, setAlarmString] = useState<string | null>(null);
   const durationRanges = [
@@ -140,6 +141,10 @@ const TaskCompletionBoard = () => {
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
   const data = {
       "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Work)
+  }
+
+  const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
+    return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
   }
 
   const TaskCompletionBoardVisibility = () => {
@@ -237,6 +242,7 @@ const TaskCompletionBoard = () => {
                   const MovedRadar = useSharedValue<number>(0);
                   const FinalRadar = useSharedValue<number>(65);
                   const [percentage, setPercentage] = useState(25)
+                  const [DurationBoxValue, setDurationBoxValue] = useState<string | null>('1h 30min')
 
                   const pan = Gesture.Pan()
                   .onBegin(() => {
@@ -337,8 +343,16 @@ const TaskCompletionBoard = () => {
                           <View>
                             <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{percentage}%  of  </Text>
                           </View>
+                          <DurationBox
+                            DurationBoxValue={DurationBoxValue}
+                            setDurationBoxValue={setDurationBoxValue}
+                            showPicker={showPicker}
+                            setShowPicker={setShowPicker}
+                            alarmString={alarmString}
+                            setAlarmString={setAlarmString}
+                          />
                           <TouchableOpacity style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}} onPress={DurationClick}>
-                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>1h 30min</Text>
+                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{DurationBoxValue}</Text>
                           </TouchableOpacity>
                         </View>
                     </View>
@@ -412,12 +426,6 @@ const TaskCompletionBoard = () => {
             </View>
         </View>
       </ImageBackground>
-    <DurationBox
-      showPicker={showPicker}
-      setShowPicker={setShowPicker}
-      alarmString={alarmString}
-      setAlarmString={setAlarmString}
-    />
     <TaskCompletionPopUp
       popUpIsVisible={popUpIsVisible}
       setPopUpIsVisible={setPopUpIsVisible}
