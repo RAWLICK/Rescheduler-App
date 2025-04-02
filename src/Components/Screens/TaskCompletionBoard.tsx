@@ -82,31 +82,31 @@ type DurationBoxPropsType = {
   DurationBoxValue: string | null
   setDurationBoxValue: SetState<string | null>
 }
-const DurationBox = (props: DurationBoxPropsType) => {
-  const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
-    return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
-  }
-  return (
-      <TimerPickerModal
-          hideSeconds
-          padHoursWithZero
-          visible={props.showPicker}
-          setIsVisible={props.setShowPicker}
-          onConfirm={(pickedDuration) => {
-            props.setAlarmString(formatTime(pickedDuration));
-            props.setShowPicker(false);
-            props.setDurationBoxValue(formatTime(pickedDuration))
-            console.log("Duration Value: ", props.DurationBoxValue)
-          }}
-          modalTitle="Duration"
-          onCancel={() => props.setShowPicker(false)}
-          closeOnOverlayPress
-          LinearGradient={LinearGradient}
-          styles={{ theme: "dark" }}
-          modalProps={{ overlayOpacity: 0.2 }}
-      />
-  )
-}
+// const DurationBox = (props: DurationBoxPropsType) => {
+//   const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
+//     return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
+//   }
+//   return (
+//       <TimerPickerModal
+//           hideSeconds
+//           padHoursWithZero
+//           visible={props.showPicker}
+//           setIsVisible={props.setShowPicker}
+//           onConfirm={(pickedDuration) => {
+//             props.setAlarmString(formatTime(pickedDuration));
+//             props.setShowPicker(false);
+//             props.setDurationBoxValue(formatTime(pickedDuration))
+//             console.log("Duration Value: ", props.DurationBoxValue)
+//           }}
+//           modalTitle="Duration"
+//           onCancel={() => props.setShowPicker(false)}
+//           closeOnOverlayPress
+//           LinearGradient={LinearGradient}
+//           styles={{ theme: "dark" }}
+//           modalProps={{ overlayOpacity: 0.2 }}
+//       />
+//   )
+// }
 
 const TaskCompletionBoard = () => {
   const dispatch = useDispatch();
@@ -140,7 +140,9 @@ const TaskCompletionBoard = () => {
   ];
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
   const data = {
-      "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Work)
+      "uniqueID": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.uniqueID),
+      "Subject": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Subject),
+      "Current_Duration": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Current_Duration)
   }
 
   const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
@@ -237,12 +239,14 @@ const TaskCompletionBoard = () => {
             </View>
             <View style={{flex: 10}}>
               <ScrollView>
-                {data["Work"].map((work, index) => {
+                {data["Subject"].map((Subject, index) => {
                   const StartRadar = useSharedValue<number>(0);
                   const MovedRadar = useSharedValue<number>(0);
                   const FinalRadar = useSharedValue<number>(65);
-                  const [percentage, setPercentage] = useState(25)
-                  const [DurationBoxValue, setDurationBoxValue] = useState<string | null>('1h 30min')
+                  // const [percentage, setPercentage] = useState(25)
+                  const percentage = 25
+                  const Current_Duration = data["Current_Duration"][index]
+                  // const [DurationBoxValue, setDurationBoxValue] = useState<string | null>('1h 30min')
 
                   const pan = Gesture.Pan()
                   .onBegin(() => {
@@ -254,45 +258,45 @@ const TaskCompletionBoard = () => {
                     if (MovedRadar.value > 0) {
                       if (FinalRadar.value <= 0) {
                         FinalRadar.value = withSpring(0)
-                        runOnJS(setPercentage)(0)
+                        // runOnJS(setPercentage)(0)
                       }
                       else if (FinalRadar.value > 0 && FinalRadar.value < 65) {
                         FinalRadar.value = withSpring(65)
-                        runOnJS(setPercentage)(25)
+                        // runOnJS(setPercentage)(25)
                       }
                       else if (FinalRadar.value > 65 && FinalRadar.value < 137) {
                         FinalRadar.value = withSpring(137)
-                        runOnJS(setPercentage)(50)
+                        // runOnJS(setPercentage)(50)
                       }
                       else if (FinalRadar.value > 137 && FinalRadar.value < 217) {
                         FinalRadar.value = withSpring(217)
-                        runOnJS(setPercentage)(75)
+                        // runOnJS(setPercentage)(75)
                       }
                       else if (FinalRadar.value > 217 && FinalRadar.value < 292) {
                         FinalRadar.value = withSpring(292)
-                        runOnJS(setPercentage)(100)
+                        // runOnJS(setPercentage)(100)
                       }
                     }
                     else {
                       if (FinalRadar.value > 0 && FinalRadar.value < 65) {
                         FinalRadar.value = withSpring(0)
-                        runOnJS(setPercentage)(0)
+                        // runOnJS(setPercentage)(0)
                       }
                       else if (FinalRadar.value > 65 && FinalRadar.value < 137) {
                         FinalRadar.value = withSpring(65)
-                        runOnJS(setPercentage)(25)
+                        // runOnJS(setPercentage)(25)
                       }
                       else if (FinalRadar.value > 137 && FinalRadar.value < 217) {
                         FinalRadar.value = withSpring(137)
-                        runOnJS(setPercentage)(50)
+                        // runOnJS(setPercentage)(50)
                       }
                       else if (FinalRadar.value > 217 && FinalRadar.value < 292) {
                         FinalRadar.value = withSpring(217)
-                        runOnJS(setPercentage)(75)
+                        // runOnJS(setPercentage)(75)
                       }
                       else if (FinalRadar.value >= 292) {
                         FinalRadar.value = withSpring(292)
-                        runOnJS(setPercentage)(100)
+                        // runOnJS(setPercentage)(100)
                       }
                     }
                     // runOnJS helps in running code on JavaScript thread instead on UI Thread
@@ -334,26 +338,26 @@ const TaskCompletionBoard = () => {
                 }));
 
                 return (
-                <View key={work} style={{padding: 5, paddingLeft: 15, paddingRight: 15, rowGap: 15, borderBottomWidth: 1, borderColor: 'grey'}}>
+                <View key={Subject} style={{padding: 5, paddingLeft: 15, paddingRight: 15, rowGap: 15, borderBottomWidth: 1, borderColor: 'grey'}}>
                     <View style={{flexDirection: 'row', columnGap: 10, alignItems: 'center', height: 30}}>
                         <View>
-                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{work}</Text>
+                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{Subject}</Text>
                         </View>
                         <View style={{backgroundColor: '#43464d', width: 150, height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5, flexDirection: 'row'}}>
                           <View>
                             <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{percentage}%  of  </Text>
                           </View>
-                          <DurationBox
+                          {/* <DurationBox
                             DurationBoxValue={DurationBoxValue}
                             setDurationBoxValue={setDurationBoxValue}
                             showPicker={showPicker}
                             setShowPicker={setShowPicker}
                             alarmString={alarmString}
                             setAlarmString={setAlarmString}
-                          />
-                          <TouchableOpacity style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}} onPress={DurationClick}>
-                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{DurationBoxValue}</Text>
-                          </TouchableOpacity>
+                          /> */}
+                          <View style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}}>
+                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{Current_Duration}</Text>
+                          </View>
                         </View>
                     </View>
                     <View>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Navbar from '../Navbar/Navbar'
 import { BarChart } from 'react-native-chart-kit'
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
@@ -131,9 +131,17 @@ const Statistics = () => {
   const [WeeklyAnalyticsStatus, setWeeklyAnalyticsStatus] = useState(false)
   const [MontlyAnalyticsStatus, setMontlyAnalyticsStatus] = useState(false)
   const currentYear = getYear(currentDate)
+  const scrollViewRef = useRef<ScrollView>(null);
   // const DatesBetween = eachDayOfInterval({start: currentWeekStartDate, end: currentWeekEndDate})
   // const AddingWeeks = addWeeks(currentWeekStartDate, 1)
   // const SubtractWeeks = subWeeks(selectedWeekStart, 1)
+
+  const scrollToPosition = () => {
+    scrollViewRef.current?.scrollTo({
+      y: 162, // Scroll 162px vertically
+      animated: true, // Smooth scrolling
+    });
+  };
 
   const WordMonth = (date: number) => {
     let MonthExtract = date;
@@ -209,6 +217,41 @@ const Statistics = () => {
     else {
       setMonthTitle(WordMonth(DecreasedMonth))
     }
+  }
+
+  const progressData = [
+    { value: 80, radius: 56, activeStrokeColor: '#e84118', inActiveStrokeColor: '#e84118' },
+    { value: 87, radius: 48, activeStrokeColor: '#badc58', inActiveStrokeColor: '#badc58' },
+    { value: 62, radius: 40, activeStrokeColor: '#18dcff', inActiveStrokeColor: '#18dcff' },
+    { value: 45, radius: 32, activeStrokeColor: '#ff9f1a', inActiveStrokeColor: '#ff9f1a' },
+    { value: 55, radius: 24, activeStrokeColor: '#b233ff', inActiveStrokeColor: '#b233ff' },
+    { value: 20, radius: 16, activeStrokeColor: '#ff5733', inActiveStrokeColor: '#ff5733' },
+    { value: 35, radius: 8, activeStrokeColor: '#33ff96', inActiveStrokeColor: '#33ff96' },
+  ];
+
+  const NestedCircularProgress = ({index} : {index: number}) => {
+    if(index >= progressData.length) return null;
+
+    const props = {
+      activeStrokeWidth: 8,
+      inActiveStrokeWidth: 8,
+      inActiveStrokeOpacity: 0.3
+    };
+
+    const {value, radius, activeStrokeColor, inActiveStrokeColor} = progressData[index]
+
+    return (
+      <CircularProgressBase
+      {...props}
+      value={value}
+      radius={radius}
+      activeStrokeColor={activeStrokeColor}
+      inActiveStrokeColor={inActiveStrokeColor}
+      >
+      {/* Recursive call for nested component */}
+        <NestedCircularProgress index={index + 1} />
+      </CircularProgressBase>
+    )
   }
 
   // useEffect(() => {
@@ -290,80 +333,111 @@ const Statistics = () => {
         </View>
         <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10}}>
           <View style={[styles.monthReport]}>
-            <View style={styles.monthGraphSheet}>
-            {new Array(2).fill(null).map((__, index) => {
-              const props = {
-                activeStrokeWidth: 8,
-                inActiveStrokeWidth: 8,
-                inActiveStrokeOpacity: 0.3
-              };
-              const fuckrad = 8;
-              return (
-                <View key={index} style={{margin: 8, marginTop: 15}}>
-                  <CircularProgressBase
-                  {...props}
-                  value={80}
-                  radius={fuckrad * 7}
-                  activeStrokeColor={'#e84118'}
-                  inActiveStrokeColor={'#e84118'}
-                >
-                  <CircularProgressBase
+            <ScrollView style={{height: 162}} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
+              <View style={styles.monthGraphSheet}>
+                <View>
+                  <NestedCircularProgress index={0}/>
+                  <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
+                    <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>1st Week</Text>
+                  </View>
+                </View>
+                <View>
+                  <NestedCircularProgress index={0}/>
+                  <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
+                    <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>2nd Week</Text>
+                  </View>
+                </View>
+              </View>
+              
+              <View style={styles.monthGraphSheet}>
+                <View>
+                  <NestedCircularProgress index={0}/>
+                  <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
+                    <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>3rd Week</Text>
+                  </View>
+                </View>
+                <View>
+                  <NestedCircularProgress index={0}/>
+                  <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
+                    <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>4th Week</Text>
+                  </View>
+                </View>
+              </View>
+              {/* <View style={styles.monthGraphSheet}>
+              {new Array(2).fill(null).map((__, index) => {
+                const props = {
+                  activeStrokeWidth: 8,
+                  inActiveStrokeWidth: 8,
+                  inActiveStrokeOpacity: 0.3
+                };
+                const fuckrad = 8;
+                return (
+                  <View key={index} style={{margin: 8, marginTop: 15}}>
+                    <CircularProgressBase
                     {...props}
-                    value={87}
-                    radius={fuckrad * 6}
-                    activeStrokeColor={'#badc58'}
-                    inActiveStrokeColor={'#badc58'}
+                    value={80}
+                    radius={fuckrad * 7}
+                    activeStrokeColor={'#e84118'}
+                    inActiveStrokeColor={'#e84118'}
                   >
                     <CircularProgressBase
                       {...props}
-                      value={62}
-                      radius={fuckrad * 5}
-                      activeStrokeColor={'#18dcff'}
-                      inActiveStrokeColor={'#18dcff'}
+                      value={87}
+                      radius={fuckrad * 6}
+                      activeStrokeColor={'#badc58'}
+                      inActiveStrokeColor={'#badc58'}
                     >
                       <CircularProgressBase
                         {...props}
-                        value={48}
-                        radius={fuckrad * 4}
-                        activeStrokeColor={'#b233ff'}
-                        inActiveStrokeColor={'#b233ff'}
+                        value={62}
+                        radius={fuckrad * 5}
+                        activeStrokeColor={'#18dcff'}
+                        inActiveStrokeColor={'#18dcff'}
                       >
                         <CircularProgressBase
                           {...props}
-                          value={47}
-                          radius={fuckrad * 3}
-                          activeStrokeColor={'#ff5733'}
-                          inActiveStrokeColor={'#ff5733'}
+                          value={48}
+                          radius={fuckrad * 4}
+                          activeStrokeColor={'#b233ff'}
+                          inActiveStrokeColor={'#b233ff'}
                         >
                           <CircularProgressBase
                             {...props}
-                            value={50}
-                            radius={fuckrad * 2}
-                            activeStrokeColor={'#33ff96'}
-                            inActiveStrokeColor={'#33ff96'}
+                            value={47}
+                            radius={fuckrad * 3}
+                            activeStrokeColor={'#ff5733'}
+                            inActiveStrokeColor={'#ff5733'}
                           >
                             <CircularProgressBase
                               {...props}
-                              value={39}
-                              radius={fuckrad}
-                              activeStrokeColor={'#33acff'}
-                              inActiveStrokeColor={'#33acff'}
+                              value={50}
+                              radius={fuckrad * 2}
+                              activeStrokeColor={'#33ff96'}
+                              inActiveStrokeColor={'#33ff96'}
                             >
+                              <CircularProgressBase
+                                {...props}
+                                value={39}
+                                radius={fuckrad}
+                                activeStrokeColor={'#33acff'}
+                                inActiveStrokeColor={'#33acff'}
+                              >
+                              </CircularProgressBase>
                             </CircularProgressBase>
                           </CircularProgressBase>
                         </CircularProgressBase>
                       </CircularProgressBase>
                     </CircularProgressBase>
-                  </CircularProgressBase>
-                  </CircularProgressBase>
-                  <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
-                    <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>1st Week</Text>
+                    </CircularProgressBase>
+                    <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
+                      <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>1st Week</Text>
+                    </View>
                   </View>
-                </View>
-              )
-            })}
-            </View>
-            <TouchableOpacity style={{backgroundColor: '#6f6f6f', flex: 0.1, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+                )
+              })}
+              </View> */}
+            </ScrollView>
+            <TouchableOpacity onPress={scrollToPosition} style={{backgroundColor: '#6f6f6f', height: 18, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
               <Image source={BoldChevronDown} style={{height: 15, width: 15}}/>
             </TouchableOpacity>
           </View>
@@ -438,7 +512,6 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 20,
     flexDirection: 'column'
-    
   }, 
 
   monthGraphSheet: {
@@ -447,7 +520,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 20,
+    margin: 8, 
+    marginTop: 15
+    
   },
 
   blurStyle: {

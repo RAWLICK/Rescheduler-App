@@ -72,8 +72,8 @@ type ExistingSubjectsPropsType = {
 const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
   const data = {
-    "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Work),
-    "Duration": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Duration)
+    "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Subject),
+    "Current_Duration": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Current_Duration)
   }
   const AddingSubjectsSheet = useRef<TrueSheet>(null);
   const [EditDialogBoxStatus, setEditDialogBoxStatus] = useState(false)

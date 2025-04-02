@@ -3,10 +3,25 @@ import { createSlice} from "@reduxjs/toolkit";
 import { combineReducers } from "@reduxjs/toolkit";
 import { ScheduleArrayItem } from "../Components/Screens/AddTiming";
 import ExistingSubjects from "../Components/Screens/ExistingSubjects";
-export type ExistingSubjectsArrayItem = {
-    Work: string;
-    Duration: string
+// export type ExistingSubjectsArrayItem = {
+//     Work: string;
+//     Duration: string
+// }
+
+export type ExistingSubjectsDataframeArrayTypeItem = {
+    "Date": string,
+    "Percentage": string,
+    "Duration": string,
+    "Work-Done-For": string
 }
+
+export type ExistingSubjectsArrayItem = {
+    "uniqueID": string,
+    "Subject": string,
+    "Current_Duration": string,
+    "Dataframe": ExistingSubjectsDataframeArrayTypeItem[]
+}
+
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
@@ -90,14 +105,39 @@ export const ExistingSubjectsArraySlice = createSlice({
     initialState,
     reducers: {
         addExistingSubjectsObject: (state, action) => {
+            // const ExistingSubjectsObject = {
+            //     "Work": action.payload.Work,
+            //     "Duration": action.payload.Duration
+            // }
             const ExistingSubjectsObject = {
-                "Work": action.payload.Work,
-                "Duration": action.payload.Duration
+                "uniqueID": action.payload.uniqueID,
+                "Subject": action.payload.Subject,
+                "Current_Duration": action.payload.Current_Duration,
+                "Dataframe": [{
+                    "Date": action.payload.Date,
+                    "Percentage": action.payload.Percentage,
+                    "Duration": action.payload.Duration,
+                    "Work-Done-For": action.payload.Work_Done_For
+                }]
             }
             state.ExistingSubjectsArrayInitialState.push(ExistingSubjectsObject)
         },
         removeExistingSubjectsObject: (state, action) => {
-            state.ExistingSubjectsArrayInitialState = state.ExistingSubjectsArrayInitialState.filter((item) => item.Work !== action.payload)
+            state.ExistingSubjectsArrayInitialState = state.ExistingSubjectsArrayInitialState.filter((item) => item.uniqueID !== action.payload)
+        },
+        addSubjectStatsForDay: (state, action) => {
+            const PerformedStat = {
+                "Date": action.payload.Date,
+                "Percentage": action.payload.Percentage,
+                "Duration": action.payload.Duration,
+                "Work-Done-For": action.payload.Work_Done_For
+            }
+            for (let index = 0; index < state.ExistingSubjectsArrayInitialState.length; index++) {
+                const eachSubject = state.ExistingSubjectsArrayInitialState[index];
+                if (eachSubject["uniqueID"] == action.payload.uniqueID) {
+                    eachSubject["Dataframe"].push(PerformedStat)
+                }
+            }
         }
     }
 })    

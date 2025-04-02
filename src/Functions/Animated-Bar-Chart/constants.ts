@@ -10,6 +10,21 @@ const add = addWeeks(start, 1)
 const subtract = subWeeks(start, 1)
 // const between = eachDayOfInterval({start: startOfWeek, endOfWeek})
 // #e68eff
+
+export type DemoDataDataframeArrayTypeItem = {
+    "Date": string,
+    "Percentage": string,
+    "Duration": string,
+    "Work-Done-For": string
+}
+
+export type demoDataArrayTypeItem = {
+    "uniqueID": string,
+    "Subject": string,
+    "Current_Duration": string,
+    "Dataframe": DemoDataDataframeArrayTypeItem[]
+}
+
 export const demoData =
  [ 
     {   

@@ -15,6 +15,7 @@ import { addExistingSubjectsObject, removeExistingSubjectsObject } from '../../a
 import { RootState } from '../../app/Store';
 import LinearGradient from 'react-native-linear-gradient';
 import { TimerPickerModal } from "react-native-timer-picker";
+import { nanoid} from "@reduxjs/toolkit";
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type DurationBoxPropsType = {
   showPicker: boolean,
@@ -56,9 +57,10 @@ const AddingSubjects = () => {
 
   const ExistingSubjectSaveButton = () => {
     const newExistingSubject = {
-      "Work": SubjectName,
-      "Slice_Color": color,
-      "Duration": durationString
+      "uniqueID": nanoid(10),
+      "Subject": SubjectName,
+      "Current_Duration": durationString,
+      "Dataframe": []
     }
     dispatch(addExistingSubjectsObject(newExistingSubject));
   }   
@@ -113,7 +115,7 @@ const AddingSubjects = () => {
           <TouchableOpacity onPress={() => setShowPicker(true)}
             style={{ flex: 0.3, justifyContent: 'center', paddingTop: 15, paddingBottom: 15, paddingLeft: 15 }}>
             <View style={{flex: 1,backgroundColor: 'grey', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{fontFamily: 'sf-pro-display-bold', color: '#d8d0d0'}}>10 hr 30 min</Text>
+              <Text style={{fontFamily: 'sf-pro-display-bold', color: '#d8d0d0'}}>{durationString}</Text>
             </View>
           </TouchableOpacity>
         </TouchableOpacity>
