@@ -46,7 +46,7 @@ type StackParamList = {
   AddTimingStack: undefined;
   SignInStack: undefined;
   SignUpStack: undefined;
-  OtpVerificationStack: undefined;
+  OtpVerificationStack: { PhoneNumber: string };
   TaskCompletionBoardStack: undefined;
   OnBoardingScreenStack: undefined;
   // RoughCompTwo: undefined;
@@ -132,7 +132,7 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='TaskCompletionBoardStack'>
+      <Stack.Navigator initialRouteName='OtpVerificationStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -199,7 +199,7 @@ function App(): React.JSX.Element {
     <Provider store={Store}>
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <NativeStack.Navigator initialRouteName="DrawerScreens">
+          <NativeStack.Navigator initialRouteName="StackScreens">
             <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
             <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
           </NativeStack.Navigator>

@@ -22,10 +22,17 @@ export type ExistingSubjectsArrayItem = {
     "Dataframe": ExistingSubjectsDataframeArrayTypeItem[]
 }
 
+export type StudentsDataArrayType = {
+    "uniqueID": string,
+    "Student_Name": string,
+    "Phone_Number": string
+}
+
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
-    ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[]
+    ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[],
+    StudentsDataArrayInitialState: [] as StudentsDataArrayType[]
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -140,17 +147,38 @@ export const ExistingSubjectsArraySlice = createSlice({
             }
         }
     }
-})    
+})  
+
+export const StudentsDataArraySlice = createSlice({
+    name: 'StudentsDataArray',
+    initialState,
+    reducers: {
+        addStudentObject: (state, action) => {
+            const NewStudent = {
+                "uniqueID": action.payload.uniqueID,
+                "Student_Name": action.payload.Student_Name,
+                "Phone_Number": action.payload.Phone_Number
+            }
+            state.StudentsDataArrayInitialState.push(NewStudent)
+        },
+
+        removeStudentObject: (state, action) => {
+            // state.StudentsDataArrayInitialState = state.StudentsDataArrayInitialState.filter((item) => item.uniqueID !== action.payload)
+        }
+    }
+})
 
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
 export const { addScheduleObject, removeScheduleObject } = ScheduleArraySlice.actions
 export const { addExistingSubjectsObject, removeExistingSubjectsObject } = ExistingSubjectsArraySlice.actions
+export const { addStudentObject, removeStudentObject } = StudentsDataArraySlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 
 const rootReducer = combineReducers({
     ScheduleArraySliceReducer: ScheduleArraySlice.reducer,
-    ExistingSubjectsArraySliceReducer: ExistingSubjectsArraySlice.reducer
+    ExistingSubjectsArraySliceReducer: ExistingSubjectsArraySlice.reducer,
+    StudentsDataArraySliceReducer: StudentsDataArraySlice.reducer
 })
 
 export { rootReducer };

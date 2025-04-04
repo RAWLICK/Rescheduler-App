@@ -1,3 +1,5 @@
-a = "1"
-b= Number(a) + 1
-console.log(b)
+let arrayOne = []
+let arrayNest = []
+arrayNest.push("15", "14", "13")
+arrayOne.push(arrayNest)
+console.log("arrayOne: ", arrayOne)

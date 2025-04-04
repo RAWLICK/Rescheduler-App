@@ -2,8 +2,11 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions } from 'rea
 import React from 'react'
 import OtpVerificationImage from '../Images/OtpVerificationImage.png'
 import ChevronLeftBlack from '../Images/ChevronLeftBlack.png'
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { CombinedRouteProp } from '../../App';
+import { OtpInput } from "react-native-otp-entry";
+import { useState } from 'react';
 const { width, height } = Dimensions.get('window');
 
 type HeaderPanelPropsType = {};
@@ -24,9 +27,13 @@ const HeaderPanel = () => {
     )
 }
 
-type VerificationPanelPropsType = {};
+type VerificationPanelPropsType = {
+    PhoneNumber: string | undefined;
+    EnteredOTP: string;
+    setEnteredOTP: React.Dispatch<React.SetStateAction<string>>;
+};
 
-const VerificationPanel = () => {
+const VerificationPanel = (props: VerificationPanelPropsType) => {
     const navigation = useNavigation<NavigationProp<any, any>>();
     return (
         <View style={{ flex: 0.5 }}>
@@ -36,16 +43,54 @@ const VerificationPanel = () => {
                 </View>
                 <View style={styles.MotiveSubHeadingArea}>
                     <Text style={styles.MotiveSubHeadingTextOne}>Enter the OTP sent to </Text>
-                    <Text style={styles.MotiveSubHeadingTextTwo}>+91 930-5985-755</Text>
+                    <Text style={styles.MotiveSubHeadingTextTwo}>+91 {props.PhoneNumber}</Text>
                 </View>
             </View>
 
             <View style={styles.OTPNumberArea}>
-                {[...Array(4).keys()].map((_, index) => (
-                    <View key={index} style={styles.OTPNumberBox}>
-                        {/* <Text>5</Text> */}
-                    </View>
-                ))}
+            <OtpInput
+                numberOfDigits={4}
+                focusColor='#aa76df'
+                autoFocus={false}
+                hideStick={true}
+                placeholder=""
+                blurOnFilled={true}
+                disabled={false}
+                type="numeric"
+                secureTextEntry={false}
+                focusStickBlinkingDuration={500}
+                onFocus={() => console.log("Focused")}
+                onBlur={() => console.log("Blurred")}
+                onTextChange={(text) => {
+                    console.log(text)
+                    props.setEnteredOTP(text)
+                }}
+                onFilled={(text) => {
+                    console.log(`OTP is ${text}`)
+                    props.setEnteredOTP(text)
+                }}
+                textInputProps={{
+                    accessibilityLabel: "One-Time Password",
+                }}
+                textProps={{
+                    accessibilityRole: "text",
+                    accessibilityLabel: "OTP digit",
+                    allowFontScaling: false,
+                }}
+                theme={{
+                    containerStyle: {justifyContent: 'center', alignItems: 'center', columnGap: 13},
+                    pinCodeContainerStyle: {width: width * 0.18,
+                        height: height * 0.06,
+                        borderWidth: 1.5,
+                        borderRadius: 10,},
+                    pinCodeTextStyle: {fontFamily: 'sf-pro-display-bold', fontSize: 20, color: 'black'},
+                    // focusStickStyle: {borderColor: 'black', backgroundColor: '#aa76df'},
+                    // focusedPinCodeContainerStyle: styles.activePinCodeContainer,
+                    // placeholderTextStyle: styles.placeholderText,
+                    // filledPinCodeContainerStyle: styles.filledPinCodeContainer,
+                    // disabledPinCodeContainerStyle: styles.disabledPinCodeContainer,
+                }}
+            />
             </View>
 
             <View style={styles.SubmitButtonArea}>
@@ -69,10 +114,21 @@ const VerificationPanel = () => {
 }
 
 const OtpVerificaton = () => {
+    const route = useRoute<CombinedRouteProp>();
+    let phoneNumber: string | undefined = '';
+    if (route.name === 'OtpVerificationStack') {
+        phoneNumber = route.params?.PhoneNumber;  // Extracting PhoneNumber
+        console.log("Phone Number as OTP will be:", phoneNumber);
+    }
+    const [EnteredOTP, setEnteredOTP] = useState("")
     return (
         <View style={{ flex: 1 }}>
             <HeaderPanel />
-            <VerificationPanel />
+            <VerificationPanel 
+                PhoneNumber={phoneNumber}  // Passing PhoneNumber to VerificationPanel
+                EnteredOTP={EnteredOTP}  // Passing EnteredOTP to VerificationPanel
+                setEnteredOTP={setEnteredOTP}  // Passing setEnteredOTP to VerificationPanel
+            />
         </View>
     )
 }
@@ -129,8 +185,8 @@ const styles = StyleSheet.create({
     },
     OTPNumberArea: {
         flex: 1,
-        flexDirection: 'row',
-        columnGap: 13,
+        // flexDirection: 'row',
+        // columnGap: 13,
         justifyContent: 'center',
         alignItems: 'center',
     },

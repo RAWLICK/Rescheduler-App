@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useState, useEffect, useRef } from 'react';
 import SearchIcon from '../Images/SearchIcon.png'
 import { Dropdown } from 'react-native-element-dropdown';
@@ -10,13 +10,105 @@ import { set } from 'date-fns';
 import { Filter } from 'react-native-svg';
 import LinearGradient from 'react-native-linear-gradient';
 import AddIcon from '../Images/Add.png'
+import { nanoid} from "@reduxjs/toolkit";
+import { TrueSheet } from "@lodev09/react-native-true-sheet"
+import { useDispatch, useSelector } from 'react-redux' 
+import { addStudentObject, removeStudentObject } from '../../app/Slice';
+import { RootState } from '../../app/Store';
 const { width, height } = Dimensions.get('window');
 interface Item {
     id: number;
     name: string;
-  }
+}
+
+const AddingStudent = () => {
+  const dispatch = useDispatch();
+  const [StudentName, setStudentName] = useState('');
+  const [PhoneNumber, setPhoneNumber] = useState("")
+
+  const SaveButton = () => {
+    const newExistingSubject = {
+      "uniqueID": nanoid(),
+      "Student_Name": StudentName,
+      "Phone_Number": PhoneNumber
+    }
+    dispatch(addStudentObject(newExistingSubject));
+  }   
+
+  return (
+    <View
+      style={{
+        backgroundColor: '#1b1b1d',
+        padding: 30,
+        paddingRight: 15,
+        paddingLeft: 15,
+        paddingBottom: 15,
+        rowGap: 15,
+      }}>
+      <View>
+        <Text
+          style={{
+            fontFamily: 'sf-pro-display-bold',
+            fontSize: 25,
+            color: 'white',
+            paddingLeft: 10,
+          }}>
+          Adding Student
+        </Text>
+      </View>
+      <View style={{ height: 130, rowGap: 1 }}>
+        <View style={[styles.UpperOption, { flex: 2 }]}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+            }}>
+            <TextInput
+              style={styles.OptionText}
+              value={StudentName}
+              onChangeText={setStudentName}
+              placeholder="Student Name"
+              placeholderTextColor="#9D9EA0"></TextInput>
+          </View>
+        </View>
+
+        <TouchableOpacity style={[styles.BottomOption, { flex: 2 }]}>
+        <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+            }}>
+            <TextInput
+              style={styles.OptionText}
+              value={PhoneNumber}
+              onChangeText={setPhoneNumber}
+              placeholder="Phone Number"
+              placeholderTextColor="#9D9EA0"></TextInput>
+          </View>
+        </TouchableOpacity>
+
+      </View>
+      <View style={{ height: 50, padding: 5 }}>
+        <TouchableOpacity style={styles.SaveButtonBox} onPress={SaveButton}>
+          <Text
+            style={{
+              fontFamily: 'futura-no-2-medium-dee',
+              color: 'black',
+              fontSize: 18,
+            }}>
+            Save
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 const AppDistributor = () => {
+  const dispatch = useDispatch();
+  const AddingStudentsSheet = useRef<TrueSheet>(null);
     const data = [
         { label: 'JDA Library', value: '1' },
         { label: 'KDA Library', value: '2' },
@@ -27,11 +119,11 @@ const AppDistributor = () => {
     const [isFocus, setIsFocus] = useState(false);
     const renderLabel = () => {
         if (value || isFocus) {
-            return (
-                <Text style={[styles.label, isFocus && { color: '#C88CE1' }]}>
-                Library Name
-                </Text>
-            );
+          return (
+              <Text style={[styles.label, isFocus && { color: '#C88CE1' }]}>
+              Library Name
+              </Text>
+          );
         }
         return null;
     };
@@ -39,64 +131,109 @@ const AppDistributor = () => {
       prevCount.current = studentSearch; // Update previous value after the render
     }, [studentSearch]);
 
-    const studentData = [
-      ['Chomu', '1234567890', '5',],
-      ['Archit', '9123456789', '3',],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Sachin Tendulkar', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3'],
-      ['Kartavya Chauhan', '9876543210', '3'],
-      ['Rahul Gupta', '9123456789', '3']
-    ]
+    const StudentData = useSelector((state: RootState) => state.StudentsDataArraySliceReducer.StudentsDataArrayInitialState)
+
+    const StudentDataList = useMemo(() => {
+      const table: string[][] = [['Lamda', '0987654321', '0']];
+      for (let index = 0; index < StudentData.length; index++) {
+        const eachData = StudentData[index];
+        table.push([
+          eachData['Student_Name'],
+          eachData['Phone_Number'],
+          eachData['uniqueID']
+        ]);
+      }
+      return table;
+    }, [StudentData]);
+    
+    // const studentData = [
+    //   ['Chomu', '1234567890', '5',],
+    //   ['Archit', '9123456789', '3',],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Sachin Tendulkar', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3'],
+    //   ['Kartavya Chauhan', '9876543210', '3'],
+    //   ['Rahul Gupta', '9123456789', '3']
+    // ]
     // Filter logic
     
-    const [dataThree, setDataThree] = useState({
+    const [StudentDataTable, setStudentDataTable] = useState({
       tableHead: ['Student', 'Number', 'Remove'],
-      tableData: studentData
+      tableData: StudentDataList
     })
 
-    const filteredData = studentSearch.length > prevCount.current.length
-    ? dataThree.tableData.filter((item) => 
-      item[0].toLowerCase().includes(studentSearch.toLowerCase())
-    )
-    : studentData.filter((item) =>
+    // const filteredData = studentSearch.length > prevCount.current.length
+    // ? StudentDataTable.tableData.filter((item) => 
+    //   item[0].toLowerCase().includes(studentSearch.toLowerCase())
+    // )
+    // : StudentDataList.filter((item) =>
+    //     item[0].toLowerCase().includes(studentSearch.toLowerCase())
+    // );
+
+    const filteredData = useMemo(() => {
+    return studentSearch.length > prevCount.current.length
+    ? StudentDataTable.tableData.filter((item) =>
+        item[0].toLowerCase().includes(studentSearch.toLowerCase())
+      )
+    : StudentDataList.filter((item) =>
         item[0].toLowerCase().includes(studentSearch.toLowerCase())
     );
+    }, [studentSearch, StudentDataTable]);
+
+    // const filteredData = StudentDataList;
 
     // console.log("Filtered Data: ", filteredData)
+    // useEffect(() => {
+    //   setStudentDataTable({
+    //     tableHead: ['Student', 'Number', 'Remove'],
+    //     tableData: filteredData
+    //   })
+    // }, [studentSearch])
+
     useEffect(() => {
-      setDataThree({
+      setStudentDataTable({
         tableHead: ['Student', 'Number', 'Remove'],
         tableData: filteredData
       })
-    }, [studentSearch])
+    }, [filteredData])
 
-    const DeleteFunction = (data, index) => (
-      <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center'}}>
+    useEffect(() => {
+      console.log("Student Table Record: ", StudentDataList)
+    }, [StudentData, StudentDataList])
+    
+
+    const DeleteButton = (uniqueID: string) => {
+      dispatch(removeStudentObject(''))
+      return (
+      <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center'}} onPress={() => console.log("uniqueID: ", uniqueID)}>
         <View style={styles.btn}>
           <Image source={RemoveIcon} style={{height: 20, width: 20}} />
         </View>
       </TouchableOpacity>
-    );
+    )};
+
+    async function AddStudentButton() {
+      await AddingStudentsSheet.current?.present();
+    }
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -157,32 +294,16 @@ const AppDistributor = () => {
                   />
               </View>
 
-              {/* <View style={styles.containerTwo}>
-                  <TextInput
-                      style={styles.inputTwo}
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChangeText={setSearchQuery}
-                  />
-                  <FlatList
-                      data={filteredData}
-                      keyExtractor={(item) => item.id.toString()}
-                      renderItem={renderItem}
-                      ListEmptyComponent={<Text style={styles.empty}>No results found</Text>}
-                  />
-              </View> */}
-
-
             <View style={styles.containerThree}>
             <ScrollView>
               <Table borderStyle={{borderColor: 'transparent'}}>
-                <Row data={dataThree.tableHead} style={styles.head} textStyle={styles.text}/>
+                <Row data={StudentDataTable.tableHead} style={styles.head} textStyle={styles.text}/>
                 {
-                  dataThree.tableData.map((rowData, index) => (
+                  StudentDataTable.tableData.map((rowData, index) => (
                     <TableWrapper key={index} style={styles.row}>
                       {
                         rowData.map((cellData, cellIndex) => (
-                          <Cell key={cellIndex} data={cellIndex === 2 ? DeleteFunction(cellData, index) : cellData}
+                          <Cell key={cellIndex} data={cellIndex === 2 ? DeleteButton(cellData) : cellData}
                            textStyle={styles.text}
                           />
                         ))
@@ -195,7 +316,7 @@ const AppDistributor = () => {
             </View>
 
             <LinearGradient colors={['#fff1c1', '#fede71']} style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#fede71', marginBottom: 15, height: 40, borderBottomLeftRadius: 10, borderBottomRightRadius: 10}}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={AddStudentButton}> 
                 <Image source={AddIcon} style={{height: 20, width: 20}}/>
               </TouchableOpacity>
             </LinearGradient>
@@ -215,9 +336,15 @@ const AppDistributor = () => {
                 <Text style={{fontFamily: 'sf-pro-display-bold', color: 'grey'}}>Plan Expire: 28/09/2025</Text>
               </View>
             </View>
-          </View>
 
-          
+            <TrueSheet
+              ref={AddingStudentsSheet}
+              sizes={['auto', 'large']}
+              cornerRadius={24}
+            >
+              <AddingStudent/>
+            </TrueSheet>
+          </View>
       </View>
     </SafeAreaView>
   )
@@ -326,5 +453,84 @@ const styles = StyleSheet.create({
       text: { margin: 8, marginLeft: 30, fontFamily: 'sf-pro-display-bold' },
       row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
       btn: { width: 18, height: 18, borderRadius: 2, justifyContent: 'center', alignItems: 'center', },
-      btnText: { textAlign: 'center', color: '#fff'}
+      btnText: { textAlign: 'center', color: '#fff'},
+
+      angleInfoColor: {
+        height: 16,
+        width: 16,
+        borderRadius: 15,
+        marginLeft: 10,
+        marginTop: 5,
+      },
+    
+      OptionText: {
+        fontSize: 18,
+        color: '#9D9EA0',
+        fontFamily: 'futura-no-2-medium-dee',
+      },
+    
+      SaveButtonBox: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ACC6FF',
+        borderRadius: 20,
+        padding: 8,
+        paddingLeft: 20,
+        paddingRight: 20,
+      },
+      UpperOption: {
+        // flex: 1,
+        flexDirection: 'row',
+        backgroundColor: '#222328',
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
+        marginBottom: 1,
+        paddingLeft: 20,
+        paddingRight: 20,
+        //
+      },
+    
+      MiddleOption: {
+        // flex: 1,
+        flexDirection: 'row',
+        backgroundColor: '#222328',
+        borderTopLeftRadius: 5,
+        borderTopRightRadius: 5,
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
+        marginBottom: 1,
+        marginTop: 1,
+        paddingLeft: 20,
+        paddingRight: 20,
+      },
+    
+      BottomOption: {
+        // flex: 1,
+        flexDirection: 'row',
+        backgroundColor: '#222328',
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
+        borderTopLeftRadius: 5,
+        borderTopRightRadius: 5,
+        marginTop: 1,
+        paddingLeft: 20,
+        paddingRight: 20,
+      },
+    
+      OnlyOption: {
+        flex: 1,
+        // flexDirection: 'row',
+        backgroundColor: 'blue',
+        // backgroundColor: '#222328',
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        // paddingLeft: 20,
+        // paddingRight: 20,
+        fontFamily: 'futura-no-2-medium-dee',
+        fontSize: 16
+      },
 })

@@ -423,7 +423,6 @@ const AddTiming = () => {
   const [PrevScheduleStatus, setPrevScheduleStatus] = useState(false)
   const dispatch = useDispatch();
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
-  // const [ScheduleArray, setScheduleArray] = useState<ScheduleArrayItem[]>([]);
 
   let currentDate = new Date();
   let currentHours = currentDate.getHours().toString().padStart(2, '0');

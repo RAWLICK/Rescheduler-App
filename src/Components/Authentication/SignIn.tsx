@@ -49,10 +49,41 @@ const LogoSection = () => {
 type CredentialInputScreenPropsType = {
   PhoneNumText: string | undefined;
   setPhoneNumText: React.Dispatch<React.SetStateAction<string>>;
+  IsRegistered: string | undefined;
+  setIsRegistered: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
   const navigation = useNavigation<NavigationProp<any, any>>();
+  const MatchNumber = async () => {
+    try {
+        const response = await fetch('http://192.168.232.92:5000/MatchNumber', {  // Replace localhost with your computer's IP address if testing on a real device
+        method: 'POST', // Specify the request method
+        headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+        },
+        body: JSON.stringify(props.PhoneNumText), // Convert the request payload to JSON.
+        })
+
+        if (!response.ok) {  // Handle HTTP errors
+        throw new Error('Failed to fetch data from the server');
+        }
+
+        const fetched_data = await response.json(); // Parse JSON response
+        props.setIsRegistered(fetched_data);
+        console.log("Is Number Registred? : ", fetched_data)
+        if (fetched_data === "true") {
+            navigation.navigate('StackScreens', { screen: 'OtpVerificationStack', params: { PhoneNumber: props.PhoneNumText } });
+        } else if (fetched_data === "false") {
+            navigation.navigate('StackScreens', { screen: 'SignUpStack' });
+        } else {
+            console.log("Invalid Response from Server");
+        }
+    } catch (error) {
+        console.error('Catch Error: ', error);
+        console.log("Failed to connect to the backend");
+    }
+  };
   return (
     <View style={{flex: 0.5, backgroundColor: '#ab7be9'}}>
       <View style={styles.RoundedBox}>
@@ -74,7 +105,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             />
           </View>
 
-          <TouchableOpacity style={styles.ContinueBox} onPress={() => navigation.navigate('StackScreens', { screen: 'OtpVerificationStack'})}>
+          <TouchableOpacity style={styles.ContinueBox} onPress={MatchNumber}>
             <Text style={styles.ContinueText}>Continue</Text>
           </TouchableOpacity>
         </View>
@@ -93,6 +124,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
 
 const SignIn = () => {
   const [PhoneNumText, setPhoneNumText] = useState('');
+  const [IsRegistered, setIsRegistered] = useState("")
   return (
     <SafeAreaView style={{flex: 1}}>
       {/* <StatusBar>
@@ -105,6 +137,8 @@ const SignIn = () => {
       <View style={{flex: 1}}>
         <LogoSection />
         <CredentialInputSection
+          IsRegistered={IsRegistered}
+          setIsRegistered={setIsRegistered}
           PhoneNumText={PhoneNumText}
           setPhoneNumText={setPhoneNumText}
         />
