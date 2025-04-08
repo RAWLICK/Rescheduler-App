@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "480260586095",
+    "project_id": "rescheduler-0019",
+    "storage_bucket": "rescheduler-0019.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:480260586095:android:197bc8e68c0e4e06f62b9a",
+        "android_client_info": {
+          "package_name": "com.rescheduler"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCufCpZigyE22NMKL-LmcahOQxgkVSaSEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

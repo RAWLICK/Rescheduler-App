@@ -77,7 +77,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             if (fetched_data === "true") {
                 navigation.navigate('StackScreens', { screen: 'SignInStack' });
             } else if (fetched_data === "false") {
-                navigation.navigate('StackScreens', { screen: 'OtpVerificationStack', params: { PhoneNumber: props.PhoneNumText } });
+                navigation.navigate('StackScreens', { screen: 'OtpVerificationStack', params: {Process: 'SignUp', PhoneNumber: props.PhoneNumText } });
             } else {
                 console.log("Invalid Response from Server");
             }

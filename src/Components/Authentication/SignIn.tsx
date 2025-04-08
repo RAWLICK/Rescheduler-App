@@ -73,7 +73,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
         props.setIsRegistered(fetched_data);
         console.log("Is Number Registred? : ", fetched_data)
         if (fetched_data === "true") {
-            navigation.navigate('StackScreens', { screen: 'OtpVerificationStack', params: { PhoneNumber: props.PhoneNumText } });
+            navigation.navigate('StackScreens', { screen: 'OtpVerificationStack', params: { Process: 'SignIn', PhoneNumber: props.PhoneNumText } });
         } else if (fetched_data === "false") {
             navigation.navigate('StackScreens', { screen: 'SignUpStack' });
         } else {

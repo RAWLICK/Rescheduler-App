@@ -95,10 +95,7 @@ const HeaderPanel = (props: GroupPropsType) => {
             screen: 'TabsDrawer',
             params: {
               screen: 'ScheduleTab',
-              params: {
-                ScheduleArray: props.ScheduleArray,
-                Message: props.Message,
-              }
+              params: undefined
             },
           })
         }

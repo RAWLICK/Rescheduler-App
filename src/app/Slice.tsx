@@ -8,6 +8,20 @@ import ExistingSubjects from "../Components/Screens/ExistingSubjects";
 //     Duration: string
 // }
 
+type StudentInfoDataType = {
+    "uniqueID": string,
+    "Name": string,
+    "Phone Number": string | undefined,
+    "Date Joined": string,
+    "Email ID": string,
+    "Gender": string,
+    "Streak": string,
+    "Subscription Type": string,
+    "City": string,
+    "State": string,
+    "Country": string
+}
+
 export type ExistingSubjectsDataframeArrayTypeItem = {
     "Date": string,
     "Percentage": string,
@@ -30,6 +44,7 @@ export type StudentsDataArrayType = {
 
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
+    StudentInfoInitialState : {} as StudentInfoDataType,
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
     ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[],
     StudentsDataArrayInitialState: [] as StudentsDataArrayType[]
@@ -44,6 +59,29 @@ const initialState = {
 // Action is used to perform some action like removing the todo. So the values which will be required to put inside removeToDo like ID comes from action
 
 // Payload is a type of object which is used to store email, ids etc.
+
+export const StudentInfoSlice = createSlice({
+    name: 'StudentInfo',
+    initialState,
+    reducers: {
+        registerUserInfo: (state, action) => {
+            const Info = {
+                "uniqueID": action.payload.uniqueID,
+                "Name": action.payload.Name,
+                "Phone Number": action.payload['Phone Number'],
+                "Date Joined": action.payload['Date Joined'],
+                "Email ID": action.payload['Email ID'],
+                "Gender": action.payload.Gender,
+                "Streak": action.payload.Streak,
+                "Subscription Type": action.payload['Subscription Type'],
+                "City": action.payload.City,
+                "State": action.payload.State,
+                "Country": action.payload.Country
+            }
+            state.StudentInfoInitialState = Info
+        }
+    }
+})
 
 export const ScheduleArraySlice = createSlice({
     name: 'ScheduleArray',
@@ -169,6 +207,7 @@ export const StudentsDataArraySlice = createSlice({
 })
 
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
+export const { registerUserInfo } = StudentInfoSlice.actions
 export const { addScheduleObject, removeScheduleObject } = ScheduleArraySlice.actions
 export const { addExistingSubjectsObject, removeExistingSubjectsObject } = ExistingSubjectsArraySlice.actions
 export const { addStudentObject, removeStudentObject } = StudentsDataArraySlice.actions
@@ -176,6 +215,7 @@ export const { addStudentObject, removeStudentObject } = StudentsDataArraySlice.
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 
 const rootReducer = combineReducers({
+    StudentInfoSliceReducer: StudentInfoSlice.reducer,
     ScheduleArraySliceReducer: ScheduleArraySlice.reducer,
     ExistingSubjectsArraySliceReducer: ExistingSubjectsArraySlice.reducer,
     StudentsDataArraySliceReducer: StudentsDataArraySlice.reducer

@@ -19,6 +19,7 @@ import AppDistributor from './Components/Drawer/AppDistributor';
 import AdminPanel from './Components/Drawer/AdminPanel';
 import RoughComponent from './Components/Rough Work/RoughComponent';
 import RoughComponentTwo from './Components/Rough Work/RoughComponentTwo';
+import CustomDrawerContent from './Components/Drawer/CustomDrawerContent';
 import Navbar from './Components/Navbar/Navbar';
 import SignIn from './Components/Authentication/SignIn';
 import SignUp from './Components/Authentication/SignUp';
@@ -46,7 +47,7 @@ type StackParamList = {
   AddTimingStack: undefined;
   SignInStack: undefined;
   SignUpStack: undefined;
-  OtpVerificationStack: { PhoneNumber: string };
+  OtpVerificationStack: { Process: string, PhoneNumber: string };
   TaskCompletionBoardStack: undefined;
   OnBoardingScreenStack: undefined;
   // RoughCompTwo: undefined;
@@ -64,7 +65,7 @@ type DrawerParamList = {
 };
 
 type TabParamList = {
-  ScheduleTab: { ScheduleArray : ScheduleArrayItem[], Message: string };
+  ScheduleTab: undefined;
   StatisticsTab: undefined;
   // RoughComp: { parentParam: string, secondParam: number };
 };
@@ -132,7 +133,7 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='OtpVerificationStack'>
+      <Stack.Navigator initialRouteName='SignInStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -146,7 +147,23 @@ function App(): React.JSX.Element {
 
   function DrawerNav() {
     return (
-    <Drawer.Navigator initialRouteName="TabsDrawer">
+    <Drawer.Navigator initialRouteName="TabsDrawer"
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      screenOptions={{
+      drawerStyle: {
+        backgroundColor: '#111827',
+        width: 240,
+      },
+      // drawerActiveTintColor: '#22d3ee',
+      drawerActiveTintColor: '#a150f3',
+      drawerInactiveTintColor: '#9ca3af',
+      drawerLabelStyle: {
+        fontSize: 16,
+        // fontWeight: 'bold',
+        fontFamily: 'sf-pro-display-bold'
+      },
+    }}
+    >
       <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
       <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/>
       <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
@@ -199,7 +216,7 @@ function App(): React.JSX.Element {
     <Provider store={Store}>
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <NativeStack.Navigator initialRouteName="StackScreens">
+          <NativeStack.Navigator initialRouteName="DrawerScreens">
             <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
             <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
           </NativeStack.Navigator>
