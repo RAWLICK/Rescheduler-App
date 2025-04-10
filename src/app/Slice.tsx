@@ -8,7 +8,7 @@ import ExistingSubjects from "../Components/Screens/ExistingSubjects";
 //     Duration: string
 // }
 
-type StudentInfoDataType = {
+export type StudentInfoDataType = {
     "uniqueID": string,
     "Name": string,
     "Phone Number": string | undefined,
@@ -17,9 +17,13 @@ type StudentInfoDataType = {
     "Gender": string,
     "Streak": string,
     "Subscription Type": string,
+    "Distribution Name": string,
+    "Distribution Branch": string,
+    "Distribution ID": string,
     "City": string,
     "State": string,
     "Country": string
+    "Type of Account": string
 }
 
 export type ExistingSubjectsDataframeArrayTypeItem = {
@@ -39,7 +43,8 @@ export type ExistingSubjectsArrayItem = {
 export type StudentsDataArrayType = {
     "uniqueID": string,
     "Student_Name": string,
-    "Phone_Number": string
+    "Phone_Number": string,
+    "Branch": string
 }
 
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
@@ -74,9 +79,13 @@ export const StudentInfoSlice = createSlice({
                 "Gender": action.payload.Gender,
                 "Streak": action.payload.Streak,
                 "Subscription Type": action.payload['Subscription Type'],
+                "Distribution Name": action.payload['Distribution Name'],
+                "Distribution Branch": action.payload['Distribution Branch'],
+                "Distribution ID": action.payload['Distribution ID'],
                 "City": action.payload.City,
                 "State": action.payload.State,
-                "Country": action.payload.Country
+                "Country": action.payload.Country,
+                "Type of Account": action.payload['Type of Account']
             }
             state.StudentInfoInitialState = Info
         }
@@ -195,13 +204,14 @@ export const StudentsDataArraySlice = createSlice({
             const NewStudent = {
                 "uniqueID": action.payload.uniqueID,
                 "Student_Name": action.payload.Student_Name,
-                "Phone_Number": action.payload.Phone_Number
+                "Phone_Number": action.payload.Phone_Number,
+                "Branch": action.payload.Branch,
             }
             state.StudentsDataArrayInitialState.push(NewStudent)
         },
 
         removeStudentObject: (state, action) => {
-            // state.StudentsDataArrayInitialState = state.StudentsDataArrayInitialState.filter((item) => item.uniqueID !== action.payload)
+            state.StudentsDataArrayInitialState = state.StudentsDataArrayInitialState.filter((item) => item.uniqueID !== action.payload)
         }
     }
 })

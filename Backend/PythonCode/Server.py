@@ -36,11 +36,50 @@ def compress():
         return 'COME with a POST request rascal !!'
     
 # Example: Insert data into MongoDB
-@app.route('/add', methods=['POST'])
-def add_data():
+@app.route('/addDistributor', methods=['POST'])
+def add_Distributor():
     data = request.json  # Get the JSON data from request
+    uniqueID = data.get('uniqueID')
+    Name = data.get('Name')
+    PhoneNumber = data.get('Phone Number')
+    Email = data.get('Email')
+    DistributorName = data.get('Distributor Name')
+    DistributorID = data.get('Distributor ID')
+    DateJoined = data.get('Date Joined')
+    City = data.get('City')
+    State = data.get('State')
+    Country = data.get('Country')
     if data:
         LibrariansInfo.insert_one(data)  # Insert into MongoDB
+        DistributorAsUser = {
+            "uniqueID": uniqueID,
+            "Name": Name,
+            "Phone Number": PhoneNumber,
+            "Date Joined": DateJoined,
+            "Email ID": Email,
+            "Gender": "",
+            "Streak": "",
+            "Subscription Type": "Library",
+            "Distributor Name": DistributorName,
+            "Distributor ID": DistributorID,
+            "City": City,
+            "State": State,
+            "Country": Country,
+            "Type of Account": "Distributor",
+        }
+        StudentInfo.insert_one(DistributorAsUser)
+        StudentsSchedules.insert_one({
+            "uniqueID": data["uniqueID"],
+            "Name": data["Name"],
+            "Phone Number": data["Phone Number"],
+            "ScheduleArray": []
+        })  # Insert into MongoDB
+        SchedulesCompletion.insert_one({
+            "uniqueID": data["uniqueID"],
+            "Name": data["Name"],
+            "Phone Number": data["Phone Number"],
+            "Completion": []
+        })
         return jsonify({"message": "Data added successfully!"}), 201
     return jsonify({"error": "No data found!"}), 400
 

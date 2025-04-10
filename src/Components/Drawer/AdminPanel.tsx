@@ -72,7 +72,7 @@ const AdminPanel = () => {
             "Other Branches List": AllBranchesList
         }
         try {
-          const response = await fetch('http://192.168.123.92:5000/add', {  // Replace localhost with your computer's IP address if testing on a real device
+          const response = await fetch('http://192.168.123.92:5000/addDistributor', {  // Replace localhost with your computer's IP address if testing on a real device
             method: 'POST', // Specify the request method
             headers: {
               'Content-Type': 'application/json',  // Set the request header to indicate JSON payload

@@ -97,14 +97,18 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     "uniqueID": nanoid(),
                     "Name": "",
                     "Phone Number": props.PhoneNumber,
-                    "DateJ oined": currentDateandMonth,
+                    "Date Joined": currentDateandMonth,
                     "Email ID": "",
                     "Gender": "",
                     "Streak": "",
                     "Subscription Type": "Free",
+                    "Distribution Name": "",
+                    "Distribution Branch": "",
+                    "Distribution ID": "",
                     "City": "",
                     "State": "",
-                    "Country": ""
+                    "Country": "",
+                    "Type of Account": "User"
                 }
                 try {
                   const response = await fetch('http://192.168.232.92:5000/AddStudent', {  // Replace localhost with your computer's IP address if testing on a real device

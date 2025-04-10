@@ -15,25 +15,77 @@ import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import { useDispatch, useSelector } from 'react-redux' 
 import { addStudentObject, removeStudentObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
+import { StudentInfoDataType } from '../../app/Slice';
 const { width, height } = Dimensions.get('window');
 interface Item {
     id: number;
     name: string;
 }
 
-const AddingStudent = () => {
+type StudentDataTableType = {
+    tableHead: string[];
+    tableData: string[][];
+}
+
+type AddingStudentType = {
+  ActiveBranch: string
+  StudentInfoData: StudentInfoDataType
+}
+
+const AddingStudent = (props: AddingStudentType) => {
   const dispatch = useDispatch();
   const [StudentName, setStudentName] = useState('');
   const [PhoneNumber, setPhoneNumber] = useState("")
+  let currentDate = new Date();
+  let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
+  let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  let currentYear = currentDate.getFullYear();
+  let currentDateandMonth = `${currentNumDate}/${currentMonth}/${currentYear}`;
 
-  const SaveButton = () => {
-    const newExistingSubject = {
+  const SaveButton = async() => {
+    const newStudent = {
       "uniqueID": nanoid(),
       "Student_Name": StudentName,
-      "Phone_Number": PhoneNumber
+      "Phone_Number": PhoneNumber,
+      "Branch": props.ActiveBranch
     }
-    dispatch(addStudentObject(newExistingSubject));
-  }   
+    dispatch(addStudentObject(newStudent));
+    let NewStudent = {
+        "uniqueID": nanoid(),
+        "Name": newStudent.Student_Name,
+        "Phone Number": newStudent.Phone_Number,
+        "Date Joined": currentDateandMonth,
+        "Email ID": "",
+        "Gender": "",
+        "Streak": "",
+        "Subscription Type": "Library",
+        "Distribution Name": props.StudentInfoData["Distribution Name"],
+        "Distribution Branch": props.ActiveBranch,
+        "Distribution ID": props.StudentInfoData["Distribution ID"],
+        "City": props.StudentInfoData["City"],
+        "State": props.StudentInfoData["State"],
+        "Country": props.StudentInfoData["Country"],
+        "Type of Account": "User"
+    }
+    try {
+      const response = await fetch('http://192.168.232.92:5000/AddStudent', {  // Replace localhost with your computer's IP address if testing on a real device
+        method: 'POST', // Specify the request method
+        headers: {
+          'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+        },
+        body: JSON.stringify(NewStudent), // Convert the request payload to JSON.
+      })
+
+      if (!response.ok) {  // Handle HTTP errors
+        throw new Error('Failed to add data to the server');
+      }
+      const fetched_data = await response.json();
+      console.log("Fetched Data: ", fetched_data)
+    }   
+    catch (error) {
+      console.error('Catch Error: ', error);
+    }
+  }
 
   return (
     <View
@@ -107,12 +159,14 @@ const AddingStudent = () => {
 };
 
 const AppDistributor = () => {
-  const dispatch = useDispatch();
-  const AddingStudentsSheet = useRef<TrueSheet>(null);
-    const data = [
+    const dispatch = useDispatch();
+    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+    const AddingStudentsSheet = useRef<TrueSheet>(null);
+    const LibraryBranchesData = [
         { label: 'JDA Library', value: '1' },
         { label: 'KDA Library', value: '2' },
     ];
+    const [ActiveBranch, setActiveBranch] = useState(LibraryBranchesData[0].label);
     const [studentSearch, setStudentSearch] = useState("")
     const prevCount = useRef('');
     const [value, setValue] = useState("");
@@ -132,62 +186,33 @@ const AppDistributor = () => {
     }, [studentSearch]);
 
     const StudentData = useSelector((state: RootState) => state.StudentsDataArraySliceReducer.StudentsDataArrayInitialState)
-
+    
     const StudentDataList = useMemo(() => {
-      const table: string[][] = [['Lamda', '0987654321', '0']];
+      const table: string[][] = [];
       for (let index = 0; index < StudentData.length; index++) {
         const eachData = StudentData[index];
-        table.push([
-          eachData['Student_Name'],
-          eachData['Phone_Number'],
-          eachData['uniqueID']
-        ]);
+        if (eachData['Branch'] == ActiveBranch) {
+          table.push([
+            eachData['Student_Name'],
+            eachData['Phone_Number'],
+            eachData['uniqueID']
+          ]);
+        }
       }
       return table;
-    }, [StudentData]);
+    }, [StudentData, ActiveBranch]);
     
-    // const studentData = [
-    //   ['Chomu', '1234567890', '5',],
-    //   ['Archit', '9123456789', '3',],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Sachin Tendulkar', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3'],
-    //   ['Kartavya Chauhan', '9876543210', '3'],
-    //   ['Rahul Gupta', '9123456789', '3']
-    // ]
-    // Filter logic
-    
-    const [StudentDataTable, setStudentDataTable] = useState({
+    const [StudentDataTable, setStudentDataTable] = useState<StudentDataTableType>({
       tableHead: ['Student', 'Number', 'Remove'],
-      tableData: StudentDataList
+      tableData: [[]]
     })
 
-    // const filteredData = studentSearch.length > prevCount.current.length
-    // ? StudentDataTable.tableData.filter((item) => 
-    //   item[0].toLowerCase().includes(studentSearch.toLowerCase())
-    // )
-    // : StudentDataList.filter((item) =>
-    //     item[0].toLowerCase().includes(studentSearch.toLowerCase())
-    // );
+    useEffect(() => {
+      setStudentDataTable({
+        tableHead: ['Student', 'Number', 'Remove'],
+        tableData: StudentDataList
+      })
+    }, [StudentData, ActiveBranch])
 
     const filteredData = useMemo(() => {
     return studentSearch.length > prevCount.current.length
@@ -199,32 +224,16 @@ const AppDistributor = () => {
     );
     }, [studentSearch, StudentDataTable]);
 
-    // const filteredData = StudentDataList;
-
-    // console.log("Filtered Data: ", filteredData)
-    // useEffect(() => {
-    //   setStudentDataTable({
-    //     tableHead: ['Student', 'Number', 'Remove'],
-    //     tableData: filteredData
-    //   })
-    // }, [studentSearch])
-
     useEffect(() => {
       setStudentDataTable({
         tableHead: ['Student', 'Number', 'Remove'],
         tableData: filteredData
       })
-    }, [filteredData])
-
-    useEffect(() => {
-      console.log("Student Table Record: ", StudentDataList)
-    }, [StudentData, StudentDataList])
-    
+    }, [studentSearch])
 
     const DeleteButton = (uniqueID: string) => {
-      dispatch(removeStudentObject(''))
       return (
-      <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center'}} onPress={() => console.log("uniqueID: ", uniqueID)}>
+      <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center'}} onPress={() => dispatch(removeStudentObject(uniqueID))}>
         <View style={styles.btn}>
           <Image source={RemoveIcon} style={{height: 20, width: 20}} />
         </View>
@@ -234,6 +243,11 @@ const AppDistributor = () => {
     async function AddStudentButton() {
       await AddingStudentsSheet.current?.present();
     }
+
+    useEffect(() => {
+      console.log("Active Library Branch: ", ActiveBranch)
+    }, [ActiveBranch])
+  
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -257,7 +271,7 @@ const AppDistributor = () => {
                   selectedTextStyle={styles.selectedTextStyle}
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
-                  data={data}
+                  data={LibraryBranchesData}
                   itemTextStyle={{fontFamily: 'sf-pro-display-bold', height: 20}}
                   itemContainerStyle={{borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
                   containerStyle={{borderRadius: 10}}
@@ -267,11 +281,12 @@ const AppDistributor = () => {
                   valueField="value"
                   placeholder={!isFocus ? 'Select item' : '...'}
                   searchPlaceholder="Search..."
-                  value={value}
+                  value={value == '' ? '1' : value}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={item => {
                       setValue(item.value);
+                      setActiveBranch(item.label);
                       setIsFocus(false);
                   }}
                   renderLeftIcon={() => (
@@ -303,8 +318,10 @@ const AppDistributor = () => {
                     <TableWrapper key={index} style={styles.row}>
                       {
                         rowData.map((cellData, cellIndex) => (
-                          <Cell key={cellIndex} data={cellIndex === 2 ? DeleteButton(cellData) : cellData}
-                           textStyle={styles.text}
+                          <Cell
+                           key={cellIndex} 
+                           data={cellIndex === 2 ? DeleteButton(cellData) : cellData}
+                           textStyle={cellIndex !== 2 ? styles.text : undefined}
                           />
                         ))
                       }
@@ -330,7 +347,7 @@ const AppDistributor = () => {
 
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <View style={{flex: 1, borderRightWidth: 1, borderColor: '#d6d3da', justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{fontFamily: 'sf-pro-display-bold', color: 'grey'}}>Total Enrolled: 80/100</Text>
+                <Text style={{fontFamily: 'sf-pro-display-bold', color: 'grey'}}>Total Enrolled: {StudentDataList.length}/100</Text>
               </View>
               <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 <Text style={{fontFamily: 'sf-pro-display-bold', color: 'grey'}}>Plan Expire: 28/09/2025</Text>
@@ -342,7 +359,10 @@ const AppDistributor = () => {
               sizes={['auto', 'large']}
               cornerRadius={24}
             >
-              <AddingStudent/>
+              <AddingStudent 
+                StudentInfoData={StudentInfoData}
+                ActiveBranch={ActiveBranch}
+              />
             </TrueSheet>
           </View>
       </View>
@@ -448,7 +468,7 @@ const styles = StyleSheet.create({
         color: 'gray',
       },
       
-      containerThree: { height: 400, backgroundColor: '#fff'},
+      containerThree: { maxHeight: 400, backgroundColor: '#fff'},
       head: { height: 40, backgroundColor: '#808B97' },
       text: { margin: 8, marginLeft: 30, fontFamily: 'sf-pro-display-bold' },
       row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
