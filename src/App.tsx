@@ -36,6 +36,8 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Store, persistor } from './app/Store'
 import OnBoardingScreen from './Components/Authentication/OnBoardingScreen';
+import { useDispatch, useSelector } from 'react-redux' 
+import { RootState } from '../src/app/Store';
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -111,6 +113,9 @@ function App(): React.JSX.Element {
   const NativeStack = createNativeStackNavigator<NativeStackParamList>();
   const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
 
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  console.log(StudentInfoData)
+
   type CustomTabButtonPropTypes = {
     label: string,
     onPress: ((e: GestureResponderEvent) => void) | undefined,
@@ -167,8 +172,12 @@ function App(): React.JSX.Element {
       <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
       <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/>
       <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
+      { StudentInfoData?.["Type of Account"] == "Distributor" &&
       <Drawer.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
+     }
+     { StudentInfoData?.["Type of Account"] == "Distributor" &&
       <Drawer.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
+     }
     </Drawer.Navigator>
     )
   }
@@ -213,16 +222,16 @@ function App(): React.JSX.Element {
   }
 
   return (
-    <Provider store={Store}>
-      <PersistGate loading={null} persistor={persistor}>
+    // <Provider store={Store}>
+      // <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
           <NativeStack.Navigator initialRouteName="DrawerScreens">
             <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
             <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
           </NativeStack.Navigator>
         </NavigationContainer>
-      </PersistGate>
-    </Provider>
+      // </PersistGate>
+    // </Provider>
   );
 }
 

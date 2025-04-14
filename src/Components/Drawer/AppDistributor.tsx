@@ -43,17 +43,17 @@ const AddingStudent = (props: AddingStudentType) => {
   let currentDateandMonth = `${currentNumDate}/${currentMonth}/${currentYear}`;
 
   const SaveButton = async() => {
-    const newStudent = {
+    const newStudentTable = {
       "uniqueID": nanoid(),
       "Student_Name": StudentName,
       "Phone_Number": PhoneNumber,
       "Branch": props.ActiveBranch
     }
-    dispatch(addStudentObject(newStudent));
+    
     let NewStudent = {
-        "uniqueID": nanoid(),
-        "Name": newStudent.Student_Name,
-        "Phone Number": newStudent.Phone_Number,
+        "uniqueID": newStudentTable.uniqueID,
+        "Name": newStudentTable.Student_Name,
+        "Phone Number": newStudentTable.Phone_Number,
         "Date Joined": currentDateandMonth,
         "Email ID": "",
         "Gender": "",
@@ -68,7 +68,7 @@ const AddingStudent = (props: AddingStudentType) => {
         "Type of Account": "User"
     }
     try {
-      const response = await fetch('http://192.168.232.92:5000/AddStudent', {  // Replace localhost with your computer's IP address if testing on a real device
+      const response = await fetch('http://10.0.2.2:5000/AddStudent', {  // Replace localhost with your computer's IP address if testing on a real device
         method: 'POST', // Specify the request method
         headers: {
           'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
@@ -81,6 +81,7 @@ const AddingStudent = (props: AddingStudentType) => {
       }
       const fetched_data = await response.json();
       console.log("Fetched Data: ", fetched_data)
+      dispatch(addStudentObject(newStudentTable));
     }   
     catch (error) {
       console.error('Catch Error: ', error);
@@ -162,11 +163,14 @@ const AppDistributor = () => {
     const dispatch = useDispatch();
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const AddingStudentsSheet = useRef<TrueSheet>(null);
-    const LibraryBranchesData = [
-        { label: 'JDA Library', value: '1' },
-        { label: 'KDA Library', value: '2' },
-    ];
-    const [ActiveBranch, setActiveBranch] = useState(LibraryBranchesData[0].label);
+    // const LibraryBranchesData = [
+    //     { label: 'JDA Library', value: '1' },
+    //     { label: 'KDA Library', value: '2' },
+    // ];
+    const [LibraryBranchesData, setLibraryBranchesData] = useState<{label: string, value: string}[]>([
+      {label: StudentInfoData['Distribution Branch'], value: '1' }
+    ])
+    const [ActiveBranch, setActiveBranch] = useState(LibraryBranchesData?.[0]?.label);
     const [studentSearch, setStudentSearch] = useState("")
     const prevCount = useRef('');
     const [value, setValue] = useState("");
@@ -181,6 +185,38 @@ const AppDistributor = () => {
         }
         return null;
     };
+    async function RenderDistributor() {
+      try {
+        const response = await fetch('http://10.0.2.2:5000/GetDistributorInfo', {  // Replace localhost with your computer's IP address if testing on a real device
+          method: 'POST', // Specify the request method
+          headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          },
+          body: JSON.stringify(StudentInfoData.uniqueID), // Convert the request payload to JSON.
+        })
+        if (!response.ok) {  // Handle HTTP errors
+          throw new Error('Failed to fetch data to the server');
+        }
+        const fetched_data = await response.json();
+        // console.log("Fetched Distributor: ", fetched_data)
+        let BranchList = fetched_data["Other Branches List"]
+        if (BranchList.length > 0) {
+          for (let index = 0; index < BranchList.length; index++) {
+            const element: string = BranchList[index];
+            let BranchObject = {label: element, value: (index + 2).toString()}
+            setLibraryBranchesData((prev) => [...prev, BranchObject])
+          }
+        }
+      } catch (error) {
+        console.error('Catch Error: ', error);
+    }}
+
+    useEffect(() => {
+      RenderDistributor();
+      console.log("Library Branches Data: ", LibraryBranchesData)
+    }, [StudentInfoData])
+    
+
     useEffect(() => {
       prevCount.current = studentSearch; // Update previous value after the render
     }, [studentSearch]);
@@ -232,8 +268,36 @@ const AppDistributor = () => {
     }, [studentSearch])
 
     const DeleteButton = (uniqueID: string) => {
+      async function ClickDelete() {
+        try {
+          const response = await fetch('http://10.0.2.2:5000/UpdateStudent', {  // Replace localhost with your computer's IP address if testing on a real device
+            method: 'POST', // Specify the request method
+            headers: {
+              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+            },
+            body: JSON.stringify({
+              "Type": "uniqueID",
+              "Value": uniqueID,
+              "Updates": {
+                "Distribution Name": "",
+                "Distribution ID": "",
+                "Distribution Branch": "",
+                "Subscription Type": "Free",
+              }
+            }), // Convert the request payload to JSON.
+          })
+          if (!response.ok) {  // Handle HTTP errors
+            throw new Error('Failed to fetch data to the server');
+          }
+          const fetched_data = await response.json();
+          console.log("Fetched Message: ", fetched_data)
+          dispatch(removeStudentObject(uniqueID))
+        } catch (error) {
+          console.error('Catch Error: ', error);
+        }
+      }
       return (
-      <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center'}} onPress={() => dispatch(removeStudentObject(uniqueID))}>
+      <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center'}} onPress={ClickDelete}>
         <View style={styles.btn}>
           <Image source={RemoveIcon} style={{height: 20, width: 20}} />
         </View>

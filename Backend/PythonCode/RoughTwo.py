@@ -1,2 +1,7 @@
-a = [1, 2, 3, 4, 5, 6, 7]
-print(a[3: ])
+a = {"Name": "John Doe", "Phone Number": "1234567890", "uniqueID": "12345"}
+b = {}
+if a:
+    a["uniqueID"] = "54321"
+    b = a
+
+print(b)

@@ -42,9 +42,6 @@ def add_Distributor():
     uniqueID = data.get('uniqueID')
     Name = data.get('Name')
     PhoneNumber = data.get('Phone Number')
-    Email = data.get('Email')
-    DistributorName = data.get('Distributor Name')
-    DistributorID = data.get('Distributor ID')
     DateJoined = data.get('Date Joined')
     City = data.get('City')
     State = data.get('State')
@@ -56,12 +53,13 @@ def add_Distributor():
             "Name": Name,
             "Phone Number": PhoneNumber,
             "Date Joined": DateJoined,
-            "Email ID": Email,
+            "Email ID": data.get('Email ID'),
             "Gender": "",
             "Streak": "",
             "Subscription Type": "Library",
-            "Distributor Name": DistributorName,
-            "Distributor ID": DistributorID,
+            "Distribution Name": data.get('Distribution Name'),
+            "Distribution ID": data.get('Distribution ID'),
+            "Distribution Branch": data.get('Distribution Name'),
             "City": City,
             "State": State,
             "Country": Country,
@@ -84,10 +82,17 @@ def add_Distributor():
     return jsonify({"error": "No data found!"}), 400
 
 # Example: Fetch data from MongoDB
-@app.route('/data', methods=['GET'])
-def get_data():
-    data = list(LibrariansInfo.find({}, {"_id": 0}))  # Fetch all data, excluding the MongoDB "_id"
-    return jsonify(data), 200
+@app.route('/GetDistributorInfo', methods=['POST'])
+def getDistributorInfo():
+    uniqueID = request.json
+    if uniqueID:
+        DistributorExists = LibrariansInfo.find_one({ "uniqueID": uniqueID }, {"_id": 0})
+        if DistributorExists:
+            return jsonify(DistributorExists), 201
+        else:
+            return jsonify("Distributor Didn't Exist"), 201
+    else:
+        return jsonify({"error": "No data found!"}), 400
 
 @app.route('/MatchNumber', methods=['POST'])
 def match_number():
@@ -125,11 +130,33 @@ def add_student():
 def get_studentInfo():
     data = request.json
     if data:
-        studentData = StudentInfo.find_one({ "Phone Number": data }, {"_id": 0})
+        if data["Type"] == "Phone Number":
+            studentData = StudentInfo.find_one({ "Phone Number": data["Value"] }, {"_id": 0})
+        elif data["Type"] == "uniqueID":
+            studentData = StudentInfo.find_one({ "uniqueID": data["Value"] }, {"_id": 0})
         if studentData:
             return jsonify(studentData), 201
         else:
-            return jsonify({"error": "No data found!"}), 400
+            return jsonify({"error": "No student found!"}), 400
+    else:
+        return jsonify({"error": "No data found!"}), 400
+
+@app.route('/UpdateStudent', methods=['POST'])
+def update_Student():
+    data = request.json
+    if data:
+        if data["Type"] == "Phone Number":
+            StudentInfo.update_one({ "Phone Number": data["Value"] },
+            {
+                "$set": data["Updates"]
+            })
+            return jsonify({"Message": "Student Updated!"}), 201
+        elif data["Type"] == "uniqueID":
+            StudentInfo.update_one({ "uniqueID": data["Value"] },
+            {
+                "$set": data["Updates"]
+            })
+            return jsonify({"Message": "Student Updated!"}), 201
     else:
         return jsonify({"error": "No data found!"}), 400
 

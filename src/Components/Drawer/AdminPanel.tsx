@@ -14,6 +14,7 @@ const AdminPanel = () => {
     let currentDateandMonth = `${currentNumDate}/${currentMonth}/${currentYear}`;
     const [distributorName, setDistributorName] = useState("")
     const [distributionName, setDistributionName] = useState("")
+    const [EmailID, setEmailID] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
     const [numberOfBranch, setNumberOfBranch] = useState(1)
     const [AllBranchesList, setAllBranchesList] = useState([''])
@@ -56,12 +57,13 @@ const AdminPanel = () => {
             "uniqueID": nanoid(),
             "Name": distributorName,
             "Distribution Name": distributionName,
-            "Distribution Type": DistributionTypeData[Number(DistributionTypeValue) - 1].label,
-            "DistributionID": nanoid(),
+            "Distribution Type": DistributionTypeData[Number(DistributionTypeValue)].label,
+            "Distribution ID": nanoid(),
+            "Email ID": EmailID,
             "Phone Number": phoneNumber,
-            "State": StateData[Number(StateValue) - 1].label,
+            "State": StateData[Number(StateValue)].label,
             "Country": "India",
-            "City": CityData[Number(CityValue) - 1].label,
+            "City": CityData[Number(CityValue)].label,
             "Date Joined": currentDateandMonth,
             "Date Left": "",
             "Plan Status": "Active",
@@ -72,7 +74,7 @@ const AdminPanel = () => {
             "Other Branches List": AllBranchesList
         }
         try {
-          const response = await fetch('http://192.168.123.92:5000/addDistributor', {  // Replace localhost with your computer's IP address if testing on a real device
+          const response = await fetch('http://10.0.2.2:5000/addDistributor', {  // Replace localhost with your computer's IP address if testing on a real device
             method: 'POST', // Specify the request method
             headers: {
               'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
@@ -153,6 +155,22 @@ const AdminPanel = () => {
                         </View>
                     </View>
 
+                    <View style={[styles.MiddleOption, { height: 65 }]}>
+                        <View
+                        style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'flex-start',
+                        }}>
+                        <TextInput
+                            style={styles.OptionText}
+                            value={EmailID}
+                            onChangeText={setEmailID}
+                            placeholder="Email ID"
+                            placeholderTextColor="#6a6a6a"></TextInput>
+                        </View>
+                    </View>
+
                     <View>
                         <Dropdown
                         style={[styles.dropdown]}
@@ -170,7 +188,7 @@ const AdminPanel = () => {
                         valueField="value"
                         placeholder={!isDistributionTypeFocus ? 'Select Distribution Type' : 'Select Distribution Type'}
                         searchPlaceholder="Search..."
-                        value={DistributionTypeValue}
+                        value={DistributionTypeValue == '' ? '1' : DistributionTypeValue}
                         onFocus={() => setDistributionTypeIsFocus(true)}
                         onBlur={() => setDistributionTypeIsFocus(false)}
                         onChange={item => {
@@ -213,7 +231,7 @@ const AdminPanel = () => {
                         valueField="value"
                         placeholder={!isCityFocus ? 'Select City' : 'Select City'}
                         searchPlaceholder="Search..."
-                        value={CityValue}
+                        value={CityValue == '' ? '1' : CityValue}
                         onFocus={() => setIsCityFocus(true)}
                         onBlur={() => setIsCityFocus(false)}
                         onChange={item => {
@@ -240,7 +258,7 @@ const AdminPanel = () => {
                         valueField="value"
                         placeholder={!isStateFocus ? 'Select State' : 'Select State'}
                         searchPlaceholder="Search..."
-                        value={StateValue}
+                        value={StateValue == '' ? '1' : StateValue}
                         onFocus={() => setIsStateFocus(true)}
                         onBlur={() => setIsStateFocus(false)}
                         onChange={item => {

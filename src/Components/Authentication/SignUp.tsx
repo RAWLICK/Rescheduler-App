@@ -59,7 +59,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
     const navigation = useNavigation<NavigationProp<any, any>>();
     const MatchNumber = async () => {
         try {
-            const response = await fetch('http://192.168.232.92:5000/MatchNumber', {  // Replace localhost with your computer's IP address if testing on a real device
+            const response = await fetch('http://10.0.2.2:5000/MatchNumber', {  // Replace localhost with your computer's IP address if testing on a real device
             method: 'POST', // Specify the request method
             headers: {
                 'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
