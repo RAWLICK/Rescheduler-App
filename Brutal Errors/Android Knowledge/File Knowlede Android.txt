@@ -1,0 +1,27 @@
+Gradle is just like a contractor of the house you are building.
+• Materials (dependencies like libraries)
+• Blueprints (source code)
+• Construction tools (compilers, SDKs)
+• A contractor who knows how to put it all together.
+That contractor = Gradle.
+Gradle turns the code into APK file in simple language, that too with an automated process.
+
+Gradle is only for android which requires Android Studio. For iOS it's xcodebuild which requires XCode.
+
+settings.Gradle -
+Think of it like the attendance sheet for your app’s modules. It tells Gradle:
+👉 “Hey! These are the parts of the project I want to include when I build the app.”
+Without it, Android wouldn’t know what to compile together.
+
+MainActivity.java- 🚪
+- It is like entry gate of your Android app 🚪.
+- This is the first screen that launches when your React Native Android app starts.
+- Defines the name of the JS module to render (usually App or whatever you registered).
+
+MainApplication.java- 🧠
+- It is like heart of my react native app 🧠.
+- This is the central control center that sets up your React Native app on Android.
+- Initializes React Native
+- Loads native modules (like maps, camera, Firebase, etc.)
+- Sets up debug tools like Flipper
+- For iOS it's (AppDelegate.mm)

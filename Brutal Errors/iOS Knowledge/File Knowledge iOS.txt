@@ -1,0 +1,46 @@
+Cocoapods is like "npm, pip, yarn".
+pods are actually individual libraries like "reanimated, firebase" etc.
+
+Podfile:
+Podfile is just like package.json of iOS Libraries. Both are dependency declaration files, but for different ecosystems.
+package.json is for JS Libraies and Podfile for iOS Libraries/framework.
+
+Command	Meaning-
+pod install:  Installs pods listed in your Podfile. Uses existing local pod spec repo cache.
+pod install --repo-update:	First updates CocoaPods’ local index of available pod versions → then installs. It is like saying “Go check the latest versions of libraries online before installing.”
+
+🔹 .xcconfig – Build Configuration File
+•	These are like .env or config files for your Xcode project.
+•	They define build settings like:
+•	SWIFT_VERSION = 5.0
+•	OTHER_LDFLAGS = -ObjC
+
+🔹 .xcfilelist – Input/Output File Tracking
+These tell Xcode what to watch so it knows when to rebuild or skip pods (saves time).
+
+🔹 .xcworkspace – Multi-project workspace (works like <> </> wrapper)
+•	Xcode can only build one project at a time (.xcodeproj).
+•	But pods are treated as separate projects inside your main app.
+
+xcodebuild - Works like Gradle(contrator of house) for iOS:
+Gradle is only for android which requires Android Studio. For iOS it's xcodebuild which requires XCode.
+
+So CocoaPods generates a .xcworkspace, which is:
+“A wrapper around your app + all its pod projects” so they build together seamlessly.
+Always open .xcworkspace when using CocoaPods!
+
+Watchman:
+Watch files and trigger actions when files change. React Native apps rely heavily on hot reloading / fast refresh, and those features only work well when your development server knows exactly when a file changed.
+
+What is Info.plist?
+Info.plist is like a settings file for your iOS app. It’s an XML file that tells iOS important details about your app — kind of like filling out a form before entering a building. Apple reads this file to understand what your app needs and how it behaves. It basically manages permission like camera access, notifications etc.
+
+AppDelegate.mm: 🧠
+- It works same like MainApplication.java 🧠 for Android
+- “The App Launcher + Setup Manager” of your React Native iOS app.
+- Acts like “electrician” — it sets up the house
+
+index.js: 🎬
+- If your app was a movie: 🎬 index.js is the first scene that starts the film.
+- It tells React Native what to show on the screen.
+- It is the official entry point for your React Native JavaScript code.
