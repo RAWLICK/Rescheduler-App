@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, Platform } from 'react-native'
 import React from 'react'
 import OtpVerificationImage from '../Images/OtpVerificationImage.png'
 import ChevronLeftBlack from '../Images/ChevronLeftBlack.png'
@@ -56,7 +56,10 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
             if (props.EnteredOTP == '1234') {
                 console.log("OTP Verified");
                 try {
-                    const response = await fetch('http://10.0.2.2:5000/GetStudentInfo', {  // Replace localhost with your computer's IP address if testing on a real device
+                    const response = await fetch(
+                    // Platform.OS === 'ios'? 'http://localhost:5000/GetStudentInfo':'http://10.0.2.2:5000/GetStudentInfo',
+                    'https://rescheduler-server.onrender.com/GetStudentInfo',
+                    { 
                       method: 'POST', // Specify the request method
                       headers: {
                         'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
@@ -74,13 +77,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     console.log("Fetched StudentInfo: ", fetched_data)
                     dispatch(registerUserInfo(fetched_data))
                     console.log("Student Signed In");
-                    navigation.navigate('DrawerScreens', {
-                      screen: 'TabsDrawer',
-                      params: {
-                        screen: 'ScheduleTab',
-                        params: undefined
-                      },
-                  })
+                    navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
                     
                   } catch (error) {
                     console.error('Catch Error: ', error);
@@ -114,7 +111,10 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     "Type of Account": "User"
                 }
                 try {
-                  const response = await fetch('http://10.0.2.2:5000/AddStudent', {  // Replace localhost with your computer's IP address if testing on a real device
+                  const response = await fetch(
+                    // Platform.OS === 'ios'? 'http://localhost:5000/AddStudent':'http://10.0.2.2:5000/AddStudent',
+                    'https://rescheduler-server.onrender.com/AddStudent',
+                    { 
                     method: 'POST', // Specify the request method
                     headers: {
                       'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
@@ -129,13 +129,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                   console.log("Fetched Data: ", fetched_data)
                   dispatch(registerUserInfo(NewStudent))
                   console.log("Student Registered");
-                  navigation.navigate('DrawerScreens', {
-                    screen: 'TabsDrawer',
-                    params: {
-                      screen: 'ScheduleTab',
-                      params: undefined
-                    },
-                })
+                  navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
                   
                 } catch (error) {
                   console.error('Catch Error: ', error);

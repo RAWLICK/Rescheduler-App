@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity, Platform } from 'react-native'
 import React, { useMemo } from 'react'
 import { useState, useEffect, useRef } from 'react';
 import SearchIcon from '../Images/SearchIcon.png'
@@ -35,7 +35,7 @@ type AddingStudentType = {
 const AddingStudent = (props: AddingStudentType) => {
   const dispatch = useDispatch();
   const [StudentName, setStudentName] = useState('');
-  const [PhoneNumber, setPhoneNumber] = useState("")
+  const [PhoneNumber, setPhoneNumber] = useState("");
   let currentDate = new Date();
   let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
   let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
@@ -68,20 +68,25 @@ const AddingStudent = (props: AddingStudentType) => {
         "Type of Account": "User"
     }
     try {
-      const response = await fetch('http://10.0.2.2:5000/AddStudent', {  // Replace localhost with your computer's IP address if testing on a real device
-        method: 'POST', // Specify the request method
+      const response = await fetch(
+        // Platform.OS === 'ios'? 'http://localhost:5000/AddStudent':'http://10.0.2.2:5000/AddStudent',
+        'https://rescheduler-server.onrender.com/AddStudent',
+        {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(NewStudent), // Convert the request payload to JSON.
+        body: JSON.stringify(NewStudent),
       })
 
       if (!response.ok) {  // Handle HTTP errors
         throw new Error('Failed to add data to the server');
       }
-      const fetched_data = await response.json();
-      console.log("Fetched Data: ", fetched_data)
-      dispatch(addStudentObject(newStudentTable));
+      else if (response.ok) {
+        const fetched_data = await response.json();
+        console.log("Fetched Data: ", fetched_data)
+        dispatch(addStudentObject(newStudentTable));
+      }
     }   
     catch (error) {
       console.error('Catch Error: ', error);
@@ -187,8 +192,11 @@ const AppDistributor = () => {
     };
     async function RenderDistributor() {
       try {
-        const response = await fetch('http://10.0.2.2:5000/GetDistributorInfo', {  // Replace localhost with your computer's IP address if testing on a real device
-          method: 'POST', // Specify the request method
+        const response = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/GetDistributorInfo':'http://10.0.2.2:5000/GetDistributorInfo',
+          'https://rescheduler-server.onrender.com/GetDistributorInfo',
+          {
+            method: 'POST', // Specify the request method
           headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
@@ -196,13 +204,13 @@ const AppDistributor = () => {
         })
         if (!response.ok) {  // Handle HTTP errors
           throw new Error('Failed to fetch data to the server');
-        }
+        } 
         const fetched_data = await response.json();
         // console.log("Fetched Distributor: ", fetched_data)
         let BranchList = fetched_data["Other Branches List"]
         if (BranchList.length > 0) {
           for (let index = 0; index < BranchList.length; index++) {
-            const element: string = BranchList[index];
+            const element = BranchList[index];
             let BranchObject = {label: element, value: (index + 2).toString()}
             setLibraryBranchesData((prev) => [...prev, BranchObject])
           }
@@ -270,7 +278,10 @@ const AppDistributor = () => {
     const DeleteButton = (uniqueID: string) => {
       async function ClickDelete() {
         try {
-          const response = await fetch('http://10.0.2.2:5000/UpdateStudent', {  // Replace localhost with your computer's IP address if testing on a real device
+          const response = await fetch(
+           // Platform.OS === 'ios'? 'http://localhost:5000/UpdateStudent':'http://10.0.2.2:5000/UpdateStudent',
+          'https://rescheduler-server.onrender.com/UpdateStudent',
+          {
             method: 'POST', // Specify the request method
             headers: {
               'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
@@ -336,7 +347,7 @@ const AppDistributor = () => {
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
                   data={LibraryBranchesData}
-                  itemTextStyle={{fontFamily: 'sf-pro-display-bold', height: 20}}
+                  itemTextStyle={{fontFamily: 'sf-pro-display-bold', height: 20, color: 'grey'}}
                   itemContainerStyle={{borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
                   containerStyle={{borderRadius: 10}}
                   // search
@@ -385,7 +396,7 @@ const AppDistributor = () => {
                           <Cell
                            key={cellIndex} 
                            data={cellIndex === 2 ? DeleteButton(cellData) : cellData}
-                           textStyle={cellIndex !== 2 ? styles.text : undefined}
+                           textStyle={cellIndex !== 2 ? styles.tableText : undefined}
                           />
                         ))
                       }
@@ -535,6 +546,7 @@ const styles = StyleSheet.create({
       containerThree: { maxHeight: 400, backgroundColor: '#fff'},
       head: { height: 40, backgroundColor: '#808B97' },
       text: { margin: 8, marginLeft: 30, fontFamily: 'sf-pro-display-bold' },
+      tableText: { margin: 8, marginLeft: 30, fontFamily: 'sf-pro-display-bold', color: 'grey' },
       row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
       btn: { width: 18, height: 18, borderRadius: 2, justifyContent: 'center', alignItems: 'center', },
       btnText: { textAlign: 'center', color: '#fff'},

@@ -2,10 +2,23 @@ import { StyleSheet, Text, View, Image } from 'react-native'
 import Onboarding from 'react-native-onboarding-swiper'
 import SignInIcon from '../Images/SignInIcon.png'
 import React from 'react'
+import { NavigationProp, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const OnBoardingScreen = () => {
+    const navigation = useNavigation<NavigationProp<any, any>>();
+    const Done = () => {
+    navigation.navigate('DrawerScreens', {
+        screen: 'TabsDrawer',
+        params: {
+            screen: 'ScheduleTab',
+            params: undefined
+        },
+    })
+    }
   return (
       <Onboarding
+      onDone={Done}
         pages={[
             {
             backgroundColor: '#fcec82',

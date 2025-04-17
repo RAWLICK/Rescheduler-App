@@ -74,7 +74,10 @@ const AdminPanel = () => {
             "Other Branches List": AllBranchesList
         }
         try {
-          const response = await fetch('http://10.0.2.2:5000/addDistributor', {  // Replace localhost with your computer's IP address if testing on a real device
+          const response = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/addDistributor':'http://10.0.2.2:5000/addDistributor',
+          'https://rescheduler-server.onrender.com/addDistributor',
+          {
             method: 'POST', // Specify the request method
             headers: {
               'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
@@ -95,12 +98,6 @@ const AdminPanel = () => {
           setServerResponseMessage('Failed to connect to the backend');  // Handle network error
         }
       };
-
-      useEffect(() => {
-        console.log("Try try dont cry: ", StateData[0].label)
-        console.log("Try try dont cry: ", Number(StateValue))
-      }, [])
-      
     
     return (
         <SafeAreaView style={styles.safeView}>

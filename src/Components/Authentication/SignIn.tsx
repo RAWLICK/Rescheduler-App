@@ -1,5 +1,4 @@
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -9,7 +8,9 @@ import {
   ImageBackground,
   TouchableOpacity,
   Dimensions,
-  TextInput
+  TextInput,
+  Platform,
+  SafeAreaView
 } from 'react-native';
 import React from 'react';
 import {useState} from 'react';
@@ -22,6 +23,13 @@ import {BlurView} from '@react-native-community/blur';
 const { width, height } = Dimensions.get('window');
 
 type LogoSectionPropsType = {};
+
+type CredentialInputScreenPropsType = {
+  PhoneNumText: string | undefined;
+  setPhoneNumText: React.Dispatch<React.SetStateAction<string>>;
+  IsRegistered: string | undefined;
+  setIsRegistered: React.Dispatch<React.SetStateAction<string>>;
+};
 
 const LogoSection = () => {
   return (
@@ -46,18 +54,14 @@ const LogoSection = () => {
   );
 };
 
-type CredentialInputScreenPropsType = {
-  PhoneNumText: string | undefined;
-  setPhoneNumText: React.Dispatch<React.SetStateAction<string>>;
-  IsRegistered: string | undefined;
-  setIsRegistered: React.Dispatch<React.SetStateAction<string>>;
-};
-
 const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
   const navigation = useNavigation<NavigationProp<any, any>>();
   const MatchNumber = async () => {
     try {
-        const response = await fetch('http://10.0.2.2:5000/MatchNumber', {  // Replace localhost with your computer's IP address if testing on a real device
+        const response = await fetch(
+        // Platform.OS === 'ios'? 'http://localhost:5000/MatchNumber':'http://10.0.2.2:5000/MatchNumber',
+        'https://rescheduler-server.onrender.com/MatchNumber',
+        {
         method: 'POST', // Specify the request method
         headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
@@ -149,7 +153,7 @@ const SignIn = () => {
 
 const styles = StyleSheet.create({
   RegisterNewUserText: {
-    fontFamily: 'sf-pro-display-bold',
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
     fontSize: 17,
     color: 'black',
   },
@@ -162,7 +166,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   OrSpacingText: {
-    fontFamily: 'sf-pro-display-bold',
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
     fontSize: 15,
   },
   OrSpacingBox: {
@@ -172,7 +176,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   ContinueText: {
-    fontFamily: 'sf-pro-display-bold',
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
     color: 'white',
     fontSize: 19,
   },
@@ -186,12 +190,12 @@ const styles = StyleSheet.create({
   PhoneNumberText: {
     flex: 0.85,
     paddingLeft: 20,
-    fontFamily: 'sf-pro-display-bold',
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
     fontSize: 17,
     color: 'black'
   },
   CountryCodeText: {
-    fontFamily: 'sf-pro-display-bold',
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
     color: 'black',
     fontSize: 17,
   },
@@ -210,10 +214,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
+    height: 50
   },
   CredentialBox: {marginBottom: 10},
   MotiveHeading: {
-    fontFamily: 'sf-pro-display-bold',
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
     color: 'grey',
     fontSize: 20,
   },
@@ -232,13 +237,13 @@ const styles = StyleSheet.create({
   },
 
   HeadingText: {
-    fontFamily: 'coolvetica rg',
+    fontFamily: Platform.OS === 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg',
     fontSize: 60,
     marginBottom: 5,
   },
 
   SubHeadingText: {
-    fontFamily: 'sf-pro-display-medium',
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium'
   },
 
   RoundedBox: {
