@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity, Platform } from 'react-native'
 import React, { useMemo } from 'react'
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import SearchIcon from '../Images/SearchIcon.png'
 import { Dropdown } from 'react-native-element-dropdown';
 import LibraryIcon from '../Images/LibraryIcon.png'
@@ -17,6 +17,13 @@ import { addStudentObject, removeStudentObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { StudentInfoDataType } from '../../app/Slice';
 const { width, height } = Dimensions.get('window');
+import LeftArrow from '../Images/LeftArrow.png';
+import {useNavigation} from '@react-navigation/native';
+import {CombinedNavigationProp} from '../../App';
+import { useFocusEffect } from '@react-navigation/native';
+import useInternetCheck from '../Authentication/InternetCheck';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+
 interface Item {
     id: number;
     name: string;
@@ -165,13 +172,11 @@ const AddingStudent = (props: AddingStudentType) => {
 };
 
 const AppDistributor = () => {
+    const isConnected = useInternetCheck();
+    const navigation = useNavigation<CombinedNavigationProp>();
     const dispatch = useDispatch();
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const AddingStudentsSheet = useRef<TrueSheet>(null);
-    // const LibraryBranchesData = [
-    //     { label: 'JDA Library', value: '1' },
-    //     { label: 'KDA Library', value: '2' },
-    // ];
     const [LibraryBranchesData, setLibraryBranchesData] = useState<{label: string, value: string}[]>([
       {label: StudentInfoData['Distribution Branch'], value: '1' }
     ])
@@ -224,7 +229,6 @@ const AppDistributor = () => {
       console.log("Library Branches Data: ", LibraryBranchesData)
     }, [StudentInfoData])
     
-
     useEffect(() => {
       prevCount.current = studentSearch; // Update previous value after the render
     }, [studentSearch]);
@@ -320,9 +324,28 @@ const AppDistributor = () => {
     }
 
     useEffect(() => {
-      console.log("Active Library Branch: ", ActiveBranch)
-    }, [ActiveBranch])
-  
+      // console.log("Is Connected from Settings: ", isConnected)
+      if (isConnected == false) {
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'No Internet',
+          textBody: "Please turn on mobile data or Wi-Fi. Don't Worry, we don't show ADs 😌",
+          closeOnOverlayTap: false
+        })
+      }
+      else {
+        Dialog.hide();
+      }
+    }, [isConnected])
+
+    // useFocusEffect(
+    //   useCallback(() => {
+    //     StatusBar.setBackgroundColor("#d6d3da")
+    //     return () => {
+    //       // optional cleanup when screen is unfocused
+    //     };
+    //   }, [])
+    // );
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -331,8 +354,27 @@ const AppDistributor = () => {
       backgroundColor="#d6d3da"
       />
       <View style={styles.mainStyle}>
-          <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center'}}>
+          <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+            <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('DrawerScreens', {
+                    screen: 'TabsDrawer',
+                    params: {
+                      screen: 'ScheduleTab',
+                      params: undefined
+                    },
+                  })
+                }
+                style={styles.BackButtonBox}>
+                <Image source={LeftArrow} style={styles.BackButtonImage} />
+              </TouchableOpacity>
+            </View>
+            <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'center'}}>
               <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 17}}>App Distributor</Text>
+            </View>
+            <View style={{flex: 0.1}}>
+            </View>
           </View>
           <View style={{flex: 1, padding: 10, paddingRight: width * 0.04, paddingLeft: width * 0.04}}>
               <View style={{marginBottom: 15}}>
@@ -629,4 +671,6 @@ const styles = StyleSheet.create({
         fontFamily: 'futura-no-2-medium-dee',
         fontSize: 16
       },
+      BackButtonBox: {flex: 1, justifyContent: 'center', alignItems: 'flex-start'},
+      BackButtonImage: {height: 15, width: 15},
 })

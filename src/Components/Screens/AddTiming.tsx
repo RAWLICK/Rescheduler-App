@@ -43,7 +43,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 // import { nanoid } from 'nanoid';
-import { nanoid} from "@reduxjs/toolkit";
+import { nanoid } from "@reduxjs/toolkit";
+import useInternetCheck from '../Authentication/InternetCheck';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PanGesture = ReturnType<typeof Gesture.Pan>;
@@ -399,6 +401,7 @@ export interface ScheduleArrayItem {
 import {CombinedNavigationProp} from '../../App';
 
 const AddTiming = () => {
+  const isConnected = useInternetCheck();
   const [AddFromExistingWorkButton, setAddFromExistingWorkButton] = useState(true)
   const AddFromExistingWorkToggleSwitch = () => setAddFromExistingWorkButton(previousState => !previousState)
   const Message = 'Keep Faith';
@@ -657,9 +660,24 @@ const AddTiming = () => {
     }
   };
 
+  // useEffect(() => {
+  //   console.log('ScheduleArray (AddTiming.tsx): ', ScheduleArray);
+  // }, [ScheduleArray]);
+
   useEffect(() => {
-    console.log('ScheduleArray (AddTiming.tsx): ', ScheduleArray);
-  }, [ScheduleArray]);
+      console.log("Is Connected from Settings: ", isConnected)
+      if (isConnected == false) {
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'No Internet',
+          textBody: "Please turn on mobile data or Wi-Fi. Don't Worry, we don't show ADs 😌",
+          closeOnOverlayTap: false
+        })
+      }
+      else {
+        Dialog.hide();
+      }
+    }, [isConnected])
 
   return (
     <SafeAreaView style={styles.safeView}>

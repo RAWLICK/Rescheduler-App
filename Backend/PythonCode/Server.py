@@ -94,6 +94,16 @@ def getDistributorInfo():
     else:
         return jsonify({"error": "No data found!"}), 400
 
+@app.route('/GetAllDistrubutionsInfo', methods=["GET"])
+def getAllDistrubutionsInfo():
+    try:
+        allDistributors = []
+        for distributor in LibrariansInfo.find({}, {"_id": 0, "Distribution Name": 1, "Local Address": 1, "City": 1}):
+            allDistributors.append(distributor)
+        return jsonify(allDistributors), 201
+    except:
+        return jsonify({"error": "An exception occurred in getAllDistrubutionsInfo route"}), 500
+    
 @app.route('/MatchNumber', methods=['POST'])
 def match_number():
     userPhoneNumber = request.json

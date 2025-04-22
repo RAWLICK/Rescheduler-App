@@ -24,6 +24,7 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
   const dispatch = useDispatch();
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
   const [Title, setTitle] = useState('')
+  const [RingAlarmArray, setRingAlarmArray] = useState<number[]>([])
 
   useEffect(() => {
     if (props.rescheduleStatus == 'rescheduled') {
@@ -87,6 +88,24 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
   function DeleteTask(id: string) {
     dispatch(removeScheduleObject(id));
   }
+
+  function ClickedAlarm(index: number) {
+    const isAlreadyAdded = RingAlarmArray.includes(index)
+    if (!isAlreadyAdded) {
+      setRingAlarmArray((prev) => {
+        let upDatedArray = [...prev, index]
+        return upDatedArray
+      })
+    }
+    else {
+      setRingAlarmArray(RingAlarmArray.filter((item) => item !== index))
+    }
+  }
+
+  useEffect(() => {
+    console.log("RingAlarmArray: ", RingAlarmArray)
+  }, [RingAlarmArray])
+  
   return (
     <View style={{backgroundColor: '#e7e7e7'}}>
       <View style={styles.HeadingArea}>
@@ -142,9 +161,8 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
               </View>
             </View>
             <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}
-            //  onPress={() => DeleteTask(uniqueID)}
-             >
-              <Image source={GreyAlarm} style={{height: 25, width: 25}}/>
+             onPress={() => ClickedAlarm(index)}>
+              <Image source={GreyAlarm} style={{height: 25, width: 25, tintColor: RingAlarmArray.includes(index) ? '#53b9f3' : 'grey' }}/>
             </TouchableOpacity>
           </View>
           )

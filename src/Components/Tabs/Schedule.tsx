@@ -15,6 +15,7 @@ import Sound from 'react-native-sound';
 // import ChainSound from '../Sounds/ChainSound.mp3'
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { BlurView } from "@react-native-community/blur";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 // import Carousel from 'react-native-reanimated-carousel';
@@ -26,7 +27,6 @@ import { CombinedNavigationProp, CombinedRouteProp } from '../../App';
 import { nanoid } from 'nanoid';
 
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -53,6 +53,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { data } from '../../Functions/Animated-Bar-Chart/constants';
+import useInternetCheck from '../Authentication/InternetCheck';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 export interface ApiDataType {
@@ -343,6 +345,7 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
 };
 
 const Schedule: React.FC = () => {
+    const isConnected = useInternetCheck();
     const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
     // const navigation = useNavigation<CombinedNavigationProp>();
@@ -376,6 +379,7 @@ const Schedule: React.FC = () => {
     const dispatch = useDispatch();
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
+
     
     const data = {
       "uniqueID": ScheduleArray.map((item: ScheduleArrayItem) => item.uniqueID),
@@ -844,7 +848,7 @@ const Schedule: React.FC = () => {
           )}))}
 
           {rescheduleStatus == "rescheduled" && (
-          ApiData['Start_Angle']
+          ApiData?.['Start_Angle']
           .map((Start_Angle:number, index:number) => ({Start_Angle, index, End_Angle: ApiData['End_Angle'][index]}))
           .filter(({End_Angle}) => End_Angle > hourRotation)
           .filter(({Start_Angle}) => Start_Angle < hourRotation + 360)
@@ -1115,9 +1119,35 @@ const Schedule: React.FC = () => {
     useEffect(() => {
       console.log("API_DATA: ", JSON.stringify(ApiData))
     }, [ApiData])
+
+    useEffect(() => {
+      console.log("Is Connected in Schedule.tsx: ", isConnected)
+      if (isConnected == false) {
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'No Internet',
+          textBody: "Please turn on mobile data or Wi-Fi. Don't Worry, we don't show ADs 😌",
+          closeOnOverlayTap: false
+        })
+      }
+      else {
+        Dialog.hide();
+      }
+    }, [isConnected])
+    
+    // Drawer and tab navigators are sibling-level navigators in your app architecture. When you switch from one drawer screen to another, you’re not actually unmounting and remounting the tab screen component — you’re just switching the visible screen. That's when you need to use the useFocusEffect to get the things done which are performed by useEffect.
+    
+    useFocusEffect(
+      useCallback(() => {
+        StatusBar.setBackgroundColor('transparent')
+        return () => {
+          // optional cleanup when screen is unfocused
+        };
+      }, [])
+    );
     
     return (
-      <SafeAreaView style={styles.safeView}>
+      <View style={styles.safeView}>
       {/* <GestureHandlerRootView>
       <PanGestureHandler> */}
       <StatusBar
@@ -1193,7 +1223,7 @@ const Schedule: React.FC = () => {
         </View>
       {/* </PanGestureHandler>
       </GestureHandlerRootView> */}
-      </SafeAreaView>
+      </View>
     );
   }
 

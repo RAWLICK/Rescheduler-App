@@ -1,10 +1,14 @@
 import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Dropdown } from 'react-native-element-dropdown';
 import { nanoid } from "@reduxjs/toolkit";
 import Normal_Plus from '../Images/Normal_Plus.png'
 import NormalMinus from '../Images/NormalMinus.png'
+import LeftArrow from '../Images/LeftArrow.png';
+import {useNavigation} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
+import {CombinedNavigationProp} from '../../App';
 
 const AdminPanel = () => {
     let currentDate = new Date();
@@ -12,10 +16,12 @@ const AdminPanel = () => {
     let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
     let currentYear = currentDate.getFullYear();
     let currentDateandMonth = `${currentNumDate}/${currentMonth}/${currentYear}`;
+    const navigation = useNavigation<CombinedNavigationProp>();
     const [distributorName, setDistributorName] = useState("")
     const [distributionName, setDistributionName] = useState("")
     const [EmailID, setEmailID] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
+    const [LocalAddress, setLocalAddress] = useState("")
     const [numberOfBranch, setNumberOfBranch] = useState(1)
     const [AllBranchesList, setAllBranchesList] = useState([''])
     const DistributionTypeData = [
@@ -61,6 +67,7 @@ const AdminPanel = () => {
             "Distribution ID": nanoid(),
             "Email ID": EmailID,
             "Phone Number": phoneNumber,
+            "Local Address": LocalAddress,
             "State": StateData[Number(StateValue)].label,
             "Country": "India",
             "City": CityData[Number(CityValue)].label,
@@ -99,6 +106,14 @@ const AdminPanel = () => {
         }
       };
     
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         StatusBar.setBackgroundColor("#d6d3da")
+    //         return () => {
+    //         // optional cleanup when screen is unfocused
+    //         };
+    //     }, [])
+    // );
     return (
         <SafeAreaView style={styles.safeView}>
             <StatusBar
@@ -106,8 +121,27 @@ const AdminPanel = () => {
             backgroundColor="#d6d3da"
             />
             <View style={styles.mainStyle}>
-                <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 17}}>Admin Panel</Text>
+                <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+                    <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
+                        <TouchableOpacity
+                            onPress={() =>
+                            navigation.navigate('DrawerScreens', {
+                                screen: 'TabsDrawer',
+                                params: {
+                                screen: 'ScheduleTab',
+                                params: undefined
+                                },
+                            })
+                            }
+                            style={styles.BackButtonBox}>
+                            <Image source={LeftArrow} style={styles.BackButtonImage} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 17, color: 'black'}}>Admin Panel</Text>
+                    </View>
+                    <View style={{flex: 0.1}}>
+                    </View>
                 </View>
                 <ScrollView
                 style={{
@@ -207,6 +241,22 @@ const AdminPanel = () => {
                             value={phoneNumber}
                             onChangeText={setPhoneNumber}
                             placeholder="Phone Number"
+                            placeholderTextColor="#6a6a6a"></TextInput>
+                        </View>
+                    </View>
+
+                    <View style={[styles.MiddleOption, { height: 65 }]}>
+                        <View
+                        style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'flex-start',
+                        }}>
+                        <TextInput
+                            style={styles.OptionText}
+                            value={LocalAddress}
+                            onChangeText={setLocalAddress}
+                            placeholder="Local Address"
                             placeholderTextColor="#6a6a6a"></TextInput>
                         </View>
                     </View>
@@ -446,4 +496,6 @@ const styles = StyleSheet.create({
         color: '#9D9EA0',
         fontFamily: 'futura-no-2-medium-dee',
       },
+      BackButtonBox: {flex: 1, justifyContent: 'center', alignItems: 'flex-start'},
+      BackButtonImage: {height: 15, width: 15},
 })
