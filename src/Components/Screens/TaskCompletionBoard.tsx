@@ -29,6 +29,7 @@ import notifee from '@notifee/react-native';
 import { AndroidColor } from '@notifee/react-native';
 import { TimerPickerModal } from "react-native-timer-picker";
 import DemoLandingPage from '../Images/DemoLandingPage.jpeg';
+import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
 const { width, height } = Dimensions.get('window');
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -239,13 +240,12 @@ const TaskCompletionBoard = () => {
             </View>
             <View style={{flex: 10}}>
               <ScrollView>
-                {data["Subject"].map((Subject, index) => {
+                {demoData.map((eachObject) => {
                   const StartRadar = useSharedValue<number>(0);
                   const MovedRadar = useSharedValue<number>(0);
                   const FinalRadar = useSharedValue<number>(65);
                   // const [percentage, setPercentage] = useState(25)
                   const percentage = 25
-                  const Current_Duration = data["Current_Duration"][index]
                   // const [DurationBoxValue, setDurationBoxValue] = useState<string | null>('1h 30min')
 
                   const pan = Gesture.Pan()
@@ -338,25 +338,17 @@ const TaskCompletionBoard = () => {
                 }));
 
                 return (
-                <View key={Subject} style={{padding: 5, paddingLeft: 15, paddingRight: 15, rowGap: 15, borderBottomWidth: 1, borderColor: 'grey'}}>
+                <View key={eachObject["uniqueID"]} style={{padding: 5, paddingLeft: 15, paddingRight: 15, rowGap: 15, borderBottomWidth: 1, borderColor: 'grey'}}>
                     <View style={{flexDirection: 'row', columnGap: 10, alignItems: 'center', height: 30}}>
                         <View>
-                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{Subject}</Text>
+                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{eachObject["Subject"]}</Text>
                         </View>
                         <View style={{backgroundColor: '#43464d', width: 150, height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5, flexDirection: 'row'}}>
                           <View>
                             <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{percentage}%  of  </Text>
                           </View>
-                          {/* <DurationBox
-                            DurationBoxValue={DurationBoxValue}
-                            setDurationBoxValue={setDurationBoxValue}
-                            showPicker={showPicker}
-                            setShowPicker={setShowPicker}
-                            alarmString={alarmString}
-                            setAlarmString={setAlarmString}
-                          /> */}
                           <View style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}}>
-                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{Current_Duration}</Text>
+                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{eachObject["Current_Duration"]}</Text>
                           </View>
                         </View>
                     </View>
@@ -420,8 +412,8 @@ const TaskCompletionBoard = () => {
                         </View>
                     </View>
                 </View>
-              )})}
-            </ScrollView>
+                )})}
+              </ScrollView>
             <View style={{height: height * 0.057, padding: 10}}>
               <TouchableOpacity onPress= {OkBoardClick} style={{flex: 1, backgroundColor: '#457fdf', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
                 <Text style={{fontFamily: 'sf-pro-display-bold', color: '#333333'}}>Done</Text>

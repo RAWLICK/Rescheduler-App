@@ -38,6 +38,7 @@ import { Store, persistor } from './app/Store'
 import OnBoardingScreen from './Components/Authentication/OnBoardingScreen';
 import { useDispatch, useSelector } from 'react-redux' 
 import { RootState } from '../src/app/Store';
+import Subscription from './Components/Drawer/Subscription';
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -62,6 +63,7 @@ type DrawerParamList = {
   };
   SettingsDrawer: undefined;
   PartneredLibrariesDrawer: undefined;
+  SubscriptionDrawer:  undefined;
   AppDistributorDrawer: undefined;
   AdminPanelDrawer: undefined;
 };
@@ -138,7 +140,7 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='SignInStack'>
+      <Stack.Navigator initialRouteName='TaskCompletionBoardStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -172,6 +174,7 @@ function App(): React.JSX.Element {
       <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
       <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/>
       <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
+      <Drawer.Screen name="SubscriptionDrawer" component={Subscription} options={{ headerShown: false, title: "Subscription"}}/>
       { StudentInfoData?.["Type of Account"] == "Distributor" &&
       <Drawer.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
      }
@@ -225,7 +228,7 @@ function App(): React.JSX.Element {
     // <Provider store={Store}>
       // <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <NativeStack.Navigator initialRouteName="DrawerScreens">
+          <NativeStack.Navigator initialRouteName="StackScreens">
             <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
             <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
           </NativeStack.Navigator>

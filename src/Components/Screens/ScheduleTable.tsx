@@ -11,6 +11,9 @@ import BlueAlarm from '../Images/Alarm_Clock_Blue.png'
 import GreyAlarm from '../Images/Alarm_Clock_Grey.png'
 import { RootState } from '../../app/Store';
 import { ApiDataType } from '../Tabs/Schedule';
+import notifee from '@notifee/react-native';
+import Sound from 'react-native-sound';
+import alarmSound from '../../../android/app/src/main/res/raw/love_alarm.mp3';
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -25,6 +28,12 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
   const [Title, setTitle] = useState('')
   const [RingAlarmArray, setRingAlarmArray] = useState<number[]>([])
+  const [hourRotation, setHourRotation] = useState(0);
+  // Import the react-native-sound module
+  var Sound = require('react-native-sound');
+
+  // Enable playback in silence mode
+  Sound.setCategory('Playback');
 
   useEffect(() => {
     if (props.rescheduleStatus == 'rescheduled') {
@@ -32,6 +41,7 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
     }
     else {
       setTitle('Schedule Table')
+      setRingAlarmArray([])
     }
   }, [props.rescheduleStatus])
   
@@ -102,9 +112,76 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
     }
   }
 
+  async function RingAlarm() {
+    console.log("Hour Rotation: ", hourRotation)
+    for (let index = 0; index < RingAlarmArray.length; index++) {
+      const element = RingAlarmArray[index];
+      let filteredData = ScheduleArray.filter((item) => item['TaskDate'] === props.selectedDate)
+      if (hourRotation == filteredData[element]['StartAngle']) {
+        console.log("Alarm Ringing")
+        var whoosh = new Sound('notify_alarm.mp3', Sound.MAIN_BUNDLE, (error: Error | null) => {
+          if (error) {
+            console.log('failed to load the sound', error);
+            return;
+          }
+          // loaded successfully
+          console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
+        
+          // Play the sound with an onEnd callback
+          whoosh.play((success: boolean) => {
+            if (success) {
+              console.log('successfully finished playing');
+            } else {
+              console.log('playback failed due to audio decoding errors');
+            }
+          });
+        });
+        // Request permissions (required for iOS)
+        await notifee.requestPermission()
+
+        // Create a channel (required for Android)
+        const channelId = await notifee.createChannel({
+          id: 'default',
+          name: 'Default Channel',
+        });
+
+        // Display a notification
+        await notifee.displayNotification({
+          title: `Notifying for ${filteredData[element]['Work']}`,
+          // body: 'Easily reschedule your messed up routine using Rescheduler ',
+          android: {
+            channelId,
+            // smallIcon: 'appicon', // optional, defaults to 'ic_launcher'.
+            // pressAction is needed if you want the notification to open the app when pressed
+            pressAction: {
+              id: 'default',
+            },
+          },
+        });
+        
+      }
+    }
+  }
+
   useEffect(() => {
-    console.log("RingAlarmArray: ", RingAlarmArray)
-  }, [RingAlarmArray])
+    const intervalId = setInterval(() => {
+      const d = new Date();
+      const hTime = d.getHours();
+      const mTime = d.getMinutes();
+
+      const hRotation = 30 * hTime + 0.5 * mTime;
+
+      setHourRotation(hRotation);
+    }, 1000);
+
+    // Clean up the interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    RingAlarm();
+  }, [hourRotation, RingAlarmArray])
+  
   
   return (
     <View style={{backgroundColor: '#e7e7e7'}}>
