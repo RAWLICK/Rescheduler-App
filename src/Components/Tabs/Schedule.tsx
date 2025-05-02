@@ -25,6 +25,7 @@ import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import { RouteProp } from '@react-navigation/native';
 import { CombinedNavigationProp, CombinedRouteProp } from '../../App';
 import { nanoid } from 'nanoid';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   ScrollView,
@@ -40,7 +41,8 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Button,
-  Dimensions
+  Dimensions,
+  SafeAreaView
 } from 'react-native';
 import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
@@ -55,6 +57,7 @@ import { RootState } from '../../app/Store';
 import { data } from '../../Functions/Animated-Bar-Chart/constants';
 import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+// import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 export interface ApiDataType {
@@ -376,6 +379,7 @@ const Schedule: React.FC = () => {
     const [serverResponseMessage, setServerResponseMessage] = useState('')
     const ScheduleTableSheet = useRef<TrueSheet>(null);
     const CalenderSheet = useRef<TrueSheet>(null);
+    const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
@@ -1139,7 +1143,9 @@ const Schedule: React.FC = () => {
     
     useFocusEffect(
       useCallback(() => {
-        StatusBar.setBackgroundColor('transparent')
+        if (Platform.OS === 'android') {
+          StatusBar.setBackgroundColor('transparent')
+        }
         return () => {
           // optional cleanup when screen is unfocused
         };
@@ -1147,6 +1153,7 @@ const Schedule: React.FC = () => {
     );
     
     return (
+      <>
       <View style={styles.safeView}>
       {/* <GestureHandlerRootView>
       <PanGestureHandler> */}
@@ -1163,7 +1170,9 @@ const Schedule: React.FC = () => {
             // y = 0 is the top of the component.
             // y = 1 is the bottom of the component.
             colors={['#a032d3', '#D2CFE4']}
-            style={{paddingTop: StatusBar.currentHeight}}>
+            style={{
+              paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : insets.top,
+              }}>
             <Navbar/>
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
@@ -1224,6 +1233,7 @@ const Schedule: React.FC = () => {
       {/* </PanGestureHandler>
       </GestureHandlerRootView> */}
       </View>
+      </>
     );
   }
 

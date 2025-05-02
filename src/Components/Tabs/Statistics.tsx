@@ -29,6 +29,7 @@ import {
 } from 'react-native';
 import { startOfWeek, endOfWeek, eachDayOfInterval, subWeeks, addWeeks, addMonths, subMonths, getMonth, getYear } from 'date-fns';
 import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
+// import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 type WeeklyAnalyticsModalPropsType = {
@@ -258,8 +259,6 @@ const Statistics = () => {
   //   console.log(selectedWeekStart)
   // }, [selectedWeekStart])
   
-  module.exports = {WeekChange}
-  
   return (
     <SafeAreaView style={styles.safeView}>
     <StatusBar
@@ -268,6 +267,7 @@ const Statistics = () => {
       barStyle="dark-content"
     />
       <View style={styles.mainStyle}>
+        <ScrollView>
         <View style={styles.heading}>
 
         </View>
@@ -363,79 +363,6 @@ const Statistics = () => {
                   </View>
                 </View>
               </View>
-              {/* <View style={styles.monthGraphSheet}>
-              {new Array(2).fill(null).map((__, index) => {
-                const props = {
-                  activeStrokeWidth: 8,
-                  inActiveStrokeWidth: 8,
-                  inActiveStrokeOpacity: 0.3
-                };
-                const fuckrad = 8;
-                return (
-                  <View key={index} style={{margin: 8, marginTop: 15}}>
-                    <CircularProgressBase
-                    {...props}
-                    value={80}
-                    radius={fuckrad * 7}
-                    activeStrokeColor={'#e84118'}
-                    inActiveStrokeColor={'#e84118'}
-                  >
-                    <CircularProgressBase
-                      {...props}
-                      value={87}
-                      radius={fuckrad * 6}
-                      activeStrokeColor={'#badc58'}
-                      inActiveStrokeColor={'#badc58'}
-                    >
-                      <CircularProgressBase
-                        {...props}
-                        value={62}
-                        radius={fuckrad * 5}
-                        activeStrokeColor={'#18dcff'}
-                        inActiveStrokeColor={'#18dcff'}
-                      >
-                        <CircularProgressBase
-                          {...props}
-                          value={48}
-                          radius={fuckrad * 4}
-                          activeStrokeColor={'#b233ff'}
-                          inActiveStrokeColor={'#b233ff'}
-                        >
-                          <CircularProgressBase
-                            {...props}
-                            value={47}
-                            radius={fuckrad * 3}
-                            activeStrokeColor={'#ff5733'}
-                            inActiveStrokeColor={'#ff5733'}
-                          >
-                            <CircularProgressBase
-                              {...props}
-                              value={50}
-                              radius={fuckrad * 2}
-                              activeStrokeColor={'#33ff96'}
-                              inActiveStrokeColor={'#33ff96'}
-                            >
-                              <CircularProgressBase
-                                {...props}
-                                value={39}
-                                radius={fuckrad}
-                                activeStrokeColor={'#33acff'}
-                                inActiveStrokeColor={'#33acff'}
-                              >
-                              </CircularProgressBase>
-                            </CircularProgressBase>
-                          </CircularProgressBase>
-                        </CircularProgressBase>
-                      </CircularProgressBase>
-                    </CircularProgressBase>
-                    </CircularProgressBase>
-                    <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
-                      <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>1st Week</Text>
-                    </View>
-                  </View>
-                )
-              })}
-              </View> */}
             </ScrollView>
             <TouchableOpacity onPress={scrollToPosition} style={{backgroundColor: '#6f6f6f', height: 18, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
               <Image source={BoldChevronDown} style={{height: 15, width: 15}}/>
@@ -461,6 +388,7 @@ const Statistics = () => {
             </LinearGradient>
           </View>
         </View>
+        </ScrollView>
       </View>
       {/* <Taskbar activeState={'Statistics'}/> */}
     </SafeAreaView>
@@ -479,7 +407,8 @@ const styles = StyleSheet.create({
   },
   safeView: {
     flex: 1,
-    backgroundColor: '#D2CFE4'
+    backgroundColor: '#D2CFE4',
+    // backgroundColor: 'black'
   },
 
   mainStyle: {

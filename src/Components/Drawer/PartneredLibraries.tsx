@@ -100,15 +100,15 @@ const PartneredLibraries = () => {
             </TouchableOpacity>
           </View>
           <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 17, color: 'black'}}>Our Partnered Libraries</Text>
+            <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: 'black'}}>Our Partnered Libraries</Text>
           </View>
           <View style={{flex: 0.1}}>
           </View>
         </View>
         <View style={{padding: 10, paddingRight: width * 0.04, paddingLeft: width * 0.04}}>
           <View style={{rowGap: 10}}>
-              <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 23, color: 'black'}}>Get a premium subscription for free</Text>
-              <Text style={{fontFamily: 'sf-pro-display-medium', fontSize: 17, color: '#525252'}}>Get a premium subscription of Rescheduler absolutely for free by joining our partnered libraries in your area</Text>
+              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 23, color: 'black'}}>Get a premium subscription for free</Text>
+              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 17, color: '#525252'}}>Get a premium subscription of Rescheduler absolutely for free by joining our partnered libraries in your area</Text>
           </View>
           <View style={{marginTop: 15, flexDirection: 'row', alignItems: 'center'}}>
               <Image source={SearchIcon} style={{height: 25, width: 25, position: 'absolute', marginLeft: 10}} />
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
         borderColor: '#d6d3da',
         padding: 10,
         borderRadius: 10,
-        fontFamily: 'sf-pro-display-bold',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
         fontSize: 16,
         paddingLeft: width * 0.12,
         color: 'black',

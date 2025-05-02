@@ -1,4 +1,4 @@
-import { Modal, StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground, StatusBar } from 'react-native'
+import { Modal, StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground, StatusBar, Platform } from 'react-native'
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { BlurView } from "@react-native-community/blur";
@@ -30,6 +30,7 @@ import { AndroidColor } from '@notifee/react-native';
 import { TimerPickerModal } from "react-native-timer-picker";
 import DemoLandingPage from '../Images/DemoLandingPage.jpeg';
 import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
+import { set } from 'date-fns';
 const { width, height } = Dimensions.get('window');
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -57,16 +58,16 @@ export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
             />
               <View style={{flex:1, rowGap: 10}}>
                 <LinearGradient colors={['#f3b607', '#cdd309']} style={{flex: 5, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 10}}>
-                  <Text style={{fontFamily: 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of 3 </Text>
+                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of 3 </Text>
                   <LottieView source={AnimatedFire} autoPlay loop style={styles.lottie}></LottieView>
                 </LinearGradient>
                 <View style={{flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
                     <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
-                    <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}> By registering 7/7 works </Text>
+                    <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}> By registering 7/7 works </Text>
                     <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
                 </View>
                 <TouchableOpacity style={{flex: 3, justifyContent: 'center', alignItems: 'center', backgroundColor: '#457fdf', borderRadius: 10}} onPress={props.NextPopUpClick}>
-                    <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>Next</Text>
+                    <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>Next</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -115,12 +116,16 @@ const TaskCompletionBoard = () => {
   const currentDay = currentDate.getDate();
   const [currentMin, setCurrentMin] = useState(currentDate.getMinutes());
   const [boardIsVisible, setBoardIsVisible] = useState(false);
-  const [popUpIsVisible, setPopUpIsVisible] = useState(false)
+  const [popUpIsVisible, setPopUpIsVisible] = useState(false);
   const DurationBoxes = [0, 1, 2, 3];
   const DurationTag = ['0%', '25%', '50%', '75%', '✓'];
   const [Duration, setDuration] = useState('1h');
   const [showPicker, setShowPicker] = useState(false);
   const [alarmString, setAlarmString] = useState<string | null>(null);
+  // const StartRadarArray = demoData.map(() => useSharedValue<number>(0));
+  // const MovedRadarArray = demoData.map(() => useSharedValue<number>(0));
+  // const FinalRadarArray = demoData.map(() => useSharedValue<number>(0));
+  const [PercentageArray, setPercentageArray] = useState<number[]>([38, 67])
   const durationRanges = [
     {max: 17.52, duration: '15 min', boxNum: 0},
     {max: 37.21, duration: '30 min', boxNum: 1},
@@ -141,9 +146,9 @@ const TaskCompletionBoard = () => {
   ];
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
   const data = {
-      "uniqueID": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.uniqueID),
-      "Subject": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Subject),
-      "Current_Duration": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Current_Duration)
+    "uniqueID": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.uniqueID),
+    "Subject": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Subject),
+    "Current_Duration": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Current_Duration)
   }
 
   const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
@@ -212,6 +217,11 @@ const TaskCompletionBoard = () => {
   const NextPopUpClick = () => {
     setPopUpIsVisible(false);
   }
+
+  useEffect(() => {
+    console.log("Percentage Array: ", PercentageArray)
+  }, [PercentageArray])
+  
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <ImageBackground
@@ -233,17 +243,20 @@ const TaskCompletionBoard = () => {
           />
             <View style={{flex: 1, borderBottomWidth: 1, borderColor: 'grey', flexDirection: 'row'}}>
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-                    <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>Work Done </Text>
-                    <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#af9afb'}}>VS</Text>
-                    <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}> Planned</Text>
+                    <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>Work Done </Text>
+                    <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#af9afb'}}>VS</Text>
+                    <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}> Planned</Text>
                 </View>
             </View>
             <View style={{flex: 10}}>
-              <ScrollView>
-                {demoData.map((eachObject) => {
+            <ScrollView>
+                {demoData.map((eachSubject, index) => {
                   const StartRadar = useSharedValue<number>(0);
                   const MovedRadar = useSharedValue<number>(0);
                   const FinalRadar = useSharedValue<number>(65);
+                  // const StartRadar = StartRadarArray[index];  // Access shared value per subject
+                  // const MovedRadar = MovedRadarArray[index];
+                  // const FinalRadar = FinalRadarArray[index];
                   // const [percentage, setPercentage] = useState(25)
                   const percentage = 25
                   // const [DurationBoxValue, setDurationBoxValue] = useState<string | null>('1h 30min')
@@ -338,17 +351,17 @@ const TaskCompletionBoard = () => {
                 }));
 
                 return (
-                <View key={eachObject["uniqueID"]} style={{padding: 5, paddingLeft: 15, paddingRight: 15, rowGap: 15, borderBottomWidth: 1, borderColor: 'grey'}}>
+                <View key={eachSubject["uniqueID"]} style={{padding: 5, paddingLeft: 15, paddingRight: 15, rowGap: 15, borderBottomWidth: 1, borderColor: 'grey'}}>
                     <View style={{flexDirection: 'row', columnGap: 10, alignItems: 'center', height: 30}}>
                         <View>
-                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-bold', color: '#fff'}}>{eachObject["Subject"]}</Text>
+                            <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>{eachSubject["Subject"]}</Text>
                         </View>
                         <View style={{backgroundColor: '#43464d', width: 150, height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5, flexDirection: 'row'}}>
                           <View>
-                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{percentage}%  of  </Text>
+                            <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', color: '#fff'}}>{percentage}%  of  </Text>
                           </View>
                           <View style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}}>
-                            <Text style={{fontSize: 15, fontFamily: 'sf-pro-display-medium', color: '#fff'}}>{eachObject["Current_Duration"]}</Text>
+                            <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', color: '#fff'}}>{eachSubject["Current_Duration"]}</Text>
                           </View>
                         </View>
                     </View>
@@ -400,7 +413,7 @@ const TaskCompletionBoard = () => {
                                 style={[
                                     {
                                     marginRight: '15%',
-                                    fontFamily: 'futura-no-2-medium-dee',
+                                    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
                                     color: '#9D9EA0',
                                     },
                                     tag != '0%' ? {marginRight: '18%'} : {}
@@ -412,11 +425,11 @@ const TaskCompletionBoard = () => {
                         </View>
                     </View>
                 </View>
-                )})}
-              </ScrollView>
+              )})}
+            </ScrollView>
             <View style={{height: height * 0.057, padding: 10}}>
               <TouchableOpacity onPress= {OkBoardClick} style={{flex: 1, backgroundColor: '#457fdf', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{fontFamily: 'sf-pro-display-bold', color: '#333333'}}>Done</Text>
+                <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#333333'}}>Done</Text>
               </TouchableOpacity>
             </View>
             </View>

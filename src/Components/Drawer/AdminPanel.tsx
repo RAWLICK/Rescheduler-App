@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity, Platform } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { Dropdown } from 'react-native-element-dropdown';
 import { nanoid } from "@reduxjs/toolkit";
@@ -7,6 +7,7 @@ import NormalMinus from '../Images/NormalMinus.png'
 import LeftArrow from '../Images/LeftArrow.png';
 import {useNavigation} from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const { width, height } = Dimensions.get('window');
 import {CombinedNavigationProp} from '../../App';
 
@@ -40,6 +41,7 @@ const AdminPanel = () => {
         { label: 'Uttar Pradesh', value: '1' }
     ];
     const [serverResponseMessage, setServerResponseMessage] = useState('')
+    const insets = useSafeAreaInsets();
 
     function DecreasingBranch() {
         if (numberOfBranch > 1) {
@@ -115,12 +117,12 @@ const AdminPanel = () => {
     //     }, [])
     // );
     return (
-        <SafeAreaView style={styles.safeView}>
+        <View style={styles.safeView}>
             <StatusBar
             animated={true}
             backgroundColor="#d6d3da"
             />
-            <View style={styles.mainStyle}>
+            <View style={[styles.mainStyle, {paddingTop: Platform.OS === 'android'? StatusBar.currentHeight : insets.top}]}>
                 <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
                     <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
                         <TouchableOpacity
@@ -138,7 +140,7 @@ const AdminPanel = () => {
                         </TouchableOpacity>
                     </View>
                     <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 17, color: 'black'}}>Admin Panel</Text>
+                        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: 'black'}}>Admin Panel</Text>
                     </View>
                     <View style={{flex: 0.1}}>
                     </View>
@@ -210,7 +212,7 @@ const AdminPanel = () => {
                         inputSearchStyle={styles.inputSearchStyle}
                         iconStyle={styles.iconStyle}
                         data={DistributionTypeData}
-                        itemTextStyle={{fontFamily: 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
+                        itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
                         itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
                         containerStyle={{borderRadius: 10}}
                         // search
@@ -269,7 +271,7 @@ const AdminPanel = () => {
                         inputSearchStyle={styles.inputSearchStyle}
                         iconStyle={styles.iconStyle}
                         data={CityData}
-                        itemTextStyle={{fontFamily: 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
+                        itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
                         itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
                         containerStyle={{borderRadius: 10}}
                         // search
@@ -296,7 +298,7 @@ const AdminPanel = () => {
                         inputSearchStyle={styles.inputSearchStyle}
                         iconStyle={styles.iconStyle}
                         data={StateData}
-                        itemTextStyle={{fontFamily: 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
+                        itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
                         itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
                         containerStyle={{borderRadius: 10}}
                         // search
@@ -358,7 +360,7 @@ const AdminPanel = () => {
                     <TouchableOpacity style={styles.SaveButtonBox} onPress={SaveButton}>
                         <Text
                         style={{
-                            fontFamily: 'futura-no-2-medium-dee',
+                            fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
                             color: 'black',
                             fontSize: 18,
                         }}>
@@ -368,7 +370,7 @@ const AdminPanel = () => {
                     </View>
                 </ScrollView>
                 </View>
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -390,12 +392,11 @@ const styles = StyleSheet.create({
     },
     mainStyle: {
         flex: 1,
-        paddingTop: StatusBar.currentHeight
     },
     OptionText: {
         fontSize: 18,
         color: '#9D9EA0',
-        fontFamily: 'futura-no-2-medium-dee',
+        fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
     },
     UpperOption: {
         // flex: 1,
@@ -446,7 +447,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 15,
         // paddingLeft: 20,
         // paddingRight: 20,
-        fontFamily: 'futura-no-2-medium-dee',
+        fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
         fontSize: 16
       },
 
@@ -471,18 +472,18 @@ const styles = StyleSheet.create({
         zIndex: 999,
         paddingHorizontal: 8,
         // fontSize: 11,
-        // fontFamily: 'futura-no-2-medium-dee',
+        // fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
         fontSize: 18,
         color: '#9D9EA0',
       },
       placeholderStyle: {
-        fontFamily: 'futura-no-2-medium-dee',
+        fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
         fontSize: 18,
         color: '#9D9EA0',
 
       },
       selectedTextStyle: {
-        fontFamily: 'futura-no-2-medium-dee',
+        fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
         fontSize: 18,
         color: '#9D9EA0',
       },
@@ -494,7 +495,7 @@ const styles = StyleSheet.create({
         height: 40,
         fontSize: 18,
         color: '#9D9EA0',
-        fontFamily: 'futura-no-2-medium-dee',
+        fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
       },
       BackButtonBox: {flex: 1, justifyContent: 'center', alignItems: 'flex-start'},
       BackButtonImage: {height: 15, width: 15},

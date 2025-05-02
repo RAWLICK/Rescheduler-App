@@ -20,6 +20,7 @@ import SignInDoodleImage from '../Images/SignInDoodle.png';
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import {BlurView} from '@react-native-community/blur';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 const { width, height } = Dimensions.get('window');
 
 type LogoSectionPropsType = {};
@@ -130,7 +131,7 @@ const SignIn = () => {
   const [PhoneNumText, setPhoneNumText] = useState('');
   const [IsRegistered, setIsRegistered] = useState("")
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <View style={{flex: 1}}>
       {/* <StatusBar>
       animated={true}
       backgroundColor='#FFFFFF'
@@ -147,7 +148,7 @@ const SignIn = () => {
           setPhoneNumText={setPhoneNumText}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

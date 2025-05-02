@@ -1,0 +1,8 @@
+rm -rf:
+rm = remove (the command to delete files/folders)
+-r = recursive (delete folders and their inside contents)
+-f = force (don’t ask for confirmation, just delete even if protected)
+
+pod install:  Installs pods listed in your Podfile. Uses existing local pod spec repo cache.
+
+pod install --repo-update:	First updates CocoaPods’ local index of available pod versions → then installs. It is like saying “Go check the latest versions of libraries online before installing.”

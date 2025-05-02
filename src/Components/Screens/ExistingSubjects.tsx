@@ -45,7 +45,7 @@ const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
               <Image source={EditIcon} style={{ height: 20, width: 20}} />
             </View>
             <View style={{justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 15}}>Edit</Text>
+              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white', fontSize: 15}}>Edit</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={{flex: 0.5, flexDirection: 'row', columnGap: 20}} onPress={() => RemovingWork(props.Work)}>
@@ -53,7 +53,7 @@ const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
               <Image source={DeleteIcon} style={{ height: 20, width: 20}} />
             </View>
             <View style={{justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 15}}>Delete</Text>
+              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white', fontSize: 15}}>Delete</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -103,7 +103,7 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
   return (
     <View style={{ backgroundColor: '#1b1b1d', padding: 30, paddingTop: 40}}>
       <View style={{ height: 50 }}>
-        <Text style={{ fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 20 }}>Subjects in Stats</Text>
+        <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white', fontSize: 20 }}>Subjects in Stats</Text>
       </View>
       <View style={{ rowGap: 1 }}>
         <TouchableOpacity style={[
@@ -114,7 +114,7 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
             <Image source={AddTwo} style={{ height: 25, width: 25}} />
           </View>
           <View style={{ flex: 0.9}}>
-            <Text style={{ fontFamily: 'sf-pro-display-bold', color: '#e9d3f5', fontSize: 15 }}>Add New Subject</Text>
+            <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#e9d3f5', fontSize: 15 }}>Add New Subject</Text>
           </View>
         </TouchableOpacity>
         {data["Work"].map((work, index) => (
@@ -125,7 +125,7 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
               paddingRight: 10 }
           ]}>
             <TouchableOpacity style={{flex: 0.9}} onPress={() => SubjectApplyingButton(work)}>
-              <Text style={{ fontFamily: 'sf-pro-display-bold', color: 'white', fontSize: 15}}>{work}</Text>
+              <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white', fontSize: 15}}>{work}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}} onPress={() => SubjectSettingButton(work)}>
               <Image source={ThreeDotsTwo} style={{ height: 20, width: 20}} />

@@ -129,10 +129,7 @@ const PreviousSchedule = (props: PreviousSchedulePropsType) => {
       screen: 'TabsDrawer',
       params: {
         screen: 'ScheduleTab',
-        params: {
-          ScheduleArray: props.ScheduleArray,
-          Message: props.Message,
-        }
+        params: undefined
       },
     })
   }
@@ -192,10 +189,10 @@ const PreviousSchedule = (props: PreviousSchedulePropsType) => {
                 return (
                 <View key={uniqueID} style={{height: 40, borderRadius: 10, backgroundColor: '#8a8a8a', flexDirection: 'row', paddingLeft: 20, paddingRight: 10, marginBottom: 5}}>
                     <View style={{flex: 0.4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                        <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{angleWork}</Text>
+                        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>{angleWork}</Text>
                     </View>
                     <View style={{flex: 0.6, justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{TwelveHourFormat(startTime)} - {TwelveHourFormat(endTime)}</Text>
+                        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>{TwelveHourFormat(startTime)} - {TwelveHourFormat(endTime)}</Text>
                     </View>
                 </View>
             )})}

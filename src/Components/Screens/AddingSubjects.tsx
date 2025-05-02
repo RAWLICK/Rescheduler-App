@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  Platform
 } from 'react-native';
 import React from 'react';
 import { useState } from 'react';
@@ -78,7 +79,7 @@ const AddingSubjects = () => {
       <View>
         <Text
           style={{
-            fontFamily: 'sf-pro-display-bold',
+            fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
             fontSize: 25,
             color: 'white',
             paddingLeft: 10,
@@ -146,7 +147,7 @@ const AddingSubjects = () => {
             multiline
             numberOfLines={2}
             style={{
-              fontFamily: 'futura-no-2-medium-dee',
+              fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
               fontSize: 16
             }}
             value={SmallNote}
@@ -159,7 +160,7 @@ const AddingSubjects = () => {
         <TouchableOpacity style={styles.SaveButtonBox} onPress={ExistingSubjectSaveButton}>
           <Text
             style={{
-              fontFamily: 'futura-no-2-medium-dee',
+              fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
               color: 'black',
               fontSize: 18,
             }}>
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
   OptionText: {
     fontSize: 18,
     color: '#9D9EA0',
-    fontFamily: 'futura-no-2-medium-dee',
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
   },
 
   SaveButtonBox: {
@@ -255,7 +256,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 15,
     // paddingLeft: 20,
     // paddingRight: 20,
-    fontFamily: 'futura-no-2-medium-dee',
+    fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
     fontSize: 16
   },
 });

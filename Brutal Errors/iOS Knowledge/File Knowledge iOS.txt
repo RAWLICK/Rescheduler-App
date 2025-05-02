@@ -5,9 +5,8 @@ Podfile:
 Podfile is just like package.json of iOS Libraries. Both are dependency declaration files, but for different ecosystems.
 package.json is for JS Libraies and Podfile for iOS Libraries/framework.
 
-Command	Meaning-
-pod install:  Installs pods listed in your Podfile. Uses existing local pod spec repo cache.
-pod install --repo-update:	First updates CocoaPods’ local index of available pod versions → then installs. It is like saying “Go check the latest versions of libraries online before installing.”
+Podfile.lock:
+It is same like package-lock.json. It has exact and accurate information of which version of the package we are using so that reinstalling those libraries don't spoil the version difference co-ordination.
 
 🔹 .xcconfig – Build Configuration File
 •	These are like .env or config files for your Xcode project.
@@ -44,3 +43,11 @@ index.js: 🎬
 - If your app was a movie: 🎬 index.js is the first scene that starts the film.
 - It tells React Native what to show on the screen.
 - It is the official entry point for your React Native JavaScript code.
+
+React-RuntimeHermes: 🛢
+- Normally, React Native apps run JavaScript using Apple’s JavaScriptCore (JSC).
+- Hermes is a faster, smaller alternative made by Meta (Facebook) just for React Native.
+- React-RuntimeHermes is the code that connects React Native to Hermes so your app uses Hermes instead of JSC.
+- Imagine your app is a car, and JavaScript is the engine fuel.
+  JSC is the standard fuel, but Hermes is a faster and more efficient fuel.
+  React-RuntimeHermes is the part of the car that makes it possible to run on Hermes fuel.

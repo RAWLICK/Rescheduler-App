@@ -6,13 +6,15 @@ require Pod::Executable.execute_command('node', ['-p',
   )', __dir__]).strip
 
 # platform :ios, '12.0' min_ios_version_supported
-platform :ios, '13.0'
+platform :ios, '15.0'
+# use_modular_headers!
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
   use_frameworks! :linkage => linkage.to_sym
+  # use_frameworks! :linkage => :static
 end
 
 target 'Rescheduler' do
@@ -21,7 +23,8 @@ target 'Rescheduler' do
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :hermes_enabled => true
   )
 
   target 'ReschedulerTests' do

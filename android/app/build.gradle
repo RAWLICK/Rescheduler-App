@@ -114,7 +114,7 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation project(':notifee_react-native')
-    implementation platform('com.google.firebase:firebase-bom:33.12.0')
+    // implementation platform('com.google.firebase:firebase-bom:33.12.0')
     // implementation 'com.google.firebase:firebase-auth'
 
     // Disable Flipper in debug builds

@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Platform } from 'react-native'
 import React from 'react'
 import { useState, useEffect } from 'react';
 // import Navbar from './Navbar'
@@ -46,9 +46,9 @@ const CalenderView = (props: CalenderViewProps) => {
         todayTextColor: '#00adf5',
         dayTextColor: '#2d4150',
         textDisabledColor: '#dd99ee',
-        textDayFontFamily: 'sf-pro-display-medium',
-        textMonthFontFamily: 'sf-pro-display-bold',
-        textDayHeaderFontFamily: 'sf-pro-display-bold',
+        textDayFontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium',
+        textMonthFontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
+        textDayHeaderFontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
         // 'stylesheet.day.basic': {
         //   container: {
         //     backgroundColor: 'grey'

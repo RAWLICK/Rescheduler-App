@@ -1,7 +1,6 @@
 import React from 'react';
 import { useRef } from 'react';
 import type {PropsWithChildren} from 'react';
-import Schedule from './Components/Tabs/Schedule';
 import { NavigationContainer, CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createBottomTabNavigator, BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -10,6 +9,7 @@ import { createStackNavigator, TransitionPresets, StackNavigationProp } from '@r
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
 import AddTiming from './Components/Screens/AddTiming';
 import Calender from './Components/Screens/CalenderView';
+import Schedule from './Components/Tabs/Schedule';
 import Statistics from './Components/Tabs/Statistics';
 import TaskCompletionBoard from './Components/Screens/TaskCompletionBoard';
 import OtpVerificaton from './Components/Authentication/OtpVerificaton';
@@ -23,10 +23,10 @@ import CustomDrawerContent from './Components/Drawer/CustomDrawerContent';
 import Navbar from './Components/Navbar/Navbar';
 import SignIn from './Components/Authentication/SignIn';
 import SignUp from './Components/Authentication/SignUp';
-import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, Image, GestureResponderEvent} from 'react-native'
+import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, Image, GestureResponderEvent, Platform} from 'react-native'
 import { useState } from 'react';
 import RescheduleIcon from './Components/Images/Reschedule.png'
-import StatisticsIcon from './Components/Images/Statistics.png'
+import StatisticsIcon from './Components/Images/StatisticsIcon.png'
 import { ScheduleArrayItem } from './Components/Screens/AddTiming';
 
 // import { ManualScheduleTable } from './Components/Screens/ScheduleTable';
@@ -39,6 +39,7 @@ import OnBoardingScreen from './Components/Authentication/OnBoardingScreen';
 import { useDispatch, useSelector } from 'react-redux' 
 import { RootState } from '../src/app/Store';
 import Subscription from './Components/Drawer/Subscription';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -125,8 +126,11 @@ function App(): React.JSX.Element {
     isFocused: boolean | undefined
   }
   function CustomTabButton ({label, onPress, Icon, isFocused}: CustomTabButtonPropTypes) {
+    const insets = useSafeAreaInsets();
     return (
-      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center',
+        //  paddingBottom: insets.bottom > 0 ? insets.bottom : 4
+        }}
       onPress={onPress}>  
         <View style={[styles.IconView,
           {backgroundColor: isFocused ? '#C1BED5' : '#d2cfe4'}
@@ -140,7 +144,7 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='TaskCompletionBoardStack'>
+      <Stack.Navigator initialRouteName='OnBoardingScreenStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -166,8 +170,7 @@ function App(): React.JSX.Element {
       drawerInactiveTintColor: '#9ca3af',
       drawerLabelStyle: {
         fontSize: 16,
-        // fontWeight: 'bold',
-        fontFamily: 'sf-pro-display-bold'
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold'
       },
     }}
     >
@@ -212,9 +215,9 @@ function App(): React.JSX.Element {
 
         tabBarStyle: {
           backgroundColor: '#d2cfe4',
-          height: 60
-          // paddingBottom: 10,
-        }
+          height: Platform.OS == 'ios' ? 70 : 60,
+          paddingBottom: Platform.OS == 'ios' ? 8 : 10,
+        },
       })}
       >
         <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false, tabBarLabel: "Schedule" }}/>
@@ -228,7 +231,7 @@ function App(): React.JSX.Element {
     // <Provider store={Store}>
       // <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <NativeStack.Navigator initialRouteName="StackScreens">
+          <NativeStack.Navigator initialRouteName="DrawerScreens">
             <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
             <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
           </NativeStack.Navigator>

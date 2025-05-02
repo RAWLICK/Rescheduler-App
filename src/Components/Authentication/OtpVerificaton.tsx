@@ -8,10 +8,11 @@ import { CombinedRouteProp } from '../../App';
 import { OtpInput } from "react-native-otp-entry";
 import { nanoid } from "@reduxjs/toolkit";
 import { useState, useEffect } from 'react';
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+// import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useDispatch, useSelector } from 'react-redux' 
 import { registerUserInfo } from '../../app/Slice';
 import { RootState } from '../../app/Store';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const { width, height } = Dimensions.get('window');
 type HeaderPanelPropsType = {};
 
@@ -196,7 +197,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                         height: height * 0.06,
                         borderWidth: 1.5,
                         borderRadius: 10,},
-                    pinCodeTextStyle: {fontFamily: 'sf-pro-display-bold', fontSize: 20, color: 'black'},
+                    pinCodeTextStyle: {fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 20, color: 'black'},
                     // focusStickStyle: {borderColor: 'black', backgroundColor: '#aa76df'},
                     // focusedPinCodeContainerStyle: styles.activePinCodeContainer,
                     // placeholderTextStyle: styles.placeholderText,
@@ -230,6 +231,7 @@ const OtpVerificaton = () => {
     const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
     const [EnteredOTP, setEnteredOTP] = useState("")
+    const insets = useSafeAreaInsets();
     // const [StudentInfoData, setStudentInfoData] = useState<StudentInfoDataType>()
     
     // Halting the whole process because of Firebase Auth requiring version of 2.1.0 of kotlin but I think react-native-truesheet is only compatible with 1.9.0 or max 2.0.0. I was following playlist of a female youtuber named "Tech with Muskan". The link is:
@@ -295,7 +297,7 @@ const OtpVerificaton = () => {
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, paddingTop: Platform.OS === 'ios'? insets.top : 0}}>
             <HeaderPanel />
             <VerificationPanel 
                 // confirmCode={confirmCode}   // Passing confirmCode to VerificationPanel
@@ -315,7 +317,7 @@ export default OtpVerificaton
 
 const styles = StyleSheet.create({
     ResendOTPTextTwo: {
-        fontFamily: 'sf-pro-display-bold',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
         fontSize: 13,
         color: '#b57eea',
     },
@@ -335,7 +337,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     SubmitButtonText: {
-        fontFamily: 'sf-pro-display-bold',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
         fontSize: 17,
         color: '#e9e9e9',
     },
@@ -368,7 +370,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     MotiveSubHeadingTextTwo: {
-        fontFamily: 'sf-pro-display-bold',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
         fontSize: 13,
         color: 'black',
     },
@@ -379,7 +381,7 @@ const styles = StyleSheet.create({
     },
     MotiveSubHeadingArea: { flexDirection: 'row', },
     MotiveHeading: {
-        fontFamily: 'sf-pro-display-heavy',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy',
         fontSize: 25,
         color: 'black',
     },

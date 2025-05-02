@@ -113,7 +113,7 @@ const AddingStudent = (props: AddingStudentType) => {
       <View>
         <Text
           style={{
-            fontFamily: 'sf-pro-display-bold',
+            fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
             fontSize: 25,
             color: 'white',
             paddingLeft: 10,
@@ -159,7 +159,7 @@ const AddingStudent = (props: AddingStudentType) => {
         <TouchableOpacity style={styles.SaveButtonBox} onPress={SaveButton}>
           <Text
             style={{
-              fontFamily: 'futura-no-2-medium-dee',
+              fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
               color: 'black',
               fontSize: 18,
             }}>
@@ -371,14 +371,14 @@ const AppDistributor = () => {
               </TouchableOpacity>
             </View>
             <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 17}}>App Distributor</Text>
+              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>App Distributor</Text>
             </View>
             <View style={{flex: 0.1}}>
             </View>
           </View>
           <View style={{flex: 1, padding: 10, paddingRight: width * 0.04, paddingLeft: width * 0.04}}>
               <View style={{marginBottom: 15}}>
-                  <Text style={{fontFamily: 'sf-pro-display-bold', fontSize: 30, color: 'black'}}>Students Enrolled</Text>
+                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 30, color: 'black'}}>Students Enrolled</Text>
               </View>
               <View style={styles.container}>
                   {renderLabel()}
@@ -389,7 +389,7 @@ const AppDistributor = () => {
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
                   data={LibraryBranchesData}
-                  itemTextStyle={{fontFamily: 'sf-pro-display-bold', height: 20, color: 'grey'}}
+                  itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', height: 20, color: 'grey'}}
                   itemContainerStyle={{borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
                   containerStyle={{borderRadius: 10}}
                   // search
@@ -459,15 +459,15 @@ const AppDistributor = () => {
             borderLeftWidth: 3,
             borderBottomWidth: 3,
             borderColor: '#841AB6', marginBottom: 15}}>
-              <Text style={{fontFamily: 'sf-pro-display-bold', color: '#f2f2f3'}}>Subscribe Plan</Text>
+              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#f2f2f3'}}>Subscribe Plan</Text>
             </View>
 
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <View style={{flex: 1, borderRightWidth: 1, borderColor: '#d6d3da', justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{fontFamily: 'sf-pro-display-bold', color: 'grey'}}>Total Enrolled: {StudentDataList.length}/100</Text>
+                <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'grey'}}>Total Enrolled: {StudentDataList.length}/100</Text>
               </View>
               <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{fontFamily: 'sf-pro-display-bold', color: 'grey'}}>Plan Expire: 28/09/2025</Text>
+                <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'grey'}}>Plan Expire: 28/09/2025</Text>
               </View>
             </View>
 
@@ -505,7 +505,7 @@ const styles = StyleSheet.create({
         borderColor: '#d6d3da',
         padding: 10,
         borderRadius: 10,
-        fontFamily: 'sf-pro-display-bold',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
         fontSize: 16,
         paddingLeft: width * 0.12
     },
@@ -533,16 +533,16 @@ const styles = StyleSheet.create({
         zIndex: 999,
         paddingHorizontal: 8,
         fontSize: 11,
-        fontFamily: 'sf-pro-display-bold',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
       },
       placeholderStyle: {
         fontSize: 16,
-        fontFamily: 'sf-pro-display-bold',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
 
       },
       selectedTextStyle: {
         fontSize: 16,
-        fontFamily: 'sf-pro-display-bold',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
         color: 'black',
       },
       iconStyle: {
@@ -552,7 +552,7 @@ const styles = StyleSheet.create({
       inputSearchStyle: {
         height: 40,
         fontSize: 16,
-        fontFamily: 'sf-pro-display-bold',
+        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
       },
 
 
@@ -587,8 +587,8 @@ const styles = StyleSheet.create({
       
       containerThree: { maxHeight: 400, backgroundColor: '#fff'},
       head: { height: 40, backgroundColor: '#808B97' },
-      text: { margin: 8, marginLeft: 30, fontFamily: 'sf-pro-display-bold' },
-      tableText: { margin: 8, marginLeft: 30, fontFamily: 'sf-pro-display-bold', color: 'grey' },
+      text: { margin: 8, marginLeft: 30, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold' },
+      tableText: { margin: 8, marginLeft: 30, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'grey' },
       row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
       btn: { width: 18, height: 18, borderRadius: 2, justifyContent: 'center', alignItems: 'center', },
       btnText: { textAlign: 'center', color: '#fff'},
@@ -604,7 +604,7 @@ const styles = StyleSheet.create({
       OptionText: {
         fontSize: 18,
         color: '#9D9EA0',
-        fontFamily: 'futura-no-2-medium-dee',
+        fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
       },
     
       SaveButtonBox: {
@@ -668,7 +668,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 15,
         // paddingLeft: 20,
         // paddingRight: 20,
-        fontFamily: 'futura-no-2-medium-dee',
+        fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
         fontSize: 16
       },
       BackButtonBox: {flex: 1, justifyContent: 'center', alignItems: 'flex-start'},

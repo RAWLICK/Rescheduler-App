@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Button, ActivityIndicator } from 'react-native'
 import React from 'react'
 import { useState, useEffect } from 'react'
 import ScheduleTable from '../Screens/ScheduleTable'
@@ -80,6 +80,7 @@ const Settings = () => {
         </AlertNotificationRoot>
         </View>
       </View>
+      {/* <ActivityIndicator size="large" color="black" /> */}
     </GestureHandlerRootView>
   )
 }

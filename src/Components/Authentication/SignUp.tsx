@@ -147,7 +147,7 @@ const SignUp = () => {
     const [PhoneNumText, setPhoneNumText] = useState('');
     const [IsRegistered, setIsRegistered] = useState("")
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
             {/* <StatusBar>
       animated={true}
       backgroundColor='#FFFFFF'
@@ -164,7 +164,7 @@ const SignUp = () => {
                     setIsRegistered={setIsRegistered}
                 />
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 

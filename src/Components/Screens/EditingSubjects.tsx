@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  Platform
 } from 'react-native';
 import React from 'react';
 import { useState } from 'react';
@@ -74,7 +75,7 @@ const EditingSubjects = () => {
           <View>
             <Text
               style={{
-                fontFamily: 'sf-pro-display-bold',
+                fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
                 fontSize: 25,
                 color: 'white',
                 paddingLeft: 10,
@@ -111,7 +112,7 @@ const EditingSubjects = () => {
               <TouchableOpacity onPress={() => setShowPicker(true)}
                 style={{ flex: 0.3, justifyContent: 'center', paddingTop: 15, paddingBottom: 15, paddingLeft: 15 }}>
                 <View style={{flex: 1,backgroundColor: 'grey', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
-                  <Text style={{fontFamily: 'sf-pro-display-bold', color: '#d8d0d0'}}>10 hr 30 min</Text>
+                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#d8d0d0'}}>10 hr 30 min</Text>
                 </View>
               </TouchableOpacity>
             </TouchableOpacity>
@@ -141,7 +142,7 @@ const EditingSubjects = () => {
             <TouchableOpacity style={styles.SaveButtonBox} onPress={ExistingSubjectSaveButton}>
               <Text
                 style={{
-                  fontFamily: 'futura-no-2-medium-dee',
+                  fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
                   color: 'black',
                   fontSize: 18,
                 }}>
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
       OptionText: {
         fontSize: 18,
         color: '#9D9EA0',
-        fontFamily: 'futura-no-2-medium-dee',
+        fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
       },
     
       SaveButtonBox: {
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 15,
         // paddingLeft: 20,
         // paddingRight: 20,
-        fontFamily: 'futura-no-2-medium-dee',
+        fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
         fontSize: 16
       },
 })

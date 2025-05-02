@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, Platform } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { DrawerContentScrollView, DrawerItemList, DrawerItem, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux' 
@@ -35,17 +35,17 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             <Text style={{ fontSize: 24, fontFamily: 'sf-pro-display-bold', color: 'white'}}>{StudentInfoData.Name == ""? "Hello, Mate": StudentInfoData.Name}</Text>
             {StudentInfoData['Subscription Type'] == "Free" &&
             <View style={{backgroundColor: '#8dc2f7', width: 120, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, paddingVertical: 2}}>
-                <Text style={{color: '#05498d', fontFamily: 'sf-pro-display-medium', fontSize: 12}}>{SubscriptionHeading}</Text>
+                <Text style={{color: '#05498d', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>{SubscriptionHeading}</Text>
             </View>
             }
             {StudentInfoData['Subscription Type'] == "Library" &&
             <View style={{backgroundColor: '#f8de67', width: 120, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, paddingVertical: 2}}>
-                <Text style={{color: '#806a02', fontFamily: 'sf-pro-display-medium', fontSize: 12}}>Premium</Text>
+                <Text style={{color: '#806a02', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>Premium</Text>
             </View>
             }
             {StudentInfoData['Subscription Type'] == "Infinite" &&
             <View style={{backgroundColor: '#96fba5', width: 120, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, flexDirection: 'row', columnGap: 5, paddingVertical: 2}}>
-                <Text style={{color: '#03ac1c', fontFamily: 'sf-pro-display-medium', fontSize: 12}}>Infinite</Text>
+                <Text style={{color: '#03ac1c', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>Infinite</Text>
                 <Image source={Infinity} style={{width: 20, height: 20}}/>
             </View>
     }
