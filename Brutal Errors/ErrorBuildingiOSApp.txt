@@ -1,0 +1,23 @@
+Error 5:
+Failed to build iOS project. "xcodebuild" exited with error code '65'. To debug build logs furthur, consider building your app with xcode app by opening Rescheduler.xcworkspace.
+
+Whole Process:
+- First we got 5 types of error in xcode.
+-> Unable to open base configuration reference file.....
+-> Unable to load contents of file list.....(4 times)
+
+- This happend because the "Target Support Files" present inside Pods Folder are completely empty.
+- Did pod install --repo update
+- Got Error: Cocoapods could not find compatible versions for pod "React-RuntimeHermes"
+- They were also accompanied with empty "Target Support Files" folder.
+- Changed the deployment target to iOS 15 inplace of iOS 13 in xcode.
+- Then did pod install and a lot of dependencies got installed.
+- Then got error while installing hermes-engine but redoing pod install worked. Network will play a vital role in it.
+- Then got Error: React-RCTAppDelegate error with 71 issues in xcode.
+- Removed all packages and dependencies of 'firebase' from both ios and android 
+- Removed 'use_modular_headers!' from Podfile because it was necessary to make firebase run, even when it was causing breaking issues especially in iOS 16/17.
+- Erros got resolved (For more info, visit screenshot of 1 May, 2025)
+
+Extras:
+Maybe to run firebase, you need: USE_FRAMEWORKS=static bundle exec pod install
+(For more info, visit screenshot of 1 May, 2025)

@@ -1,6 +1,6 @@
 import { Modal, StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground, StatusBar, Platform } from 'react-native'
 import React from 'react'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { BlurView } from "@react-native-community/blur";
 import {
     Gesture,
@@ -17,7 +17,7 @@ import {
     withSpring
   } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux' 
-import { addExistingSubjectsObject, removeExistingSubjectsObject } from '../../app/Slice';
+import { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { ExistingSubjectsArrayItem } from '../../app/Slice';
 import LottieView from 'lottie-react-native';
@@ -113,7 +113,9 @@ type DurationBoxPropsType = {
 const TaskCompletionBoard = () => {
   const dispatch = useDispatch();
   const currentDate = new Date();
-  const currentDay = currentDate.getDate();
+  let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
+  let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  let currentYear = currentDate.getFullYear();
   const [currentMin, setCurrentMin] = useState(currentDate.getMinutes());
   const [boardIsVisible, setBoardIsVisible] = useState(false);
   const [popUpIsVisible, setPopUpIsVisible] = useState(false);
@@ -122,10 +124,12 @@ const TaskCompletionBoard = () => {
   const [Duration, setDuration] = useState('1h');
   const [showPicker, setShowPicker] = useState(false);
   const [alarmString, setAlarmString] = useState<string | null>(null);
-  // const StartRadarArray = demoData.map(() => useSharedValue<number>(0));
-  // const MovedRadarArray = demoData.map(() => useSharedValue<number>(0));
-  // const FinalRadarArray = demoData.map(() => useSharedValue<number>(0));
-  const [PercentageArray, setPercentageArray] = useState<number[]>([38, 67])
+  type PercentageArrayType = {
+    uniqueID: string,
+    percentage: number
+  }
+  const [PercentageArray, setPercentageArray] = useState<PercentageArrayType[]>([])
+  const percentageArrayRef = useRef<number[]>([]);
   const durationRanges = [
     {max: 17.52, duration: '15 min', boxNum: 0},
     {max: 37.21, duration: '30 min', boxNum: 1},
@@ -145,11 +149,49 @@ const TaskCompletionBoard = () => {
     {max: 310, duration: '4h', boxNum: 15},
   ];
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
-  const data = {
-    "uniqueID": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.uniqueID),
-    "Subject": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Subject),
-    "Current_Duration": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Current_Duration)
+
+  function getTimeByPercentage(timeString: string, percentage: number) {
+    // Extract hours and minutes from the input string
+    const hourMatch = timeString.match(/(\d+)\s*h/);
+    const minMatch = timeString.match(/(\d+)\s*min/);
+  
+    const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+    const minutes = minMatch ? parseInt(minMatch[1]) : 0;
+  
+    // Total time in minutes
+    const totalMinutes = hours * 60 + minutes;
+  
+    // Calculate percentage of time
+    const resultMinutes = Math.round((totalMinutes * percentage) / 100);
+  
+    // Convert back to hours and minutes
+    const resultHours = Math.floor(resultMinutes / 60);
+    const remainingMinutes = resultMinutes % 60;
+  
+    // Format output string
+    let output = '';
+    if (resultHours > 0) output += `${resultHours}h `;
+    if (remainingMinutes > 0 || resultHours === 0) output += `${remainingMinutes}min`;
+  
+    return output.trim();
   }
+
+  const updatePercentageArray = (uniqueID: string, percentage: number) => {
+    setPercentageArray((prev) => {
+      let newArray = [...prev];
+      const found = newArray.find((item) => item.uniqueID === uniqueID);
+      if (found) {
+        found.percentage = percentage;
+      }
+      else {
+        newArray.push({ 
+          "uniqueID": uniqueID, 
+          "percentage": percentage 
+        });
+      }
+      return newArray;
+    });
+  };
 
   const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
     return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
@@ -177,6 +219,14 @@ const TaskCompletionBoard = () => {
     }, [currentMin]);
 
     return boardIsVisible;
+  }
+
+  function DisplayingPercentage (uniqueID: string) {
+    const found = PercentageArray.find((item) => item.uniqueID === uniqueID);
+    if (found) {
+      return found.percentage;
+    }
+    return 0;
   }
 
   async function onDisplayNotification() {
@@ -209,9 +259,11 @@ const TaskCompletionBoard = () => {
   }
 
   const OkBoardClick = () => {
+    dispatch(addExistingSubjectsWorkDoneObject(PercentageArray));
     onDisplayNotification();
     setBoardIsVisible(false);
     setPopUpIsVisible(true);
+    console.log("Existing Subjects Array: ", ExistingSubjectsArray)
   }
 
   const NextPopUpClick = () => {
@@ -221,7 +273,7 @@ const TaskCompletionBoard = () => {
   useEffect(() => {
     console.log("Percentage Array: ", PercentageArray)
   }, [PercentageArray])
-  
+
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <ImageBackground
@@ -250,68 +302,72 @@ const TaskCompletionBoard = () => {
             </View>
             <View style={{flex: 10}}>
             <ScrollView>
-                {demoData.map((eachSubject, index) => {
+                {ExistingSubjectsArray.map((eachSubject, index) => {
                   const StartRadar = useSharedValue<number>(0);
                   const MovedRadar = useSharedValue<number>(0);
                   const FinalRadar = useSharedValue<number>(65);
-                  // const StartRadar = StartRadarArray[index];  // Access shared value per subject
-                  // const MovedRadar = MovedRadarArray[index];
-                  // const FinalRadar = FinalRadarArray[index];
-                  // const [percentage, setPercentage] = useState(25)
-                  const percentage = 25
-                  // const [DurationBoxValue, setDurationBoxValue] = useState<string | null>('1h 30min')
+                  const uniqueID = eachSubject["uniqueID"];
+                  const lastPercentage = useSharedValue<number>(25);
 
                   const pan = Gesture.Pan()
                   .onBegin(() => {
                     StartRadar.value = FinalRadar.value;
                   })
                   .onChange(event => {
+                    let newPercentage = lastPercentage.value
+
                     MovedRadar.value = event.translationX;
                     FinalRadar.value = StartRadar.value + MovedRadar.value;
                     if (MovedRadar.value > 0) {
                       if (FinalRadar.value <= 0) {
                         FinalRadar.value = withSpring(0)
-                        // runOnJS(setPercentage)(0)
+                        newPercentage = 0;
                       }
                       else if (FinalRadar.value > 0 && FinalRadar.value < 65) {
                         FinalRadar.value = withSpring(65)
-                        // runOnJS(setPercentage)(25)
+                        newPercentage = 25;
                       }
                       else if (FinalRadar.value > 65 && FinalRadar.value < 137) {
                         FinalRadar.value = withSpring(137)
-                        // runOnJS(setPercentage)(50)
+                        newPercentage = 50;
                       }
                       else if (FinalRadar.value > 137 && FinalRadar.value < 217) {
                         FinalRadar.value = withSpring(217)
-                        // runOnJS(setPercentage)(75)
+                        newPercentage = 75;
                       }
                       else if (FinalRadar.value > 217 && FinalRadar.value < 292) {
                         FinalRadar.value = withSpring(292)
-                        // runOnJS(setPercentage)(100)
+                        newPercentage = 100;
                       }
                     }
                     else {
                       if (FinalRadar.value > 0 && FinalRadar.value < 65) {
                         FinalRadar.value = withSpring(0)
-                        // runOnJS(setPercentage)(0)
+                        newPercentage = 0;
                       }
                       else if (FinalRadar.value > 65 && FinalRadar.value < 137) {
                         FinalRadar.value = withSpring(65)
-                        // runOnJS(setPercentage)(25)
+                        newPercentage = 25;
                       }
                       else if (FinalRadar.value > 137 && FinalRadar.value < 217) {
                         FinalRadar.value = withSpring(137)
-                        // runOnJS(setPercentage)(50)
+                        newPercentage = 50;
                       }
                       else if (FinalRadar.value > 217 && FinalRadar.value < 292) {
                         FinalRadar.value = withSpring(217)
-                        // runOnJS(setPercentage)(75)
+                        newPercentage = 75;
                       }
                       else if (FinalRadar.value >= 292) {
                         FinalRadar.value = withSpring(292)
-                        // runOnJS(setPercentage)(100)
+                        newPercentage = 100;
                       }
                     }
+
+                    if (newPercentage !== lastPercentage.value) {
+                      lastPercentage.value = newPercentage;
+                      runOnJS(updatePercentageArray)(uniqueID, newPercentage);
+                    }
+
                     // runOnJS helps in running code on JavaScript thread instead on UI Thread
 
                     const foundRange = durationRanges.find(
@@ -341,7 +397,6 @@ const TaskCompletionBoard = () => {
                       // playSound();
                     }
                   })
-                
                   .onFinalize(() => {
                     // console.log("Pressed onFinalize")
                   });
@@ -358,7 +413,7 @@ const TaskCompletionBoard = () => {
                         </View>
                         <View style={{backgroundColor: '#43464d', width: 150, height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5, flexDirection: 'row'}}>
                           <View>
-                            <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', color: '#fff'}}>{percentage}%  of  </Text>
+                            <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', color: '#fff'}}>{DisplayingPercentage(uniqueID)}%  of  </Text>
                           </View>
                           <View style={{backgroundColor: '#646871', borderRadius: 5, padding: 2, paddingLeft: 7, paddingRight: 7}}>
                             <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', color: '#fff'}}>{eachSubject["Current_Duration"]}</Text>

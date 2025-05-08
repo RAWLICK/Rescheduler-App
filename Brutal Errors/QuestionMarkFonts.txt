@@ -1,0 +1,9 @@
+Error 4:
+Getting question mark symbols instead of alphabetical fonts in ios app.
+
+Tried Efforts:
+- Deleted the 'react-native-safe-area-context' package because after it's download, I saw the such error but nothing happend.
+- Downloaded 'react-native-asset' package but nothing happend.
+
+Succedded Effort:
+- Did reinstall of 'react-native-safe-area-context' and pod install after that. It worked

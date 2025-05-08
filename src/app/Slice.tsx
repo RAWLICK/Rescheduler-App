@@ -159,22 +159,90 @@ export const ExistingSubjectsArraySlice = createSlice({
     initialState,
     reducers: {
         addExistingSubjectsObject: (state, action) => {
-            // const ExistingSubjectsObject = {
-            //     "Work": action.payload.Work,
-            //     "Duration": action.payload.Duration
-            // }
             const ExistingSubjectsObject = {
                 "uniqueID": action.payload.uniqueID,
                 "Subject": action.payload.Subject,
                 "Current_Duration": action.payload.Current_Duration,
-                "Dataframe": [{
-                    "Date": action.payload.Date,
-                    "Percentage": action.payload.Percentage,
-                    "Duration": action.payload.Duration,
-                    "Work-Done-For": action.payload.Work_Done_For
-                }]
+                "Dataframe": [
+                //     {
+                //     "Date": action.payload.Date,
+                //     "Percentage": action.payload.Percentage,
+                //     "Duration": action.payload.Duration,
+                //     "Work-Done-For": action.payload.Work_Done_For
+                // }
+            ]
             }
             state.ExistingSubjectsArrayInitialState.push(ExistingSubjectsObject)
+        },
+        addExistingSubjectsWorkDoneObject: (state, action) => {
+            const currentDate = new Date();
+            let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
+            let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            let currentYear = currentDate.getFullYear();
+            const PercentageArray = action.payload
+            function getTimeByPercentage(timeString: string, percentage: number) {
+                // Extract hours and minutes from the input string
+                const hourMatch = timeString.match(/(\d+)\s*h/);
+                const minMatch = timeString.match(/(\d+)\s*min/);
+              
+                const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+                const minutes = minMatch ? parseInt(minMatch[1]) : 0;
+              
+                // Total time in minutes
+                const totalMinutes = hours * 60 + minutes;
+              
+                // Calculate percentage of time
+                const resultMinutes = Math.round((totalMinutes * percentage) / 100);
+              
+                // Convert back to hours and minutes
+                const resultHours = Math.floor(resultMinutes / 60);
+                const remainingMinutes = resultMinutes % 60;
+              
+                // Format output string
+                let output = '';
+                if (resultHours > 0) output += `${resultHours}h `;
+                if (remainingMinutes > 0 || resultHours === 0) output += `${remainingMinutes}min`;
+              
+                return output.trim();
+            }
+            for (let index = 0; index < PercentageArray.length; index++) {
+                const element = PercentageArray[index];
+                const findInData = state.ExistingSubjectsArrayInitialState.find((item) => item["uniqueID"] === element.uniqueID);
+                if (findInData) {
+                findInData["Dataframe"].push({
+                    "Date": `${currentNumDate}/${currentMonth}/${currentYear}`,
+                    "Percentage": `${element.percentage}%`,
+                    "Duration": findInData["Current_Duration"],
+                    "Work-Done-For": getTimeByPercentage(findInData["Current_Duration"], element.percentage)
+                });
+                }
+                else {
+                console.log("Not Found")
+                }
+            }
+            for (let index = 0; index < state.ExistingSubjectsArrayInitialState.length; index++) {
+                const element = state.ExistingSubjectsArrayInitialState[index];
+                if (element["Dataframe"].length >= 2) {
+                    element["Dataframe"].sort((a, b) => {
+                        const formatDate = (dateStr: string) => {
+                            const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
+                            return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+                        };
+
+                        const dateA = formatDate(a.Date);
+                        const dateB = formatDate(b.Date);
+                
+                        // Compare Date first
+                        if (dateA < dateB) return -1;
+                        if (dateA > dateB) return 1;
+                        return 0;
+                    });
+                }
+            }
+            // for (let index = 0; index < state.ExistingSubjectsArrayInitialState.length; index++) {
+            //     const element = state.ExistingSubjectsArrayInitialState[index];
+            //     element["Dataframe"] = []
+            // }
         },
         removeExistingSubjectsObject: (state, action) => {
             state.ExistingSubjectsArrayInitialState = state.ExistingSubjectsArrayInitialState.filter((item) => item.uniqueID !== action.payload)
@@ -219,7 +287,7 @@ export const StudentsDataArraySlice = createSlice({
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
 export const { registerUserInfo } = StudentInfoSlice.actions
 export const { addScheduleObject, removeScheduleObject } = ScheduleArraySlice.actions
-export const { addExistingSubjectsObject, removeExistingSubjectsObject } = ExistingSubjectsArraySlice.actions
+export const { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject } = ExistingSubjectsArraySlice.actions
 export const { addStudentObject, removeStudentObject } = StudentsDataArraySlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.

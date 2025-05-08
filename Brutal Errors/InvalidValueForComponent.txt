@@ -1,0 +1,6 @@
+Error 3 Problem:
+- Got an invalid value for 'component' prop for the screen 'StatisticsTab'. It must be a valid react component.
+
+Succedded Effort:
+Was exporting extra things like -> module.export{weekChange} which was causing error. We just removed it and the error was gone.
+You can export extra things but when importing, you have to use these brackets {} so that every import comes with it's own value rather than getting mixed.
