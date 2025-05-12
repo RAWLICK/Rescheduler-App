@@ -382,6 +382,7 @@ const Schedule: React.FC = () => {
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
+    const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
 
     
@@ -1173,7 +1174,7 @@ const Schedule: React.FC = () => {
             style={{
               paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : insets.top,
               }}>
-            <Navbar/>
+            <Navbar Streak={StudentInfo.Streak}/>
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
             <UpperArea

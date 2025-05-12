@@ -15,7 +15,7 @@ export type StudentInfoDataType = {
     "Date Joined": string,
     "Email ID": string,
     "Gender": string,
-    "Streak": string,
+    "Streak": number,
     "Subscription Type": string,
     "Distribution Name": string,
     "Distribution Branch": string,
@@ -88,6 +88,14 @@ export const StudentInfoSlice = createSlice({
                 "Type of Account": action.payload['Type of Account']
             }
             state.StudentInfoInitialState = Info
+        },
+        updateStreakInfo: (state, action) => {
+            if (action.payload == "Increase") {
+                state.StudentInfoInitialState["Streak"] += 1
+            }
+            else if (action.payload == "Vanish") {
+                state.StudentInfoInitialState["Streak"] = 1
+            }
         }
     }
 })
@@ -163,14 +171,7 @@ export const ExistingSubjectsArraySlice = createSlice({
                 "uniqueID": action.payload.uniqueID,
                 "Subject": action.payload.Subject,
                 "Current_Duration": action.payload.Current_Duration,
-                "Dataframe": [
-                //     {
-                //     "Date": action.payload.Date,
-                //     "Percentage": action.payload.Percentage,
-                //     "Duration": action.payload.Duration,
-                //     "Work-Done-For": action.payload.Work_Done_For
-                // }
-            ]
+                "Dataframe": []
             }
             state.ExistingSubjectsArrayInitialState.push(ExistingSubjectsObject)
         },
@@ -194,16 +195,16 @@ export const ExistingSubjectsArraySlice = createSlice({
                 // Calculate percentage of time
                 const resultMinutes = Math.round((totalMinutes * percentage) / 100);
               
-                // Convert back to hours and minutes
-                const resultHours = Math.floor(resultMinutes / 60);
-                const remainingMinutes = resultMinutes % 60;
+                // // Convert back to hours and minutes
+                // const resultHours = Math.floor(resultMinutes / 60);
+                // const remainingMinutes = resultMinutes % 60;
               
-                // Format output string
-                let output = '';
-                if (resultHours > 0) output += `${resultHours}h `;
-                if (remainingMinutes > 0 || resultHours === 0) output += `${remainingMinutes}min`;
+                // // Format output string
+                // let output = '';
+                // if (resultHours > 0) output += `${resultHours}h `;
+                // if (remainingMinutes > 0 || resultHours === 0) output += `${remainingMinutes}min`;
               
-                return output.trim();
+                return `${resultMinutes}min`.trim();
             }
             for (let index = 0; index < PercentageArray.length; index++) {
                 const element = PercentageArray[index];
@@ -285,7 +286,7 @@ export const StudentsDataArraySlice = createSlice({
 })
 
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
-export const { registerUserInfo } = StudentInfoSlice.actions
+export const { registerUserInfo, updateStreakInfo } = StudentInfoSlice.actions
 export const { addScheduleObject, removeScheduleObject } = ScheduleArraySlice.actions
 export const { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject } = ExistingSubjectsArraySlice.actions
 export const { addStudentObject, removeStudentObject } = StudentsDataArraySlice.actions

@@ -190,7 +190,7 @@ function App(): React.JSX.Element {
 
   function Tabs() {
     return (
-      <Tab.Navigator initialRouteName="ScheduleTab"
+      <Tab.Navigator initialRouteName="StatisticsTab"
        screenOptions={ ({route}) => ({
         tabBarButton: (props) => {
           const {onPress, accessibilityState} = props;
@@ -231,7 +231,7 @@ function App(): React.JSX.Element {
     // <Provider store={Store}>
       // <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <NativeStack.Navigator initialRouteName="StackScreens">
+          <NativeStack.Navigator initialRouteName="DrawerScreens">
             <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
             <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
           </NativeStack.Navigator>

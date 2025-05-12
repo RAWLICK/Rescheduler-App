@@ -27,8 +27,10 @@ import {
   Modal,
   Platform
 } from 'react-native';
-import { startOfWeek, endOfWeek, eachDayOfInterval, subWeeks, addWeeks, addMonths, subMonths, getMonth, getYear } from 'date-fns';
+import { startOfWeek, startOfMonth, endOfWeek, endOfMonth, eachDayOfInterval, subWeeks, addDays, addWeeks, addMonths, subMonths, getMonth, getYear } from 'date-fns';
 import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/Store';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -119,7 +121,7 @@ const MonthlyAnalyticsModal = () => {
 
 const Statistics = () => {
   const [WeekChange, setWeekChange] = useState<number>(0);
-  const [MonthChange, setMonthChange] = useState<number>(0)
+  const [MonthChange, setMonthChange] = useState<number>(0);
   const currentDate = new Date();
   const currentWeekStartDate = startOfWeek(currentDate, { weekStartsOn: 1 });
   const currentWeekEndDate = endOfWeek(currentDate, { weekStartsOn: 1 });
@@ -132,10 +134,9 @@ const Statistics = () => {
   const [WeeklyAnalyticsStatus, setWeeklyAnalyticsStatus] = useState(false)
   const [MontlyAnalyticsStatus, setMontlyAnalyticsStatus] = useState(false)
   const currentYear = getYear(currentDate)
+  const [SelectedYear, setSelectedYear] = useState(getYear(currentDate))
   const scrollViewRef = useRef<ScrollView>(null);
-  // const DatesBetween = eachDayOfInterval({start: currentWeekStartDate, end: currentWeekEndDate})
-  // const AddingWeeks = addWeeks(currentWeekStartDate, 1)
-  // const SubtractWeeks = subWeeks(selectedWeekStart, 1)
+  const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
 
   const scrollToPosition = () => {
     scrollViewRef.current?.scrollTo({
@@ -200,8 +201,16 @@ const Statistics = () => {
 
   function IncreaseMonthButton () {
     let IncreasedMonth = SelectedMonth + 1
-    setSelectedMonth(SelectedMonth + 1)
-    if (IncreasedMonth == currentMonth) {
+    if(IncreasedMonth > 11) {
+      IncreasedMonth = 0
+      setSelectedMonth(IncreasedMonth)
+      setSelectedYear(SelectedYear + 1)
+    }
+    else {
+      setSelectedMonth(IncreasedMonth)
+    }
+
+    if (IncreasedMonth == currentMonth && SelectedYear == currentYear) {
       setMonthTitle("This Month")
     }
     else {
@@ -211,8 +220,16 @@ const Statistics = () => {
 
   function DecreaseMonthButton () {
     let DecreasedMonth = SelectedMonth - 1
-    setSelectedMonth(SelectedMonth - 1)
-    if (DecreasedMonth == currentMonth) {
+    if(DecreasedMonth < 0) {
+      DecreasedMonth = 11
+      setSelectedMonth(DecreasedMonth)
+      setSelectedYear(SelectedYear - 1)
+    }
+    else {
+      setSelectedMonth(DecreasedMonth)
+    }
+
+    if (DecreasedMonth == currentMonth && SelectedYear == currentYear) {
       setMonthTitle("This Month")
     }
     else {
@@ -230,27 +247,97 @@ const Statistics = () => {
     { value: 35, radius: 8, activeStrokeColor: '#33ff96', inActiveStrokeColor: '#33ff96' },
   ];
 
-  const NestedCircularProgress = ({index} : {index: number}) => {
-    if(index >= progressData.length) return null;
+  type NestedCircularProgressPropsType = {
+    index: number;
+    StartDateNumber: number;
+  }
 
-    const props = {
+  const NestedCircularProgress = (props: NestedCircularProgressPropsType) => {
+    const filteredData: {"uniqueID": string, "Subject": string, "value": number, "radius": number, "activeStrokeColor": string, "inActiveStrokeColor": string }[] = []
+
+    function parseDate(dateStr: string) {
+      const [day, month, year] = dateStr.split("/"); // Split into components
+      return new Date(`${year}-${month}-${day}`);    // Return a Date object
+    }
+
+    let StartDate = parseDate(props.StartDateNumber + "/" + (SelectedMonth + 1) + "/" + SelectedYear)
+    const EndDate = () => {
+      if (props.StartDateNumber == 22) {
+        return endOfMonth(StartDate)
+      }
+      else {
+        return addDays(StartDate, 6)
+      }
+    }
+
+    const ColorList = ['#e84118', '#badc58', '#18dcff', '#ff9f1a', '#b233ff', '#ff5733', '#33ff96']
+    const RadiusList = [56, 48, 40, 32, 24, 16, 8]
+
+    for (let index = 0; index < demoData.length; index++) {
+      const element = demoData[index];
+      const AddingList = []
+      for (let indexTwo = 0; indexTwo < element.Dataframe.length; indexTwo++) {
+        const eachDataframeObject = element.Dataframe[indexTwo];
+        const date = parseDate(eachDataframeObject["Date"]);
+        if (date >= StartDate && date <= EndDate()) {
+          AddingList.push(Number(eachDataframeObject["Work-Done-For"].split("min")[0]))
+        }
+      }
+      const SumOfAddingList = AddingList.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+      filteredData.push({
+        "uniqueID": element.uniqueID, 
+        "Subject": element.Subject, 
+        "value": SumOfAddingList,
+        "radius": RadiusList[index],
+        "activeStrokeColor": ColorList[index],
+        "inActiveStrokeColor": ColorList[index]
+      })
+    }
+
+    function convertToMinutes(timeStr: string) {
+      const hoursMatch = timeStr.match(/(\d+)h/);
+      const minutesMatch = timeStr.match(/(\d+)min/);
+    
+      const hours = hoursMatch ? parseInt(hoursMatch[1], 10) : 0;
+      const minutes = minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
+    
+      return (hours * 60) + minutes;
+    }
+
+    function PercentageOfValues() {
+      let AddingList = []
+      for (let index = 0; index < ExistingSubjectsArray.length; index++) {
+        const element = ExistingSubjectsArray[index];
+        AddingList.push(convertToMinutes(element.Current_Duration))
+      }
+      for (let index = 0; index < filteredData.length; index++) {
+        const element = filteredData[index];
+        filteredData[index].value = (element.value / (AddingList[index] * 7)) * 100
+      }
+    }
+    PercentageOfValues();
+
+    if(props.index >= filteredData.length) 
+      return null;
+
+    const InternalProps = {
       activeStrokeWidth: 8,
       inActiveStrokeWidth: 8,
       inActiveStrokeOpacity: 0.3
     };
 
-    const {value, radius, activeStrokeColor, inActiveStrokeColor} = progressData[index]
+    const {value, radius, activeStrokeColor, inActiveStrokeColor} = filteredData[props.index]
 
     return (
       <CircularProgressBase
-      {...props}
+      {...InternalProps}
       value={value}
       radius={radius}
       activeStrokeColor={activeStrokeColor}
       inActiveStrokeColor={inActiveStrokeColor}
       >
       {/* Recursive call for nested component */}
-        <NestedCircularProgress index={index + 1} />
+        <NestedCircularProgress index={props.index + 1} StartDateNumber={props.StartDateNumber}/>
       </CircularProgressBase>
     )
   }
@@ -322,12 +409,12 @@ const Statistics = () => {
               <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
             </TouchableOpacity>
             <View style={{marginLeft: 15, marginRight: 15}}>
-              <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>{MonthTitle}</Text>
+              <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>{MonthTitle} {currentMonth != SelectedMonth && SelectedYear}</Text>
             </View>
-            <TouchableOpacity onPress={IncreaseMonthButton} disabled={currentMonth == SelectedMonth}>
+            <TouchableOpacity onPress={IncreaseMonthButton} disabled={currentMonth == SelectedMonth && SelectedYear == currentYear}>
               <Image source={ChevronRightBlack} style={[{height: 15, width: 15 },
-              currentMonth == SelectedMonth && {opacity: 0.3}
-            ]}/>
+              currentMonth == SelectedMonth && SelectedYear == currentYear && {opacity: 0.3}]}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -336,13 +423,13 @@ const Statistics = () => {
             <ScrollView style={{height: 162}} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
               <View style={styles.monthGraphSheet}>
                 <View>
-                  <NestedCircularProgress index={0}/>
+                  <NestedCircularProgress index={0} StartDateNumber={1}/>
                   <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
                     <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>1st Week</Text>
                   </View>
                 </View>
                 <View>
-                  <NestedCircularProgress index={0}/>
+                  <NestedCircularProgress index={0} StartDateNumber={8}/>
                   <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
                     <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>2nd Week</Text>
                   </View>
@@ -351,13 +438,13 @@ const Statistics = () => {
               
               <View style={styles.monthGraphSheet}>
                 <View>
-                  <NestedCircularProgress index={0}/>
+                  <NestedCircularProgress index={0} StartDateNumber={15}/>
                   <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
                     <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>3rd Week</Text>
                   </View>
                 </View>
                 <View>
-                  <NestedCircularProgress index={0}/>
+                  <NestedCircularProgress index={0} StartDateNumber={22}/>
                   <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 5}}>
                     <Text style={{fontFamily: 'sf-pro-display-medium', color: 'white'}}>4th Week</Text>
                   </View>

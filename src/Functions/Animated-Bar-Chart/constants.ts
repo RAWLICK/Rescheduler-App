@@ -30,30 +30,30 @@ export const demoData =
     {   
         "uniqueID": "7g3ca85f6h",
         "Subject": "Chemistry",
-        "Current_Duration": "1h",
+        "Current_Duration": "1h 0min",
         "Dataframe": [
             {
-                "Date": "24/03/2025",
+                "Date": "02/05/2025",
                 "Percentage": "25%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "25min"
             },
             {
-                "Date": "25/03/2025",
+                "Date": "03/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "04/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "05/05/2025",
                 "Percentage": "50%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "30min"
             }
         ]
@@ -61,24 +61,24 @@ export const demoData =
     {
         "uniqueID": "b30v6s9f1j",
         "Subject": "Maths",
-        "Current_Duration": "2h",
+        "Current_Duration": "2h 0min",
         "Dataframe": [
             {
-                "Date": "25/03/2025",
+                "Date": "03/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "04/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "05/05/2025",
                 "Percentage": "50%",
-                "Duration": "2h",
+                "Duration": "2h 0min",
                 "Work-Done-For": "60min"
             }
         ]
@@ -89,21 +89,21 @@ export const demoData =
         "Current_Duration": "1h 30min",
         "Dataframe": [
             {
-                "Date": "25/03/2025",
+                "Date": "03/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "04/05/2025",
                 "Percentage": "100%",
                 "Duration": "1h 30min",
                 "Work-Done-For": "90min"
             },
             {
-                "Date": "01/04/2025",
+                "Date": "05/05/2025",
                 "Percentage": "50%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "30min"
             }
         ]
@@ -114,19 +114,19 @@ export const demoData =
         "Current_Duration": "0h 30min",
         "Dataframe": [
             {
-                "Date": "25/03/2025",
+                "Date": "03/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "04/05/2025",
                 "Percentage": "100%",
                 "Duration": "1h 30min",
                 "Work-Done-For": "90min"
             },
             {
-                "Date": "01/04/2025",
+                "Date": "05/05/2025",
                 "Percentage": "50%",
                 "Duration": "0h 30min",
                 "Work-Done-For": "15min"
@@ -139,19 +139,19 @@ export const demoData =
         "Current_Duration": "1h 15min",
         "Dataframe": [
             {
-                "Date": "25/03/2025",
+                "Date": "03/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "04/05/2025",
                 "Percentage": "100%",
                 "Duration": "1h 15min",
                 "Work-Done-For": "75min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "05/05/2025",
                 "Percentage": "50%",
                 "Duration": "1h 15min",
                 "Work-Done-For": "37min"
@@ -161,30 +161,30 @@ export const demoData =
     {
         "uniqueID": "871v6d45nn",
         "Subject": "Civics",
-        "Current_Duration": "1h",
+        "Current_Duration": "1h 0min",
         "Dataframe": [
             {
-                "Date": "25/03/2025",
+                "Date": "03/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "04/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "05/05/2025",
                 "Percentage": "0%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "0min"
             },
             {
-                "Date": "01/04/2025",
+                "Date": "06/05/2025",
                 "Percentage": "75%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "45min"
             }
         ]
@@ -192,28 +192,28 @@ export const demoData =
     {
         "uniqueID": "982bx673f5",
         "Subject": "Geography",
-        "Current_Duration": "10min",
+        "Current_Duration": "0h 10min",
         "Dataframe": [
             {
-                "Date": "25/03/2025",
+                "Date": "03/05/2025",
                 "Percentage": "100%",
-                "Duration": "1h",
+                "Duration": "1h 0min",
                 "Work-Done-For": "70min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "04/05/2025",
                 "Percentage": "50%",
                 "Duration": "10min",
                 "Work-Done-For": "5min"
             },
             {
-                "Date": "31/03/2025",
+                "Date": "05/05/2025",
                 "Percentage": "25%",
                 "Duration": "10min",
                 "Work-Done-For": "3min"
             },
             {
-                "Date": "01/04/2025",
+                "Date": "06/05/2025",
                 "Percentage": "100%",
                 "Duration": "1hr",
                 "Work-Done-For": "60min"

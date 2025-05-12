@@ -18,6 +18,7 @@ import {
   } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux' 
 import { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject } from '../../app/Slice';
+import { updateStreakInfo } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { ExistingSubjectsArrayItem } from '../../app/Slice';
 import LottieView from 'lottie-react-native';
@@ -40,6 +41,7 @@ type TaskCompletionPopUpPropsType = {
   NextPopUpClick: () => void
 }
 export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
+  const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   return (
     <Modal visible={props.popUpIsVisible} animationType='fade'>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -58,7 +60,7 @@ export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
             />
               <View style={{flex:1, rowGap: 10}}>
                 <LinearGradient colors={['#f3b607', '#cdd309']} style={{flex: 5, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 10}}>
-                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of 3 </Text>
+                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of {StudentInfo.Streak} </Text>
                   <LottieView source={AnimatedFire} autoPlay loop style={styles.lottie}></LottieView>
                 </LinearGradient>
                 <View style={{flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
@@ -260,6 +262,7 @@ const TaskCompletionBoard = () => {
 
   const OkBoardClick = () => {
     dispatch(addExistingSubjectsWorkDoneObject(PercentageArray));
+    dispatch(updateStreakInfo("Increase"));
     onDisplayNotification();
     setBoardIsVisible(false);
     setPopUpIsVisible(true);
@@ -268,6 +271,7 @@ const TaskCompletionBoard = () => {
 
   const NextPopUpClick = () => {
     setPopUpIsVisible(false);
+    setPercentageArray([])
   }
 
   useEffect(() => {

@@ -8,14 +8,17 @@ import StreakFire from '../Images/StreakFire.png'
 import { useNavigation, NavigationProp, DrawerActions, useNavigationState } from '@react-navigation/native';
 import { CombinedNavigationProp } from '../../App';
 
-const Navbar = () => {
+type NavbarPropsType = {
+  "Streak": number
+}
+
+const Navbar = (props: NavbarPropsType) => {
   // BD54EE, 6A1293
   // const navigation = useNavigation<NavigationProp<any, any>>();
   const navigation = useNavigation<CombinedNavigationProp>();
   const isDrawerAvailable = useNavigationState((state) =>
     state?.type === 'drawer' // Check if the current navigation context is a drawer
   );
-  const Message = 'Fuck You';
   return (
     <View style={styles.mainNav}>
       <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
@@ -29,7 +32,7 @@ const Navbar = () => {
       </View>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginRight: 10}}>
         <Image source={StreakFire} style={styles.ThreeDotsImage}/>
-        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20, color: '#6A1293'}}>1</Text>
+        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20, color: '#6A1293'}}>{props.Streak}</Text>
       </View>
     </View>
   )

@@ -27,7 +27,7 @@ type DurationBoxPropsType = {
 
 const DurationBox = (props: DurationBoxPropsType) => {
   const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
-    return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
+    return `${pickedDuration.hours}h ${pickedDuration.minutes}min`
   }
   return (
       <TimerPickerModal

@@ -101,7 +101,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     "Date Joined": currentDateandMonth,
                     "Email ID": "",
                     "Gender": "",
-                    "Streak": "",
+                    "Streak": 1,
                     "Subscription Type": "Free",
                     "Distribution Name": "",
                     "Distribution Branch": "",
