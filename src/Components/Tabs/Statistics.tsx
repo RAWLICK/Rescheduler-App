@@ -31,6 +31,8 @@ import { startOfWeek, startOfMonth, endOfWeek, endOfMonth, eachDayOfInterval, su
 import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/Store';
+import { TrueSheet } from "@lodev09/react-native-true-sheet"
+import AddingSubjects from '../Screens/AddingSubjects'
 // import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -40,6 +42,14 @@ type WeeklyAnalyticsModalPropsType = {
   WeekTitle: string
   WeekAnalyticsStatus: boolean
   setWeekAnalyticsStatus: SetState<boolean>
+}
+
+type MonthlyAnalyticsModalPropsType = {
+  MonthTitle: string
+  MonthlyAnalyticsStatus: boolean
+  SelectedMonth: number
+  SelectedYear: number
+  setMonthlyAnalyticsStatus: SetState<boolean>
 }
 
 const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
@@ -115,8 +125,97 @@ const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
   )
 }
 
-const MonthlyAnalyticsModal = () => {
+const MonthlyAnalyticsModal = (props: MonthlyAnalyticsModalPropsType) => {
+    const filteredData: {"uniqueID": string, "Subject": string, "value": number, "activeStrokeColor": string}[] = []
 
+    function parseDate(dateStr: string) {
+      const [day, month, year] = dateStr.split("/"); // Split into components
+      return new Date(`${year}-${month}-${day}`);    // Return a Date object
+    }
+
+    let StartDate = parseDate(1 + "/" + (props.SelectedMonth + 1) + "/" + props.SelectedYear)
+    let EndDate = endOfMonth(StartDate)
+    const ColorList = ['#e84118', '#badc58', '#18dcff', '#ff9f1a', '#b233ff', '#ff5733', '#33ff96']
+
+    for (let index = 0; index < demoData.length; index++) {
+      const element = demoData[index];
+      const AddingList = []
+      for (let indexTwo = 0; indexTwo < element.Dataframe.length; indexTwo++) {
+        const eachDataframeObject = element.Dataframe[indexTwo];
+        const date = parseDate(eachDataframeObject["Date"]);
+        if (date >= StartDate && date <= EndDate) {
+          AddingList.push(Number(eachDataframeObject["Work-Done-For"].split("min")[0]))
+        }
+      }
+      const SumOfAddingList = AddingList.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+      filteredData.push({
+        "uniqueID": element.uniqueID, 
+        "Subject": element.Subject, 
+        "value": SumOfAddingList,
+        "activeStrokeColor": ColorList[index],
+      })
+    }
+
+    function formatMinutesToHours(mins: number) {
+      const hours = Math.floor(mins / 60);
+      const minutes = mins % 60;
+    
+      if (hours > 0 && minutes > 0) return `${hours}h ${minutes}min`;
+      if (hours > 0) return `${hours}h`;
+      return `${minutes}min`;
+    }
+  return (
+  <Modal transparent= {true} visible={props.MonthlyAnalyticsStatus} animationType='fade'>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <BlurView
+          style={styles.blurStyle}
+          blurType="light"
+          blurAmount={10}
+          // reducedTransparencyFallbackColor="light"
+        />
+        <View style={[styles.selectionDialogBox]}>
+            <BlurView
+            style={styles.blurStyle}
+            blurType="dark"
+            blurAmount={50}
+            // reducedTransparencyFallbackColor="black"
+            />
+            <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
+              <TouchableOpacity onPress={() => props.setMonthlyAnalyticsStatus(false)} style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
+                <Image source={LeftArrow} style={{height: 17, width: 17}}/>
+              </TouchableOpacity>
+              <View style={{flex: 0.8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+                  <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>{props.MonthTitle}</Text>
+              </View>
+              <View style={{flex: 0.1}}>
+  
+              </View>
+            </View>
+            <View style={{flex: 7, paddingLeft: 10,paddingRight: 10, paddingTop: 10}}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {filteredData.map((eachSubject, index) => {
+                  return (
+                  <View key={index} style={{height: 40, borderRadius: 10, backgroundColor: '#8a8a8a', flexDirection: 'row', paddingLeft: 20, paddingRight: 20, marginBottom: 5}}>
+                      <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'flex-start'}}>
+                        <View style={{height: 10, width: 10, justifyContent: 'center', alignItems: 'flex-start', borderRadius: 20, backgroundColor: eachSubject.activeStrokeColor}}></View>
+                      </View>
+                      <View style={{flex: 0.3, justifyContent: 'center', alignItems: 'flex-start'}}>
+                          <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{eachSubject.Subject}</Text>
+                      </View>
+                      <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}>
+                        <Image source={RightArrowTwo} style={{height: 25, width: 25}}/>
+                      </View>
+                      <View style={{flex: 0.4, justifyContent: 'center', alignItems: 'flex-end'}}>
+                          <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{formatMinutesToHours(eachSubject.value)}</Text>
+                      </View>
+                  </View>
+                )})}
+              </ScrollView>
+            </View>
+        </View>
+      </View>
+    </Modal>
+  )
 }
 
 const Statistics = () => {
@@ -132,11 +231,18 @@ const Statistics = () => {
   const [WeekTitle, setWeekTitle] = useState('This Week')
   const [MonthTitle, setMonthTitle] = useState('This Month')
   const [WeeklyAnalyticsStatus, setWeeklyAnalyticsStatus] = useState(false)
-  const [MontlyAnalyticsStatus, setMontlyAnalyticsStatus] = useState(false)
+  const [MonthlyAnalyticsStatus, setMonthlyAnalyticsStatus] = useState(false)
   const currentYear = getYear(currentDate)
   const [SelectedYear, setSelectedYear] = useState(getYear(currentDate))
+  const AddingSubjectsSheet = useRef<TrueSheet>(null);
+  const [EditDialogBoxStatus, setEditDialogBoxStatus] = useState(false)
   const scrollViewRef = useRef<ScrollView>(null);
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
+
+  async function AddingSubjectsButton () {
+    setEditDialogBoxStatus(false);
+    await AddingSubjectsSheet.current?.present();
+  }
 
   const scrollToPosition = () => {
     scrollViewRef.current?.scrollTo({
@@ -144,6 +250,12 @@ const Statistics = () => {
       animated: true, // Smooth scrolling
     });
   };
+  
+  const scrollingCondition = () => {
+    if (currentDate >= new Date(currentYear, currentMonth, 15)) {
+      scrollToPosition();
+    }
+  }
 
   const WordMonth = (date: number) => {
     let MonthExtract = date;
@@ -342,9 +454,9 @@ const Statistics = () => {
     )
   }
 
-  // useEffect(() => {
-  //   console.log(selectedWeekStart)
-  // }, [selectedWeekStart])
+  useEffect(() => {
+    scrollingCondition()
+  }, [currentDate.getDate()])
   
   return (
     <SafeAreaView style={styles.safeView}>
@@ -380,10 +492,18 @@ const Statistics = () => {
               selectedWeekEnd={selectedWeekEnd}
             />
           </View>
-          <View style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: 5}}>
+          <TouchableOpacity onPress={AddingSubjectsButton} style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: 5}}>
             <Image source={AddTwo} style={{height: 20, width: 20}}/>
             <Text style={{color: 'white', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Add Subjects in Stats</Text>
-          </View>
+          </TouchableOpacity>
+
+          <TrueSheet
+            ref={AddingSubjectsSheet}
+            sizes={['auto', 'large']}
+            cornerRadius={24}
+          >
+          <AddingSubjects/>
+        </TrueSheet>
 
           <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }} onPress={() => setWeeklyAnalyticsStatus(true)}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
@@ -456,7 +576,7 @@ const Statistics = () => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }}>
+          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }} onPress={() => setMonthlyAnalyticsStatus(true)}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
               <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Month Analytics</Text>
             </View>
@@ -464,9 +584,17 @@ const Statistics = () => {
               <Image source={ChevronRightBlack} style={{height: 20, width: 20}}/>
             </View>
           </TouchableOpacity>
+
+          <MonthlyAnalyticsModal
+            MonthTitle={MonthTitle}
+            MonthlyAnalyticsStatus={MonthlyAnalyticsStatus}
+            SelectedMonth={SelectedMonth}
+            SelectedYear={SelectedYear}
+            setMonthlyAnalyticsStatus={setMonthlyAnalyticsStatus}
+          />
           <View style={{marginTop: 10}}>
             <View style={{marginBottom: 10, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{fontFamily: 'sf-pro-display-medium', color: '#000'}}>Reach Streak of 10 to unlock new Insights</Text>
+              <Text style={{fontFamily: 'sf-pro-display-medium', color: '#000'}}>New Insights will be soon unlocked with Streak</Text>
             </View>
             <LinearGradient colors={['#ffffff', '#D2CFE4']} style={{borderRadius: 10}}>
               <View style={{height: 100, borderRadius: 10, borderColor: '#6B1294', borderTopWidth: 5, justifyContent: 'center', alignItems: 'center'}}>
