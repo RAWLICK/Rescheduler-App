@@ -13,6 +13,7 @@ import { BlurView } from "@react-native-community/blur";
 import AddTwo from "../Images/AddTwo.png"
 import LeftArrow from '../Images/LeftArrow.png'
 import RightArrowTwo from '../Images/RightArrowTwo.png'
+import ExistingSubjects from '../Screens/ExistingSubjects';
 import {
   SafeAreaView,
   ScrollView,
@@ -238,10 +239,11 @@ const Statistics = () => {
   const [EditDialogBoxStatus, setEditDialogBoxStatus] = useState(false)
   const scrollViewRef = useRef<ScrollView>(null);
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
-
-  async function AddingSubjectsButton () {
-    setEditDialogBoxStatus(false);
-    await AddingSubjectsSheet.current?.present();
+  const ExistingSubjectSheet = useRef<TrueSheet>(null);
+  const [FakeWork, setFakeWork] = useState('FakeWork')
+  
+  async function ExistingSubjectButton () {
+    await ExistingSubjectSheet.current?.present();
   }
 
   const scrollToPosition = () => {
@@ -418,8 +420,8 @@ const Statistics = () => {
 
     function PercentageOfValues() {
       let AddingList = []
-      for (let index = 0; index < ExistingSubjectsArray.length; index++) {
-        const element = ExistingSubjectsArray[index];
+      for (let index = 0; index < demoData.length; index++) {
+        const element = demoData[index];
         AddingList.push(convertToMinutes(element.Current_Duration))
       }
       for (let index = 0; index < filteredData.length; index++) {
@@ -492,18 +494,10 @@ const Statistics = () => {
               selectedWeekEnd={selectedWeekEnd}
             />
           </View>
-          <TouchableOpacity onPress={AddingSubjectsButton} style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: 5}}>
+          <TouchableOpacity onPress={ExistingSubjectButton} style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: 5}}>
             <Image source={AddTwo} style={{height: 20, width: 20}}/>
             <Text style={{color: 'white', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Add Subjects in Stats</Text>
           </TouchableOpacity>
-
-          <TrueSheet
-            ref={AddingSubjectsSheet}
-            sizes={['auto', 'large']}
-            cornerRadius={24}
-          >
-          <AddingSubjects/>
-        </TrueSheet>
 
           <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }} onPress={() => setWeeklyAnalyticsStatus(true)}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
@@ -605,6 +599,17 @@ const Statistics = () => {
         </View>
         </ScrollView>
       </View>
+      <TrueSheet
+      ref={ExistingSubjectSheet}
+      sizes={['auto', 'large']}
+      cornerRadius={24}
+      >
+        <ExistingSubjects 
+        WorkToDo={FakeWork}
+        setWorkToDo={setFakeWork}
+        ExistingSubjectSheet={ExistingSubjectSheet}
+        />
+      </TrueSheet>
       {/* <Taskbar activeState={'Statistics'}/> */}
     </SafeAreaView>
   )

@@ -9,6 +9,7 @@ import DeleteIcon from '../Images/DeleteIcon.png'
 import { BlurView } from "@react-native-community/blur";
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import AddingSubjects from './AddingSubjects'
+import EditingSubjects from './EditingSubjects'
 const { width, height } = Dimensions.get('window');
 import { useDispatch, useSelector } from 'react-redux';
 import { addExistingSubjectsObject, removeExistingSubjectsObject } from '../../app/Slice';
@@ -17,20 +18,27 @@ import { ExistingSubjectsArrayItem } from '../../app/Slice'
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 type EditDialogBoxPropsTypes = {
-  EditDialogBoxStatus: boolean,
-  setEditDialogBoxStatus: (value: React.SetStateAction<boolean>) => void
-  AddingSubjectsButton: () => void,
+  uniqueID: string
+  SubjectSettingDialogBoxStatus: boolean,
+  setSubjectSettingDialogBoxStatus: (value: React.SetStateAction<boolean>) => void
+  EditingSubjectsButton: () => void,
   handleOutsidePress: () => void,
-  Work: string
 }
+
+type ExistingSubjectsPropsType = {
+  WorkToDo: string
+  setWorkToDo: SetState<string>
+  ExistingSubjectSheet: React.RefObject<TrueSheet>
+}
+
 const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
   const dispatch = useDispatch();
-  const RemovingWork = (work: string) => {
-    dispatch(removeExistingSubjectsObject(work))
-    props.setEditDialogBoxStatus(false);
+  const RemovingWork = (uniqueID: string) => {
+    dispatch(removeExistingSubjectsObject(uniqueID))
+    props.setSubjectSettingDialogBoxStatus(false);
   }
   return (
-    <Modal visible={props.EditDialogBoxStatus} animationType='fade'>
+    <Modal visible={props.SubjectSettingDialogBoxStatus} animationType='fade'>
     <TouchableWithoutFeedback onPress={props.handleOutsidePress}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <BlurView
@@ -40,7 +48,7 @@ const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
           reducedTransparencyFallbackColor="black"
         />
         <View style={[styles.subjectEditDialogBox, {backgroundColor: '#3F3F41'}]}>
-          <TouchableOpacity style={{flex: 0.5, flexDirection: 'row', columnGap: 20, borderBottomWidth: 0.5, borderColor: 'grey'}} onPress={props.AddingSubjectsButton}>
+          <TouchableOpacity style={{flex: 0.5, flexDirection: 'row', columnGap: 20, borderBottomWidth: 0.5, borderColor: 'grey'}} onPress={props.EditingSubjectsButton}>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <Image source={EditIcon} style={{ height: 20, width: 20}} />
             </View>
@@ -48,7 +56,7 @@ const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
               <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white', fontSize: 15}}>Edit</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={{flex: 0.5, flexDirection: 'row', columnGap: 20}} onPress={() => RemovingWork(props.Work)}>
+          <TouchableOpacity style={{flex: 0.5, flexDirection: 'row', columnGap: 20}} onPress={() => RemovingWork(props.uniqueID)}>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <Image source={DeleteIcon} style={{ height: 20, width: 20}} />
             </View>
@@ -63,41 +71,37 @@ const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
   )
 }
 
-type ExistingSubjectsPropsType = {
-  WorkToDo: string
-  setWorkToDo: SetState<string>
-  ExistingSubjectSheet: React.RefObject<TrueSheet>
-}
-
 const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
-  const data = {
-    "Work": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Subject),
-    "Current_Duration": ExistingSubjectsArray.map((item: ExistingSubjectsArrayItem) => item.Current_Duration)
-  }
   const AddingSubjectsSheet = useRef<TrueSheet>(null);
-  const [EditDialogBoxStatus, setEditDialogBoxStatus] = useState(false)
-  const [workToBeEdited, setWorkToBeEdited] = useState('')
-
-  const WorkLength = data["Work"].length
+  const EditingSubjectsSheet = useRef<TrueSheet>(null);
+  const [SubjectSettingDialogBoxStatus, setSubjectSettingDialogBoxStatus] = useState(false)
+  const [EditTrueSheetStatus, setEditTrueSheetStatus] = useState(false)
+  const [uniqueIDToBeEdited, setuniqueIDToBeEdited] = useState('')
   
   async function AddingSubjectsButton () {
-    setEditDialogBoxStatus(false);
+    setSubjectSettingDialogBoxStatus(false);
     await AddingSubjectsSheet.current?.present();
   }
+
+  async function EditingSubjectsButton () {
+    setEditTrueSheetStatus(false);
+    await EditingSubjectsSheet.current?.present();
+  }
+
   async function SubjectApplyingButton (work: string) {
     props.setWorkToDo(work)
     await props.ExistingSubjectSheet.current?.dismiss();
   }
 
-  const SubjectSettingButton = (work: string) => {
-    setWorkToBeEdited(work)
-    setEditDialogBoxStatus(true);
+  const SubjectSettingButton = (uniqueID: string) => {
+    setuniqueIDToBeEdited(uniqueID);
+    setSubjectSettingDialogBoxStatus(true);
   }
 
   const handleOutsidePress = () => {
     Keyboard.dismiss();                   // Close keyboard if open
-    setEditDialogBoxStatus(false)         // Close modal
+    setSubjectSettingDialogBoxStatus(false)         // Close modal
   };
 
   return (
@@ -107,8 +111,8 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
       </View>
       <View style={{ rowGap: 1 }}>
         <TouchableOpacity style={[
-          WorkLength != 0 && styles.UpperOption,
-          WorkLength == 0 && styles.OnlyOption,
+          ExistingSubjectsArray.length != 0 && styles.UpperOption,
+          ExistingSubjectsArray.length == 0 && styles.OnlyOption,
           { backgroundColor: '#c454fc', height: height * 0.06, alignItems: 'center', columnGap: 5 }]} onPress={AddingSubjectsButton}>
           <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
             <Image source={AddTwo} style={{ height: 25, width: 25}} />
@@ -117,28 +121,31 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
             <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#e9d3f5', fontSize: 15 }}>Add New Subject</Text>
           </View>
         </TouchableOpacity>
-        {data["Work"].map((work, index) => (
+        {ExistingSubjectsArray.map((eachSubject, index) => {
+          const work = eachSubject.Subject;
+          const uniqueID = eachSubject.uniqueID;
+          return (
           <View key={index} style={[
-            index == (WorkLength-1) && styles.BottomOption,
-            index >= 0 && index < (WorkLength-1) && styles.MiddleOption,
+            index == (ExistingSubjectsArray.length-1) && styles.BottomOption,
+            index >= 0 && index < (ExistingSubjectsArray.length-1) && styles.MiddleOption,
             { backgroundColor: '#222328', height: height * 0.06, alignItems: 'center', columnGap: 5, paddingLeft: 20,
               paddingRight: 10 }
           ]}>
             <TouchableOpacity style={{flex: 0.9}} onPress={() => SubjectApplyingButton(work)}>
               <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white', fontSize: 15}}>{work}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}} onPress={() => SubjectSettingButton(work)}>
+            <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}} onPress={() => SubjectSettingButton(uniqueID)}>
               <Image source={ThreeDotsTwo} style={{ height: 20, width: 20}} />
             </TouchableOpacity>
           </View>
-        ))
+        )})
         }
         <EditDialogBox
-          EditDialogBoxStatus={EditDialogBoxStatus}
-          setEditDialogBoxStatus={setEditDialogBoxStatus}
-          AddingSubjectsButton={AddingSubjectsButton}
+          SubjectSettingDialogBoxStatus={SubjectSettingDialogBoxStatus}
+          setSubjectSettingDialogBoxStatus={setSubjectSettingDialogBoxStatus}
+          EditingSubjectsButton={EditingSubjectsButton}
           handleOutsidePress={handleOutsidePress}
-          Work={workToBeEdited}
+          uniqueID={uniqueIDToBeEdited}
         />
         
         <TrueSheet
@@ -147,6 +154,16 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
           cornerRadius={24}
         >
           <AddingSubjects/>
+        </TrueSheet>
+
+        <TrueSheet
+          ref={EditingSubjectsSheet}
+          sizes={['auto', 'large']}
+          cornerRadius={24}
+        >
+          <EditingSubjects
+            uniqueID={uniqueIDToBeEdited}
+          />
         </TrueSheet>
       </View>
     </View>

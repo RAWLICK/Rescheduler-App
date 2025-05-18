@@ -54,7 +54,7 @@ const AddingSubjects = () => {
   const [SubjectName, setSubjectName] = useState('');
   const color = 'blue';
   const [showPicker, setShowPicker] = useState(false);
-  const [durationString, setDurationString] = useState<string | null>(null);
+  const [durationString, setDurationString] = useState<string | null>('1h 0min');
 
   const ExistingSubjectSaveButton = () => {
     const newExistingSubject = {
@@ -87,7 +87,7 @@ const AddingSubjects = () => {
           Adding Subject
         </Text>
       </View>
-      <View style={{ height: 195, rowGap: 1 }}>
+      <View style={{ height: 130, rowGap: 1 }}>
         <View style={[styles.UpperOption, { flex: 2 }]}>
           <View
             style={{
@@ -104,7 +104,7 @@ const AddingSubjects = () => {
           </View>
         </View>
 
-        <TouchableOpacity style={[styles.MiddleOption, { flex: 2 }]}>
+        <TouchableOpacity style={[styles.BottomOption, { flex: 2 }]}>
           <View
             style={{
               flex: 0.7,
@@ -122,7 +122,7 @@ const AddingSubjects = () => {
         </TouchableOpacity>
 
 
-        <TouchableOpacity style={[styles.BottomOption, { flex: 2 }]}>
+        {/* <TouchableOpacity style={[styles.BottomOption, { flex: 2 }]}>
           <View
             style={{
               flex: 1,
@@ -139,7 +139,7 @@ const AddingSubjects = () => {
                 { backgroundColor: `${color}` },
               ]}></View>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
 
         {/* <View style={[styles.BottomOption, { flex: 3 }]}>

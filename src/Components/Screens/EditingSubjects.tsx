@@ -9,19 +9,24 @@ import {
   Platform
 } from 'react-native';
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ChevronLeft from '../Images/ChevronLeft.png';
 import { useDispatch, useSelector } from 'react-redux' 
-import { addExistingSubjectsObject, removeExistingSubjectsObject } from '../../app/Slice';
+import { EditExistingSubjectObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import LinearGradient from 'react-native-linear-gradient';
 import { TimerPickerModal } from "react-native-timer-picker";
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+
 type DurationBoxPropsType = {
   showPicker: boolean,
   setShowPicker: SetState<boolean>,
   durationString: string | null
   setDurationString: SetState<string | null>
+}
+
+type EditingSubjectsPropsType = {
+  uniqueID: string
 }
 
 const DurationBox = (props: DurationBoxPropsType) => {
@@ -48,19 +53,34 @@ const DurationBox = (props: DurationBoxPropsType) => {
   )
 }
 
-const EditingSubjects = () => {
+const EditingSubjects = (props: EditingSubjectsPropsType) => {
     const dispatch = useDispatch();
     const [SubjectName, setSubjectName] = useState('');
     const color = 'blue';
     const [showPicker, setShowPicker] = useState(false);
     const [durationString, setDurationString] = useState<string | null>(null);
+    const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
 
-    const ExistingSubjectSaveButton = () => {
-    const newExistingSubject = {
-        "Work": SubjectName,
-        "Duration": durationString
+    function FilledDetails() {
+        const existingSubject = ExistingSubjectsArray.find((item) => item.uniqueID === props.uniqueID);
+        if (existingSubject) {
+            setSubjectName(existingSubject.Subject);
+            setDurationString(existingSubject.Current_Duration);
+        }
+        console.log("Existing Subject: ", existingSubject);
     }
-    dispatch(addExistingSubjectsObject(newExistingSubject));
+
+    useEffect(() => {
+        FilledDetails();
+    }, [props.uniqueID])
+    
+    const ExistingSubjectSaveButton = () => {
+      const newExistingSubject = {
+          "uniqueID": props.uniqueID,
+          "Subject": SubjectName,
+          "Current_Duration": durationString
+      }
+      dispatch(EditExistingSubjectObject(newExistingSubject));
     }   
     return (
     <View
@@ -83,7 +103,7 @@ const EditingSubjects = () => {
               Editing Subject
             </Text>
           </View>
-          <View style={{ height: 195, rowGap: 1 }}>
+          <View style={{ height: 130, rowGap: 1 }}>
             <View style={[styles.UpperOption, { flex: 2 }]}>
               <View
                 style={{
@@ -100,7 +120,7 @@ const EditingSubjects = () => {
               </View>
             </View>
     
-            <TouchableOpacity style={[styles.MiddleOption, { flex: 2 }]}>
+            <TouchableOpacity style={[styles.BottomOption, { flex: 2 }]}>
               <View
                 style={{
                   flex: 0.7,
@@ -112,29 +132,9 @@ const EditingSubjects = () => {
               <TouchableOpacity onPress={() => setShowPicker(true)}
                 style={{ flex: 0.3, justifyContent: 'center', paddingTop: 15, paddingBottom: 15, paddingLeft: 15 }}>
                 <View style={{flex: 1,backgroundColor: 'grey', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
-                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#d8d0d0'}}>10 hr 30 min</Text>
+                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#d8d0d0'}}>{durationString}</Text>
                 </View>
               </TouchableOpacity>
-            </TouchableOpacity>
-    
-    
-            <TouchableOpacity style={[styles.BottomOption, { flex: 2 }]}>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'flex-start',
-                }}>
-                <Text style={styles.OptionText}>Color Assigned</Text>
-              </View>
-              <View
-                style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end' }}>
-                <View
-                  style={[
-                    styles.angleInfoColor,
-                    { backgroundColor: `${color}` },
-                  ]}></View>
-              </View>
             </TouchableOpacity>
           </View>
 

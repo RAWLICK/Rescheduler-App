@@ -192,7 +192,7 @@ export const demoData =
     {
         "uniqueID": "982bx673f5",
         "Subject": "Geography",
-        "Current_Duration": "0h 10min",
+        "Current_Duration": "1h 10min",
         "Dataframe": [
             {
                 "Date": "03/05/2025",

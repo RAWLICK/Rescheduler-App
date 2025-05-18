@@ -175,6 +175,13 @@ export const ExistingSubjectsArraySlice = createSlice({
             }
             state.ExistingSubjectsArrayInitialState.push(ExistingSubjectsObject)
         },
+        EditExistingSubjectObject: (state, action) => {
+            const foundSubject = state.ExistingSubjectsArrayInitialState.find((item) => item.uniqueID === action.payload.uniqueID);
+            if (foundSubject) {
+                foundSubject.Subject = action.payload.Subject;
+                foundSubject.Current_Duration = action.payload.Current_Duration;
+            }
+        },
         addExistingSubjectsWorkDoneObject: (state, action) => {
             const currentDate = new Date();
             let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
@@ -288,7 +295,7 @@ export const StudentsDataArraySlice = createSlice({
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
 export const { registerUserInfo, updateStreakInfo } = StudentInfoSlice.actions
 export const { addScheduleObject, removeScheduleObject } = ScheduleArraySlice.actions
-export const { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject } = ExistingSubjectsArraySlice.actions
+export const { addExistingSubjectsObject, EditExistingSubjectObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject } = ExistingSubjectsArraySlice.actions
 export const { addStudentObject, removeStudentObject } = StudentsDataArraySlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
