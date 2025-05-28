@@ -6,3 +6,7 @@ rm = remove (the command to delete files/folders)
 pod install:  Installs pods listed in your Podfile. Uses existing local pod spec repo cache.
 
 pod install --repo-update:	First updates CocoaPods’ local index of available pod versions → then installs. It is like saying “Go check the latest versions of libraries online before installing.”
+
+watchman watch-del-all: 
+- It does NOT delete Watchman itself — it simply clears all the directories that Watchman is currently watching. After running it You don’t need to do anything else. 
+- Next time Metro runs, it will tell Watchman what to watch again automatically.

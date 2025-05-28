@@ -40,6 +40,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../src/app/Store';
 import Subscription from './Components/Drawer/Subscription';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {useAuth0, Auth0Provider} from 'react-native-auth0';
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -144,7 +145,7 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='TaskCompletionBoardStack'>
+      <Stack.Navigator initialRouteName='OtpVerificationStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -190,7 +191,7 @@ function App(): React.JSX.Element {
 
   function Tabs() {
     return (
-      <Tab.Navigator initialRouteName="StatisticsTab"
+      <Tab.Navigator initialRouteName="ScheduleTab"
        screenOptions={ ({route}) => ({
         tabBarButton: (props) => {
           const {onPress, accessibilityState} = props;
@@ -231,7 +232,7 @@ function App(): React.JSX.Element {
     // <Provider store={Store}>
       // <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <NativeStack.Navigator initialRouteName="DrawerScreens">
+          <NativeStack.Navigator initialRouteName="StackScreens">
             <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
             <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
           </NativeStack.Navigator>

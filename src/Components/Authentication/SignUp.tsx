@@ -10,7 +10,9 @@ import {
     TouchableOpacity,
     Dimensions,
     TextInput,
-    Platform
+    Platform,
+    ActivityIndicator,
+    Alert
 } from 'react-native';
 import React from 'react';
 import { useState } from 'react';
@@ -20,6 +22,8 @@ import SignInDoodleImage from '../Images/SignInDoodle.png';
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { BlurView } from '@react-native-community/blur';
+import Auth0 from 'react-native-auth0';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 const { width, height } = Dimensions.get('window');
 
 type LogoSectionPropsType = {};
@@ -54,12 +58,19 @@ type CredentialInputScreenPropsType = {
     setPhoneNumText: React.Dispatch<React.SetStateAction<string>>;
     IsRegistered: string | undefined;
     setIsRegistered: React.Dispatch<React.SetStateAction<string>>;
+    Loading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
     const navigation = useNavigation<NavigationProp<any, any>>();
+    const auth0 = new Auth0({
+        domain: 'dev-euawlucdljtesr0z.us.auth0.com',
+        clientId: 'MgGS4kNAn4YSeC5lqwlJ9bM3hcCk7Cus',
+    });  
     const MatchNumber = async () => {
         try {
+            props.setLoading(true);
             const response = await fetch(
             // Platform.OS === 'ios'? 'http://localhost:5000/MatchNumber':'http://10.0.2.2:5000/MatchNumber',
             'https://rescheduler-server.onrender.com/MatchNumber',
@@ -74,18 +85,38 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             if (!response.ok) {  // Handle HTTP errors
             throw new Error('Failed to fetch data from the server');
             }
-
+            props.setLoading(false);
             const fetched_data = await response.json(); // Parse JSON response
             props.setIsRegistered(fetched_data);
             console.log("Is Number Registred? : ", fetched_data)
             if (fetched_data === "true") {
                 navigation.navigate('StackScreens', { screen: 'SignInStack' });
+                if (Platform.OS === 'android') {
+                Dialog.show({
+                    type: ALERT_TYPE.WARNING,
+                    title: 'Already Registered',
+                    textBody: "Please Sign In",
+                    button: 'Sign In',
+                })
+                }
+                else if (Platform.OS === 'ios') {
+                Alert.alert(
+                    "Already Registered", "Please Sign In",
+                    [{ text: "Sign In" }]
+                )
+                }
             } else if (fetched_data === "false") {
+                await auth0.auth.passwordlessWithSMS({
+                    phoneNumber: `+91${props.PhoneNumText}`,
+                    send: 'code',
+                });
+                console.log(`OTP Sent to +91${props.PhoneNumText}`)
                 navigation.navigate('StackScreens', { screen: 'OtpVerificationStack', params: {Process: 'SignUp', PhoneNumber: props.PhoneNumText } });
             } else {
                 console.log("Invalid Response from Server");
             }
         } catch (error) {
+            props.setLoading(false);
             console.error('Catch Error: ', error);
             console.log("Failed to connect to the backend");
         }
@@ -115,12 +146,15 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
                         />
                     </View>
 
-                    <TouchableOpacity onPress={MatchNumber}
-                        style={styles.ContinueBox}>
-                        <Text style={styles.ContinueText}>
-                            Continue
-                        </Text>
-                    </TouchableOpacity>
+                    {props.Loading? 
+                        <View style={styles.ContinueBox}>
+                        <ActivityIndicator size="small" color="#ffffff" />
+                        </View>
+                        :
+                        <TouchableOpacity style={styles.ContinueBox} onPress={MatchNumber}>
+                        <Text style={styles.ContinueText}>Continue</Text>
+                        </TouchableOpacity>
+                    }
                 </View>
                 <View>
                     <View
@@ -146,6 +180,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
 const SignUp = () => {
     const [PhoneNumText, setPhoneNumText] = useState('');
     const [IsRegistered, setIsRegistered] = useState("")
+    const [Loading, setLoading] = useState(false)
     return (
         <View style={{ flex: 1 }}>
             {/* <StatusBar>
@@ -162,6 +197,8 @@ const SignUp = () => {
                     setPhoneNumText={setPhoneNumText}
                     IsRegistered={IsRegistered}
                     setIsRegistered={setIsRegistered}
+                    Loading={Loading}
+                    setLoading={setLoading}
                 />
             </View>
         </View>

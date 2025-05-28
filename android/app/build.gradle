@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+// apply plugin: "com.google.gms.google-services"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -81,6 +82,10 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 3
         versionName "1.2"
+        manifestPlaceholders = [
+            auth0Domain: "dev-euawlucdljtesr0z.us.auth0.com",
+            auth0Scheme: "${applicationId}.auth0"
+        ]   // Auth0 configuration
     }
     signingConfigs {
         debug {
@@ -129,4 +134,4 @@ dependencies {
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
-apply plugin: 'com.google.gms.google-services'
+

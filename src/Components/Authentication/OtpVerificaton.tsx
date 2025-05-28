@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, Platform } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, Platform, ActivityIndicator, Alert } from 'react-native'
 import React from 'react'
 import OtpVerificationImage from '../Images/OtpVerificationImage.png'
 import ChevronLeftBlack from '../Images/ChevronLeftBlack.png'
@@ -13,6 +13,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { registerUserInfo } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Auth0 from 'react-native-auth0';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 const { width, height } = Dimensions.get('window');
 type HeaderPanelPropsType = {};
 
@@ -40,9 +42,12 @@ type VerificationPanelPropsType = {
     PhoneNumber: string | undefined;
     EnteredOTP: string;
     setEnteredOTP: React.Dispatch<React.SetStateAction<string>>;
+    Loading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const VerificationPanel = (props: VerificationPanelPropsType) => {
+    const [Countdown, setCountdown] = useState<number>(60)
     const dispatch = useDispatch();
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     let currentDate = new Date();
@@ -51,10 +56,19 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
     let currentYear = currentDate.getFullYear();
     let currentDateandMonth = `${currentNumDate}/${currentMonth}/${currentYear}`;
     const navigation = useNavigation<NavigationProp<any, any>>();
+    const auth0 = new Auth0({
+        domain: 'dev-euawlucdljtesr0z.us.auth0.com',
+        clientId: 'MgGS4kNAn4YSeC5lqwlJ9bM3hcCk7Cus',
+      });  
 
     async function VerifyButton() {
+        props.setLoading(true)
         if (props.EnteredOTP.length === 4 && props.Process == 'SignIn') {
-            if (props.EnteredOTP == '1234') {
+            try {
+                const credentials = await auth0.auth.loginWithSMS({
+                    phoneNumber: `+91${props.PhoneNumber}`,
+                    code: props.EnteredOTP,
+                });
                 console.log("OTP Verified");
                 try {
                     const response = await fetch(
@@ -70,10 +84,11 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                         "Type": "Phone Number"
                     }), // Convert the request payload to JSON.
                     })
-              
+                    
                     if (!response.ok) {  // Handle HTTP errors
                       throw new Error('Failed to add data to the server');
                     }
+                    props.setLoading(false)
                     const fetched_data = await response.json();
                     console.log("Fetched StudentInfo: ", fetched_data)
                     dispatch(registerUserInfo(fetched_data))
@@ -81,18 +96,36 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
                     
                   } catch (error) {
-                    console.error('Catch Error: ', error);
+                      console.error('Catch Error: ', error);
+                      props.setLoading(false)
                 }
             }
-            else {
+            catch (error) {
+                props.setLoading(false)
+                if (Platform.OS === 'android') {
+                Dialog.show({
+                    type: ALERT_TYPE.WARNING,
+                    title: 'Incorrect OTP',
+                    textBody: "Please Enter correct OTP",
+                    button: 'Ok',
+                })
+                }
+                else if (Platform.OS === 'ios') {
+                Alert.alert(
+                    "Incorrect OTP", "Please Enter correct OTP",
+                    [{ text: "Ok" }]
+                )
+                }
                 console.log("OTP is incorrect");
             }
-            // props.confirmCode();
-            // navigation.navigate('TabScreens')
 
         } 
         else if (props.EnteredOTP.length === 4 && props.Process == 'SignUp') {
-            if (props.EnteredOTP == '1234') {
+            try {
+                const credentials = await auth0.auth.loginWithSMS({
+                    phoneNumber: `+91${props.PhoneNumber}`,
+                    code: props.EnteredOTP,
+                });
                 console.log("OTP Verified");
                 let NewStudent = {
                     "uniqueID": nanoid(),
@@ -126,6 +159,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                   if (!response.ok) {  // Handle HTTP errors
                     throw new Error('Failed to add data to the server');
                   }
+                  props.setLoading(false)
                   const fetched_data = await response.json();
                   console.log("Fetched Data: ", fetched_data)
                   dispatch(registerUserInfo(NewStudent))
@@ -133,17 +167,52 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                   navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
                   
                 } catch (error) {
+                    props.setLoading(false)
                   console.error('Catch Error: ', error);
                 }
             }
-            else {
+            catch (error) {
+                props.setLoading(false)
+                if (Platform.OS === 'android') {
+                Dialog.show({
+                    type: ALERT_TYPE.WARNING,
+                    title: 'Incorrect OTP',
+                    textBody: "Please Enter correct OTP",
+                    button: 'Ok',
+                })
+                }
+                else if (Platform.OS === 'ios') {
+                Alert.alert(
+                    "Incorrect OTP", "Please Enter correct OTP",
+                    [{ text: "Ok" }]
+                )
+                }
                 console.log("OTP is incorrect");
             }
         }
         else {
+            props.setLoading(false)
             console.log("Please enter a valid OTP");
         }
     }
+
+    // let seconds = 60;
+
+    const runningSecond = setInterval(() => {
+        // console.log(`⏳ Time left: ${seconds} seconds`);
+        let copiedCountdown = Countdown
+        setCountdown(copiedCountdown--);
+
+        if (Countdown < 0) {
+            clearInterval(runningSecond);
+            console.log("✅ Countdown finished!");
+        }
+    }, 1000);
+
+    // useEffect(() => {
+    //     runningSecond;
+    // }, [])
+    
 
     useEffect(() => {
         console.log("Student Details: ", StudentInfoData)
@@ -206,20 +275,31 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                 }}
             />
             </View>
-
+            
+            {props.Loading?
+            <View style={styles.SubmitButtonArea}>
+                <TouchableOpacity style={styles.SubmitButtonBox} onPress={VerifyButton}>
+                    <ActivityIndicator size="small" color="#ffffff" />
+                </TouchableOpacity>
+            </View>
+            :
             <View style={styles.SubmitButtonArea}>
                 <TouchableOpacity style={styles.SubmitButtonBox} onPress={VerifyButton}>
                     <Text style={styles.SubmitButtonText}>Verify</Text>
                 </TouchableOpacity>
             </View>
+            }
 
             <View style={styles.ResendOTPArea}>
                 <View style={styles.ResendOTPBox}>
                     <View>
                         <Text style={styles.ResendOTPTextOne}>Didn't receive the OTP? </Text>
                     </View>
-                    <TouchableOpacity>
+                    {/* <TouchableOpacity>
                         <Text style={styles.ResendOTPTextTwo}>Resend</Text>
+                    </TouchableOpacity> */}
+                    <TouchableOpacity>
+                        <Text style={styles.ResendOTPTextTwo}>{Countdown}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -231,6 +311,7 @@ const OtpVerificaton = () => {
     const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
     const [EnteredOTP, setEnteredOTP] = useState("")
+    const [Loading, setLoading] = useState(false)
     const insets = useSafeAreaInsets();
     // const [StudentInfoData, setStudentInfoData] = useState<StudentInfoDataType>()
     
@@ -307,6 +388,8 @@ const OtpVerificaton = () => {
                 PhoneNumber={phoneNumber}      // Passing PhoneNumber to VerificationPanel
                 EnteredOTP={EnteredOTP}        // Passing EnteredOTP to VerificationPanel
                 setEnteredOTP={setEnteredOTP}  // Passing setEnteredOTP to VerificationPanel
+                setLoading={setLoading}
+                Loading={Loading}
             />
         </View>
     )

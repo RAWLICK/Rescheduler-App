@@ -42,7 +42,8 @@ import {
   TouchableWithoutFeedback,
   Button,
   Dimensions,
-  SafeAreaView
+  SafeAreaView,
+  ActivityIndicator
 } from 'react-native';
 import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
@@ -118,6 +119,8 @@ type UpperAreaPropsType = {
 }
 
 type RescheduleButtonAreaPropsType = {
+  Loading: boolean,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   ResButtonTitle: string;
   PriorSelections: number[];
   FixedSelections: number[];
@@ -291,9 +294,15 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
             </ScrollView>
           </View>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
+            {props.Loading ?
+            <View>
+              <ActivityIndicator size="small" color="#ffffff" />
+            </View>
+            :
             <TouchableOpacity onPress={() => props.RescheduleButtonClick()}>
               <Text style={{color: '#457fdf', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
             </TouchableOpacity>
+            }
           </View>
         </View>
       </View>
@@ -383,8 +392,8 @@ const Schedule: React.FC = () => {
     const dispatch = useDispatch();
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+    const [Loading, setLoading] = useState(false)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
-
     
     const data = {
       "uniqueID": ScheduleArray.map((item: ScheduleArrayItem) => item.uniqueID),
@@ -939,9 +948,10 @@ const Schedule: React.FC = () => {
     // In the backend API case, ensure to have a 3rd device to share the same network in both PC and real device emulator and also ensure that Windows Firewall is closed.
 
     const sendNameToBackend = async () => {
+      setLoading(true);  // Set loading state to true
       try {
         const response = await fetch(
-          // Platform.OS === 'ios'? 'http://localhost:5000/MatchNumber':'http://10.0.2.2:5000/',
+          // Platform.OS === 'ios'? 'http://localhost:5000/':'http://192.168.131.92:5000/',
           'https://rescheduler-server.onrender.com/',
           {
           method: 'POST', // Specify the request method
@@ -955,12 +965,13 @@ const Schedule: React.FC = () => {
         if (!response.ok) {  // Handle HTTP errors
           throw new Error('Failed to fetch data from the server');
         }
-  
+        setLoading(false);  // Set loading state to false
         const fetched_data = await response.json(); // Parse JSON response
         setApiData(fetched_data)
         setServerResponseMessage(fetched_data.message);  // Update state with server response
         // console.log("API_DATA: ", JSON.stringify(ApiData))
       } catch (error) {
+        setLoading(false);  // Set loading state to false
         console.error('Catch Error: ', error);
         setServerResponseMessage('Failed to connect to the backend');  // Handle network error
       }
@@ -1200,6 +1211,8 @@ const Schedule: React.FC = () => {
             </View>
 
             <RescheduleButtonArea
+             Loading={Loading}
+             setLoading={setLoading}
              ResButtonTitle={ResButtonTitle}
              PriorSelections={PriorSelections}
              FixedSelections={FixedSelections}
