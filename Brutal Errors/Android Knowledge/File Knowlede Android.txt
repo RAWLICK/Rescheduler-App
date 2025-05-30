@@ -17,14 +17,16 @@ MainActivity.java- 🚪
 - It is like entry gate of your Android app 🚪.
 - This is the first screen that launches when your React Native Android app starts.
 - Defines the name of the JS module to render (usually App or whatever you registered).
+- Now React Native generates both MainActivity and MainActivity in .kt(Kotlin) format from new version becasue Kotlin is  Officially recommended by Google for Android development.
 
-MainApplication.java- 🧠
+MainActivity.java- 🧠
 - It is like heart of my react native app 🧠.
 - This is the central control center that sets up your React Native app on Android.
 - Initializes React Native
 - Loads native modules (like maps, camera, Firebase, etc.)
 - Sets up debug tools like Flipper
 - For iOS it's (AppDelegate.mm)
+- Now React Native generates both MainActivity and MainActivity in .kt(Kotlin) format from new version becasue Kotlin is  Officially recommended by Google for Android development.
 
 React-RuntimeHermes: 🛢
 - Normally, React Native apps run JavaScript using Apple’s JavaScriptCore (JSC).

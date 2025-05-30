@@ -19,6 +19,7 @@ import {useState, useEffect, useRef} from 'react';
 import ChevronRight from '../Images/ChevronRight.png';
 import ChevronLeft from '../Images/ChevronLeft.png';
 import RightArrow from '../Images/RightArrow.png';
+import LockImage from '../Images/Lock.png'
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import 'react-native-gesture-handler';
 import {useNavigation} from '@react-navigation/native';
@@ -46,6 +47,7 @@ import { RootState } from '../../app/Store';
 import { nanoid } from "@reduxjs/toolkit";
 import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+import LinearGradient from 'react-native-linear-gradient';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PanGesture = ReturnType<typeof Gesture.Pan>;
@@ -123,7 +125,7 @@ const AreaOne = (props: GroupPropsType) => {
   }
   return (
     <>
-    <View style={[styles.areaOne, props.AddFromExistingWorkButton && {height: 150}]}>
+    <View style={[styles.areaOne]}>
       <View style={styles.UpperOption}>
         {!props.AddFromExistingWorkButton ? (
         <View
@@ -135,8 +137,8 @@ const AreaOne = (props: GroupPropsType) => {
             style={styles.OptionText}
             value={props.WorkToDo}
             onChangeText={props.setWorkToDo}
-            placeholder="Work"
-            placeholderTextColor="#9D9EA0"></TextInput>
+            placeholder="Subject Name"
+            placeholderTextColor="#666666"></TextInput>
         </View>
         ) : (
           <TouchableOpacity
@@ -147,7 +149,7 @@ const AreaOne = (props: GroupPropsType) => {
             }}
             onPress={ExistingSubjectButton}
             >
-              <Text style={styles.OptionText}>{props.WorkToDo}</Text>
+              <Text style={styles.OptionText}>Choose Subject</Text>
           </TouchableOpacity>
         )}
         
@@ -158,7 +160,7 @@ const AreaOne = (props: GroupPropsType) => {
         }
       </View>
 
-      {!props.AddFromExistingWorkButton && 
+      {/* {!props.AddFromExistingWorkButton && 
       <TouchableOpacity style={styles.MiddleOption}>
         <View
           style={{
@@ -177,7 +179,8 @@ const AreaOne = (props: GroupPropsType) => {
             ]}></View>
         </View>
       </TouchableOpacity>
-      }
+      } */}
+
       <View style={styles.BottomOption}>
         <View
           style={{
@@ -302,7 +305,7 @@ const AreaTwo = (props: GroupPropsType) => {
 
       <View
         style={[
-          styles.MiddleOption,
+          styles.BottomOption,
           {flex: 2, flexDirection: 'column', justifyContent: 'center'},
         ]}>
         <View style={[styles.DurationTagLineBox, props.PrevScheduleStatus == true ? {backgroundColor: 'black'}: {backgroundColor: '#9D9EA0'}]}>
@@ -355,7 +358,7 @@ const AreaTwo = (props: GroupPropsType) => {
         </View>
       </View>
 
-      <View style={styles.BottomOption}>
+      {/* <View style={styles.BottomOption}>
         <View style={styles.AllDayFeatureBox}>
           <Text style={styles.OptionText}>Mini Alarm</Text>
         </View>
@@ -368,7 +371,7 @@ const AreaTwo = (props: GroupPropsType) => {
             value={props.isEnabled}
           />
         </View>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -376,14 +379,19 @@ const AreaTwo = (props: GroupPropsType) => {
 const AreaThree = (props: GroupPropsType) => {
   return (
     <View style={styles.areaThree}>
-      <TextInput
-        multiline
-        numberOfLines={6}
-        style={styles.OnlyOption}
-        value={props.NoteText}
-        onChangeText={props.setNoteText}
-        placeholder="Add a Note"
-        placeholderTextColor="#9D9EA0"></TextInput>
+      <View style={{marginTop: 10}}>
+        <View style={{marginBottom: 10, justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{fontSize: 16, color: '#9D9EA0',
+          fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee'}}>
+          New Inputs will be soon unlocked with Streak
+          </Text>
+        </View>
+        <LinearGradient colors={['#222328', '#1B1B1D']} style={{borderRadius: 10}}>
+          <View style={{height: 100, borderRadius: 10, borderColor: '#6B1294', borderTopWidth: 5, justifyContent: 'center', alignItems: 'center'}}>
+            <Image source={LockImage} style={{height: 15, width: 15}}/>
+          </View>
+        </LinearGradient>
+      </View>
     </View>
   );
 };
@@ -402,7 +410,7 @@ import {CombinedNavigationProp} from '../../App';
 
 const AddTiming = () => {
   const isConnected = useInternetCheck();
-  const [AddFromExistingWorkButton, setAddFromExistingWorkButton] = useState(true)
+  const [AddFromExistingWorkButton, setAddFromExistingWorkButton] = useState(false)
   const AddFromExistingWorkToggleSwitch = () => setAddFromExistingWorkButton(previousState => !previousState)
   const Message = 'Keep Faith';
   const navigation = useNavigation<CombinedNavigationProp>();
@@ -417,7 +425,7 @@ const AddTiming = () => {
   const [EndTime, setEndTime] = useState('');
   const [TaskDate, setTaskDate] = useState('');
   const [Duration, setDuration] = useState('1h');
-  const [WorkToDo, setWorkToDo] = useState('Work');
+  const [WorkToDo, setWorkToDo] = useState('');
   const [StartAngle, setStartAngle] = useState<number>();
   const [EndAngle, setEndAngle] = useState<number>();
   const [PrevScheduleStatus, setPrevScheduleStatus] = useState(false)
@@ -659,10 +667,6 @@ const AddTiming = () => {
       dispatch(addScheduleObject(newTask));
     }
   };
-
-  // useEffect(() => {
-  //   console.log('ScheduleArray (AddTiming.tsx): ', ScheduleArray);
-  // }, [ScheduleArray]);
 
   useEffect(() => {
       console.log("Is Connected from Settings: ", isConnected)
@@ -1034,14 +1038,14 @@ const styles = StyleSheet.create({
   },
 
   areaOne: {
-    height: 225,
+    height: 150,
     padding: 10,
     paddingBottom: 15,
     paddingTop: 15,
   },
 
   areaTwo: {
-    height: 462,
+    height: 385,
     padding: 10,
     paddingBottom: 15,
     paddingTop: 15,
@@ -1050,8 +1054,7 @@ const styles = StyleSheet.create({
   areaThree: {
     height: 150,
     padding: 10,
-    paddingBottom: 15,
-    paddingTop: 15,
+    paddingBottom: 15
   },
 
   angleInfoColor: {
@@ -1064,11 +1067,8 @@ const styles = StyleSheet.create({
 
   OptionText: {
     fontSize: 18,
-    // fontWeight: 'bold',
-    // fontWeight: '',
     color: '#9D9EA0',
     fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
-    // fontFamily: 'sf-pro-display-medium'
   },
 });
 

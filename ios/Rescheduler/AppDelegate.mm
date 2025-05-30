@@ -4,6 +4,8 @@
 
 #import <React/RCTLinkingManager.h>  // For Auth0 authentication
 
+#import "RNSplashScreen.h"  // here
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -13,7 +15,12 @@
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
 
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+  //  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+  BOOL result = [super application:application didFinishLaunchingWithOptions:launchOptions];
+
+  [RNSplashScreen show];  // 👈 Correct place after React Native is initialized
+
+  return result;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

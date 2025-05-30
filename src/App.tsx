@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import type {PropsWithChildren} from 'react';
 import { NavigationContainer, CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -41,6 +41,7 @@ import { RootState } from '../src/app/Store';
 import Subscription from './Components/Drawer/Subscription';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useAuth0, Auth0Provider} from 'react-native-auth0';
+import SplashScreen from 'react-native-splash-screen';
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -120,12 +121,20 @@ function App(): React.JSX.Element {
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   console.log(StudentInfoData)
 
+  useEffect(() => {
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 1000);
+  }, [])
+  
+
   type CustomTabButtonPropTypes = {
     label: string,
     onPress: ((e: GestureResponderEvent) => void) | undefined,
     Icon: ImageSourcePropType,
     isFocused: boolean | undefined
   }
+
   function CustomTabButton ({label, onPress, Icon, isFocused}: CustomTabButtonPropTypes) {
     const insets = useSafeAreaInsets();
     return (
@@ -229,16 +238,12 @@ function App(): React.JSX.Element {
   }
 
   return (
-    // <Provider store={Store}>
-      // <PersistGate loading={null} persistor={persistor}>
-        <NavigationContainer>
-          <NativeStack.Navigator initialRouteName="StackScreens">
-            <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
-            <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
-          </NativeStack.Navigator>
-        </NavigationContainer>
-      // </PersistGate>
-    // </Provider>
+    <NavigationContainer>
+      <NativeStack.Navigator initialRouteName="DrawerScreens">
+        <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
+        <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
+      </NativeStack.Navigator>
+    </NavigationContainer>
   );
 }
 

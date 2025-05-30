@@ -48,6 +48,7 @@ type VerificationPanelPropsType = {
 
 const VerificationPanel = (props: VerificationPanelPropsType) => {
     const [Countdown, setCountdown] = useState<number>(60)
+    const [ResendStatus, setResendStatus] = useState(false)
     const dispatch = useDispatch();
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     let currentDate = new Date();
@@ -59,7 +60,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
     const auth0 = new Auth0({
         domain: 'dev-euawlucdljtesr0z.us.auth0.com',
         clientId: 'MgGS4kNAn4YSeC5lqwlJ9bM3hcCk7Cus',
-      });  
+    });  
 
     async function VerifyButton() {
         props.setLoading(true)
@@ -196,28 +197,32 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
         }
     }
 
-    // let seconds = 60;
-
-    const runningSecond = setInterval(() => {
-        // console.log(`⏳ Time left: ${seconds} seconds`);
-        let copiedCountdown = Countdown
-        setCountdown(copiedCountdown--);
-
-        if (Countdown < 0) {
-            clearInterval(runningSecond);
-            console.log("✅ Countdown finished!");
-        }
-    }, 1000);
-
-    // useEffect(() => {
-    //     runningSecond;
-    // }, [])
-    
+    async function ResendClicked() {
+        await auth0.auth.passwordlessWithSMS({
+            phoneNumber: `+91${props.PhoneNumber}`,
+            send: 'code',
+        });
+        setCountdown(10)
+        setResendStatus(true);
+    }
 
     useEffect(() => {
         console.log("Student Details: ", StudentInfoData)
     }, [StudentInfoData])
     
+    useEffect(() => {
+        if (Countdown === 0) {
+            setResendStatus(false)
+            return;
+        }
+
+        const interval = setInterval(() => {
+        setCountdown(prev => prev - 1);
+        }, 1000);
+
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, [Countdown]);
+
     return (
         <View style={{ flex: 0.5 }}>
             <View style={styles.MotiveTextArea}>
@@ -295,12 +300,15 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     <View>
                         <Text style={styles.ResendOTPTextOne}>Didn't receive the OTP? </Text>
                     </View>
-                    {/* <TouchableOpacity>
-                        <Text style={styles.ResendOTPTextTwo}>Resend</Text>
-                    </TouchableOpacity> */}
-                    <TouchableOpacity>
-                        <Text style={styles.ResendOTPTextTwo}>{Countdown}</Text>
-                    </TouchableOpacity>
+                    {ResendStatus? 
+                        <TouchableOpacity>
+                            <Text style={styles.ResendOTPTextTwo}>{Countdown}</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity onPress={ResendClicked}>
+                            <Text style={styles.ResendOTPTextTwo}>Resend</Text>
+                        </TouchableOpacity>
+                    }
                 </View>
             </View>
         </View>

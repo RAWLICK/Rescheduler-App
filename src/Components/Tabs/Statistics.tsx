@@ -458,7 +458,8 @@ const Statistics = () => {
 
   useEffect(() => {
     scrollingCondition()
-  }, [currentDate.getDate()])
+  // }, [currentDate.getDate()])
+  }, [])
   
   return (
     <SafeAreaView style={styles.safeView}>
