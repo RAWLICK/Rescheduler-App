@@ -26,6 +26,7 @@ import { RouteProp } from '@react-navigation/native';
 import { CombinedNavigationProp, CombinedRouteProp } from '../../App';
 import { nanoid } from 'nanoid';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import DeviceInfo from 'react-native-device-info';
 
 import {
   ScrollView,
@@ -43,7 +44,9 @@ import {
   Button,
   Dimensions,
   SafeAreaView,
-  ActivityIndicator
+  ActivityIndicator,
+  Linking,
+  Alert
 } from 'react-native';
 import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
@@ -1103,6 +1106,65 @@ const Schedule: React.FC = () => {
     async function CalenderButton () {
       await CalenderSheet.current?.present();
     }
+
+    const checkAppVersion = async () => {
+      const currentVersion = DeviceInfo.getVersion(); // e.g., "1.0.0"
+      try {
+        const Fetched_VersionInfo = await fetch('https://rescheduler-server.onrender.com/GetVersionInfo');
+        const VersionInfo = await Fetched_VersionInfo.json();
+
+        function ReturningLatestVersion() {
+          if (Platform.OS == 'android') {
+            const latestVersion: string = VersionInfo[0]["Versions"]["LatestVersion"]
+            const forceUpdate: string = VersionInfo[0]["Versions"]["UpdateRequired"]
+            return {latestVersion, forceUpdate}
+          }
+          else if (Platform.OS == 'ios') {
+            const latestVersion: string = VersionInfo[1]["Versions"]["LatestVersion"]
+            const forceUpdate: string = VersionInfo[1]["Versions"]["UpdateRequired"]
+            return {latestVersion, forceUpdate}
+          }
+          return undefined
+        }
+
+        const result = ReturningLatestVersion();
+
+        if (result) {
+          const { latestVersion, forceUpdate } = result;
+          const isForceUpdate = forceUpdate === "true"; // Convert string to boolean
+          if (currentVersion !== latestVersion) {
+            const buttons = [
+              {
+                text: 'Update Now',
+                onPress: () => {
+                  const storeUrl = Platform.OS === 'ios'
+                    ? 'https://apps.apple.com/us/app/rescheduler/id6745407651'
+                    : 'https://play.google.com/store/apps/details?id=com.rescheduler';
+                  Linking.openURL(storeUrl);
+                },
+              },
+            ]
+
+            // if (isForceUpdate) {
+            //   buttons.push({
+            //     text: 'Cancel',
+            //     onPress: () => console.log('User cancelled'),
+            //   });
+            // }
+
+            Alert.alert(
+              'Update Required',
+              'A new version of the app is available. Please update to continue.',
+              buttons,
+              { cancelable: !isForceUpdate }
+            );
+          }
+        }
+      } catch (error) {
+        console.log("Unable to Check App Version")
+      }
+      
+    };
     
     useEffect(() => {
       console.log("PriorSelectionList: ", PriorSelections)
@@ -1128,28 +1190,37 @@ const Schedule: React.FC = () => {
       LabelChanging();
     }, [ScheduleArray, currentMinTime, rescheduleStatus])
 
-    useEffect(() => {
-      console.log("Today's ScheduleArray: ", TodayScheduleArray)
-    }, [ScheduleArray])
+    // useEffect(() => {
+    //   console.log("Today's ScheduleArray: ", TodayScheduleArray)
+    // }, [ScheduleArray])
 
-    useEffect(() => {
-      console.log("API_DATA: ", JSON.stringify(ApiData))
-    }, [ApiData])
+    // useEffect(() => {
+    //   console.log("API_DATA: ", JSON.stringify(ApiData))
+    // }, [ApiData])
 
     useEffect(() => {
       console.log("Is Connected in Schedule.tsx: ", isConnected)
       if (isConnected == false) {
-        Dialog.show({
+        if (Platform.OS == 'android') {
+          Dialog.show({
           type: ALERT_TYPE.DANGER,
           title: 'No Internet',
           textBody: "Please turn on mobile data or Wi-Fi. Don't Worry, we don't show ADs 😌",
           closeOnOverlayTap: false
         })
+        }
+        else if (Platform.OS == 'ios') {
+          Alert.alert("No Internet", `Please turn on mobile data or Wi-Fi. Don't Worry, we don't show ADs 😌`)
+        }
       }
       else {
         Dialog.hide();
       }
     }, [isConnected])
+
+    useEffect(() => {
+      checkAppVersion();
+    }, [])
     
     // Drawer and tab navigators are sibling-level navigators in your app architecture. When you switch from one drawer screen to another, you’re not actually unmounting and remounting the tab screen component — you’re just switching the visible screen. That's when you need to use the useFocusEffect to get the things done which are performed by useEffect.
     

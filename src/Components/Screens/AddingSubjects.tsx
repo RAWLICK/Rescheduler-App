@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
-  Platform
+  Platform,
+  Alert
 } from 'react-native';
 import React from 'react';
 import { useState } from 'react';
@@ -55,6 +56,7 @@ const AddingSubjects = () => {
   const color = 'blue';
   const [showPicker, setShowPicker] = useState(false);
   const [durationString, setDurationString] = useState<string | null>('1h 0min');
+  const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
 
   const ExistingSubjectSaveButton = () => {
     const newExistingSubject = {
@@ -63,7 +65,23 @@ const AddingSubjects = () => {
       "Current_Duration": durationString,
       "Dataframe": []
     }
-    dispatch(addExistingSubjectsObject(newExistingSubject));
+    function MatchingWorks() {
+      for (let index = 0; index < ExistingSubjectsArray.length; index++) {
+        const element = ExistingSubjectsArray[index];
+        if (element["Subject"].toLowerCase() == SubjectName.toLowerCase()) {
+          return true
+        }
+      }
+    }
+    if (MatchingWorks() == true) {
+      Alert.alert("Duplicate Subject", `You have a ${SubjectName} Work already present in Statistics`)
+    }
+    else if (SubjectName == "") {
+      Alert.alert("Empty Subject", `Please enter Subject name`)
+    }
+    else {
+      dispatch(addExistingSubjectsObject(newExistingSubject));
+    }
   }   
 
   return (

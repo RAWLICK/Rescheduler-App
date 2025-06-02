@@ -33,25 +33,25 @@ export const demoData =
         "Current_Duration": "1h 0min",
         "Dataframe": [
             {
-                "Date": "02/05/2025",
+                "Date": "02/06/2025",
                 "Percentage": "25%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "25min"
             },
             {
-                "Date": "03/05/2025",
+                "Date": "03/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "04/05/2025",
+                "Date": "04/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "05/05/2025",
+                "Date": "05/06/2025",
                 "Percentage": "50%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "30min"
@@ -64,19 +64,19 @@ export const demoData =
         "Current_Duration": "2h 0min",
         "Dataframe": [
             {
-                "Date": "03/05/2025",
+                "Date": "03/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "04/05/2025",
+                "Date": "04/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "05/05/2025",
+                "Date": "05/06/2025",
                 "Percentage": "50%",
                 "Duration": "2h 0min",
                 "Work-Done-For": "60min"
@@ -89,19 +89,19 @@ export const demoData =
         "Current_Duration": "1h 30min",
         "Dataframe": [
             {
-                "Date": "03/05/2025",
+                "Date": "03/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "04/05/2025",
+                "Date": "04/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 30min",
                 "Work-Done-For": "90min"
             },
             {
-                "Date": "05/05/2025",
+                "Date": "05/06/2025",
                 "Percentage": "50%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "30min"
@@ -114,19 +114,19 @@ export const demoData =
         "Current_Duration": "0h 30min",
         "Dataframe": [
             {
-                "Date": "03/05/2025",
+                "Date": "03/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "04/05/2025",
+                "Date": "04/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 30min",
                 "Work-Done-For": "90min"
             },
             {
-                "Date": "05/05/2025",
+                "Date": "05/06/2025",
                 "Percentage": "50%",
                 "Duration": "0h 30min",
                 "Work-Done-For": "15min"
@@ -139,19 +139,19 @@ export const demoData =
         "Current_Duration": "1h 15min",
         "Dataframe": [
             {
-                "Date": "03/05/2025",
+                "Date": "03/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "04/05/2025",
+                "Date": "04/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 15min",
                 "Work-Done-For": "75min"
             },
             {
-                "Date": "05/05/2025",
+                "Date": "05/06/2025",
                 "Percentage": "50%",
                 "Duration": "1h 15min",
                 "Work-Done-For": "37min"
@@ -164,25 +164,25 @@ export const demoData =
         "Current_Duration": "1h 0min",
         "Dataframe": [
             {
-                "Date": "03/05/2025",
+                "Date": "03/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "04/05/2025",
+                "Date": "04/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "60min"
             },
             {
-                "Date": "05/05/2025",
+                "Date": "05/06/2025",
                 "Percentage": "0%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "0min"
             },
             {
-                "Date": "06/05/2025",
+                "Date": "06/06/2025",
                 "Percentage": "75%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "45min"
@@ -195,25 +195,25 @@ export const demoData =
         "Current_Duration": "1h 10min",
         "Dataframe": [
             {
-                "Date": "03/05/2025",
+                "Date": "03/06/2025",
                 "Percentage": "100%",
                 "Duration": "1h 0min",
                 "Work-Done-For": "70min"
             },
             {
-                "Date": "04/05/2025",
+                "Date": "04/06/2025",
                 "Percentage": "50%",
                 "Duration": "10min",
                 "Work-Done-For": "5min"
             },
             {
-                "Date": "05/05/2025",
+                "Date": "05/06/2025",
                 "Percentage": "25%",
                 "Duration": "10min",
                 "Work-Done-For": "3min"
             },
             {
-                "Date": "06/05/2025",
+                "Date": "06/06/2025",
                 "Percentage": "100%",
                 "Duration": "1hr",
                 "Work-Done-For": "60min"

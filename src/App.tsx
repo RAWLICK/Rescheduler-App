@@ -23,7 +23,7 @@ import CustomDrawerContent from './Components/Drawer/CustomDrawerContent';
 import Navbar from './Components/Navbar/Navbar';
 import SignIn from './Components/Authentication/SignIn';
 import SignUp from './Components/Authentication/SignUp';
-import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, Image, GestureResponderEvent, Platform} from 'react-native'
+import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, Image, GestureResponderEvent, Platform, Alert} from 'react-native'
 import { useState } from 'react';
 import RescheduleIcon from './Components/Images/Reschedule.png'
 import StatisticsIcon from './Components/Images/StatisticsIcon.png'
@@ -42,6 +42,7 @@ import Subscription from './Components/Drawer/Subscription';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useAuth0, Auth0Provider} from 'react-native-auth0';
 import SplashScreen from 'react-native-splash-screen';
+import { addDays } from "date-fns";
 
 // This below code helps prevent systum font overriding on application's font
 (Text as any).defaultProps = {
@@ -121,12 +122,24 @@ function App(): React.JSX.Element {
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   console.log(StudentInfoData)
 
+  function TrialValidity() {
+    const currentDate = new Date();
+    const formatDate = (dateStr: string) => {
+      const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
+      return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+    };
+    if (currentDate >= addDays(formatDate(StudentInfoData["Date Joined"]), 7) && StudentInfoData["Subscription Type"] == "Free") {
+    // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
+      Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
+      return false;
+    }
+  }
+
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 1000);
   }, [])
-  
 
   type CustomTabButtonPropTypes = {
     label: string,
@@ -168,7 +181,7 @@ function App(): React.JSX.Element {
 
   function DrawerNav() {
     return (
-    <Drawer.Navigator initialRouteName="TabsDrawer"
+    <Drawer.Navigator initialRouteName={TrialValidity() == false ? "SubscriptionDrawer" : "TabsDrawer"}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
       drawerStyle: {
@@ -188,12 +201,12 @@ function App(): React.JSX.Element {
       <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/>
       <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
       <Drawer.Screen name="SubscriptionDrawer" component={Subscription} options={{ headerShown: false, title: "Subscription"}}/>
-      { StudentInfoData?.["Type of Account"] == "Distributor" &&
+      { (StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&
       <Drawer.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
-     }
-     { StudentInfoData?.["Type of Account"] == "Distributor" &&
+      }
+      { StudentInfoData?.["Type of Account"] == "Admin" &&
       <Drawer.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
-     }
+      }
     </Drawer.Navigator>
     )
   }

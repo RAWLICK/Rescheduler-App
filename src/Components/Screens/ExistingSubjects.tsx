@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, Keyboard, Platform } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, Keyboard, Platform, Alert } from 'react-native'
 import React from 'react'
 import { useRef } from 'react'
 import { useState } from 'react'
@@ -80,8 +80,13 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
   const [uniqueIDToBeEdited, setuniqueIDToBeEdited] = useState('')
   
   async function AddingSubjectsButton () {
-    setSubjectSettingDialogBoxStatus(false);
-    await AddingSubjectsSheet.current?.present();
+    if (ExistingSubjectsArray.length < 7) {
+      setSubjectSettingDialogBoxStatus(false);
+      await AddingSubjectsSheet.current?.present();
+    }
+    else {
+      Alert.alert("Limit Reached", `You can only add upto 7 Subjects for Statistics`)
+    }
   }
 
   async function EditingSubjectsButton () {

@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react'
 import { BACKGROUND_COLOR, data } from './constants.ts'
 import SingleBarChart from './SingleBarChart.tsx'
 import { demoData } from './constants.ts'
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/Store';
 type DemoDataItemPropsType = {
   uniqueID: string;
   Subject: string;
@@ -24,6 +26,8 @@ export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
   const [WeekChangeImport, setWeekChangeImport ] = useState<number>(0)
   const {WeekChange} = require('../../Components/Tabs/Statistics.tsx')
   const currentDate = new Date();
+
+  const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
 
   const [maxMinThisWeek, setmaxMinThisWeek] = useState<number>(300)
 
@@ -78,7 +82,7 @@ export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
     <>
     <View style={styles.container}>
       {/* Thanks to ChatGPT for this acurate mapped code */}
-      {demoData.map((eachSubject, index) => {
+      {ExistingSubjectsArray.map((eachSubject, index) => {
         // Filter the Dataframe for dates within the range
         const filteredDataframe = eachSubject.Dataframe.filter((eachDataframeObject) => {
           const date = StringDateToDateConvert(eachDataframeObject.Date);
@@ -95,7 +99,7 @@ export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
           return total + numericValue;
         },0);
         return (
-          <View key={index}>
+          <View key={index} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <SingleBarChart value={totalWorkDone/(maxMinThisWeek + 50)}/>
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               <Text style={{ fontSize: 7, color: "white" }}>{eachSubject.Subject}</Text>
@@ -115,6 +119,7 @@ const styles = StyleSheet.create({
         backgroundColor: BACKGROUND_COLOR,
         justifyContent: 'center',
         alignItems: 'flex-end',
-        borderRadius: 10
+        borderRadius: 10,
+        // columnGap: 10
     }
 })

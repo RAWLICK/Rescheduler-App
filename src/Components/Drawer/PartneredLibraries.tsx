@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TextInput, Image, StatusBar, SafeAreaView, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TextInput, Image, StatusBar, SafeAreaView, TouchableOpacity, Platform, ScrollView, Alert } from 'react-native'
 import React from 'react'
 import { useState, useCallback, useEffect , useRef, useMemo} from 'react';
 import SearchIcon from '../Images/SearchIcon.png'
@@ -6,6 +6,9 @@ import LeftArrow from '../Images/LeftArrow.png';
 import {useNavigation} from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import {CombinedNavigationProp} from '../../App';
+import { useDispatch, useSelector } from 'react-redux' 
+import { RootState } from '../../app/Store';
+import { addDays } from "date-fns";
 const { width, height } = Dimensions.get('window');
 
 type DistribtionInfoType = {
@@ -21,6 +24,9 @@ const PartneredLibraries = () => {
     const [AllDistributionsInfo, setAllDistributionsInfo] = useState<DistribtionInfoType[]>()
     const [EditableDistributionsInfo, setEditableDistributionsInfo] = useState<DistribtionInfoType[] | undefined>()
     const [DistributionDataToRender, setDistributionDataToRender] = useState<DistribtionInfoType[] | undefined>()
+
+    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+    console.log(StudentInfoData)
 
     async function RenderAllDistributionsInfo() {
       try {
@@ -51,6 +57,18 @@ const PartneredLibraries = () => {
         item['City'].toLowerCase().includes(LibrarySearch.toLowerCase())
     );
     }, [LibrarySearch, EditableDistributionsInfo]);
+
+    function TrialValidity() {
+      const currentDate = new Date();
+      const formatDate = (dateStr: string) => {
+        const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
+        return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+      };
+      if (currentDate >= addDays(formatDate(StudentInfoData["Date Joined"]), 7) && StudentInfoData["Subscription Type"] == "Free") {
+      // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free" ) {
+        return false;
+      }
+    }
 
     useEffect(() => {
       setDistributionDataToRender(filteredData)
@@ -86,15 +104,23 @@ const PartneredLibraries = () => {
         <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
           <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('DrawerScreens', {
+              onPress={() => {
+                if (TrialValidity() == false) {
+                  navigation.navigate('DrawerScreens', {
+                  screen: 'SubscriptionDrawer',
+                  params: undefined,
+                })
+                }
+                else {
+                  navigation.navigate('DrawerScreens', {
                   screen: 'TabsDrawer',
                   params: {
                     screen: 'ScheduleTab',
                     params: undefined
                   },
                 })
-              }
+                }
+              }}
               style={styles.BackButtonBox}>
               <Image source={LeftArrow} style={styles.BackButtonImage} />
             </TouchableOpacity>

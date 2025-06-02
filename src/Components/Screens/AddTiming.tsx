@@ -465,7 +465,8 @@ const AddTiming = () => {
   const [CoveredDurBoxes, setCoveredDurBoxes] = useState<number[]>([
     0, 1, 2, 3,
   ]);
-  // console.log("CoveredDurBoxes" , CoveredDurBoxes)
+  var Sound = require('react-native-sound');
+  Sound.setCategory('Playback');
 
   const hideDatePicker = () => {
     setDateTimeState('off');
@@ -660,10 +661,71 @@ const AddTiming = () => {
       TaskDate: TaskDate,
       Slice_Color: color
     };
+
+    function MatchingWorks() {
+      const foundWorks = ScheduleArray.filter((item) => item.TaskDate == currentDateandMonth)
+      for (let index = 0; index < foundWorks.length; index++) {
+        const element = foundWorks[index];
+        if (element["Work"].toLowerCase() == WorkToDo.toLowerCase()) {
+          return true
+        }
+      }
+    }
+
+    function MatchingTimings() {
+      const foundWorks = ScheduleArray.filter((item) => item.TaskDate == currentDateandMonth)
+      for (let index = 0; index < foundWorks.length; index++) {
+        const element = foundWorks[index];
+        if (StartAngle && EndAngle) {
+          if
+           (
+            StartAngle > Number(element["StartAngle"]) && StartAngle < Number(element["EndAngle"])
+            || EndAngle < Number(element["EndAngle"]) && EndAngle > Number(element["StartAngle"])
+            || EndAngle == Number(element["EndAngle"]) && StartAngle == Number(element["StartAngle"])
+           )
+            {
+            console.log("StartAngle: ", StartAngle)
+            console.log("element StartAngle: ", Number(element["StartAngle"]))
+            console.log("EndAngle: ", EndAngle)
+            console.log("element EndAngle: ", Number(element["EndAngle"]))
+          return true
+          }
+        }
+      }
+    }
+
+    MatchingTimings();
+
     if (StartTime.split(":")[0] > EndTime.split(":")[0]) {
       Alert.alert("Invalid TimeZone", "Your Start Time is ahead of End Time")
     }
+    else if (MatchingWorks() == true) {
+      Alert.alert("Duplicate Work", `You have a ${WorkToDo} Work already present in today's Schedule`)
+    }
+    else if (MatchingTimings() == true) {
+      Alert.alert("Timings Collided", `This time period is colliding with another time period in today's Schedule`)
+    }
+    else if (WorkToDo == "") {
+      Alert.alert("Empty Subject", `Please enter Subject name`)
+    }
     else {
+      var whoosh = new Sound('savebutton_click.mp3', Sound.MAIN_BUNDLE, (error: Error | null) => {
+        if (error) {
+          console.log('failed to load the sound', error);
+          return;
+        }
+        // loaded successfully
+        console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
+      
+        // Play the sound with an onEnd callback
+        whoosh.play((success: boolean) => {
+          if (success) {
+            console.log('successfully finished playing');
+          } else {
+            console.log('playback failed due to audio decoding errors');
+          }
+        });
+      });
       dispatch(addScheduleObject(newTask));
     }
   };

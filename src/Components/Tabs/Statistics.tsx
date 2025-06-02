@@ -54,6 +54,7 @@ type MonthlyAnalyticsModalPropsType = {
 }
 
 const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
+  const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
   function StringDateToDateConvert(stringDate: string) {
     // + converts string to number
     let [day, month, year] = stringDate.split('/')
@@ -89,7 +90,7 @@ const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
             </View>
             <View style={{flex: 7, paddingLeft: 10,paddingRight: 10, paddingTop: 10}}>
               <ScrollView showsVerticalScrollIndicator={false}>
-                {demoData.map((eachSubject, index) => {
+                {ExistingSubjectsArray.map((eachSubject, index) => {
                   // Filter the Dataframe for dates within the range
                   const filteredDataframe = eachSubject.Dataframe.filter((eachDataframeObject) => {
                     const date = StringDateToDateConvert(eachDataframeObject.Date);
@@ -108,13 +109,13 @@ const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
                   return (
                   <View key={index} style={{height: 40, borderRadius: 10, backgroundColor: '#8a8a8a', flexDirection: 'row', paddingLeft: 20, paddingRight: 20, marginBottom: 5}}>
                       <View style={{flex: 0.4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{eachSubject.Subject}</Text>
+                          <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>{eachSubject.Subject}</Text>
                       </View>
                       <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}>
                         <Image source={RightArrowTwo} style={{height: 25, width: 25}}/>
                       </View>
                       <View style={{flex: 0.4, justifyContent: 'center', alignItems: 'flex-end'}}>
-                          <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{totalWorkDone} mins</Text>
+                          <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>{totalWorkDone} mins</Text>
                       </View>
                   </View>
                 )})}
@@ -127,6 +128,7 @@ const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
 }
 
 const MonthlyAnalyticsModal = (props: MonthlyAnalyticsModalPropsType) => {
+  const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
     const filteredData: {"uniqueID": string, "Subject": string, "value": number, "activeStrokeColor": string}[] = []
 
     function parseDate(dateStr: string) {
@@ -138,8 +140,8 @@ const MonthlyAnalyticsModal = (props: MonthlyAnalyticsModalPropsType) => {
     let EndDate = endOfMonth(StartDate)
     const ColorList = ['#e84118', '#badc58', '#18dcff', '#ff9f1a', '#b233ff', '#ff5733', '#33ff96']
 
-    for (let index = 0; index < demoData.length; index++) {
-      const element = demoData[index];
+    for (let index = 0; index < ExistingSubjectsArray.length; index++) {
+      const element = ExistingSubjectsArray[index];
       const AddingList = []
       for (let indexTwo = 0; indexTwo < element.Dataframe.length; indexTwo++) {
         const eachDataframeObject = element.Dataframe[indexTwo];
@@ -201,13 +203,13 @@ const MonthlyAnalyticsModal = (props: MonthlyAnalyticsModalPropsType) => {
                         <View style={{height: 10, width: 10, justifyContent: 'center', alignItems: 'flex-start', borderRadius: 20, backgroundColor: eachSubject.activeStrokeColor}}></View>
                       </View>
                       <View style={{flex: 0.3, justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{eachSubject.Subject}</Text>
+                          <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>{eachSubject.Subject}</Text>
                       </View>
                       <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}>
                         <Image source={RightArrowTwo} style={{height: 25, width: 25}}/>
                       </View>
                       <View style={{flex: 0.4, justifyContent: 'center', alignItems: 'flex-end'}}>
-                          <Text style={{fontFamily: 'sf-pro-display-bold', color: 'white'}}>{formatMinutesToHours(eachSubject.value)}</Text>
+                          <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>{formatMinutesToHours(eachSubject.value)}</Text>
                       </View>
                   </View>
                 )})}
@@ -387,8 +389,8 @@ const Statistics = () => {
     const ColorList = ['#e84118', '#badc58', '#18dcff', '#ff9f1a', '#b233ff', '#ff5733', '#33ff96']
     const RadiusList = [56, 48, 40, 32, 24, 16, 8]
 
-    for (let index = 0; index < demoData.length; index++) {
-      const element = demoData[index];
+    for (let index = 0; index < ExistingSubjectsArray.length; index++) {
+      const element = ExistingSubjectsArray[index];
       const AddingList = []
       for (let indexTwo = 0; indexTwo < element.Dataframe.length; indexTwo++) {
         const eachDataframeObject = element.Dataframe[indexTwo];
