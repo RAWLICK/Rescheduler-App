@@ -127,8 +127,14 @@ const TaskCompletionBoard = () => {
   const [showPicker, setShowPicker] = useState(false);
   const [alarmString, setAlarmString] = useState<string | null>(null);
   type PercentageArrayType = {
-    uniqueID: string,
-    percentage: number
+    SubjectUniqueID: string,
+    percentage: number,
+    ProgressInfo: {
+      "Date": string,
+      "Percentage": string,
+      "Duration": string,
+      "Work-Done-For": string
+    }
   }
   const [PercentageArray, setPercentageArray] = useState<PercentageArrayType[]>([])
   const percentageArrayRef = useRef<number[]>([]);
@@ -150,45 +156,57 @@ const TaskCompletionBoard = () => {
     {max: 284.31, duration: '3h 45 min', boxNum: 14},
     {max: 310, duration: '4h', boxNum: 15},
   ];
+  const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
 
-  function getTimeByPercentage(timeString: string, percentage: number) {
-    // Extract hours and minutes from the input string
-    const hourMatch = timeString.match(/(\d+)\s*h/);
-    const minMatch = timeString.match(/(\d+)\s*min/);
-  
-    const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
-    const minutes = minMatch ? parseInt(minMatch[1]) : 0;
-  
-    // Total time in minutes
-    const totalMinutes = hours * 60 + minutes;
-  
-    // Calculate percentage of time
-    const resultMinutes = Math.round((totalMinutes * percentage) / 100);
-  
-    // Convert back to hours and minutes
-    const resultHours = Math.floor(resultMinutes / 60);
-    const remainingMinutes = resultMinutes % 60;
-  
-    // Format output string
-    let output = '';
-    if (resultHours > 0) output += `${resultHours}h `;
-    if (remainingMinutes > 0 || resultHours === 0) output += `${remainingMinutes}min`;
-  
-    return output.trim();
-  }
-
-  const updatePercentageArray = (uniqueID: string, percentage: number) => {
+  const updatePercentageArray = (uniqueID: string, percentage: number, Current_Duration: string) => {
+    function getTimeByPercentage(timeString: string, percentage: number) {
+      // Extract hours and minutes from the input string
+      const hourMatch = timeString.match(/(\d+)\s*h/);
+      const minMatch = timeString.match(/(\d+)\s*min/);
+    
+      const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+      const minutes = minMatch ? parseInt(minMatch[1]) : 0;
+    
+      // Total time in minutes
+      const totalMinutes = hours * 60 + minutes;
+    
+      // Calculate percentage of time
+      const resultMinutes = Math.round((totalMinutes * percentage) / 100);
+    
+      // // Convert back to hours and minutes
+      // const resultHours = Math.floor(resultMinutes / 60);
+      // const remainingMinutes = resultMinutes % 60;
+    
+      // // Format output string
+      // let output = '';
+      // if (resultHours > 0) output += `${resultHours}h `;
+      // if (remainingMinutes > 0 || resultHours === 0) output += `${remainingMinutes}min`;
+    
+      return `${resultMinutes}min`.trim();
+    }
     setPercentageArray((prev) => {
       let newArray = [...prev];
-      const found = newArray.find((item) => item.uniqueID === uniqueID);
+      const found = newArray.find((item) => item.SubjectUniqueID === uniqueID);
       if (found) {
         found.percentage = percentage;
+        found.ProgressInfo = {
+            "Date": `${currentNumDate}/${currentMonth}/${currentYear}`,
+            "Percentage": `${percentage}%`,
+            "Duration": Current_Duration,
+            "Work-Done-For": getTimeByPercentage(Current_Duration, percentage)
+        }
       }
       else {
         newArray.push({ 
-          "uniqueID": uniqueID, 
-          "percentage": percentage 
+          "SubjectUniqueID": uniqueID,
+          "percentage": percentage,
+          "ProgressInfo" : {
+            "Date": `${currentNumDate}/${currentMonth}/${currentYear}`,
+            "Percentage": `${percentage}%`,
+            "Duration": Current_Duration,
+            "Work-Done-For": getTimeByPercentage(Current_Duration, percentage)
+          }
         });
       }
       return newArray;
@@ -224,7 +242,7 @@ const TaskCompletionBoard = () => {
   }
 
   function DisplayingPercentage (uniqueID: string) {
-    const found = PercentageArray.find((item) => item.uniqueID === uniqueID);
+    const found = PercentageArray.find((item) => item.SubjectUniqueID === uniqueID);
     if (found) {
       return found.percentage;
     }
@@ -260,12 +278,34 @@ const TaskCompletionBoard = () => {
     setShowPicker(true);
   }
 
-  const OkBoardClick = () => {
+  const OkBoardClick = async () => {
     dispatch(addExistingSubjectsWorkDoneObject(PercentageArray));
     dispatch(updateStreakInfo("Increase"));
     onDisplayNotification();
     setBoardIsVisible(false);
     setPopUpIsVisible(true);
+    try {
+      const response = await fetch (
+      // Platform.OS === 'ios'? 'http://localhost:5000/UpdateExistingSubjectsArray':'http://192.168.131.92:5000/UpdateExistingSubjectsArray',
+      'https://rescheduler-server.onrender.com/UpdateExistingSubjectsArray',
+      {
+      method: 'POST', // Specify the request method
+      headers: {
+          'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+      },
+      body: JSON.stringify({
+          "uniqueID": StudentInfo["uniqueID"],
+          "Streak": Number(StudentInfo["Streak"]) + 1,
+          "Process": "AddCompletion",
+          "PercentageArray": PercentageArray
+        })
+      })
+      if (!response.ok) {  // Handle HTTP errors
+      throw new Error('Failed to fetch data from the server');
+      }
+    } catch (error) {
+        console.error('Catch Error: ', error);
+    }
     console.log("Existing Subjects Array: ", ExistingSubjectsArray)
   }
 
@@ -276,6 +316,7 @@ const TaskCompletionBoard = () => {
 
   useEffect(() => {
     console.log("Percentage Array: ", PercentageArray)
+    // console.log("ExistingSubjects Array: ", ExistingSubjectsArray)
   }, [PercentageArray])
 
   return (
@@ -311,6 +352,7 @@ const TaskCompletionBoard = () => {
                   const MovedRadar = useSharedValue<number>(0);
                   const FinalRadar = useSharedValue<number>(65);
                   const uniqueID = eachSubject["uniqueID"];
+                  const Current_Duration = eachSubject["Current_Duration"]
                   const lastPercentage = useSharedValue<number>(25);
 
                   const pan = Gesture.Pan()
@@ -369,7 +411,7 @@ const TaskCompletionBoard = () => {
 
                     if (newPercentage !== lastPercentage.value) {
                       lastPercentage.value = newPercentage;
-                      runOnJS(updatePercentageArray)(uniqueID, newPercentage);
+                      runOnJS(updatePercentageArray)(uniqueID, newPercentage, Current_Duration);
                     }
 
                     // runOnJS helps in running code on JavaScript thread instead on UI Thread

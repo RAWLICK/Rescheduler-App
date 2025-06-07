@@ -48,6 +48,7 @@ const AddingStudent = (props: AddingStudentType) => {
   let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
   let currentYear = currentDate.getFullYear();
   let currentDateandMonth = `${currentNumDate}/${currentMonth}/${currentYear}`;
+  const StudentsData = useSelector((state: RootState) => state.StudentsDataArraySliceReducer.StudentsDataArrayInitialState);
 
   const SaveButton = async() => {
     const newStudentTable = {
@@ -56,47 +57,132 @@ const AddingStudent = (props: AddingStudentType) => {
       "Phone_Number": PhoneNumber,
       "Branch": props.ActiveBranch
     }
-    
-    let NewStudent = {
-        "uniqueID": newStudentTable.uniqueID,
-        "Name": newStudentTable.Student_Name,
-        "Phone Number": newStudentTable.Phone_Number,
-        "Date Joined": currentDateandMonth,
-        "Email ID": "",
-        "Gender": "",
-        "Streak": "",
-        "Subscription Type": "Library",
-        "Distribution Name": props.StudentInfoData["Distribution Name"],
-        "Distribution Branch": props.ActiveBranch,
-        "Distribution ID": props.StudentInfoData["Distribution ID"],
-        "City": props.StudentInfoData["City"],
-        "State": props.StudentInfoData["State"],
-        "Country": props.StudentInfoData["Country"],
-        "Type of Account": "User"
-    }
-    try {
-      const response = await fetch(
-        // Platform.OS === 'ios'? 'http://localhost:5000/AddStudent':'http://10.0.2.2:5000/AddStudent',
-        'https://rescheduler-server.onrender.com/AddStudent',
-        {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(NewStudent),
-      })
 
-      if (!response.ok) {  // Handle HTTP errors
-        throw new Error('Failed to add data to the server');
+    function MatchingPhoneNumber() {
+      for (let index = 0; index < StudentsData.length; index++) {
+        const eachData = StudentsData[index];
+        if (eachData['Phone_Number'] === PhoneNumber) {
+          return true;
+        }
       }
-      else if (response.ok) {
+      return false;
+    }
+
+    async function IsFunctionRegistered() {
+      try {
+          const response = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/MatchNumber':'http://192.168.31.141:5000/MatchNumber',
+          'https://rescheduler-server.onrender.com/MatchNumber',
+          {
+          method: 'POST', // Specify the request method
+          headers: {
+              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          },
+          body: JSON.stringify(PhoneNumber), // Convert the request payload to JSON.
+          })
+  
+          if (!response.ok) {  // Handle HTTP errors
+            throw new Error('Failed to fetch data from the server');
+          }
+  
+          const fetched_data = await response.json(); // Parse JSON response
+          console.log("Is Number Registred? : ", fetched_data)
+          if (fetched_data === "true") {
+            return true;
+          } else if (fetched_data === "false") {
+            return false;
+          } else {
+            console.log("Invalid Response from Server");
+          }
+      } catch (error) {
+        console.error('Catch Error: ', error);
+        console.log("Failed to connect to the backend");
+      }
+    };
+
+    if (MatchingPhoneNumber() == true) {
+      Alert.alert("Phone Number Already Exists", "This Phone Number is already present in one of you Library Branches")
+    }
+    else if (StudentName == "" || PhoneNumber == "") {
+      Alert.alert("Empty Fields", "Please fill all the fields before saving the student")
+    }
+    else if (PhoneNumber.length < 10 || PhoneNumber.length > 10) {
+      Alert.alert("Invalid Phone Number", "Please enter a valid 10 digit phone number")
+    }
+    else if (await IsFunctionRegistered()) {
+      try {
+        const response = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/UpdateStudent':'http://10.0.2.2:5000/UpdateStudent',
+        'https://rescheduler-server.onrender.com/UpdateStudent',
+        {
+          method: 'POST', // Specify the request method
+          headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          },
+          body: JSON.stringify({
+            "Type": "Phone Number",
+            "Value": PhoneNumber,
+            "Updates": {
+              "Name": StudentName,
+              "Distribution Name": props.StudentInfoData["Distribution Name"],
+              "Distribution ID": props.StudentInfoData["Distribution ID"],
+              "Distribution Branch": props.ActiveBranch,
+              "Subscription Type": "Library",
+            }
+          }), // Convert the request payload to JSON.
+        })
+        if (!response.ok) {  // Handle HTTP errors
+          throw new Error('Failed to fetch data to the server');
+        }
         const fetched_data = await response.json();
-        console.log("Fetched Data: ", fetched_data)
+        console.log("Fetched Message: ", fetched_data)
         dispatch(addStudentObject(newStudentTable));
+      } catch (error) {
+        console.error('Catch Error: ', error);
       }
-    }   
-    catch (error) {
-      console.error('Catch Error: ', error);
+    }
+    else {
+      let NewStudent = {
+          "uniqueID": newStudentTable.uniqueID,
+          "Name": newStudentTable.Student_Name,
+          "Phone Number": newStudentTable.Phone_Number,
+          "Date Joined": currentDateandMonth,
+          "Email ID": "",
+          "Gender": "",
+          "Streak": 1,
+          "Subscription Type": "Library",
+          "Distribution Name": props.StudentInfoData["Distribution Name"],
+          "Distribution Branch": props.ActiveBranch,
+          "Distribution ID": props.StudentInfoData["Distribution ID"],
+          "City": props.StudentInfoData["City"],
+          "State": props.StudentInfoData["State"],
+          "Country": props.StudentInfoData["Country"],
+          "Type of Account": "User"
+      }
+      try {
+        const response = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/AddStudent':'http://10.0.2.2:5000/AddStudent',
+          'https://rescheduler-server.onrender.com/AddStudent',
+          {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(NewStudent),
+        })
+
+        if (!response.ok) {  // Handle HTTP errors
+          throw new Error('Failed to add data to the server');
+        }
+        else if (response.ok) {
+          const fetched_data = await response.json();
+          console.log("Fetched Data: ", fetched_data)
+          dispatch(addStudentObject(newStudentTable));
+        }
+      }   
+      catch (error) {
+        console.error('Catch Error: ', error);
+      }
     }
   }
 
@@ -127,7 +213,6 @@ const AddingStudent = (props: AddingStudentType) => {
             style={{
               flex: 1,
               justifyContent: 'center',
-              alignItems: 'flex-start',
             }}>
             <TextInput
               style={styles.OptionText}
@@ -142,8 +227,7 @@ const AddingStudent = (props: AddingStudentType) => {
         <View
             style={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
+              justifyContent: 'center'
             }}>
             <TextInput
               style={styles.OptionText}
@@ -214,11 +298,15 @@ const AppDistributor = () => {
         // console.log("Fetched Distributor: ", fetched_data)
         let BranchList = fetched_data["Other Branches List"]
         if (BranchList.length > 0) {
+          let BranchObjectArray = []
+          BranchObjectArray.push({label: StudentInfoData['Distribution Branch'], value: '1' })
           for (let index = 0; index < BranchList.length; index++) {
             const element = BranchList[index];
-            let BranchObject = {label: element, value: (index + 2).toString()}
-            setLibraryBranchesData((prev) => [...prev, BranchObject])
+            // let BranchObject = {label: element, value: (index + 2).toString()}
+            BranchObjectArray.push({label: element, value: (index + 2).toString()})
           }
+          console.log("Branch Object Array: ", BranchObjectArray)
+          setLibraryBranchesData(BranchObjectArray)
         }
       } catch (error) {
         console.error('Catch Error: ', error);
@@ -233,12 +321,12 @@ const AppDistributor = () => {
       prevCount.current = studentSearch; // Update previous value after the render
     }, [studentSearch]);
 
-    const StudentData = useSelector((state: RootState) => state.StudentsDataArraySliceReducer.StudentsDataArrayInitialState)
+    const StudentsData = useSelector((state: RootState) => state.StudentsDataArraySliceReducer.StudentsDataArrayInitialState)
     
     const StudentDataList = useMemo(() => {
       const table: string[][] = [];
-      for (let index = 0; index < StudentData.length; index++) {
-        const eachData = StudentData[index];
+      for (let index = 0; index < StudentsData.length; index++) {
+        const eachData = StudentsData[index];
         if (eachData['Branch'] == ActiveBranch) {
           table.push([
             eachData['Student_Name'],
@@ -248,7 +336,7 @@ const AppDistributor = () => {
         }
       }
       return table;
-    }, [StudentData, ActiveBranch]);
+    }, [StudentsData, ActiveBranch]);
     
     const [StudentDataTable, setStudentDataTable] = useState<StudentDataTableType>({
       tableHead: ['Student', 'Number', 'Remove'],
@@ -260,7 +348,7 @@ const AppDistributor = () => {
         tableHead: ['Student', 'Number', 'Remove'],
         tableData: StudentDataList
       })
-    }, [StudentData, ActiveBranch])
+    }, [StudentsData, ActiveBranch])
 
     const filteredData = useMemo(() => {
     return studentSearch.length > prevCount.current.length
@@ -371,7 +459,7 @@ const AppDistributor = () => {
               </TouchableOpacity>
             </View>
             <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>App Distributor</Text>
+              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: 'black'}}>App Distributor</Text>
             </View>
             <View style={{flex: 0.1}}>
             </View>
@@ -507,7 +595,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
         fontSize: 16,
-        paddingLeft: width * 0.12
+        paddingLeft: width * 0.12,
+        color: 'black',
     },
     container: {
         backgroundColor: 'white',
@@ -534,11 +623,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         fontSize: 11,
         fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
+        color: 'grey'
       },
       placeholderStyle: {
         fontSize: 16,
         fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
-
       },
       selectedTextStyle: {
         fontSize: 16,

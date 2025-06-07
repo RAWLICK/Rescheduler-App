@@ -167,7 +167,7 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='OtpVerificationStack'>
+      <Stack.Navigator initialRouteName='TaskCompletionBoardStack'>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -181,7 +181,7 @@ function App(): React.JSX.Element {
 
   function DrawerNav() {
     return (
-    <Drawer.Navigator initialRouteName={TrialValidity() == false ? "SubscriptionDrawer" : "TabsDrawer"}
+    <Drawer.Navigator initialRouteName={"TabsDrawer"}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
       drawerStyle: {

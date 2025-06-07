@@ -15,10 +15,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux' 
 import { RootState } from '../../app/Store';
 import { addDays } from "date-fns";
+import { NavigationProp } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 
 const Subscription = () => {
-  const navigation = useNavigation<CombinedNavigationProp>();
+  const navigation = useNavigation<NavigationProp<any, any>>();
   const insets = useSafeAreaInsets();
 
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
@@ -45,9 +46,9 @@ const Subscription = () => {
         <View style={{ height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
           <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center' }}>
             {TrialValidity() == false ?
-              <View>
-
-              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('StackScreens', { screen: 'SignInStack'}) } style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Image source={require('../Images/LogOut.png')} style={{width: 30, height: 30}}/>
+              </TouchableOpacity>
               :
               <TouchableOpacity
                 onPress={() =>
@@ -130,7 +131,7 @@ const Subscription = () => {
 
         <View>
           <View style={{ justifyContent: 'center', alignItems: 'center', height: 30, marginBottom: 10, marginTop: 10}}>
-            <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 15, }}>OR</Text>
+            <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 15, color: 'black'}}>OR</Text>
           </View>
           <TouchableOpacity style={{
             justifyContent: 'center',

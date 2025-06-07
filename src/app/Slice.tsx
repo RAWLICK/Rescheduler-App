@@ -159,6 +159,40 @@ export const ScheduleArraySlice = createSlice({
                 return a.StartAngle - b.StartAngle;
             });
         },
+        addWholeScheduleArray: (state, action) => {
+            const ScheduleArray = action.payload;
+            state.ScheduleArrayInitialState = []
+            for (let index = 0; index < ScheduleArray.length; index++) {
+                const element = ScheduleArray[index];
+                const ScheduleObject = {
+                    "uniqueID": element.uniqueID,
+                    "StartTime": element.StartTime,
+                    "EndTime": element.EndTime,
+                    "Work": element.Work,
+                    "StartAngle": element.StartAngle,
+                    "EndAngle": element.EndAngle,
+                    "TaskDate": element.TaskDate,
+                    "Slice_Color": element.Slice_Color
+                }
+                state.ScheduleArrayInitialState.push(ScheduleObject)
+            }
+            state.ScheduleArrayInitialState.sort((a, b) => {
+                const formatDate = (dateStr: string) => {
+                    const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
+                    return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+                };
+        
+                const dateA = formatDate(a.TaskDate);
+                const dateB = formatDate(b.TaskDate);
+        
+                // Compare TaskDate first
+                if (dateA < dateB) return -1;
+                if (dateA > dateB) return 1;
+        
+                // If TaskDate is the same, compare StartAngle
+                return a.StartAngle - b.StartAngle;
+            });
+        }
     }
 })
 
@@ -183,49 +217,15 @@ export const ExistingSubjectsArraySlice = createSlice({
             }
         },
         addExistingSubjectsWorkDoneObject: (state, action) => {
-            const currentDate = new Date();
-            let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
-            let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-            let currentYear = currentDate.getFullYear();
             const PercentageArray = action.payload
-            function getTimeByPercentage(timeString: string, percentage: number) {
-                // Extract hours and minutes from the input string
-                const hourMatch = timeString.match(/(\d+)\s*h/);
-                const minMatch = timeString.match(/(\d+)\s*min/);
-              
-                const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
-                const minutes = minMatch ? parseInt(minMatch[1]) : 0;
-              
-                // Total time in minutes
-                const totalMinutes = hours * 60 + minutes;
-              
-                // Calculate percentage of time
-                const resultMinutes = Math.round((totalMinutes * percentage) / 100);
-              
-                // // Convert back to hours and minutes
-                // const resultHours = Math.floor(resultMinutes / 60);
-                // const remainingMinutes = resultMinutes % 60;
-              
-                // // Format output string
-                // let output = '';
-                // if (resultHours > 0) output += `${resultHours}h `;
-                // if (remainingMinutes > 0 || resultHours === 0) output += `${remainingMinutes}min`;
-              
-                return `${resultMinutes}min`.trim();
-            }
             for (let index = 0; index < PercentageArray.length; index++) {
                 const element = PercentageArray[index];
-                const findInData = state.ExistingSubjectsArrayInitialState.find((item) => item["uniqueID"] === element.uniqueID);
-                if (findInData) {
-                findInData["Dataframe"].push({
-                    "Date": `${currentNumDate}/${currentMonth}/${currentYear}`,
-                    "Percentage": `${element.percentage}%`,
-                    "Duration": findInData["Current_Duration"],
-                    "Work-Done-For": getTimeByPercentage(findInData["Current_Duration"], element.percentage)
-                });
+                const findInSubject = state.ExistingSubjectsArrayInitialState.find((item) => item["uniqueID"] === element.SubjectUniqueID);
+                if (findInSubject) {
+                    findInSubject["Dataframe"].push(element.ProgressInfo);
                 }
                 else {
-                console.log("Not Found")
+                    console.log("Not Found")
                 }
             }
             for (let index = 0; index < state.ExistingSubjectsArrayInitialState.length; index++) {
@@ -247,10 +247,6 @@ export const ExistingSubjectsArraySlice = createSlice({
                     });
                 }
             }
-            // for (let index = 0; index < state.ExistingSubjectsArrayInitialState.length; index++) {
-            //     const element = state.ExistingSubjectsArrayInitialState[index];
-            //     element["Dataframe"] = []
-            // }
         },
         removeExistingSubjectsObject: (state, action) => {
             state.ExistingSubjectsArrayInitialState = state.ExistingSubjectsArrayInitialState.filter((item) => item.uniqueID !== action.payload)
@@ -267,6 +263,20 @@ export const ExistingSubjectsArraySlice = createSlice({
                 if (eachSubject["uniqueID"] == action.payload.uniqueID) {
                     eachSubject["Dataframe"].push(PerformedStat)
                 }
+            }
+        },
+        addWholeExistingSubjectsArray: (state, action) => {
+            const ExistingSubjectsArray = action.payload;
+            state.ExistingSubjectsArrayInitialState = []
+            for (let index = 0; index < ExistingSubjectsArray.length; index++) {
+                const element = ExistingSubjectsArray[index];
+                const ExistingSubjectsObject = {
+                    "uniqueID": element.uniqueID,
+                    "Subject": element.Subject,
+                    "Current_Duration": element.Current_Duration,
+                    "Dataframe": element.Dataframe || [] // Ensure Dataframe is initialized as an empty array if not provided
+                }
+                state.ExistingSubjectsArrayInitialState.push(ExistingSubjectsObject)
             }
         }
     }
@@ -288,15 +298,29 @@ export const StudentsDataArraySlice = createSlice({
 
         removeStudentObject: (state, action) => {
             state.StudentsDataArrayInitialState = state.StudentsDataArrayInitialState.filter((item) => item.uniqueID !== action.payload)
+        },
+        addWholeStudentsDataArray: (state, action) => {
+            const StudentsDataArray = action.payload;
+            state.StudentsDataArrayInitialState = []
+            for (let index = 0; index < StudentsDataArray.length; index++) {
+                const element = StudentsDataArray[index];
+                const NewStudent = {
+                    "uniqueID": element.uniqueID,
+                    "Student_Name": element.Student_Name,
+                    "Phone_Number": element.Phone_Number,
+                    "Branch": element.Branch,
+                }
+                state.StudentsDataArrayInitialState.push(NewStudent)
+            }
         }
     }
 })
 
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
 export const { registerUserInfo, updateStreakInfo } = StudentInfoSlice.actions
-export const { addScheduleObject, removeScheduleObject } = ScheduleArraySlice.actions
-export const { addExistingSubjectsObject, EditExistingSubjectObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject } = ExistingSubjectsArraySlice.actions
-export const { addStudentObject, removeStudentObject } = StudentsDataArraySlice.actions
+export const { addScheduleObject, removeScheduleObject, addWholeScheduleArray } = ScheduleArraySlice.actions
+export const { addExistingSubjectsObject, EditExistingSubjectObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, addWholeExistingSubjectsArray } = ExistingSubjectsArraySlice.actions
+export const { addStudentObject, removeStudentObject, addWholeStudentsDataArray } = StudentsDataArraySlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 

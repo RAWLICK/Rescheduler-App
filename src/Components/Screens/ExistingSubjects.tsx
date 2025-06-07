@@ -32,20 +32,44 @@ type ExistingSubjectsPropsType = {
 }
 
 const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   const dispatch = useDispatch();
-  const RemovingWork = (uniqueID: string) => {
+  const RemovingWork = async (uniqueID: string) => {
     dispatch(removeExistingSubjectsObject(uniqueID))
     props.setSubjectSettingDialogBoxStatus(false);
+    try {
+      const response = await fetch(
+        // Platform.OS === 'ios'? 'http://localhost:5000/UpdateExistingSubjectsArray':'http://192.168.131.92:5000/UpdateExistingSubjectsArray',
+        'https://rescheduler-server.onrender.com/UpdateExistingSubjectsArray',
+        {
+        method: 'POST', // Specify the request method
+        headers: {
+          'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+        },
+        body: JSON.stringify(
+          {"uniqueID": StudentInfoData["uniqueID"],
+            "Process": "Delete",
+            "StatsSubjectUniqueID": uniqueID
+          }
+        ), // Convert the request payload to JSON.
+      })
+
+      if (!response.ok) {  // Handle HTTP errors
+        throw new Error('Failed to fetch data from the server');
+      }
+    } catch (error) {
+      console.error('Catch Error: ', error);
+    }
   }
   return (
-    <Modal visible={props.SubjectSettingDialogBoxStatus} animationType='fade'>
+    <Modal transparent={true} visible={props.SubjectSettingDialogBoxStatus} animationType='fade'>
     <TouchableWithoutFeedback onPress={props.handleOutsidePress}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <BlurView
           style={styles.blurStyle}
           blurType="dark"
           blurAmount={10}
-          reducedTransparencyFallbackColor="black"
+          // reducedTransparencyFallbackColor="black"
         />
         <View style={[styles.subjectEditDialogBox, {backgroundColor: '#3F3F41'}]}>
           <TouchableOpacity style={{flex: 0.5, flexDirection: 'row', columnGap: 20, borderBottomWidth: 0.5, borderColor: 'grey'}} onPress={props.EditingSubjectsButton}>
@@ -76,7 +100,7 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
   const AddingSubjectsSheet = useRef<TrueSheet>(null);
   const EditingSubjectsSheet = useRef<TrueSheet>(null);
   const [SubjectSettingDialogBoxStatus, setSubjectSettingDialogBoxStatus] = useState(false)
-  const [EditTrueSheetStatus, setEditTrueSheetStatus] = useState(false)
+  // const [EditTrueSheetStatus, setEditTrueSheetStatus] = useState(false)
   const [uniqueIDToBeEdited, setuniqueIDToBeEdited] = useState('')
   
   async function AddingSubjectsButton () {
@@ -90,7 +114,9 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
   }
 
   async function EditingSubjectsButton () {
-    setEditTrueSheetStatus(false);
+    console.log("Editing Subjects Button Pressed")
+    setSubjectSettingDialogBoxStatus(false)
+    // await props.ExistingSubjectSheet.current?.dismiss();
     await EditingSubjectsSheet.current?.present();
   }
 

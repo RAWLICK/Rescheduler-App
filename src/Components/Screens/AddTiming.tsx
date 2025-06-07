@@ -431,6 +431,7 @@ const AddTiming = () => {
   const [PrevScheduleStatus, setPrevScheduleStatus] = useState(false)
   const dispatch = useDispatch();
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
 
   let currentDate = new Date();
   let currentHours = currentDate.getHours().toString().padStart(2, '0');
@@ -650,7 +651,7 @@ const AddTiming = () => {
     degreeConverter(StartTime, EndTime);
   }, [StartTime, EndTime]);
 
-  const SaveButton = () => {
+  const SaveButton = async () => {
     let newTask = {
       uniqueID: nanoid(10),
       StartTime: StartTime,
@@ -709,25 +710,51 @@ const AddTiming = () => {
       Alert.alert("Empty Subject", `Please enter Subject name`)
     }
     else {
-      var whoosh = new Sound('savebutton_click.mp3', Sound.MAIN_BUNDLE, (error: Error | null) => {
-        if (error) {
-          console.log('failed to load the sound', error);
-          return;
-        }
-        // loaded successfully
-        console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
-      
-        // Play the sound with an onEnd callback
-        whoosh.play((success: boolean) => {
-          if (success) {
-            console.log('successfully finished playing');
-          } else {
-            console.log('playback failed due to audio decoding errors');
+      if (Platform.OS == 'android') {
+        var whoosh = new Sound('savebutton_click.mp3', Sound.MAIN_BUNDLE, (error: Error | null) => {
+          if (error) {
+            console.log('failed to load the sound', error);
+            return;
           }
+          // loaded successfully
+          console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
+        
+          // Play the sound with an onEnd callback
+          whoosh.play((success: boolean) => {
+            if (success) {
+              console.log('successfully finished playing');
+            } else {
+              console.log('playback failed due to audio decoding errors');
+            }
+          });
         });
-      });
+      }
       dispatch(addScheduleObject(newTask));
-    }
+      
+      try {
+        const response = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/':'http://192.168.131.92:5000/',
+          'https://rescheduler-server.onrender.com/UpdateScheduleArray',
+          {
+          method: 'POST', // Specify the request method
+          headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          },
+          body: JSON.stringify(
+            {"uniqueID": StudentInfoData["uniqueID"],
+             "Process": "Add",
+             "SubjectInfoObject": newTask
+            }
+          ), // Convert the request payload to JSON.
+        })
+  
+        if (!response.ok) {  // Handle HTTP errors
+          throw new Error('Failed to fetch data from the server');
+        }
+      } catch (error) {
+        console.error('Catch Error: ', error);
+      }
+    };
   };
 
   useEffect(() => {

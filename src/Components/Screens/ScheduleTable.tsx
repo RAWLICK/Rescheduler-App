@@ -29,6 +29,7 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
   const [Title, setTitle] = useState('')
   const [RingAlarmArray, setRingAlarmArray] = useState<number[]>([])
   const [hourRotation, setHourRotation] = useState(0);
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   // Import the react-native-sound module
   var Sound = require('react-native-sound');
 
@@ -95,8 +96,31 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
     }
   }
 
-  function DeleteTask(id: string) {
+  async function DeleteTask(id: string) {
     dispatch(removeScheduleObject(id));
+    try {
+      const response = await fetch(
+        // Platform.OS === 'ios'? 'http://localhost:5000/':'http://192.168.131.92:5000/',
+        'https://rescheduler-server.onrender.com/UpdateScheduleArray',
+        {
+        method: 'POST', // Specify the request method
+        headers: {
+          'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+        },
+        body: JSON.stringify(
+          {"uniqueID": StudentInfoData["uniqueID"],
+            "Process": "Delete",
+            "SubjectUniqueID": id
+          }
+        ), // Convert the request payload to JSON.
+      })
+
+      if (!response.ok) {  // Handle HTTP errors
+        throw new Error('Failed to fetch data from the server');
+      }
+    } catch (error) {
+      console.error('Catch Error: ', error);
+    }
   }
 
   function ClickedAlarm(index: number) {

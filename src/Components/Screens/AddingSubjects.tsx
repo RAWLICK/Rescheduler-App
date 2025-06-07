@@ -56,9 +56,10 @@ const AddingSubjects = () => {
   const color = 'blue';
   const [showPicker, setShowPicker] = useState(false);
   const [durationString, setDurationString] = useState<string | null>('1h 0min');
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
 
-  const ExistingSubjectSaveButton = () => {
+  const ExistingSubjectSaveButton = async () => {
     const newExistingSubject = {
       "uniqueID": nanoid(10),
       "Subject": SubjectName,
@@ -81,6 +82,29 @@ const AddingSubjects = () => {
     }
     else {
       dispatch(addExistingSubjectsObject(newExistingSubject));
+      try {
+        const response = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/UpdateExistingSubjectsArray':'http://192.168.131.92:5000/UpdateExistingSubjectsArray',
+          'https://rescheduler-server.onrender.com/UpdateExistingSubjectsArray',
+          {
+          method: 'POST', // Specify the request method
+          headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          },
+          body: JSON.stringify(
+            {"uniqueID": StudentInfoData["uniqueID"],
+             "Process": "Add",
+             "StatsSubjectInfoObject": newExistingSubject
+            }
+          ), // Convert the request payload to JSON.
+        })
+  
+        if (!response.ok) {  // Handle HTTP errors
+          throw new Error('Failed to fetch data from the server');
+        }
+      } catch (error) {
+        console.error('Catch Error: ', error);
+      }
     }
   }   
 
@@ -111,7 +135,7 @@ const AddingSubjects = () => {
             style={{
               flex: 1,
               justifyContent: 'center',
-              alignItems: 'flex-start',
+              // alignItems: 'flex-start',
             }}>
             <TextInput
               style={styles.OptionText}

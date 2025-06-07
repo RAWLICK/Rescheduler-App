@@ -1210,7 +1210,17 @@ const Schedule: React.FC = () => {
         })
         }
         else if (Platform.OS == 'ios') {
-          Alert.alert("No Internet", `Please turn on mobile data or Wi-Fi. Don't Worry, we don't show ADs 😌`)
+          function Disconnected() {
+            Alert.alert("No Internet", `Please turn on mobile data or Wi-Fi. Don't Worry, we don't show ADs 😌`,
+              [
+                {
+                  text: "OK",
+                  onPress: () => Disconnected()
+                }
+              ],
+            )
+          }
+          Disconnected();
         }
       }
       else {
