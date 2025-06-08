@@ -11,12 +11,16 @@ import { useState, useEffect } from 'react';
 // import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useDispatch, useSelector } from 'react-redux' 
 import { registerUserInfo } from '../../app/Slice';
-import { addWholeScheduleArray, addWholeExistingSubjectsArray, addWholeStudentsDataArray } from '../../app/Slice';
+import { addWholeScheduleArray, addWholeExistingSubjectsArray, addWholeStudentsDataArray, updateLocalStorageInfo } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Auth0 from 'react-native-auth0';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import { StudentInfoDataType } from '../../app/Slice';
+import { ScheduleArrayItem } from '../Screens/AddTiming';
+import { ExistingSubjectsArrayItem } from '../../app/Slice';
+import { addDays, subDays } from "date-fns";
+import { CommonActions } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 type HeaderPanelPropsType = {};
 
@@ -48,26 +52,9 @@ type VerificationPanelPropsType = {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const VerificationPanel = (props: VerificationPanelPropsType) => {
+const VerificationPanel = (props: VerificationPanelPropsType) => {  
     const [Countdown, setCountdown] = useState<number>(60)
     const [ResendStatus, setResendStatus] = useState(false)
-    const [tempStudentInfo, settempStudentInfo] = useState<StudentInfoDataType>(
-        {"uniqueID" : '',
-        "Name": '',
-        "Phone Number": '',
-        "Date Joined": '',
-        "Email ID": '',
-        "Gender": '',
-        "Streak": 1,
-        "Subscription Type": '',
-        "Distribution Name": '',
-        "Distribution Branch": '',
-        "Distribution ID": '',
-        "City": '',
-        "State": '',
-        "Country": '',
-        "Type of Account": ''}
-    )
     const dispatch = useDispatch();
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     let currentDate = new Date();
@@ -75,12 +62,30 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
     let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
     let currentYear = currentDate.getFullYear();
     let currentDateandMonth = `${currentNumDate}/${currentMonth}/${currentYear}`;
+    let currentHourTime = currentDate.getHours();
+    let currentMinTime = currentDate.getMinutes();
+    let currentSecTime = currentDate.getSeconds();
     let fetched_StudentInfo: StudentInfoDataType | null = null
+    let fetched_ScheduleArray: ScheduleArrayItem[] | null = null
+    let fetched_ExistingSubjectsArray: ExistingSubjectsArrayItem[] | null = null
     const navigation = useNavigation<NavigationProp<any, any>>();
     const auth0 = new Auth0({
         domain: 'dev-euawlucdljtesr0z.us.auth0.com',
         clientId: 'MgGS4kNAn4YSeC5lqwlJ9bM3hcCk7Cus',
     });  
+
+    function TrialValidity() {
+        const currentDate = new Date();
+        const formatDate = (dateStr: string) => {
+          const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
+          return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+        };
+        if (currentDate >= addDays(formatDate(StudentInfoData["Date Joined"]), 7) && StudentInfoData["Subscription Type"] == "Free") {
+        // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
+          Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
+          return false;
+        }
+    }
 
     async function VerifyButton() {
         props.setLoading(true)
@@ -139,7 +144,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                       throw new Error('Failed to download data from the server');
                     }
                     // props.setLoading(false)
-                    const fetched_ScheduleArray = await ScheduleArrayResponse.json();
+                    fetched_ScheduleArray = await ScheduleArrayResponse.json();
                     console.log("Fetched ScheduleArray: ", fetched_ScheduleArray)
                     dispatch(addWholeScheduleArray(fetched_ScheduleArray))
                     // console.log("Student Signed In");
@@ -168,7 +173,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     if (!ExistingSubjectsResponse.ok) {  // Handle HTTP errors
                       throw new Error('Failed to download data from the server');
                     }
-                    const fetched_ExistingSubjectsArray = await ExistingSubjectsResponse.json();
+                    fetched_ExistingSubjectsArray = await ExistingSubjectsResponse.json();
                     console.log("Fetched ExistingSubjectsArray: ", fetched_ExistingSubjectsArray)
                     dispatch(addWholeExistingSubjectsArray(fetched_ExistingSubjectsArray))
 
@@ -200,11 +205,405 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     }
                     console.log("Student Signed In");
                     props.setLoading(false)
-                    navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
                     
                 } catch (error) {
                     console.error('Catch Error: ', error);
                     props.setLoading(false)
+                }
+
+                if (fetched_ScheduleArray?.length === 0) {
+                    if (currentHourTime > 0 && currentHourTime < 6) {
+                        let yesterdayDate = subDays(currentDate, 1);
+                        let yesterdayNumDate = yesterdayDate.getDate().toString().padStart(2, '0');
+                        let yesterdayMonth = (yesterdayDate.getMonth() + 1).toString().padStart(2, '0');
+                        let yesterdayYear = yesterdayDate.getFullYear();
+                        let yesterdayDateandMonth = `${yesterdayNumDate}/${yesterdayMonth}/${yesterdayYear}`;
+                        const TestingSubjects = [
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "23:00",
+                                "EndTime": "24:00",
+                                "Work": "Hindi",
+                                "StartAngle": 690,
+                                "EndAngle": 720,
+                                "TaskDate": yesterdayDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "01:00",
+                                "EndTime": "02:00",
+                                "Work": "Physics",
+                                "StartAngle": 30,
+                                "EndAngle": 60,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "03:00",
+                                "EndTime": "04:00",
+                                "Work": "Chemistry",
+                                "StartAngle": 90,
+                                "EndAngle": 120,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "05:00",
+                                "EndTime": "06:00",
+                                "Work": "Biology",
+                                "StartAngle": 150,
+                                "EndAngle": 180,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "06:00",
+                                "EndTime": "07:00",
+                                "Work": "History",
+                                "StartAngle": 180,
+                                "EndAngle": 210,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "07:00",
+                                "EndTime": "08:00",
+                                "Work": "English",
+                                "StartAngle": 210,
+                                "EndAngle": 240,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "09:00",
+                                "EndTime": "10:00",
+                                "Work": "Maths",
+                                "StartAngle": 270,
+                                "EndAngle": 300,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            }
+                        ]
+                        dispatch(addWholeScheduleArray(TestingSubjects))
+                    }
+                    else if (currentHourTime > 6 && currentHourTime < 12) {
+                        const TestingSubjects = [
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "05:00",
+                                "EndTime": "06:00",
+                                "Work": "Physics",
+                                "StartAngle": 150,
+                                "EndAngle": 180,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "07:00",
+                                "EndTime": "08:00",
+                                "Work": "Chemistry",
+                                "StartAngle": 210,
+                                "EndAngle": 240,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "09:00",
+                                "EndTime": "10:00",
+                                "Work": "Biology",
+                                "StartAngle": 270,
+                                "EndAngle": 300,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "11:00",
+                                "EndTime": "12:00",
+                                "Work": "History",
+                                "StartAngle": 330,
+                                "EndAngle": 360,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "12:00",
+                                "EndTime": "13:00",
+                                "Work": "English",
+                                "StartAngle": 360,
+                                "EndAngle": 390,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "13:00",
+                                "EndTime": "14:00",
+                                "Work": "Maths",
+                                "StartAngle": 390,
+                                "EndAngle": 420,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "15:00",
+                                "EndTime": "16:00",
+                                "Work": "Hindi",
+                                "StartAngle": 450,
+                                "EndAngle": 480,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            }
+                        ]
+                        dispatch(addWholeScheduleArray(TestingSubjects))
+                    }
+                    else if (currentHourTime > 12 && currentHourTime < 18) {
+                        const TestingSubjects = [
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "11:00",
+                                "EndTime": "12:00",
+                                "Work": "Physics",
+                                "StartAngle": 330,
+                                "EndAngle": 360,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "13:00",
+                                "EndTime": "14:00",
+                                "Work": "Chemistry",
+                                "StartAngle": 390,
+                                "EndAngle": 420,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "15:00",
+                                "EndTime": "16:00",
+                                "Work": "Biology",
+                                "StartAngle": 450,
+                                "EndAngle": 480,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "17:00",
+                                "EndTime": "18:00",
+                                "Work": "History",
+                                "StartAngle": 510,
+                                "EndAngle": 540,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "18:00",
+                                "EndTime": "19:00",
+                                "Work": "English",
+                                "StartAngle": 540,
+                                "EndAngle": 570,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "19:00",
+                                "EndTime": "20:00",
+                                "Work": "Maths",
+                                "StartAngle": 570,
+                                "EndAngle": 600,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "21:00",
+                                "EndTime": "22:00",
+                                "Work": "Hindi",
+                                "StartAngle": 630,
+                                "EndAngle": 660,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            }
+                        ]
+                        dispatch(addWholeScheduleArray(TestingSubjects))
+                    }
+                    else if (currentHourTime > 18 && currentHourTime < 24) {
+                        let nextdayDate = addDays(currentDate, 1);
+                        let nextdayNumDate = nextdayDate.getDate().toString().padStart(2, '0');
+                        let nextdayMonth = (nextdayDate.getMonth() + 1).toString().padStart(2, '0');
+                        let nextdayYear = nextdayDate.getFullYear();
+                        let nextdayDateandMonth = `${nextdayNumDate}/${nextdayMonth}/${nextdayYear}`;
+                        const TestingSubjects = [
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "17:00",
+                                "EndTime": "18:00",
+                                "Work": "Physics",
+                                "StartAngle": 510,
+                                "EndAngle": 540,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "19:00",
+                                "EndTime": "20:00",
+                                "Work": "Chemistry",
+                                "StartAngle": 570,
+                                "EndAngle": 600,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "21:00",
+                                "EndTime": "22:00",
+                                "Work": "Biology",
+                                "StartAngle": 630,
+                                "EndAngle": 660,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "23:00",
+                                "EndTime": "24:00",
+                                "Work": "History",
+                                "StartAngle": 690,
+                                "EndAngle": 720,
+                                "TaskDate": currentDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "00:00",
+                                "EndTime": "01:00",
+                                "Work": "English",
+                                "StartAngle": 0,
+                                "EndAngle": 30,
+                                "TaskDate": nextdayDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "01:00",
+                                "EndTime": "02:00",
+                                "Work": "Maths",
+                                "StartAngle": 30,
+                                "EndAngle": 60,
+                                "TaskDate": nextdayDateandMonth,
+                                "Slice_Color": "blue"
+                            },
+                            {
+                                "uniqueID": nanoid(10),
+                                "StartTime": "03:00",
+                                "EndTime": "04:00",
+                                "Work": "Hindi",
+                                "StartAngle": 90,
+                                "EndAngle": 120,
+                                "TaskDate": nextdayDateandMonth,
+                                "Slice_Color": "blue"
+                            }
+                        ]
+                        dispatch(addWholeScheduleArray(TestingSubjects))
+                    }
+                }
+
+                if (fetched_ExistingSubjectsArray?.length === 0) {
+                    const TestingStatsSubjects = [
+                        {
+                            "uniqueID": nanoid(10),
+                            "Subject": "Physics",
+                            "Current_Duration": "1h 0min",
+                            "Dataframe": []
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "Subject": "Chemistry",
+                            "Current_Duration": "1h 0min",
+                            "Dataframe": []
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "Subject": "Maths",
+                            "Current_Duration": "1h 0min",
+                            "Dataframe": []
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "Subject": "History",
+                            "Current_Duration": "1h 0min",
+                            "Dataframe": []
+                        }
+                    ]
+                    dispatch(addWholeExistingSubjectsArray(TestingStatsSubjects))
+                }
+
+                dispatch(updateLocalStorageInfo("Login"));
+                // Resetting the navigation stack to SignInStack. Now the history of the previous screens will be cleared.
+                // This is done to prevent the user from going back to the otp screens after logging in.
+                // here state are nested navigtators
+                // First come state and inside there are routes which then create new navigation stack
+                // routes[0] is 'DrawerScreens', so it becomes the active root screen. It means: “Activate the first screen (at position 0) from the routes array.”
+                if (TrialValidity() == false) {
+                    navigation.dispatch(
+                        CommonActions.reset({
+                            index: 0,
+                            routes: [
+                                {
+                                    name: 'DrawerScreens',
+                                    state: {
+                                        routes: [
+                                            {
+                                                name: 'SubscriptionDrawer',
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        })
+                    );
+                }
+                else {
+                    navigation.dispatch(
+                        CommonActions.reset({
+                            index: 0,
+                            routes: [
+                            {
+                                name: 'DrawerScreens',
+                                state: {
+                                    routes: [
+                                        {
+                                        name: 'TabsDrawer',
+                                        state: {
+                                            routes: [
+                                            {
+                                                name: 'ScheduleTab',
+                                            },
+                                            ],
+                                        },
+                                        },
+                                    ],
+                                },
+                            },
+                            ],
+                        })
+                    );
                 }
             }
             catch (error) {
@@ -269,12 +668,377 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                   const fetched_data = await response.json();
                   console.log("Fetched Data: ", fetched_data)
                   dispatch(registerUserInfo(NewStudent))
+                  if (currentHourTime > 0 && currentHourTime < 6) {
+                    let yesterdayDate = subDays(currentDate, 1);
+                    let yesterdayNumDate = yesterdayDate.getDate().toString().padStart(2, '0');
+                    let yesterdayMonth = (yesterdayDate.getMonth() + 1).toString().padStart(2, '0');
+                    let yesterdayYear = yesterdayDate.getFullYear();
+                    let yesterdayDateandMonth = `${yesterdayNumDate}/${yesterdayMonth}/${yesterdayYear}`;
+                    const TestingSubjects = [
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "23:00",
+                            "EndTime": "24:00",
+                            "Work": "Hindi",
+                            "StartAngle": 690,
+                            "EndAngle": 720,
+                            "TaskDate": yesterdayDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "01:00",
+                            "EndTime": "02:00",
+                            "Work": "Physics",
+                            "StartAngle": 30,
+                            "EndAngle": 60,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "03:00",
+                            "EndTime": "04:00",
+                            "Work": "Chemistry",
+                            "StartAngle": 90,
+                            "EndAngle": 120,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "05:00",
+                            "EndTime": "06:00",
+                            "Work": "Biology",
+                            "StartAngle": 150,
+                            "EndAngle": 180,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "06:00",
+                            "EndTime": "07:00",
+                            "Work": "History",
+                            "StartAngle": 180,
+                            "EndAngle": 210,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "07:00",
+                            "EndTime": "08:00",
+                            "Work": "English",
+                            "StartAngle": 210,
+                            "EndAngle": 240,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "09:00",
+                            "EndTime": "10:00",
+                            "Work": "Maths",
+                            "StartAngle": 270,
+                            "EndAngle": 300,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        }
+                    ]
+                    dispatch(addWholeScheduleArray(TestingSubjects))
+                  }
+                  else if (currentHourTime > 6 && currentHourTime < 12) {
+                    const TestingSubjects = [
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "05:00",
+                            "EndTime": "06:00",
+                            "Work": "Physics",
+                            "StartAngle": 150,
+                            "EndAngle": 180,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "07:00",
+                            "EndTime": "08:00",
+                            "Work": "Chemistry",
+                            "StartAngle": 210,
+                            "EndAngle": 240,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "09:00",
+                            "EndTime": "10:00",
+                            "Work": "Biology",
+                            "StartAngle": 270,
+                            "EndAngle": 300,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "11:00",
+                            "EndTime": "12:00",
+                            "Work": "History",
+                            "StartAngle": 330,
+                            "EndAngle": 360,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "12:00",
+                            "EndTime": "13:00",
+                            "Work": "English",
+                            "StartAngle": 360,
+                            "EndAngle": 390,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "13:00",
+                            "EndTime": "14:00",
+                            "Work": "Maths",
+                            "StartAngle": 390,
+                            "EndAngle": 420,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "15:00",
+                            "EndTime": "16:00",
+                            "Work": "Hindi",
+                            "StartAngle": 450,
+                            "EndAngle": 480,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        }
+                    ]
+                    dispatch(addWholeScheduleArray(TestingSubjects))
+                  }
+                  else if (currentHourTime > 12 && currentHourTime < 18) {
+                    const TestingSubjects = [
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "11:00",
+                            "EndTime": "12:00",
+                            "Work": "Physics",
+                            "StartAngle": 330,
+                            "EndAngle": 360,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "13:00",
+                            "EndTime": "14:00",
+                            "Work": "Chemistry",
+                            "StartAngle": 390,
+                            "EndAngle": 420,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "15:00",
+                            "EndTime": "16:00",
+                            "Work": "Biology",
+                            "StartAngle": 450,
+                            "EndAngle": 480,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "17:00",
+                            "EndTime": "18:00",
+                            "Work": "History",
+                            "StartAngle": 510,
+                            "EndAngle": 540,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "18:00",
+                            "EndTime": "19:00",
+                            "Work": "English",
+                            "StartAngle": 540,
+                            "EndAngle": 570,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "19:00",
+                            "EndTime": "20:00",
+                            "Work": "Maths",
+                            "StartAngle": 570,
+                            "EndAngle": 600,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "21:00",
+                            "EndTime": "22:00",
+                            "Work": "Hindi",
+                            "StartAngle": 630,
+                            "EndAngle": 660,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        }
+                    ]
+                    dispatch(addWholeScheduleArray(TestingSubjects))
+                  }
+                  else if (currentHourTime > 18 && currentHourTime < 24) {
+                    let nextdayDate = addDays(currentDate, 1);
+                    let nextdayNumDate = nextdayDate.getDate().toString().padStart(2, '0');
+                    let nextdayMonth = (nextdayDate.getMonth() + 1).toString().padStart(2, '0');
+                    let nextdayYear = nextdayDate.getFullYear();
+                    let nextdayDateandMonth = `${nextdayNumDate}/${nextdayMonth}/${nextdayYear}`;
+                    const TestingSubjects = [
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "17:00",
+                            "EndTime": "18:00",
+                            "Work": "Physics",
+                            "StartAngle": 510,
+                            "EndAngle": 540,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "19:00",
+                            "EndTime": "20:00",
+                            "Work": "Chemistry",
+                            "StartAngle": 570,
+                            "EndAngle": 600,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "21:00",
+                            "EndTime": "22:00",
+                            "Work": "Biology",
+                            "StartAngle": 630,
+                            "EndAngle": 660,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "23:00",
+                            "EndTime": "24:00",
+                            "Work": "History",
+                            "StartAngle": 690,
+                            "EndAngle": 720,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "00:00",
+                            "EndTime": "01:00",
+                            "Work": "English",
+                            "StartAngle": 0,
+                            "EndAngle": 30,
+                            "TaskDate": nextdayDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "01:00",
+                            "EndTime": "02:00",
+                            "Work": "Maths",
+                            "StartAngle": 30,
+                            "EndAngle": 60,
+                            "TaskDate": nextdayDateandMonth,
+                            "Slice_Color": "blue"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "03:00",
+                            "EndTime": "04:00",
+                            "Work": "Hindi",
+                            "StartAngle": 90,
+                            "EndAngle": 120,
+                            "TaskDate": nextdayDateandMonth,
+                            "Slice_Color": "blue"
+                        }
+                    ]
+                    dispatch(addWholeScheduleArray(TestingSubjects))
+                  }
+                  const TestingStatsSubjects = [
+                    {
+                        "uniqueID": nanoid(10),
+                        "Subject": "Physics",
+                        "Current_Duration": "1h 0min",
+                        "Dataframe": []
+                    },
+                    {
+                        "uniqueID": nanoid(10),
+                        "Subject": "Chemistry",
+                        "Current_Duration": "1h 0min",
+                        "Dataframe": []
+                    },
+                    {
+                        "uniqueID": nanoid(10),
+                        "Subject": "Maths",
+                        "Current_Duration": "1h 0min",
+                        "Dataframe": []
+                    },
+                    {
+                        "uniqueID": nanoid(10),
+                        "Subject": "History",
+                        "Current_Duration": "1h 0min",
+                        "Dataframe": []
+                    }
+                  ]
+                  dispatch(addWholeExistingSubjectsArray(TestingStatsSubjects))
                   console.log("Student Registered");
-                  navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
-                  
+                  dispatch(updateLocalStorageInfo("Login"));
+                  // Resetting the navigation stack to SignInStack. Now the history of the previous screens will be cleared.
+                    // This is done to prevent the user from going back to the otp screens after logging in.
+                    // here state are nested navigtators
+                    // First come state and inside there are routes which then create new navigation stack
+                    // routes[0] is 'DrawerScreens', so it becomes the active root screen. It means: “Activate the first screen (at position 0) from the routes array.”
+                  navigation.dispatch(
+                    CommonActions.reset({
+                        index: 0,
+                        routes: [
+                        {
+                            name: 'DrawerScreens',
+                            state: {
+                                routes: [
+                                    {
+                                    name: 'TabsDrawer',
+                                    state: {
+                                        routes: [
+                                        {
+                                            name: 'ScheduleTab',
+                                        },
+                                        ],
+                                    },
+                                    },
+                                ],
+                            },
+                        },
+                        ],
+                    })
+                );
                 } catch (error) {
                     props.setLoading(false)
-                  console.error('Catch Error: ', error);
+                    console.error('Catch Error: ', error);
                 }
             }
             catch (error) {

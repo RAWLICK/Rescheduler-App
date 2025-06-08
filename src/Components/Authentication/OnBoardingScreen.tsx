@@ -4,20 +4,20 @@ import SignInIcon from '../Images/SignInIcon.png'
 import React from 'react'
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux' 
+import { RootState } from '../../app/Store';
+import { updateLocalStorageInfo } from '../../app/Slice';
 
 const OnBoardingScreen = () => {
     const navigation = useNavigation<NavigationProp<any, any>>();
+    const dispatch = useDispatch();
     const Done = () => {
-    navigation.navigate('DrawerScreens', {
-        screen: 'TabsDrawer',
-        params: {
-            screen: 'ScheduleTab',
-            params: undefined
-        },
-    })
+        dispatch(updateLocalStorageInfo("FirstLaunch"));
+        navigation.navigate('StackScreens', { screen: 'SignInStack' })
     }
   return (
       <Onboarding
+      onSkip={Done}
       onDone={Done}
         pages={[
             {

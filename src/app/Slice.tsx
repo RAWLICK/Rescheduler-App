@@ -2,11 +2,11 @@
 import { createSlice} from "@reduxjs/toolkit";
 import { combineReducers } from "@reduxjs/toolkit";
 import { ScheduleArrayItem } from "../Components/Screens/AddTiming";
-import ExistingSubjects from "../Components/Screens/ExistingSubjects";
-// export type ExistingSubjectsArrayItem = {
-//     Work: string;
-//     Duration: string
-// }
+
+export type LocalStorageInfoDataType = {
+    "IsLoggedIn": boolean,
+    "IsFirstLaunch": boolean,
+}
 
 export type StudentInfoDataType = {
     "uniqueID": string,
@@ -49,6 +49,10 @@ export type StudentsDataArrayType = {
 
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
+    LocalStorageInfoInitialState: {
+        "IsLoggedIn": false,
+        "IsFirstLaunch": true
+    } as LocalStorageInfoDataType,
     StudentInfoInitialState : {} as StudentInfoDataType,
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
     ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[],
@@ -64,6 +68,24 @@ const initialState = {
 // Action is used to perform some action like removing the todo. So the values which will be required to put inside removeToDo like ID comes from action
 
 // Payload is a type of object which is used to store email, ids etc.
+
+export const LocalStorageInfoSlice = createSlice({
+    name: 'LocalStorageInfo',
+    initialState,
+    reducers: {
+        updateLocalStorageInfo: (state, action) => {
+            if (action.payload == "Login") {
+                state.LocalStorageInfoInitialState["IsLoggedIn"] = true
+            }
+            else if (action.payload == "Logout") {
+                state.LocalStorageInfoInitialState["IsLoggedIn"] = false
+            }
+            else if (action.payload == "FirstLaunch") {
+                state.LocalStorageInfoInitialState["IsFirstLaunch"] = false
+            }
+        }
+    }
+})
 
 export const StudentInfoSlice = createSlice({
     name: 'StudentInfo',
@@ -317,6 +339,7 @@ export const StudentsDataArraySlice = createSlice({
 })
 
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
+export const { updateLocalStorageInfo } = LocalStorageInfoSlice.actions
 export const { registerUserInfo, updateStreakInfo } = StudentInfoSlice.actions
 export const { addScheduleObject, removeScheduleObject, addWholeScheduleArray } = ScheduleArraySlice.actions
 export const { addExistingSubjectsObject, EditExistingSubjectObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, addWholeExistingSubjectsArray } = ExistingSubjectsArraySlice.actions
@@ -325,6 +348,7 @@ export const { addStudentObject, removeStudentObject, addWholeStudentsDataArray 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 
 const rootReducer = combineReducers({
+    LocalStorageInfoSliceReducer: LocalStorageInfoSlice.reducer,
     StudentInfoSliceReducer: StudentInfoSlice.reducer,
     ScheduleArraySliceReducer: ScheduleArraySlice.reducer,
     ExistingSubjectsArraySliceReducer: ExistingSubjectsArraySlice.reducer,

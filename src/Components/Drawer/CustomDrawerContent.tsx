@@ -7,13 +7,17 @@ import Infinity from '../Images/Infinity.png'
 import LogOut from '../Images/LogOut.png'
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
+import { updateLocalStorageInfo } from '../../app/Slice';
+import { CommonActions } from '@react-navigation/native';
 
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
+    const dispatch = useDispatch();
     const navigation = useNavigation<NavigationProp<any, any>>();
     const [NameHeading, setNameHeading] = useState("")
     const [SubscriptionHeading, setSubscriptionHeading] = useState("")
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     console.log(StudentInfoData)
+
     function SubscriptionHeadingDecider() {
         if (StudentInfoData['Subscription Type'] == "Free") {
             setSubscriptionHeading("Free Trial - 7 Days")
@@ -24,6 +28,26 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         else if (StudentInfoData['Subscription Type'] == "Infinite") {
             setSubscriptionHeading("Infinite")
         }
+    }
+
+    function LogoutPress() {
+        dispatch(updateLocalStorageInfo("Logout"));
+
+        // Resetting the navigation stack to SignInStack. Now the history of the previous screens will be cleared.
+        // This is done to prevent the user from going back to the previous screens after logging out.
+        navigation.dispatch(
+            CommonActions.reset({
+            index: 0,
+            routes: [
+                {
+                name: 'StackScreens',
+                state: {
+                    routes: [{ name: 'SignInStack' }],
+                },
+                },
+            ],
+            })
+        );
     }
 
     useEffect(() => {
@@ -54,7 +78,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         <DrawerItem
             label="Logout"
             labelStyle={{color: 'white', fontFamily: 'sf-pro-display-bold', fontSize: 14}}
-            onPress={() => navigation.navigate('StackScreens', { screen: 'SignInStack'}) }
+            onPress={LogoutPress}
             icon={() => <Image source={require('../Images/LogOut.png')} style={{width: 25, height: 25}}/>}
             style={{marginTop: 'auto'}}
         />

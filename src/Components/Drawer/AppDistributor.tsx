@@ -322,12 +322,13 @@ const AppDistributor = () => {
     }, [studentSearch]);
 
     const StudentsData = useSelector((state: RootState) => state.StudentsDataArraySliceReducer.StudentsDataArrayInitialState)
-    
+
     const StudentDataList = useMemo(() => {
       const table: string[][] = [];
+      
       for (let index = 0; index < StudentsData.length; index++) {
         const eachData = StudentsData[index];
-        if (eachData['Branch'] == ActiveBranch) {
+        if (eachData['Branch'] == ActiveBranch && eachData["uniqueID"] !== StudentInfoData.uniqueID) {
           table.push([
             eachData['Student_Name'],
             eachData['Phone_Number'],

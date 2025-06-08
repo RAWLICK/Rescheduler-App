@@ -85,7 +85,7 @@ const Clock = () => {
       const mTime = d.getMinutes();
       const sTime = d.getSeconds();
 
-      const hRotation = 30 * hTime + 0.5 * mTime;
+      const hRotation = 30 * hTime + 0.5 * mTime + (0.5 / 60) * sTime; // 30 degrees per hour + 0.5 degrees per minute + 0.0083 degrees per second
       const mRotation = 6 * mTime;
       const sRotation = 6 * sTime;
 
@@ -368,12 +368,15 @@ const Schedule: React.FC = () => {
     const currentHourTime = currentDate.getHours();
     const currentMinTime = currentDate.getMinutes();
     const currentSecTime = currentDate.getSeconds();
-    const currentDay = currentDate.getDate();
+    // const currentDay = currentDate.getDate();
+    const [currentDay, setCurrentDay] = useState(currentDate.getDate())
     const currentMonth = currentDate.getMonth() + 1;
     const currentYear = currentDate.getFullYear();
     const currentDateStringFormat = (`${currentDay.toString().padStart(2, '0')}/${currentMonth.toString().padStart(2, '0')}/${currentYear}`)
     const [selectedDate, setSelectedDate] = useState(currentDateStringFormat);
     const [hourRotation, setHourRotation] = useState(0);
+    const [minuteRotation, setMinuteRotation] = useState(0);
+    const [secondRotation, setSecondRotation] = useState(0);
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
     const [timeStart, settimeStart] = useState('')
@@ -641,10 +644,17 @@ const Schedule: React.FC = () => {
         const d = new Date();
         const hTime = d.getHours();
         const mTime = d.getMinutes();
+        const sTime = d.getSeconds();
   
-        const hRotation = 30 * hTime + 0.5 * mTime;
+        const hRotation = 30 * hTime + 0.5 * mTime + (0.5 / 60) * 30; // Calculate hour rotation based on current time
+        const mRotation = 6 * mTime;
+        const sRotation = 6 * sTime;
+
   
         setHourRotation(hRotation);
+        setMinuteRotation(mRotation);
+        setSecondRotation(sRotation);
+        setCurrentDay(d.getDate());
       }, 1000);
   
       // Clean up the interval on unmount
@@ -908,7 +918,7 @@ const Schedule: React.FC = () => {
           )}))}
         </Svg>
       );
-    }, [ScheduleArray, selectedDate, currentMinTime, rescheduleStatus]);
+    }, [ScheduleArray, selectedDate, minuteRotation, rescheduleStatus]);
   
     const AngleInfo = () => {
       return(
@@ -1188,7 +1198,7 @@ const Schedule: React.FC = () => {
 
     useEffect(() => {
       LabelChanging();
-    }, [ScheduleArray, currentMinTime, rescheduleStatus])
+    }, [ScheduleArray, currentMinTime, rescheduleStatus, currentSecTime])
 
     // useEffect(() => {
     //   console.log("Today's ScheduleArray: ", TodayScheduleArray)
@@ -1237,14 +1247,16 @@ const Schedule: React.FC = () => {
     useFocusEffect(
       useCallback(() => {
         if (Platform.OS === 'android') {
+          console.log("Focused on Schedule Screen")
           StatusBar.setBackgroundColor('transparent')
+          StatusBar.setTranslucent(true);
         }
         return () => {
           // optional cleanup when screen is unfocused
         };
       }, [])
     );
-    
+
     return (
       <>
       <View style={styles.safeView}>
@@ -1330,12 +1342,12 @@ const Schedule: React.FC = () => {
       </View>
       </>
     );
-  }
+}
 
   const styles = StyleSheet.create({
     safeView: {
       flex: 1,
-      backgroundColor: 'green'
+      backgroundColor: 'transparent'
     },
   
     mainStyle: {

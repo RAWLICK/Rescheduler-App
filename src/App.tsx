@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRef, useEffect } from 'react';
-import type {PropsWithChildren} from 'react';
 import { NavigationContainer, CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createBottomTabNavigator, BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -8,7 +7,6 @@ import { createDrawerNavigator, DrawerNavigationProp } from '@react-navigation/d
 import { createStackNavigator, TransitionPresets, StackNavigationProp } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
 import AddTiming from './Components/Screens/AddTiming';
-import Calender from './Components/Screens/CalenderView';
 import Schedule from './Components/Tabs/Schedule';
 import Statistics from './Components/Tabs/Statistics';
 import TaskCompletionBoard from './Components/Screens/TaskCompletionBoard';
@@ -20,21 +18,12 @@ import AdminPanel from './Components/Drawer/AdminPanel';
 import RoughComponent from './Components/Rough Work/RoughComponent';
 import RoughComponentTwo from './Components/Rough Work/RoughComponentTwo';
 import CustomDrawerContent from './Components/Drawer/CustomDrawerContent';
-import Navbar from './Components/Navbar/Navbar';
 import SignIn from './Components/Authentication/SignIn';
 import SignUp from './Components/Authentication/SignUp';
 import { View, Text, TouchableOpacity, Button, ImageSourcePropType, StyleSheet, Image, GestureResponderEvent, Platform, Alert} from 'react-native'
 import { useState } from 'react';
 import RescheduleIcon from './Components/Images/Reschedule.png'
 import StatisticsIcon from './Components/Images/StatisticsIcon.png'
-import { ScheduleArrayItem } from './Components/Screens/AddTiming';
-
-// import { ManualScheduleTable } from './Components/Screens/ScheduleTable';
-// import { CompressedScheduleTable } from './Components/Screens/ScheduleTable';
-import ScheduleTable from './Components/Screens/ScheduleTable';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { Store, persistor } from './app/Store'
 import OnBoardingScreen from './Components/Authentication/OnBoardingScreen';
 import { useDispatch, useSelector } from 'react-redux' 
 import { RootState } from '../src/app/Store';
@@ -120,6 +109,7 @@ function App(): React.JSX.Element {
   const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
 
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  const LocalStorageInfoData = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
   console.log(StudentInfoData)
 
   function TrialValidity() {
@@ -167,7 +157,7 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName='TaskCompletionBoardStack'>
+      <Stack.Navigator initialRouteName={LocalStorageInfoData["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -181,7 +171,7 @@ function App(): React.JSX.Element {
 
   function DrawerNav() {
     return (
-    <Drawer.Navigator initialRouteName={"TabsDrawer"}
+    <Drawer.Navigator initialRouteName={TrialValidity() == false? "SubscriptionDrawer" : "TabsDrawer"}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
       drawerStyle: {
@@ -219,7 +209,9 @@ function App(): React.JSX.Element {
           const {onPress, accessibilityState} = props;
           const isFocused = accessibilityState?.selected || false;
           // const label = route.options?.tabBarLabel || route.name
-
+          const label = route.name === 'ScheduleTab' ? 'Schedule' :
+                    route.name === 'StatisticsTab' ? 'Statistics' :
+                    route.name;
           let icon;
           if (route.name == 'ScheduleTab') {
             icon = RescheduleIcon;
@@ -229,7 +221,7 @@ function App(): React.JSX.Element {
           }
           return (
             <CustomTabButton
-             label={route.name}
+             label={label}
              Icon={icon}
              isFocused={isFocused}
              onPress={onPress} />
@@ -243,8 +235,8 @@ function App(): React.JSX.Element {
         },
       })}
       >
-        <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false, tabBarLabel: "Schedule" }}/>
-        <Tab.Screen name="StatisticsTab" component={Statistics} options={{ headerShown: false, tabBarLabel: "Statistics"}}/>
+        <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false }}/>
+        <Tab.Screen name="StatisticsTab" component={Statistics} options={{ headerShown: false }}/>
         {/* <Tab.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/> */}
       </Tab.Navigator>
     );
@@ -252,7 +244,7 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <NativeStack.Navigator initialRouteName="DrawerScreens">
+      <NativeStack.Navigator initialRouteName={LocalStorageInfoData["IsLoggedIn"]? "DrawerScreens": "StackScreens"}>
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
       </NativeStack.Navigator>

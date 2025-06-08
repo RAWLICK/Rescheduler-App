@@ -36,6 +36,18 @@ const Subscription = () => {
       return false;
     }
   }
+
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS === 'android') {
+        console.log("Focused on Subscription Screen")
+        StatusBar.setBackgroundColor('#d6d3da')
+      }
+      return () => {
+        // optional cleanup when screen is unfocused
+      };
+    }, [])
+  );
   return (
     <View style={{ flex: 1 }}>
       <StatusBar

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import Navbar from '../Navbar/Navbar'
 import { BarChart } from 'react-native-chart-kit'
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
@@ -14,6 +14,7 @@ import AddTwo from "../Images/AddTwo.png"
 import LeftArrow from '../Images/LeftArrow.png'
 import RightArrowTwo from '../Images/RightArrowTwo.png'
 import ExistingSubjects from '../Screens/ExistingSubjects';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   SafeAreaView,
   ScrollView,
@@ -462,6 +463,18 @@ const Statistics = () => {
     scrollingCondition()
   // }, [currentDate.getDate()])
   }, [])
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (Platform.OS === 'android') {
+  //       console.log("Focused on Stats Screen")
+  //       StatusBar.setBackgroundColor('#D2CFE4')
+  //     }
+  //     return () => {
+  //       // optional cleanup when screen is unfocused
+  //     };
+  //   }, [])
+  // );
   
   return (
     <SafeAreaView style={styles.safeView}>
