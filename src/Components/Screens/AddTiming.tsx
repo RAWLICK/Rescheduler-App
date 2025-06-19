@@ -45,6 +45,7 @@ import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 // import { nanoid } from 'nanoid';
 import { nanoid } from "@reduxjs/toolkit";
+import { updateStreakInfo } from '../../app/Slice';
 import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import LinearGradient from 'react-native-linear-gradient';
@@ -407,6 +408,7 @@ export interface ScheduleArrayItem {
   Slice_Color: string;
 }
 import {CombinedNavigationProp} from '../../App';
+import { random } from 'nanoid';
 
 const AddTiming = () => {
   const isConnected = useInternetCheck();
@@ -414,7 +416,6 @@ const AddTiming = () => {
   const AddFromExistingWorkToggleSwitch = () => setAddFromExistingWorkButton(previousState => !previousState)
   const Message = 'Keep Faith';
   const navigation = useNavigation<CombinedNavigationProp>();
-  const color = 'blue';
   const DurationBoxes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   const DurationTag = ['0h', '1h', '2h', '3h', '4h'];
   const [NoteText, setNoteText] = useState('');
@@ -428,10 +429,33 @@ const AddTiming = () => {
   const [WorkToDo, setWorkToDo] = useState('');
   const [StartAngle, setStartAngle] = useState<number>();
   const [EndAngle, setEndAngle] = useState<number>();
+  const [colorIndex, setColorIndex] = useState(0);
   const [PrevScheduleStatus, setPrevScheduleStatus] = useState(false)
   const dispatch = useDispatch();
+  const color = [
+    "rgba(175, 193, 85, 0.5)",
+    "rgba(182, 108, 239, 0.5)",
+    "rgba(78, 161, 40, 0.5)",
+    "rgba(71, 214, 63, 0.5)",
+    "rgba(19, 249, 16, 0.5)",
+    "rgba(69, 221, 118, 0.5)", 
+    "rgba(17, 150, 214, 0.5) ",
+    "rgba(174, 182, 155, 0.5)",
+    "rgba(54, 147, 187, 0.5) ",
+    "rgba(49, 107, 93, 0.5)",
+    "rgba(12, 248, 250, 0.5) ",
+    "rgba(146, 120, 43, 0.5)", 
+    "rgba(38, 3, 93, 0.5)",
+    "rgba(240, 19, 80, 0.5)",
+    "rgba(227, 127, 0, 0.5)",
+    "rgba(38, 131, 56, 0.5)",
+    "rgba(57, 190, 200, 0.5)",
+    "rgba(28, 79, 20, 0.5)",
+    "rgba(82, 176, 27, 0.5)",
+    "rgba(191, 115, 181, 0.5)"
+  ]
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
-  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
 
   let currentDate = new Date();
   let currentHours = currentDate.getHours().toString().padStart(2, '0');
@@ -651,6 +675,11 @@ const AddTiming = () => {
     degreeConverter(StartTime, EndTime);
   }, [StartTime, EndTime]);
 
+  function randomColorIndex() {
+    const randomIndex = Math.floor(Math.random() * color.length);
+    return randomIndex;
+  }
+
   const SaveButton = async () => {
     let newTask = {
       uniqueID: nanoid(10),
@@ -660,7 +689,7 @@ const AddTiming = () => {
       StartAngle: StartAngle ?? 0,
       EndAngle: EndAngle ?? 0,
       TaskDate: TaskDate,
-      Slice_Color: color
+      Slice_Color: color[randomColorIndex()]
     };
 
     function MatchingWorks() {
@@ -683,6 +712,8 @@ const AddTiming = () => {
             StartAngle > Number(element["StartAngle"]) && StartAngle < Number(element["EndAngle"])
             || EndAngle < Number(element["EndAngle"]) && EndAngle > Number(element["StartAngle"])
             || EndAngle == Number(element["EndAngle"]) && StartAngle == Number(element["StartAngle"])
+            || StartAngle == Number(element["StartAngle"]) 
+            || EndAngle == Number(element["EndAngle"])
            )
             {
             console.log("StartAngle: ", StartAngle)
@@ -730,7 +761,7 @@ const AddTiming = () => {
         });
       }
       dispatch(addScheduleObject(newTask));
-      
+      setWorkToDo('');
       try {
         const response = await fetch(
           // Platform.OS === 'ios'? 'http://localhost:5000/':'http://192.168.131.92:5000/',
@@ -741,7 +772,7 @@ const AddTiming = () => {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
           body: JSON.stringify(
-            {"uniqueID": StudentInfoData["uniqueID"],
+            {"uniqueID": StudentInfoData[0]["uniqueID"],
              "Process": "Add",
              "SubjectInfoObject": newTask
             }
@@ -757,6 +788,10 @@ const AddTiming = () => {
     };
   };
 
+  useEffect(() => {
+    console.log("Color Index: ", colorIndex)
+  }, [colorIndex])
+  
   useEffect(() => {
       console.log("Is Connected from Settings: ", isConnected)
       if (isConnected == false) {
@@ -798,7 +833,7 @@ const AddTiming = () => {
             SaveButton={SaveButton}
             WorkToDo={WorkToDo}
             setWorkToDo={setWorkToDo}
-            color={color}
+            color={color[0]}
             DateTimeState={DateTimeState}
             setDateTimeState={setDateTimeState}
             TaskDate={TaskDate}
@@ -832,7 +867,7 @@ const AddTiming = () => {
               SaveButton={SaveButton}
               WorkToDo={WorkToDo}
               setWorkToDo={setWorkToDo}
-              color={color}
+              color={color[0]}
               DateTimeState={DateTimeState}
               setDateTimeState={setDateTimeState}
               TaskDate={TaskDate}
@@ -865,7 +900,7 @@ const AddTiming = () => {
               SaveButton={SaveButton}
               WorkToDo={WorkToDo}
               setWorkToDo={setWorkToDo}
-              color={color}
+              color={color[0]}
               DateTimeState={DateTimeState}
               setDateTimeState={setDateTimeState}
               TaskDate={TaskDate}
@@ -898,7 +933,7 @@ const AddTiming = () => {
               SaveButton={SaveButton}
               WorkToDo={WorkToDo}
               setWorkToDo={setWorkToDo}
-              color={color}
+              color={color[0]}
               DateTimeState={DateTimeState}
               setDateTimeState={setDateTimeState}
               TaskDate={TaskDate}

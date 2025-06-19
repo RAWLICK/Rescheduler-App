@@ -29,7 +29,7 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
   const [Title, setTitle] = useState('')
   const [RingAlarmArray, setRingAlarmArray] = useState<number[]>([])
   const [hourRotation, setHourRotation] = useState(0);
-  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
   // Import the react-native-sound module
   var Sound = require('react-native-sound');
 
@@ -108,7 +108,7 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
           'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
         },
         body: JSON.stringify(
-          {"uniqueID": StudentInfoData["uniqueID"],
+          {"uniqueID": StudentInfoData[0]["uniqueID"],
             "Process": "Delete",
             "SubjectUniqueID": id
           }

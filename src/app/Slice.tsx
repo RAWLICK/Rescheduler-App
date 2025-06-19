@@ -23,7 +23,8 @@ export type StudentInfoDataType = {
     "City": string,
     "State": string,
     "Country": string
-    "Type of Account": string
+    "Type of Account": string,
+    "RescheduledTimes": number
 }
 
 export type ExistingSubjectsDataframeArrayTypeItem = {
@@ -49,14 +50,15 @@ export type StudentsDataArrayType = {
 
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
-    LocalStorageInfoInitialState: {
+    LocalStorageInfoInitialState: [{
         "IsLoggedIn": false,
         "IsFirstLaunch": true
-    } as LocalStorageInfoDataType,
-    StudentInfoInitialState : {} as StudentInfoDataType,
+    }] as LocalStorageInfoDataType[],
+    StudentInfoInitialState : [] as StudentInfoDataType[],
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
     ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[],
-    StudentsDataArrayInitialState: [] as StudentsDataArrayType[]
+    StudentsDataArrayInitialState: [] as StudentsDataArrayType[],
+    DemoArrayInitialState: [{"DemoStatus": true}]
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -71,17 +73,17 @@ const initialState = {
 
 export const LocalStorageInfoSlice = createSlice({
     name: 'LocalStorageInfo',
-    initialState,
+    initialState: initialState.LocalStorageInfoInitialState,
     reducers: {
         updateLocalStorageInfo: (state, action) => {
             if (action.payload == "Login") {
-                state.LocalStorageInfoInitialState["IsLoggedIn"] = true
+                state[0]["IsLoggedIn"] = true
             }
             else if (action.payload == "Logout") {
-                state.LocalStorageInfoInitialState["IsLoggedIn"] = false
+                state[0]["IsLoggedIn"] = false
             }
             else if (action.payload == "FirstLaunch") {
-                state.LocalStorageInfoInitialState["IsFirstLaunch"] = false
+                state[0]["IsFirstLaunch"] = false
             }
         }
     }
@@ -89,7 +91,7 @@ export const LocalStorageInfoSlice = createSlice({
 
 export const StudentInfoSlice = createSlice({
     name: 'StudentInfo',
-    initialState,
+    initialState: initialState.StudentInfoInitialState,
     reducers: {
         registerUserInfo: (state, action) => {
             const Info = {
@@ -107,16 +109,17 @@ export const StudentInfoSlice = createSlice({
                 "City": action.payload.City,
                 "State": action.payload.State,
                 "Country": action.payload.Country,
-                "Type of Account": action.payload['Type of Account']
+                "Type of Account": action.payload['Type of Account'],
+                "RescheduledTimes": action.payload['RescheduledTimes'] || 0 // Default to 0 if not provided
             }
-            state.StudentInfoInitialState = Info
+            state.push(Info);
         },
         updateStreakInfo: (state, action) => {
             if (action.payload == "Increase") {
-                state.StudentInfoInitialState["Streak"] += 1
+                state[0]["Streak"] += 1
             }
             else if (action.payload == "Vanish") {
-                state.StudentInfoInitialState["Streak"] = 1
+                state[0]["Streak"] = 1
             }
         }
     }
@@ -338,12 +341,24 @@ export const StudentsDataArraySlice = createSlice({
     }
 })
 
+export const DemoArraySlice = createSlice({
+    name: 'DemoArray',
+    initialState: initialState.DemoArrayInitialState,
+    reducers: {
+        updateDemoStatus: (state, action) => {
+            state[0].DemoStatus = action.payload;
+            console.log("Demo Data Updated")
+        }
+    }
+})
+
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
 export const { updateLocalStorageInfo } = LocalStorageInfoSlice.actions
 export const { registerUserInfo, updateStreakInfo } = StudentInfoSlice.actions
 export const { addScheduleObject, removeScheduleObject, addWholeScheduleArray } = ScheduleArraySlice.actions
 export const { addExistingSubjectsObject, EditExistingSubjectObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, addWholeExistingSubjectsArray } = ExistingSubjectsArraySlice.actions
 export const { addStudentObject, removeStudentObject, addWholeStudentsDataArray } = StudentsDataArraySlice.actions
+export const { updateDemoStatus } = DemoArraySlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 
@@ -352,7 +367,8 @@ const rootReducer = combineReducers({
     StudentInfoSliceReducer: StudentInfoSlice.reducer,
     ScheduleArraySliceReducer: ScheduleArraySlice.reducer,
     ExistingSubjectsArraySliceReducer: ExistingSubjectsArraySlice.reducer,
-    StudentsDataArraySliceReducer: StudentsDataArraySlice.reducer
+    StudentsDataArraySliceReducer: StudentsDataArraySlice.reducer,
+    DemoArraySliceReducer: DemoArraySlice.reducer
 })
 
 export { rootReducer };

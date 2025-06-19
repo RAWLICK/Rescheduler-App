@@ -108,8 +108,8 @@ function App(): React.JSX.Element {
   const NativeStack = createNativeStackNavigator<NativeStackParamList>();
   const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
 
-  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-  const LocalStorageInfoData = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+  const LocalStorageInfoData = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer)
   console.log(StudentInfoData)
 
   function TrialValidity() {
@@ -118,7 +118,7 @@ function App(): React.JSX.Element {
       const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
       return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
     };
-    if (currentDate >= addDays(formatDate(StudentInfoData["Date Joined"]), 7) && StudentInfoData["Subscription Type"] == "Free") {
+    if (currentDate >= addDays(formatDate(StudentInfoData[0]["Date Joined"]), 7) && StudentInfoData[0]["Subscription Type"] == "Free") {
     // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
       Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
       return false;
@@ -157,7 +157,8 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName={LocalStorageInfoData["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
+      // <Stack.Navigator initialRouteName={LocalStorageInfoData["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
+      <Stack.Navigator initialRouteName={"TaskCompletionBoardStack"}>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -191,10 +192,10 @@ function App(): React.JSX.Element {
       <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/>
       <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
       <Drawer.Screen name="SubscriptionDrawer" component={Subscription} options={{ headerShown: false, title: "Subscription"}}/>
-      { (StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&
+      { (StudentInfoData?.[0]["Type of Account"] == "Distributor" || StudentInfoData?.[0]["Type of Account"] == "Admin") &&
       <Drawer.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
       }
-      { StudentInfoData?.["Type of Account"] == "Admin" &&
+      { StudentInfoData?.[0]["Type of Account"] == "Admin" &&
       <Drawer.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
       }
     </Drawer.Navigator>
@@ -244,7 +245,8 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <NativeStack.Navigator initialRouteName={LocalStorageInfoData["IsLoggedIn"]? "DrawerScreens": "StackScreens"}>
+      {/* <NativeStack.Navigator initialRouteName={LocalStorageInfoData["IsLoggedIn"]? "DrawerScreens": "StackScreens"}> */}
+      <NativeStack.Navigator initialRouteName={"StackScreens"}>
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
       </NativeStack.Navigator>

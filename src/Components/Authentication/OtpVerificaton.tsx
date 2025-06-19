@@ -56,7 +56,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
     const [Countdown, setCountdown] = useState<number>(60)
     const [ResendStatus, setResendStatus] = useState(false)
     const dispatch = useDispatch();
-    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
     let currentDate = new Date();
     let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
     let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
@@ -80,7 +80,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
           const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
           return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
         };
-        if (currentDate >= addDays(formatDate(StudentInfoData["Date Joined"]), 7) && StudentInfoData["Subscription Type"] == "Free") {
+        if (currentDate >= addDays(formatDate(StudentInfoData[0]["Date Joined"]), 7) && StudentInfoData[0]["Subscription Type"] == "Free") {
         // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
           Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
           return false;
@@ -647,7 +647,8 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     "City": "",
                     "State": "",
                     "Country": "",
-                    "Type of Account": "User"
+                    "Type of Account": "User",
+                    "RescheduledTimes": 0
                 }
                 try {
                   const response = await fetch(

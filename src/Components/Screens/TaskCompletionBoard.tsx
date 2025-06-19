@@ -1,4 +1,4 @@
-import { Modal, StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground, StatusBar, Platform } from 'react-native'
+import { Modal, StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground, StatusBar, Platform, Alert } from 'react-native'
 import React from 'react'
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { BlurView } from "@react-native-community/blur";
@@ -17,7 +17,7 @@ import {
     withSpring
   } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux' 
-import { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject } from '../../app/Slice';
+import { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, updateLocalStorageInfo, updateDemoStatus } from '../../app/Slice';
 import { updateStreakInfo } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { ExistingSubjectsArrayItem } from '../../app/Slice';
@@ -32,18 +32,35 @@ import { TimerPickerModal } from "react-native-timer-picker";
 import DemoLandingPage from '../Images/DemoLandingPage.jpeg';
 import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
 import { set } from 'date-fns';
+import {useNavigation} from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+import {CombinedNavigationProp} from '../../App';
+
+type PercentageArrayType = {
+    SubjectUniqueID: string,
+    percentage: number,
+    ProgressInfo: {
+      "Date": string,
+      "Percentage": string,
+      "Duration": string,
+      "Work-Done-For": string
+    }
+}
 
 type TaskCompletionPopUpPropsType = {
   popUpIsVisible: boolean
   setPopUpIsVisible: SetState<boolean>
   NextPopUpClick: () => void
+  PercentageArray: PercentageArrayType[]
 }
+
 export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
-  const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+  const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
+  
   return (
-    <Modal visible={props.popUpIsVisible} animationType='fade'>
+    <Modal visible={props.popUpIsVisible} animationType='fade' transparent= {true}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <BlurView
           style={styles.blurStyle}
@@ -60,12 +77,12 @@ export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
             />
               <View style={{flex:1, rowGap: 10}}>
                 <LinearGradient colors={['#f3b607', '#cdd309']} style={{flex: 5, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 10}}>
-                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of {StudentInfo.Streak} </Text>
+                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of {StudentInfo[0].Streak} </Text>
                   <LottieView source={AnimatedFire} autoPlay loop style={styles.lottie}></LottieView>
                 </LinearGradient>
                 <View style={{flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
                     <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
-                    <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}> By registering 7/7 works </Text>
+                    <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}> By registering {props.PercentageArray.length}/{ExistingSubjectsArray.length} works </Text>
                     <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
                 </View>
                 <TouchableOpacity style={{flex: 3, justifyContent: 'center', alignItems: 'center', backgroundColor: '#457fdf', borderRadius: 10}} onPress={props.NextPopUpClick}>
@@ -78,66 +95,20 @@ export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
   )
 }
 
-type DurationBoxPropsType = {
-  showPicker: boolean,
-  setShowPicker: SetState<boolean>,
-  alarmString: string | null
-  setAlarmString: SetState<string | null>
-  DurationBoxValue: string | null
-  setDurationBoxValue: SetState<string | null>
-}
-// const DurationBox = (props: DurationBoxPropsType) => {
-//   const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
-//     return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
-//   }
-//   return (
-//       <TimerPickerModal
-//           hideSeconds
-//           padHoursWithZero
-//           visible={props.showPicker}
-//           setIsVisible={props.setShowPicker}
-//           onConfirm={(pickedDuration) => {
-//             props.setAlarmString(formatTime(pickedDuration));
-//             props.setShowPicker(false);
-//             props.setDurationBoxValue(formatTime(pickedDuration))
-//             console.log("Duration Value: ", props.DurationBoxValue)
-//           }}
-//           modalTitle="Duration"
-//           onCancel={() => props.setShowPicker(false)}
-//           closeOnOverlayPress
-//           LinearGradient={LinearGradient}
-//           styles={{ theme: "dark" }}
-//           modalProps={{ overlayOpacity: 0.2 }}
-//       />
-//   )
-// }
-
 const TaskCompletionBoard = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation<CombinedNavigationProp>();
   const currentDate = new Date();
   let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
   let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
   let currentYear = currentDate.getFullYear();
   const [currentMin, setCurrentMin] = useState(currentDate.getMinutes());
-  const [boardIsVisible, setBoardIsVisible] = useState(false);
+  const [boardIsVisible, setBoardIsVisible] = useState(true);
   const [popUpIsVisible, setPopUpIsVisible] = useState(false);
   const DurationBoxes = [0, 1, 2, 3];
   const DurationTag = ['0%', '25%', '50%', '75%', '✓'];
   const [Duration, setDuration] = useState('1h');
-  const [showPicker, setShowPicker] = useState(false);
-  const [alarmString, setAlarmString] = useState<string | null>(null);
-  type PercentageArrayType = {
-    SubjectUniqueID: string,
-    percentage: number,
-    ProgressInfo: {
-      "Date": string,
-      "Percentage": string,
-      "Duration": string,
-      "Work-Done-For": string
-    }
-  }
   const [PercentageArray, setPercentageArray] = useState<PercentageArrayType[]>([])
-  const percentageArrayRef = useRef<number[]>([]);
   const durationRanges = [
     {max: 17.52, duration: '15 min', boxNum: 0},
     {max: 37.21, duration: '30 min', boxNum: 1},
@@ -156,7 +127,7 @@ const TaskCompletionBoard = () => {
     {max: 284.31, duration: '3h 45 min', boxNum: 14},
     {max: 310, duration: '4h', boxNum: 15},
   ];
-  const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer)
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
 
   const updatePercentageArray = (uniqueID: string, percentage: number, Current_Duration: string) => {
@@ -273,17 +244,32 @@ const TaskCompletionBoard = () => {
       },
     });
   }
-
-  function DurationClick () {
-    setShowPicker(true);
-  }
-
+  
   const OkBoardClick = async () => {
+    // console.log("Percentage Array in OkBoardclick: ", PercentageArray)
+    if (PercentageArray.length === 0) {
+      Alert.alert("Missing Subjects", ` No Subjects have been registered for Statistics. Please register all the subjects to gain the Streak`)
+      return;
+    }
+    else if (PercentageArray.length < ExistingSubjectsArray.length) {
+      Alert.alert("Missing Subjects", ` Only ${PercentageArray.length} / ${ExistingSubjectsArray.length} subjects are registered for Statistics. Please register all the subjects to gain the Streak`)
+      return;
+    }
     dispatch(addExistingSubjectsWorkDoneObject(PercentageArray));
+    // dispatch(updateLocalStorageInfo("Logout"));
     dispatch(updateStreakInfo("Increase"));
-    onDisplayNotification();
     setBoardIsVisible(false);
     setPopUpIsVisible(true);
+    // onDisplayNotification();
+
+    // navigation.navigate('DrawerScreens', {
+    //   screen: 'TabsDrawer',
+    //   params: {
+    //     screen: 'ScheduleTab',
+    //     params: undefined
+    //   },
+    // })
+
     try {
       const response = await fetch (
       // Platform.OS === 'ios'? 'http://localhost:5000/UpdateExistingSubjectsArray':'http://192.168.131.92:5000/UpdateExistingSubjectsArray',
@@ -294,8 +280,8 @@ const TaskCompletionBoard = () => {
           'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
       },
       body: JSON.stringify({
-          "uniqueID": StudentInfo["uniqueID"],
-          "Streak": Number(StudentInfo["Streak"]) + 1,
+          "uniqueID": StudentInfo[0]["uniqueID"],
+          "Streak": Number(StudentInfo[0]["Streak"]) + 1,
           "Process": "AddCompletion",
           "PercentageArray": PercentageArray
         })
@@ -306,18 +292,30 @@ const TaskCompletionBoard = () => {
     } catch (error) {
         console.error('Catch Error: ', error);
     }
-    console.log("Existing Subjects Array: ", ExistingSubjectsArray)
   }
 
   const NextPopUpClick = () => {
+    console.log("Next Button in popup Clicked")
     setPopUpIsVisible(false);
     setPercentageArray([])
   }
 
-  useEffect(() => {
-    console.log("Percentage Array: ", PercentageArray)
-    // console.log("ExistingSubjects Array: ", ExistingSubjectsArray)
-  }, [PercentageArray])
+  // useEffect(() => {
+  //   // console.log("Percentage Array: ", PercentageArray)
+  //   // console.log("Board Button: ", boardIsVisible)
+  //   console.log("ExistingSubjects Array: ", ExistingSubjectsArray)
+  // }, [ExistingSubjectsArray])
+
+  // useEffect(() => {
+  //   console.log("Percentage Array: ", PercentageArray)
+  // }, [PercentageArray])
+  
+
+  // console.log("Rendering TaskCompletionBoard");
+  // useEffect(() => {
+  //   console.log("Mounted TaskCompletionBoard");
+  //   return () => console.log("Unmounted TaskCompletionBoard");
+  // }, []);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
@@ -536,11 +534,14 @@ const TaskCompletionBoard = () => {
             </View>
         </View>
       </ImageBackground>
+    {popUpIsVisible && (
     <TaskCompletionPopUp
       popUpIsVisible={popUpIsVisible}
       setPopUpIsVisible={setPopUpIsVisible}
       NextPopUpClick={NextPopUpClick}
+      PercentageArray={PercentageArray}
      />
+    )}
     </GestureHandlerRootView>
   )
 }

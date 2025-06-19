@@ -61,6 +61,7 @@ import { RootState } from '../../app/Store';
 import { data } from '../../Functions/Animated-Bar-Chart/constants';
 import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+import { updateStreakInfo } from '../../app/Slice';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -377,6 +378,7 @@ const Schedule: React.FC = () => {
     const [hourRotation, setHourRotation] = useState(0);
     const [minuteRotation, setMinuteRotation] = useState(0);
     const [secondRotation, setSecondRotation] = useState(0);
+    const [FiveSecGap, setFiveSecGap] = useState(1)
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
     const [timeStart, settimeStart] = useState('')
@@ -384,6 +386,28 @@ const Schedule: React.FC = () => {
     const [duration, setduration] = useState('')
     const [Work, setWork] = useState('Free Time')
     const [angleColor, setangleColor] = useState('')
+    const color = [
+    "rgba(175, 193, 85, 0.5)",
+    "rgba(182, 108, 239, 0.5)",
+    "rgba(78, 161, 40, 0.5)",
+    "rgba(71, 214, 63, 0.5)",
+    "rgba(19, 249, 16, 0.5)",
+    "rgba(69, 221, 118, 0.5)", 
+    "rgba(17, 150, 214, 0.5) ",
+    "rgba(174, 182, 155, 0.5)",
+    "rgba(54, 147, 187, 0.5) ",
+    "rgba(49, 107, 93, 0.5)",
+    "rgba(12, 248, 250, 0.5) ",
+    "rgba(146, 120, 43, 0.5)", 
+    "rgba(38, 3, 93, 0.5)",
+    "rgba(240, 19, 80, 0.5)",
+    "rgba(227, 127, 0, 0.5)",
+    "rgba(38, 131, 56, 0.5)",
+    "rgba(57, 190, 200, 0.5)",
+    "rgba(28, 79, 20, 0.5)",
+    "rgba(82, 176, 27, 0.5)",
+    "rgba(191, 115, 181, 0.5)"
+    ]
     const [tintstatus, setTintStatus] = useState(false)
     const [strokeStatus, setStrokeStatus] = useState(false)
     const [rescheduleStatus, setRescheduleStatus] = useState('off')
@@ -397,7 +421,7 @@ const Schedule: React.FC = () => {
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
-    const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+    const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer)
     const [Loading, setLoading] = useState(false)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
     
@@ -409,230 +433,9 @@ const Schedule: React.FC = () => {
       "StartAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.StartAngle),
       "EndAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
       "TaskDate": ScheduleArray.map((item: ScheduleArrayItem) => item.TaskDate),
-      "Slice_Color": [
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-      "rgba(175, 193, 85, 0.5)",
-      "rgba(182, 108, 239, 0.5)",
-      "rgba(78, 161, 40, 0.5)",
-      "rgba(71, 214, 63, 0.5)",
-      "rgba(19, 249, 16, 0.5)",
-      "rgba(69, 221, 118, 0.5)", 
-      "rgba(17, 150, 214, 0.5) ",
-      "rgba(174, 182, 155, 0.5)",
-      "rgba(54, 147, 187, 0.5) ",
-      "rgba(49, 107, 93, 0.5)",
-      "rgba(12, 248, 250, 0.5) ",
-      "rgba(146, 120, 43, 0.5)", 
-      "rgba(38, 3, 93, 0.5)",
-      "rgba(240, 19, 80, 0.5)",
-      "rgba(227, 127, 0, 0.5)",
-      "rgba(38, 131, 56, 0.5)",
-      "rgba(57, 190, 200, 0.5)",
-      "rgba(28, 79, 20, 0.5)",
-      "rgba(82, 176, 27, 0.5)",
-      "rgba(191, 115, 181, 0.5)",
-    ],
+      "Slice_Color": ScheduleArray.map((item: ScheduleArrayItem) => item.Slice_Color),
     }
-  
+    
     const [ApiData, setApiData] = useState<ApiDataType>({} as ApiDataType)
     
     const [PriorSelections, setPriorSelections] = useState<number[]>([])
@@ -883,7 +686,7 @@ const Schedule: React.FC = () => {
             // const uniqueID = data['uniqueID'][index]
             const startAngle = ApiData['Start_Angle'][index];
             const endAngle = ApiData['End_Angle'][index];
-            const sectorColor = data['Slice_Color'][index];
+            const sectorColor = color[index];
             const startTime = ApiData['Start_Timing'][index]
             const endTime = ApiData['End_Timing'][index]
             const angleDuration = angleToTime(endAngle - startAngle)
@@ -918,26 +721,7 @@ const Schedule: React.FC = () => {
           )}))}
         </Svg>
       );
-    }, [ScheduleArray, selectedDate, minuteRotation, rescheduleStatus]);
-  
-    const AngleInfo = () => {
-      return(
-        <View style={styles.angleInfo}>
-          <View style={styles.angleInfoLeft}>
-            <Text style={styles.angleInfoLeftText}>Timing:  </Text>
-            <Text style={styles.angleInfoLeftText}>Work:  </Text>
-            <Text style={styles.angleInfoLeftText}>Duration:  </Text>
-            <Text style={styles.angleInfoLeftText}>Color:  </Text>
-          </View>
-          <View style={styles.angleInfoRight}>
-            <Text style={styles.angleInfoRightText}> {timeStart} - {timeEnd}</Text>
-            <Text style={styles.angleInfoRightText}> {Work}</Text>
-            <Text style={styles.angleInfoRightText}> {duration}mins</Text>
-            <View style={[styles.angleInfoColor, {backgroundColor: `${angleColor}`}]}></View>
-          </View>
-        </View>
-      );
-    } 
+    }, [ScheduleArray, selectedDate, rescheduleStatus, minuteRotation]);
     
     useEffect(() => {
       if (rescheduleStatus === 'PriorStage') {
@@ -978,11 +762,38 @@ const Schedule: React.FC = () => {
         if (!response.ok) {  // Handle HTTP errors
           throw new Error('Failed to fetch data from the server');
         }
-        setLoading(false);  // Set loading state to false
+        // setLoading(false);  // Set loading state to false
         const fetched_data = await response.json(); // Parse JSON response
         setApiData(fetched_data)
         setServerResponseMessage(fetched_data.message);  // Update state with server response
         // console.log("API_DATA: ", JSON.stringify(ApiData))
+      } catch (error) {
+        setLoading(false);  // Set loading state to false
+        console.error('Catch Error: ', error);
+        setServerResponseMessage('Failed to connect to the backend');  // Handle network error
+      }
+
+      try {
+        const response = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/UpdateStudent':'http://192.168.131.92:5000/UpdateStudent',
+          'https://rescheduler-server.onrender.com/UpdateStudent',
+          {
+            method: 'POST', // Specify the request method
+            headers: {
+              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+            },
+            body: JSON.stringify({ 
+              "Type": "uniqueID", 
+              "Value": StudentInfo[0].uniqueID, 
+              "Updates": {"RescheduledTimes": 1}
+            })
+          })
+        if (!response.ok) {  // Handle HTTP errors
+          throw new Error('Failed to fetch data from the server');
+        }
+        setLoading(false);  // Set loading state to false
+        const fetched_data = await response.json(); // Parse JSON response
+        console.log(fetched_data)
       } catch (error) {
         setLoading(false);  // Set loading state to false
         console.error('Catch Error: ', error);
@@ -998,7 +809,7 @@ const Schedule: React.FC = () => {
     }
 
     const RescheduleButtonClick = () => {
-      rescheduleStatus === 'off' &&  setRescheduleStatus('PriorStage') 
+      rescheduleStatus === 'off' &&  setRescheduleStatus('PriorStage')
       if (rescheduleStatus === 'off') {
         setSelectedDate(currentDateStringFormat);
       }
@@ -1197,8 +1008,19 @@ const Schedule: React.FC = () => {
     }, [rescheduleStatus])
 
     useEffect(() => {
+      const intervalId = setInterval(() => {
+        const d = new Date(); 
+        const currentsec = d.getSeconds();
+        setFiveSecGap(currentsec)
+      }, 5000);
+  
+      // Clean up the interval on unmount
+      return () => clearInterval(intervalId);
+    }, []);
+
+    useEffect(() => {
       LabelChanging();
-    }, [ScheduleArray, currentMinTime, rescheduleStatus, currentSecTime])
+    }, [ScheduleArray, rescheduleStatus, FiveSecGap])
 
     // useEffect(() => {
     //   console.log("Today's ScheduleArray: ", TodayScheduleArray)
@@ -1221,7 +1043,8 @@ const Schedule: React.FC = () => {
         }
         else if (Platform.OS == 'ios') {
           function Disconnected() {
-            Alert.alert("No Internet", `Please turn on mobile data or Wi-Fi. Don't Worry, we don't show ADs 😌`,
+            console.log("isConnected: ", isConnected)
+            Alert.alert("No Internet", `Please turn on mobile data or Wi-Fi and open the app again 🤧`,
               [
                 {
                   text: "OK",
@@ -1278,7 +1101,7 @@ const Schedule: React.FC = () => {
             style={{
               paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : insets.top,
               }}>
-            <Navbar Streak={StudentInfo.Streak}/>
+            <Navbar Streak={StudentInfo[0].Streak}/>
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
             <UpperArea

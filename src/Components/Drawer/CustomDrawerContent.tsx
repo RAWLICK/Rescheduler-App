@@ -15,17 +15,17 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     const navigation = useNavigation<NavigationProp<any, any>>();
     const [NameHeading, setNameHeading] = useState("")
     const [SubscriptionHeading, setSubscriptionHeading] = useState("")
-    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
     console.log(StudentInfoData)
 
     function SubscriptionHeadingDecider() {
-        if (StudentInfoData['Subscription Type'] == "Free") {
+        if (StudentInfoData[0]['Subscription Type'] == "Free") {
             setSubscriptionHeading("Free Trial - 7 Days")
         }
-        else if (StudentInfoData['Subscription Type'] == "Library") {
+        else if (StudentInfoData[0]['Subscription Type'] == "Library") {
             setSubscriptionHeading("Premium")
         }
-        else if (StudentInfoData['Subscription Type'] == "Infinite") {
+        else if (StudentInfoData[0]['Subscription Type'] == "Infinite") {
             setSubscriptionHeading("Infinite")
         }
     }
@@ -56,18 +56,18 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
         <View style={{padding: 15, paddingLeft: 20, borderBottomColor: 'grey', borderBottomWidth: 0.5, marginBottom: 10}}>
-            <Text style={{ fontSize: 24, fontFamily: 'sf-pro-display-bold', color: 'white'}}>{StudentInfoData.Name == ""? "Hello, Mate": StudentInfoData.Name}</Text>
-            {StudentInfoData['Subscription Type'] == "Free" &&
+            <Text style={{ fontSize: 24, fontFamily: 'sf-pro-display-bold', color: 'white'}}>{StudentInfoData[0].Name == ""? "Hello, Mate": StudentInfoData[0].Name}</Text>
+            {StudentInfoData[0]['Subscription Type'] == "Free" &&
             <View style={{backgroundColor: '#8dc2f7', width: 120, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, paddingVertical: 2}}>
                 <Text style={{color: '#05498d', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>{SubscriptionHeading}</Text>
             </View>
             }
-            {StudentInfoData['Subscription Type'] == "Library" &&
+            {StudentInfoData[0]['Subscription Type'] == "Library" &&
             <View style={{backgroundColor: '#f8de67', width: 120, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, paddingVertical: 2}}>
                 <Text style={{color: '#806a02', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>Premium</Text>
             </View>
             }
-            {StudentInfoData['Subscription Type'] == "Infinite" &&
+            {StudentInfoData[0]['Subscription Type'] == "Infinite" &&
             <View style={{backgroundColor: '#96fba5', width: 120, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, flexDirection: 'row', columnGap: 5, paddingVertical: 2}}>
                 <Text style={{color: '#03ac1c', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>Infinite</Text>
                 <Image source={Infinity} style={{width: 20, height: 20}}/>

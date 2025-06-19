@@ -25,7 +25,7 @@ const PartneredLibraries = () => {
     const [EditableDistributionsInfo, setEditableDistributionsInfo] = useState<DistribtionInfoType[] | undefined>()
     const [DistributionDataToRender, setDistributionDataToRender] = useState<DistribtionInfoType[] | undefined>()
 
-    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
     console.log(StudentInfoData)
 
     async function RenderAllDistributionsInfo() {
@@ -64,7 +64,7 @@ const PartneredLibraries = () => {
         const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
         return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
       };
-      if (currentDate >= addDays(formatDate(StudentInfoData["Date Joined"]), 7) && StudentInfoData["Subscription Type"] == "Free") {
+      if (currentDate >= addDays(formatDate(StudentInfoData[0]["Date Joined"]), 7) && StudentInfoData[0]["Subscription Type"] == "Free") {
       // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free" ) {
         return false;
       }

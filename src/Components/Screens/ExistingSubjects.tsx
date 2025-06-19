@@ -32,7 +32,7 @@ type ExistingSubjectsPropsType = {
 }
 
 const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
-  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
   const dispatch = useDispatch();
   const RemovingWork = async (uniqueID: string) => {
     dispatch(removeExistingSubjectsObject(uniqueID))
@@ -47,7 +47,7 @@ const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
           'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
         },
         body: JSON.stringify(
-          {"uniqueID": StudentInfoData["uniqueID"],
+          {"uniqueID": StudentInfoData[0]["uniqueID"],
             "Process": "Delete",
             "StatsSubjectUniqueID": uniqueID
           }
