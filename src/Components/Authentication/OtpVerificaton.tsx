@@ -80,7 +80,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
           const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
           return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
         };
-        if (currentDate >= addDays(formatDate(StudentInfoData[0]["Date Joined"]), 7) && StudentInfoData[0]["Subscription Type"] == "Free") {
+        if (currentDate >= addDays(formatDate(fetched_StudentInfo?.["Date Joined"] || ''), 7) && fetched_StudentInfo?.["Subscription Type"] == "Free") {
         // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
           Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
           return false;
@@ -554,7 +554,8 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     dispatch(addWholeExistingSubjectsArray(TestingStatsSubjects))
                 }
 
-                dispatch(updateLocalStorageInfo("Login"));
+                // dispatch(updateLocalStorageInfo("Login"));
+
                 // Resetting the navigation stack to SignInStack. Now the history of the previous screens will be cleared.
                 // This is done to prevent the user from going back to the otp screens after logging in.
                 // here state are nested navigtators
@@ -606,7 +607,9 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     );
                 }
             }
-            catch (error) {
+            catch (error: any) {
+                console.log("Error: ", error);
+                console.log("Error Line: ", error.stack);
                 props.setLoading(false)
                 if (Platform.OS === 'android') {
                 Dialog.show({
@@ -1076,9 +1079,9 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
         setResendStatus(true);
     }
 
-    useEffect(() => {
-        console.log("Student Details: ", StudentInfoData)
-    }, [StudentInfoData])
+    // useEffect(() => {
+    //     console.log("Student Details: ", StudentInfoData[0]["Date Joined"])
+    // }, [StudentInfoData[0]])
     
     useEffect(() => {
         if (Countdown === 0) {

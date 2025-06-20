@@ -129,6 +129,7 @@ const TaskCompletionBoard = () => {
   ];
   const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer)
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
+  const DemoStatus = useSelector((state: RootState) => state.DemoArraySliceReducer)
 
   const updatePercentageArray = (uniqueID: string, percentage: number, Current_Duration: string) => {
     function getTimeByPercentage(timeString: string, percentage: number) {
@@ -257,7 +258,8 @@ const TaskCompletionBoard = () => {
     }
     dispatch(addExistingSubjectsWorkDoneObject(PercentageArray));
     // dispatch(updateLocalStorageInfo("Logout"));
-    dispatch(updateStreakInfo("Increase"));
+    // dispatch(updateStreakInfo("Increase"));
+    dispatch(updateDemoStatus(true));
     setBoardIsVisible(false);
     setPopUpIsVisible(true);
     // onDisplayNotification();
@@ -299,6 +301,10 @@ const TaskCompletionBoard = () => {
     setPopUpIsVisible(false);
     setPercentageArray([])
   }
+
+  useEffect(() => {
+    console.log("DemoStatus:", DemoStatus.DemoStatus);
+  }, [DemoStatus.DemoStatus]);
 
   // useEffect(() => {
   //   // console.log("Percentage Array: ", PercentageArray)
