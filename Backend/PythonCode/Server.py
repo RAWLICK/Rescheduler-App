@@ -224,6 +224,25 @@ def update_Student():
     except:
         return jsonify({"error": "An exception occurred in update_Student route"}), 500
 
+@app.route('/IncrementRescheduleClick', methods=['POST'])
+def increment_reschedule_click():
+    try:
+        data = request.json
+        if data:
+            result = StudentInfo.update_one(
+                {"uniqueID": data["uniqueID"]},         # Match document by ID (or any condition)
+                {"$inc": {"RescheduledTimes": 1}}   # Increment the 'RescheduledTimes' field by 1
+            )
+
+            if result.modified_count == 1:
+                return {"status": "success", "message": "RescheduledTimes incremented"}
+            else:
+                return {"status": "error", "message": "No document updated"}
+        else:
+            return jsonify({"error": "No data found!"}), 400
+    except:
+        return jsonify({"error": "An exception occurred in IncrementRescheduleClick route"}), 500
+
 @app.route('/UpdateScheduleArray', methods=['POST'])
 def update_ScheduleArray():
     try:

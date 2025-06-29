@@ -455,7 +455,7 @@ const AddTiming = () => {
     "rgba(191, 115, 181, 0.5)"
   ]
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
-  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
 
   let currentDate = new Date();
   let currentHours = currentDate.getHours().toString().padStart(2, '0');
@@ -772,7 +772,7 @@ const AddTiming = () => {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
           body: JSON.stringify(
-            {"uniqueID": StudentInfoData[0]["uniqueID"],
+            {"uniqueID": StudentInfoData["uniqueID"],
              "Process": "Add",
              "SubjectInfoObject": newTask
             }

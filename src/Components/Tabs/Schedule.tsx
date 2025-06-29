@@ -421,7 +421,7 @@ const Schedule: React.FC = () => {
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
-    const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const [Loading, setLoading] = useState(false)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
     
@@ -775,17 +775,15 @@ const Schedule: React.FC = () => {
 
       try {
         const response = await fetch(
-          // Platform.OS === 'ios'? 'http://localhost:5000/UpdateStudent':'http://192.168.131.92:5000/UpdateStudent',
-          'https://rescheduler-server.onrender.com/UpdateStudent',
+          // Platform.OS === 'ios'? 'http://localhost:5000/IncrementRescheduleClick':'http://192.168.131.92:5000/IncrementRescheduleClick',
+          'https://rescheduler-server.onrender.com/IncrementRescheduleClick',
           {
             method: 'POST', // Specify the request method
             headers: {
               'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
             },
             body: JSON.stringify({ 
-              "Type": "uniqueID", 
-              "Value": StudentInfo[0].uniqueID, 
-              "Updates": {"RescheduledTimes": 1}
+              "uniqueID": StudentInfoData.uniqueID, 
             })
           })
         if (!response.ok) {  // Handle HTTP errors
@@ -1101,7 +1099,7 @@ const Schedule: React.FC = () => {
             style={{
               paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : insets.top,
               }}>
-            <Navbar Streak={StudentInfo[0].Streak}/>
+            <Navbar/>
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
             <UpperArea

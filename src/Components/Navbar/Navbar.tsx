@@ -6,16 +6,19 @@ import ThreeDotsImage from '../Images/ThreeDots.png'
 import LinearGradient from 'react-native-linear-gradient';
 import StreakFire from '../Images/StreakFire.png'
 import { useNavigation, NavigationProp, DrawerActions, useNavigationState } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux' 
+import { RootState } from '../../app/Store';
 import { CombinedNavigationProp } from '../../App';
 
-type NavbarPropsType = {
-  "Streak": number
-}
+// type NavbarPropsType = {
+//   "Streak": number
+// }
 
-const Navbar = (props: NavbarPropsType) => {
+const Navbar = () => {
   // BD54EE, 6A1293
   // const navigation = useNavigation<NavigationProp<any, any>>();
   const navigation = useNavigation<CombinedNavigationProp>();
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   const isDrawerAvailable = useNavigationState((state) =>
     state?.type === 'drawer' // Check if the current navigation context is a drawer
   );
@@ -32,7 +35,7 @@ const Navbar = (props: NavbarPropsType) => {
       </View>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginRight: 10}}>
         <Image source={StreakFire} style={styles.ThreeDotsImage}/>
-        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20, color: '#6A1293'}}>{props.Streak}</Text>
+        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20, color: '#6A1293'}}>{StudentInfoData["Streak"]}</Text>
       </View>
     </View>
   )

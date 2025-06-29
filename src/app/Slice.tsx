@@ -50,15 +50,15 @@ export type StudentsDataArrayType = {
 
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
-    LocalStorageInfoInitialState: [{
+    LocalStorageInfoInitialState: {
         "IsLoggedIn": false,
         "IsFirstLaunch": true
-    }] as LocalStorageInfoDataType[],
-    StudentInfoInitialState : [] as StudentInfoDataType[],
+    } as LocalStorageInfoDataType,
+    StudentInfoInitialState : {} as StudentInfoDataType,
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
     ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[],
     StudentsDataArrayInitialState: [] as StudentsDataArrayType[],
-    DemoArrayInitialState: {"DemoStatus": true} as { "DemoStatus": boolean }
+    DemoArrayInitialState: [{"DemoStatus": true}] as [{ "DemoStatus": boolean }]
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -73,17 +73,17 @@ const initialState = {
 
 export const LocalStorageInfoSlice = createSlice({
     name: 'LocalStorageInfo',
-    initialState: initialState.LocalStorageInfoInitialState,
+    initialState,
     reducers: {
         updateLocalStorageInfo: (state, action) => {
             if (action.payload == "Login") {
-                state[0]["IsLoggedIn"] = true
+                state.LocalStorageInfoInitialState["IsLoggedIn"] = true
             }
             else if (action.payload == "Logout") {
-                state[0]["IsLoggedIn"] = false
+                state.LocalStorageInfoInitialState["IsLoggedIn"] = false
             }
             else if (action.payload == "FirstLaunch") {
-                state[0]["IsFirstLaunch"] = false
+                state.LocalStorageInfoInitialState["IsFirstLaunch"] = false
             }
         }
     }
@@ -91,7 +91,7 @@ export const LocalStorageInfoSlice = createSlice({
 
 export const StudentInfoSlice = createSlice({
     name: 'StudentInfo',
-    initialState: initialState.StudentInfoInitialState,
+    initialState,
     reducers: {
         registerUserInfo: (state, action) => {
             const Info = {
@@ -112,14 +112,14 @@ export const StudentInfoSlice = createSlice({
                 "Type of Account": action.payload['Type of Account'],
                 "RescheduledTimes": action.payload['RescheduledTimes'] || 0 // Default to 0 if not provided
             }
-            state[0] = Info;
+            state.StudentInfoInitialState = Info;
         },
         updateStreakInfo: (state, action) => {
             if (action.payload == "Increase") {
-                state[0]["Streak"] += 1
+                state.StudentInfoInitialState["Streak"] += 1
             }
             else if (action.payload == "Vanish") {
-                state[0]["Streak"] = 1
+                state.StudentInfoInitialState["Streak"] = 1
             }
         }
     }
@@ -346,7 +346,7 @@ export const DemoArraySlice = createSlice({
     initialState: initialState.DemoArrayInitialState,
     reducers: {
         updateDemoStatus: (state, action) => {
-            state.DemoStatus = action.payload;
+            state[0].DemoStatus = action.payload;
             console.log("Demo Data Updated")
         }
     }

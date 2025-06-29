@@ -59,7 +59,7 @@ const EditingSubjects = (props: EditingSubjectsPropsType) => {
     const color = 'blue';
     const [showPicker, setShowPicker] = useState(false);
     const [durationString, setDurationString] = useState<string | null>(null);
-    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
 
     function FilledDetails() {
@@ -93,7 +93,7 @@ const EditingSubjects = (props: EditingSubjectsPropsType) => {
           },
           body: JSON.stringify(
             { 
-              "uniqueID": StudentInfoData[0]["uniqueID"],
+              "uniqueID": StudentInfoData["uniqueID"],
               "Process": "UpdateSubject",
               "NewExistingSubject": newExistingSubject
             }

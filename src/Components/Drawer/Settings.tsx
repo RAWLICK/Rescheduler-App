@@ -5,6 +5,8 @@ import ScheduleTable from '../Screens/ScheduleTable'
 import { useDispatch, useSelector } from 'react-redux' 
 import { addScheduleObject, removeScheduleObject } from '../../app/Slice'
 import { RootState } from '../../app/Store'
+import {persistor} from '../../app/Store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Gesture,
   GestureDetector,
@@ -53,7 +55,7 @@ const Settings = () => {
           <AlertNotificationRoot>
             <View>
               {/* // dialog box */}
-              <Button
+              {/* <Button
                 title={'dialog box'}
                 onPress={() =>
                   Dialog.show({
@@ -64,6 +66,14 @@ const Settings = () => {
                     // closeOnOverlayTap: false
                   })
                 }
+              /> */}
+              <Button
+                title="Reset Redux Storage"
+                onPress={() => {
+                  persistor.purge();
+                  AsyncStorage.clear();
+                  console.log("Full Storage Cleared");
+                }}
               />
               {/* // toast notification */}
               <Button

@@ -56,7 +56,7 @@ const AddingSubjects = () => {
   const color = 'blue';
   const [showPicker, setShowPicker] = useState(false);
   const [durationString, setDurationString] = useState<string | null>('1h 0min');
-  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
 
   const ExistingSubjectSaveButton = async () => {
@@ -92,7 +92,7 @@ const AddingSubjects = () => {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
           body: JSON.stringify(
-            {"uniqueID": StudentInfoData[0]["uniqueID"],
+            {"uniqueID": StudentInfoData["uniqueID"],
              "Process": "Add",
              "StatsSubjectInfoObject": newExistingSubject
             }

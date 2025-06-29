@@ -36,6 +36,7 @@ import {useNavigation} from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 import {CombinedNavigationProp} from '../../App';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 type PercentageArrayType = {
     SubjectUniqueID: string,
@@ -56,7 +57,7 @@ type TaskCompletionPopUpPropsType = {
 }
 
 export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
-  const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
   
   return (
@@ -77,7 +78,7 @@ export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
             />
               <View style={{flex:1, rowGap: 10}}>
                 <LinearGradient colors={['#f3b607', '#cdd309']} style={{flex: 5, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 10}}>
-                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of {StudentInfo[0].Streak} </Text>
+                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of {StudentInfoData.Streak} </Text>
                   <LottieView source={AnimatedFire} autoPlay loop style={styles.lottie}></LottieView>
                 </LinearGradient>
                 <View style={{flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
@@ -127,7 +128,7 @@ const TaskCompletionBoard = () => {
     {max: 284.31, duration: '3h 45 min', boxNum: 14},
     {max: 310, duration: '4h', boxNum: 15},
   ];
-  const StudentInfo = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
   const DemoStatus = useSelector((state: RootState) => state.DemoArraySliceReducer)
 
@@ -256,20 +257,24 @@ const TaskCompletionBoard = () => {
       Alert.alert("Missing Subjects", ` Only ${PercentageArray.length} / ${ExistingSubjectsArray.length} subjects are registered for Statistics. Please register all the subjects to gain the Streak`)
       return;
     }
+    console.log("Streak Info: ", StudentInfoData)
     dispatch(addExistingSubjectsWorkDoneObject(PercentageArray));
-    // dispatch(updateLocalStorageInfo("Logout"));
-    // dispatch(updateStreakInfo("Increase"));
-    dispatch(updateDemoStatus(true));
-    setBoardIsVisible(false);
-    setPopUpIsVisible(true);
+    dispatch(updateStreakInfo("Increase"));
+    // setPopUpIsVisible(true);
     // onDisplayNotification();
 
-    // navigation.navigate('DrawerScreens', {
-    //   screen: 'TabsDrawer',
-    //   params: {
-    //     screen: 'ScheduleTab',
-    //     params: undefined
-    //   },
+    navigation.navigate('DrawerScreens', {
+      screen: 'TabsDrawer',
+      params: {
+        screen: 'ScheduleTab',
+        params: undefined
+      },
+    })
+
+    // Toast.show({
+    //   type: ALERT_TYPE.SUCCESS,
+    //   title: 'Success',
+    //   textBody: 'Congrats! You Reached a Streak of ' + (Number(StudentInfoData["Streak"]) + 1),
     // })
 
     try {
@@ -282,8 +287,8 @@ const TaskCompletionBoard = () => {
           'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
       },
       body: JSON.stringify({
-          "uniqueID": StudentInfo[0]["uniqueID"],
-          "Streak": Number(StudentInfo[0]["Streak"]) + 1,
+          "uniqueID": StudentInfoData["uniqueID"],
+          "Streak": Number(StudentInfoData["Streak"]) + 1,
           "Process": "AddCompletion",
           "PercentageArray": PercentageArray
         })
@@ -303,8 +308,13 @@ const TaskCompletionBoard = () => {
   }
 
   useEffect(() => {
-    console.log("DemoStatus:", DemoStatus.DemoStatus);
-  }, [DemoStatus.DemoStatus]);
+    console.log("StudentInfo:", StudentInfoData);
+  }, [StudentInfoData])
+  
+
+  // useEffect(() => {
+  //   console.log("DemoStatus:", DemoStatus.DemoStatus);
+  // }, [DemoStatus.DemoStatus]);
 
   // useEffect(() => {
   //   // console.log("Percentage Array: ", PercentageArray)
@@ -346,7 +356,7 @@ const TaskCompletionBoard = () => {
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
                     <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>Work Done </Text>
                     <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#af9afb'}}>VS</Text>
-                    <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}> Planned</Text>
+                    <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}> Planned (Streak ↑)</Text>
                 </View>
             </View>
             <View style={{flex: 10}}>

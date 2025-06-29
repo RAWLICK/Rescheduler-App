@@ -56,7 +56,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
     const [Countdown, setCountdown] = useState<number>(60)
     const [ResendStatus, setResendStatus] = useState(false)
     const dispatch = useDispatch();
-    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     let currentDate = new Date();
     let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
     let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');

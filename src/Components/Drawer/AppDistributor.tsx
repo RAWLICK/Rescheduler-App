@@ -36,7 +36,7 @@ type StudentDataTableType = {
 
 type AddingStudentType = {
   ActiveBranch: string
-  StudentInfoData: StudentInfoDataType[]
+  StudentInfoData: StudentInfoDataType
 }
 
 const AddingStudent = (props: AddingStudentType) => {
@@ -124,8 +124,8 @@ const AddingStudent = (props: AddingStudentType) => {
             "Value": PhoneNumber,
             "Updates": {
               "Name": StudentName,
-              "Distribution Name": props.StudentInfoData[0]["Distribution Name"],
-              "Distribution ID": props.StudentInfoData[0]["Distribution ID"],
+              "Distribution Name": props.StudentInfoData["Distribution Name"],
+              "Distribution ID": props.StudentInfoData["Distribution ID"],
               "Distribution Branch": props.ActiveBranch,
               "Subscription Type": "Library",
             }
@@ -151,12 +151,12 @@ const AddingStudent = (props: AddingStudentType) => {
           "Gender": "",
           "Streak": 1,
           "Subscription Type": "Library",
-          "Distribution Name": props.StudentInfoData[0]["Distribution Name"],
+          "Distribution Name": props.StudentInfoData["Distribution Name"],
           "Distribution Branch": props.ActiveBranch,
-          "Distribution ID": props.StudentInfoData[0]["Distribution ID"],
-          "City": props.StudentInfoData[0]["City"],
-          "State": props.StudentInfoData[0]["State"],
-          "Country": props.StudentInfoData[0]["Country"],
+          "Distribution ID": props.StudentInfoData["Distribution ID"],
+          "City": props.StudentInfoData["City"],
+          "State": props.StudentInfoData["State"],
+          "Country": props.StudentInfoData["Country"],
           "Type of Account": "User",
           "RescheduledTimes": 0
       }
@@ -260,10 +260,10 @@ const AppDistributor = () => {
     const isConnected = useInternetCheck();
     const navigation = useNavigation<CombinedNavigationProp>();
     const dispatch = useDispatch();
-    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer)
+    const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const AddingStudentsSheet = useRef<TrueSheet>(null);
     const [LibraryBranchesData, setLibraryBranchesData] = useState<{label: string, value: string}[]>([
-      {label: StudentInfoData[0]['Distribution Branch'], value: '1' }
+      {label: StudentInfoData['Distribution Branch'], value: '1' }
     ])
     const [ActiveBranch, setActiveBranch] = useState(LibraryBranchesData?.[0]?.label);
     const [studentSearch, setStudentSearch] = useState("")
@@ -290,7 +290,7 @@ const AppDistributor = () => {
           headers: {
             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
           },
-          body: JSON.stringify(StudentInfoData[0].uniqueID), // Convert the request payload to JSON.
+          body: JSON.stringify(StudentInfoData.uniqueID), // Convert the request payload to JSON.
         })
         if (!response.ok) {  // Handle HTTP errors
           throw new Error('Failed to fetch data to the server');
@@ -300,7 +300,7 @@ const AppDistributor = () => {
         let BranchList = fetched_data["Other Branches List"]
         if (BranchList.length > 0) {
           let BranchObjectArray = []
-          BranchObjectArray.push({label: StudentInfoData[0]['Distribution Branch'], value: '1' })
+          BranchObjectArray.push({label: StudentInfoData['Distribution Branch'], value: '1' })
           for (let index = 0; index < BranchList.length; index++) {
             const element = BranchList[index];
             // let BranchObject = {label: element, value: (index + 2).toString()}
@@ -329,7 +329,7 @@ const AppDistributor = () => {
       
       for (let index = 0; index < StudentsData.length; index++) {
         const eachData = StudentsData[index];
-        if (eachData['Branch'] == ActiveBranch && eachData["uniqueID"] !== StudentInfoData[0].uniqueID) {
+        if (eachData['Branch'] == ActiveBranch && eachData["uniqueID"] !== StudentInfoData.uniqueID) {
           table.push([
             eachData['Student_Name'],
             eachData['Phone_Number'],
