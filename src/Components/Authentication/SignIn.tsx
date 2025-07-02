@@ -287,7 +287,8 @@ const styles = StyleSheet.create({
   },
 
   SubHeadingText: {
-    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium'
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium',
+    color: 'black'
   },
 
   RoundedBox: {

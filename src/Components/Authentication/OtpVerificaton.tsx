@@ -554,7 +554,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     dispatch(addWholeExistingSubjectsArray(TestingStatsSubjects))
                 }
 
-                // dispatch(updateLocalStorageInfo("Login"));
+                dispatch(updateLocalStorageInfo("Login"));
 
                 // Resetting the navigation stack to SignInStack. Now the history of the previous screens will be cleared.
                 // This is done to prevent the user from going back to the otp screens after logging in.

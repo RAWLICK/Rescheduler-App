@@ -407,6 +407,7 @@ export interface ScheduleArrayItem {
   TaskDate: string;
   Slice_Color: string;
 }
+
 import {CombinedNavigationProp} from '../../App';
 import { random } from 'nanoid';
 

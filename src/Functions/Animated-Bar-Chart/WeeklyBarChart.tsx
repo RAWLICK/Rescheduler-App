@@ -47,10 +47,10 @@ export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
   function FindingMaxMinuteOfWeek(selectedWeekStart: Date, selectedWeekEnd: Date) {
     const AllSubjectsMinsOfWeek = [];
 
-    for (let index = 0; index < demoData.length; index++) {
+    for (let index = 0; index < ExistingSubjectsArray.length; index++) {
       let AddingDurationArray: string[] = []
       let SumOfAddingDurationArray = 0
-      let eachSubjectObj = demoData[index];
+      let eachSubjectObj = ExistingSubjectsArray[index];
       for (let indexTwo = 0; indexTwo < eachSubjectObj['Dataframe'].length; indexTwo++) {
         const eachDataframeObject = eachSubjectObj['Dataframe'][indexTwo];
 
@@ -71,7 +71,7 @@ export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
   }
   useEffect(() => {
     FindingMaxMinuteOfWeek(props.selectedWeekStart, props.selectedWeekEnd);
-    // console.log(MaxValueGot)
+    console.log("MaxValueGot: ", MaxValueGot)
   }, [props.selectedWeekStart])
 
   useEffect(() => {

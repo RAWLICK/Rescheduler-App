@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity, Platform } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity, Platform, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { Dropdown } from 'react-native-element-dropdown';
 import { nanoid } from "@reduxjs/toolkit";
@@ -18,6 +18,8 @@ const AdminPanel = () => {
     let currentYear = currentDate.getFullYear();
     let currentDateandMonth = `${currentNumDate}/${currentMonth}/${currentYear}`;
     const navigation = useNavigation<CombinedNavigationProp>();
+    const [loading, setLoading] = useState(false)
+    const [IsSaved, setIsSaved] = useState(false)
     const [distributorName, setDistributorName] = useState("")
     const [distributionName, setDistributionName] = useState("")
     const [EmailID, setEmailID] = useState("")
@@ -61,52 +63,57 @@ const AdminPanel = () => {
     }
 
     const SaveButton = async () => {
-        let NewDistributorAdd = {
-            "uniqueID": nanoid(),
-            "Name": distributorName,
-            "Distribution Name": distributionName,
-            "Distribution Type": DistributionTypeData[Number(DistributionTypeValue)].label,
-            "Distribution ID": nanoid(),
-            "Email ID": EmailID,
-            "Phone Number": phoneNumber,
-            "Local Address": LocalAddress,
-            "State": StateData[Number(StateValue)].label,
-            "Country": "India",
-            "City": CityData[Number(CityValue)].label,
-            "Date Joined": currentDateandMonth,
-            "Date Left": "",
-            "Plan Status": "Active",
-            "Enrolled Students": "",
-            "Plan Duration": "3 Months",
-            "Plan Enrollment Limit": "100",
-            "Number of Branches": numberOfBranch,
-            "Other Branches List": AllBranchesList
+        if (distributorName == "" || distributionName == "" || EmailID == "" || phoneNumber == "" || LocalAddress == "") {
+            Alert.alert("Missing Information", "Some of the information is missing");
         }
-        try {
-          const response = await fetch(
-          // Platform.OS === 'ios'? 'http://localhost:5000/addDistributor':'http://10.0.2.2:5000/addDistributor',
-          'https://rescheduler-server.onrender.com/addDistributor',
-          {
-            method: 'POST', // Specify the request method
-            headers: {
-              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
-            },
-            body: JSON.stringify(NewDistributorAdd), // Convert the request payload to JSON.
-          })
-    
-          if (!response.ok) {  // Handle HTTP errors
-            throw new Error('Failed to add data to the server');
-          }
-    
-        //   const fetched_data = await response.json(); // Parse JSON response
-        //   setApiData(fetched_data)
-        //   setServerResponseMessage(fetched_data.message);  // Update state with server response
-          // console.log("API_DATA: ", JSON.stringify(ApiData))
-        } catch (error) {
-          console.error('Catch Error: ', error);
-          setServerResponseMessage('Failed to connect to the backend');  // Handle network error
-        }
-      };
+        else {
+            setLoading(true);
+            let NewDistributorAdd = {
+                "uniqueID": nanoid(),
+                "Name": distributorName,
+                "Distribution Name": distributionName,
+                "Distribution Type": DistributionTypeData[Number(DistributionTypeValue) - 1].label,
+                "Distribution ID": nanoid(),
+                "Email ID": EmailID,
+                "Phone Number": phoneNumber,
+                "Local Address": LocalAddress,
+                "State": StateData[Number(StateValue) - 1].label,
+                "Country": "India",
+                "City": CityData[Number(CityValue) - 1].label,
+                "Date Joined": currentDateandMonth,
+                "Date Left": "",
+                "Plan Status": "Active",
+                "Enrolled Students": "",
+                "Plan Duration": "3 Months",
+                "Plan Enrollment Limit": "100",
+                "Number of Branches": numberOfBranch,
+                "Other Branches List": AllBranchesList
+            }
+            try {
+            const response = await fetch(
+            // Platform.OS === 'ios'? 'http://localhost:5000/addDistributor':'http://10.0.2.2:5000/addDistributor',
+            'https://rescheduler-server.onrender.com/addDistributor',
+            {
+                method: 'POST', // Specify the request method
+                headers: {
+                'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+                },
+                body: JSON.stringify(NewDistributorAdd), // Convert the request payload to JSON.
+            })
+        
+            if (!response.ok) {  // Handle HTTP errors
+                setLoading(false)
+                throw new Error('Failed to add data to the server');
+            }
+            setLoading(false)
+            setIsSaved(true)
+            } catch (error) {
+                console.error('Catch Error: ', error);
+                setServerResponseMessage('Failed to connect to the backend');  // Handle network error
+                setLoading(false)
+            }
+            };
+    }
     
     // useFocusEffect(
     //     useCallback(() => {
@@ -145,6 +152,7 @@ const AdminPanel = () => {
                     <View style={{flex: 0.1}}>
                     </View>
                 </View>
+
                 <ScrollView
                 style={{
                     flex: 1,
@@ -344,29 +352,46 @@ const AdminPanel = () => {
                     
                     {new Array(numberOfBranch - 1).fill(null).map(( __, index) => {
                     return (
-                        <View key={index} style={[styles.MiddleOption, { height: 65 }]}>
-                            <TextInput
-                            style={styles.OptionText}
-                            value={AllBranchesList[index]}
-                            onChangeText={(text) => handleBranchChange(text, index)}
-                            placeholder="Branch Name"
-                            placeholderTextColor="#6a6a6a">
-                            </TextInput>
+                        <View key={index}>
+                            <View style={[styles.MiddleOption, { height: 65, marginBottom: 3 }]}>
+                                <TextInput
+                                style={styles.OptionText}
+                                value={AllBranchesList[index]}
+                                onChangeText={(text) => handleBranchChange(text, index)}
+                                placeholder={`Branch Name ${index + 2}`}
+                                placeholderTextColor="#6a6a6a">
+                                </TextInput>
+                            </View>
+                            {/* <View style={[styles.MiddleOption, { height: 65 }]}>
+                                <TextInput
+                                style={styles.OptionText}
+                                value={AllBranchesList[index]}
+                                onChangeText={(text) => handleBranchChange(text, index)}
+                                placeholder={`Branch ${index + 2} (Local Address)`}
+                                placeholderTextColor="#6a6a6a">
+                                </TextInput>
+                            </View> */}
                         </View>
                     )
                     })}
                     </View>
-                    <View style={{ height: 50, marginTop: 12 }}>
-                    <TouchableOpacity style={styles.SaveButtonBox} onPress={SaveButton}>
-                        <Text
-                        style={{
-                            fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
-                            color: 'black',
-                            fontSize: 18,
-                        }}>
-                        Save
-                        </Text>
-                    </TouchableOpacity>
+                    <View style={{ height: 50, marginTop: 12, marginBottom: insets.bottom }}>
+                    {loading? 
+                        <View style={styles.SaveButtonBox}>
+                            <ActivityIndicator size="small" color="black" />
+                        </View>
+                        :
+                        <TouchableOpacity style={[styles.SaveButtonBox, {backgroundColor: IsSaved ? '#83ff91' : '#ACC6FF'}]} onPress={SaveButton}>
+                            <Text
+                            style={{
+                                fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
+                                color: 'black',
+                                fontSize: 18,
+                            }}>
+                            {IsSaved ? "Saved" : "Save"}
+                            </Text>
+                        </TouchableOpacity>
+                    }
                     </View>
                 </ScrollView>
                 </View>
@@ -381,6 +406,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#ACC6FF',
+        // backgroundColor: '#83ff91',
         borderRadius: 20,
         padding: 8,
         paddingLeft: 20,

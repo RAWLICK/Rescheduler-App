@@ -21,7 +21,7 @@ const OnBoardingScreen = () => {
     const Done = () => {
         dispatch(updateDemoStatus(true));
         dispatch(updateLocalStorageInfo("FirstLaunch"));
-        // navigation.navigate('StackScreens', { screen: 'SignInStack' })
+        navigation.navigate('StackScreens', { screen: 'SignInStack' })
     }
     useEffect(() => {
       console.log("DemoStatement", DemoStatement);

@@ -227,6 +227,7 @@ const Statistics = () => {
   const [WeekChange, setWeekChange] = useState<number>(0);
   const [MonthChange, setMonthChange] = useState<number>(0);
   const currentDate = new Date();
+  const [currentDay, setCurrentDay] = useState(currentDate.getDate());
   const currentWeekStartDate = startOfWeek(currentDate, { weekStartsOn: 1 });
   const currentWeekEndDate = endOfWeek(currentDate, { weekStartsOn: 1 });
   const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(currentWeekStartDate)
@@ -244,6 +245,7 @@ const Statistics = () => {
   const scrollViewRef = useRef<ScrollView>(null);
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
   const ExistingSubjectSheet = useRef<TrueSheet>(null);
+  const [MonthBoxPos, setMonthBoxPos] = useState('up')
   const [FakeWork, setFakeWork] = useState('FakeWork')
   
   async function ExistingSubjectButton () {
@@ -251,15 +253,32 @@ const Statistics = () => {
   }
 
   const scrollToPosition = () => {
-    scrollViewRef.current?.scrollTo({
-      y: 162, // Scroll 162px vertically
-      animated: true, // Smooth scrolling
-    });
+    if (MonthBoxPos == 'up') {
+      scrollViewRef.current?.scrollTo({
+        y: +162, // Scroll 162px vertically
+        animated: true, // Smooth scrolling
+      });
+      setMonthBoxPos('down')
+    }
+    else if (MonthBoxPos == 'down') {
+      scrollViewRef.current?.scrollTo({
+        y: -162, // Scroll 162px vertically
+        animated: true, // Smooth scrolling
+      });
+      setMonthBoxPos('up')
+    }
   };
   
   const scrollingCondition = () => {
     if (currentDate >= new Date(currentYear, currentMonth, 15)) {
-      scrollToPosition();
+      // set timeout is used because instant mounting of screen doesn't effect changes in scrolling. Also it appeals the UI luckily.
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({
+        y: +162, // Scroll 162px vertically
+        animated: true, // Smooth scrolling
+      });
+      }, 1000); 
+      setMonthBoxPos('down');
     }
   }
 
@@ -424,8 +443,8 @@ const Statistics = () => {
 
     function PercentageOfValues() {
       let AddingList = []
-      for (let index = 0; index < demoData.length; index++) {
-        const element = demoData[index];
+      for (let index = 0; index < ExistingSubjectsArray.length; index++) {
+        const element = ExistingSubjectsArray[index];
         AddingList.push(convertToMinutes(element.Current_Duration))
       }
       for (let index = 0; index < filteredData.length; index++) {
@@ -461,9 +480,18 @@ const Statistics = () => {
   }
 
   useEffect(() => {
-    scrollingCondition()
-  // }, [currentDate.getDate()])
-  }, [])
+    const intervalId = setInterval(() => {
+      const d = new Date();
+      setCurrentDay(d.getDate());
+    }, 1000);
+
+    // Clean up the interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    scrollingCondition();
+  }, [currentDay])
 
   // useFocusEffect(
   //   useCallback(() => {
@@ -583,7 +611,7 @@ const Statistics = () => {
               </View>
             </ScrollView>
             <TouchableOpacity onPress={scrollToPosition} style={{backgroundColor: '#6f6f6f', height: 18, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
-              <Image source={BoldChevronDown} style={{height: 15, width: 15}}/>
+              <Image source={BoldChevronDown} style={{height: 15, width: 15, transform:  [{rotate: MonthBoxPos == 'down' ?'180deg' : '0deg'}]}}/>
             </TouchableOpacity>
           </View>
 

@@ -371,9 +371,9 @@ const TaskCompletionBoard = () => {
           />
             <View style={{flex: 1, borderBottomWidth: 1, borderColor: 'grey', flexDirection: 'column'}}>
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-                    <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>Work Done </Text>
-                    <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#af9afb'}}>VS</Text>
-                    <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}> Planned (Streak ↑)</Text>
+                    <Text style={{fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>Work Done </Text>
+                    <Text style={{fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#af9afb'}}>VS</Text>
+                    <Text style={{fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}> Planned (Streak ↑)</Text>
                 </View>
             </View>
             <View style={{flex: 10}}>
@@ -381,7 +381,7 @@ const TaskCompletionBoard = () => {
                 {ExistingSubjectsArray.map((eachSubject, index) => {
                   const StartRadar = useSharedValue<number>(0);
                   const MovedRadar = useSharedValue<number>(0);
-                  const FinalRadar = useSharedValue<number>(96);
+                  const FinalRadar = useSharedValue<number>(85);
                   const uniqueID = eachSubject["uniqueID"];
                   const Current_Duration = eachSubject["Current_Duration"]
                   const lastPercentage = useSharedValue<number>(25);
@@ -400,42 +400,42 @@ const TaskCompletionBoard = () => {
                         FinalRadar.value = withSpring(0)
                         newPercentage = 0;
                       }
-                      else if (FinalRadar.value > 0 && FinalRadar.value < 65) {
-                        FinalRadar.value = withSpring(65)
+                      else if (FinalRadar.value > 0 && FinalRadar.value < 50) {
+                        FinalRadar.value = withSpring(50)
                         newPercentage = 25;
                       }
-                      else if (FinalRadar.value > 65 && FinalRadar.value < 137) {
-                        FinalRadar.value = withSpring(137)
+                      else if (FinalRadar.value > 50 && FinalRadar.value < 120) {
+                        FinalRadar.value = withSpring(120)
                         newPercentage = 50;
                       }
-                      else if (FinalRadar.value > 137 && FinalRadar.value < 217) {
-                        FinalRadar.value = withSpring(217)
+                      else if (FinalRadar.value > 120 && FinalRadar.value < 190) {
+                        FinalRadar.value = withSpring(190)
                         newPercentage = 75;
                       }
-                      else if (FinalRadar.value > 217 && FinalRadar.value < 292) {
-                        FinalRadar.value = withSpring(292)
+                      else if (FinalRadar.value > 190 && FinalRadar.value < 245) {
+                        FinalRadar.value = withSpring(245)
                         newPercentage = 100;
                       }
                     }
                     else {
-                      if (FinalRadar.value > 0 && FinalRadar.value < 65) {
+                      if (FinalRadar.value > 0 && FinalRadar.value < 50) {
                         FinalRadar.value = withSpring(0)
                         newPercentage = 0;
                       }
-                      else if (FinalRadar.value > 65 && FinalRadar.value < 137) {
-                        FinalRadar.value = withSpring(65)
+                      else if (FinalRadar.value > 50 && FinalRadar.value < 120) {
+                        FinalRadar.value = withSpring(50)
                         newPercentage = 25;
                       }
-                      else if (FinalRadar.value > 137 && FinalRadar.value < 217) {
-                        FinalRadar.value = withSpring(137)
+                      else if (FinalRadar.value > 120 && FinalRadar.value < 190) {
+                        FinalRadar.value = withSpring(120)
                         newPercentage = 50;
                       }
-                      else if (FinalRadar.value > 217 && FinalRadar.value < 292) {
-                        FinalRadar.value = withSpring(217)
+                      else if (FinalRadar.value > 190 && FinalRadar.value < 240) {
+                        FinalRadar.value = withSpring(190)
                         newPercentage = 75;
                       }
-                      else if (FinalRadar.value >= 292) {
-                        FinalRadar.value = withSpring(292)
+                      else if (FinalRadar.value >= 245) {
+                        FinalRadar.value = withSpring(245)
                         newPercentage = 100;
                       }
                     }
@@ -479,7 +479,7 @@ const TaskCompletionBoard = () => {
                   });
 
                 const animatedStyles = useAnimatedStyle(() => ({
-                  transform: [{translateX: clamp(FinalRadar.value, 0, 283)}],
+                  transform: [{translateX: clamp(FinalRadar.value, 0, 245)}],
                 }));
 
                 return (
@@ -548,7 +548,7 @@ const TaskCompletionBoard = () => {
                                     fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
                                     color: '#9D9EA0',
                                     },
-                                    tag != '0%' ? {marginRight: '18%'} : {}
+                                    tag != '0%' ? {marginRight: '16%'} : {}
                                 ]}>
                                 {tag}
                                 </Text>
@@ -559,8 +559,8 @@ const TaskCompletionBoard = () => {
                 </View>
               )})}
             </ScrollView>
-            <View style={{height: height * 0.057, padding: 10}}>
-              <TouchableOpacity onPress= {OkBoardClick} style={{flex: 1, backgroundColor: '#457fdf', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{height: height * 0.07, padding: 10}}>
+              <TouchableOpacity onPress= {OkBoardClick} style={{flex: 1, backgroundColor: '#457fdf', borderRadius: 8, justifyContent: 'center', alignItems: 'center'}}>
                 <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#333333'}}>Done (Yesterday)</Text>
               </TouchableOpacity>
             </View>
