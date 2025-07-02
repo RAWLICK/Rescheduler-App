@@ -36,6 +36,7 @@ import {useNavigation} from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 import {CombinedNavigationProp} from '../../App';
+import { addDays, subDays } from "date-fns";
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 type PercentageArrayType = {
@@ -103,6 +104,11 @@ const TaskCompletionBoard = () => {
   let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
   let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
   let currentYear = currentDate.getFullYear();
+  const [previousDate, setPreviousDate] = useState(subDays(new Date(), 1))
+  const [previousDay, setPreviousDay] = useState(previousDate.getDate())
+  const previousDayMonth = previousDate.getMonth() + 1;
+  const previousDayYear = previousDate.getFullYear();
+  const previousDateStringFormat = (`${previousDay.toString().padStart(2, '0')}/${previousDayMonth.toString().padStart(2, '0')}/${previousDayYear}`)
   const [currentMin, setCurrentMin] = useState(currentDate.getMinutes());
   const [boardIsVisible, setBoardIsVisible] = useState(true);
   const [popUpIsVisible, setPopUpIsVisible] = useState(false);
@@ -164,7 +170,7 @@ const TaskCompletionBoard = () => {
       if (found) {
         found.percentage = percentage;
         found.ProgressInfo = {
-            "Date": `${currentNumDate}/${currentMonth}/${currentYear}`,
+            "Date": previousDateStringFormat,
             "Percentage": `${percentage}%`,
             "Duration": Current_Duration,
             "Work-Done-For": getTimeByPercentage(Current_Duration, percentage)
@@ -175,7 +181,7 @@ const TaskCompletionBoard = () => {
           "SubjectUniqueID": uniqueID,
           "percentage": percentage,
           "ProgressInfo" : {
-            "Date": `${currentNumDate}/${currentMonth}/${currentYear}`,
+            "Date": previousDateStringFormat,
             "Percentage": `${percentage}%`,
             "Duration": Current_Duration,
             "Work-Done-For": getTimeByPercentage(Current_Duration, percentage)
@@ -219,7 +225,7 @@ const TaskCompletionBoard = () => {
     if (found) {
       return found.percentage;
     }
-    return 0;
+    return '-- '
   }
 
   async function onDisplayNotification() {
@@ -301,6 +307,17 @@ const TaskCompletionBoard = () => {
     }
   }
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const pd = subDays(new Date(), 1);
+      setPreviousDate(pd);
+      setPreviousDay(pd.getDate())
+    }, 1000);
+
+    // Clean up the interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
   const NextPopUpClick = () => {
     console.log("Next Button in popup Clicked")
     setPopUpIsVisible(false);
@@ -352,7 +369,7 @@ const TaskCompletionBoard = () => {
             blurAmount={50}
             // reducedTransparencyFallbackColor="black"
           />
-            <View style={{flex: 1, borderBottomWidth: 1, borderColor: 'grey', flexDirection: 'row'}}>
+            <View style={{flex: 1, borderBottomWidth: 1, borderColor: 'grey', flexDirection: 'column'}}>
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
                     <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>Work Done </Text>
                     <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#af9afb'}}>VS</Text>
@@ -364,7 +381,7 @@ const TaskCompletionBoard = () => {
                 {ExistingSubjectsArray.map((eachSubject, index) => {
                   const StartRadar = useSharedValue<number>(0);
                   const MovedRadar = useSharedValue<number>(0);
-                  const FinalRadar = useSharedValue<number>(65);
+                  const FinalRadar = useSharedValue<number>(96);
                   const uniqueID = eachSubject["uniqueID"];
                   const Current_Duration = eachSubject["Current_Duration"]
                   const lastPercentage = useSharedValue<number>(25);
@@ -544,7 +561,7 @@ const TaskCompletionBoard = () => {
             </ScrollView>
             <View style={{height: height * 0.057, padding: 10}}>
               <TouchableOpacity onPress= {OkBoardClick} style={{flex: 1, backgroundColor: '#457fdf', borderRadius: 10, justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#333333'}}>Done</Text>
+                <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#333333'}}>Done (Yesterday)</Text>
               </TouchableOpacity>
             </View>
             </View>

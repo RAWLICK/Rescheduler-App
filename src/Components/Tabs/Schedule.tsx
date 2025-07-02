@@ -61,6 +61,7 @@ import { RootState } from '../../app/Store';
 import { data } from '../../Functions/Animated-Bar-Chart/constants';
 import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+import { addDays, subDays } from "date-fns";
 import { updateStreakInfo } from '../../app/Slice';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -221,6 +222,32 @@ const UpperArea = (props: UpperAreaPropsType) => {
 };
 
 const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
+  const DisplayingSubjects = props.data['StartAngle']
+  .map((StartAngle: number, index: number) => ({
+    StartAngle, 
+    TaskDate: props.data['TaskDate'][index],
+    index // Store the original index
+  }))
+  .filter(({TaskDate}) => {
+    return TaskDate == props.currentDateStringFormat
+  })
+  .map(({TaskDate, index, StartAngle}, newIndex) => ({  // newIndex is made to index 0, 1 instead of 52, 53 etc.
+    TaskDate, index, StartAngle, newIndex
+  }))
+  .filter(({index, StartAngle, newIndex}) => {
+  if (props.rescheduleStatus == 'PriorStage') {
+    return StartAngle <= props.hourRotation 
+  }
+  else if (props.rescheduleStatus == 'FixingStage') {
+    if (!props.RemovingSelections.includes(newIndex)) {    // Prevent Fixed and Removing list getting common
+      return StartAngle > props.hourRotation 
+    }
+  }
+  else if (props.rescheduleStatus == 'RemovingStage') {
+    if (!props.FixedSelections.includes(newIndex)) {       // Prevent Fixed and Removing list getting common
+      return StartAngle > props.hourRotation 
+    }
+  }})
   return (
     <View style={[styles.LowerArea]}>
       <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
@@ -251,35 +278,16 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           </View>
           <View style={{flex: 1}}></View>
         </View>
-        <View style={{flex: 5, paddingLeft: 20, paddingBottom: 5}}>
+        <View style={{flex: 5, paddingLeft: DisplayingSubjects.length === 0 ? 0 : 20, paddingBottom: DisplayingSubjects.length === 0 ? 0 : 5}}>
+          {DisplayingSubjects.length === 0 ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={{ color: 'white', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold'}}>
+                No work left for this Section
+              </Text>
+            </View>
+          ) : (
           <ScrollView>
-          {props.data['StartAngle']
-          .map((StartAngle: number, index: number) => ({
-            StartAngle, 
-            TaskDate: props.data['TaskDate'][index],
-            index // Store the original index
-          }))
-          .filter(({TaskDate}) => {
-            return TaskDate == props.currentDateStringFormat
-          })
-          .map(({TaskDate, index, StartAngle}, newIndex) => ({  // newIndex is made to index 0, 1 instead of 52, 53 etc.
-            TaskDate, index, StartAngle, newIndex
-          }))
-          .filter(({index, StartAngle, newIndex}) => {
-          if (props.rescheduleStatus == 'PriorStage') {
-            return StartAngle <= props.hourRotation 
-          }
-          else if (props.rescheduleStatus == 'FixingStage') {
-            if (!props.RemovingSelections.includes(newIndex)) {    // Prevent Fixed and Removing list getting common
-              return StartAngle > props.hourRotation 
-            }
-          }
-          else if (props.rescheduleStatus == 'RemovingStage') {
-            if (!props.FixedSelections.includes(newIndex)) {       // Prevent Fixed and Removing list getting common
-              return StartAngle > props.hourRotation 
-            }
-          }})
-          .map(({index, newIndex}) => {
+          {DisplayingSubjects.map(({index, newIndex}) => {
             return(
               <View style={{margin: 5}} key={index}>
                 <BouncyCheckbox
@@ -290,12 +298,13 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
                   text={String(props.data['Work'][index])}
                   iconStyle={{ borderColor: "red" }}
                   innerIconStyle={{ borderWidth: 2 }}
-                  textStyle={{ fontFamily: "sf-pro-display-medium", color: '#fff', textDecorationLine: 'none' }}
+                  textStyle={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', color: '#fff', textDecorationLine: 'none' }}
                   onPress={(isChecked: boolean) => props.handleCheckboxChange(newIndex, isChecked)}
                 />
               </View>
             )})}
             </ScrollView>
+          )}
           </View>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
             {props.Loading ?
@@ -365,7 +374,7 @@ const Schedule: React.FC = () => {
     const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
     // const navigation = useNavigation<CombinedNavigationProp>();
-    const currentDate = new Date();
+    const [currentDate, setCurrentDate] = useState(new Date());
     const currentHourTime = currentDate.getHours();
     const currentMinTime = currentDate.getMinutes();
     const currentSecTime = currentDate.getSeconds();
@@ -374,6 +383,17 @@ const Schedule: React.FC = () => {
     const currentMonth = currentDate.getMonth() + 1;
     const currentYear = currentDate.getFullYear();
     const currentDateStringFormat = (`${currentDay.toString().padStart(2, '0')}/${currentMonth.toString().padStart(2, '0')}/${currentYear}`)
+    const [previousDate, setPreviousDate] = useState(subDays(new Date(), 1))
+    const [previousDay, setPreviousDay] = useState(previousDate.getDate())
+    const previousDayMonth = previousDate.getMonth() + 1;
+    const previousDayYear = previousDate.getFullYear();
+    const previousDateStringFormat = (`${previousDay.toString().padStart(2, '0')}/${previousDayMonth.toString().padStart(2, '0')}/${previousDayYear}`)
+    const [PrevToPrevDate, setPrevToPrevDate] = useState(subDays(new Date(), 2))
+    const [PrevToPrevDay, setPrevToPrevDay] = useState(PrevToPrevDate.getDate())
+    const PrevToPrevDayMonth = PrevToPrevDate.getMonth() + 1
+    const PrevToPrevDayYear = PrevToPrevDate.getFullYear();
+    const PrevToPrevDateStringFormat = (`${PrevToPrevDay.toString().padStart(2, '0')}/${PrevToPrevDayMonth.toString().padStart(2, '0')}/${PrevToPrevDayYear}`)
+
     const [selectedDate, setSelectedDate] = useState(currentDateStringFormat);
     const [hourRotation, setHourRotation] = useState(0);
     const [minuteRotation, setMinuteRotation] = useState(0);
@@ -422,6 +442,7 @@ const Schedule: React.FC = () => {
     const dispatch = useDispatch();
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+    const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
     const [Loading, setLoading] = useState(false)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
     
@@ -445,6 +466,8 @@ const Schedule: React.FC = () => {
     useEffect(() => {
       const intervalId = setInterval(() => {
         const d = new Date();
+        const pd = subDays(new Date(), 1);
+        const ptpd = subDays(new Date(), 2);
         const hTime = d.getHours();
         const mTime = d.getMinutes();
         const sTime = d.getSeconds();
@@ -452,12 +475,16 @@ const Schedule: React.FC = () => {
         const hRotation = 30 * hTime + 0.5 * mTime + (0.5 / 60) * 30; // Calculate hour rotation based on current time
         const mRotation = 6 * mTime;
         const sRotation = 6 * sTime;
-
   
         setHourRotation(hRotation);
         setMinuteRotation(mRotation);
         setSecondRotation(sRotation);
+        setCurrentDate(d);
+        setPreviousDate(pd);
+        setPrevToPrevDate(ptpd);
         setCurrentDay(d.getDate());
+        setPreviousDay(pd.getDate());
+        setPrevToPrevDay(ptpd.getDate());
       }, 1000);
   
       // Clean up the interval on unmount
@@ -748,7 +775,7 @@ const Schedule: React.FC = () => {
       setLoading(true);  // Set loading state to true
       try {
         const response = await fetch(
-          // Platform.OS === 'ios'? 'http://localhost:5000/':'http://192.168.131.92:5000/',
+          // Platform.OS === 'ios'? 'http://localhost:5000/':'http://192.168.31.141:5000/',
           'https://rescheduler-server.onrender.com/',
           {
           method: 'POST', // Specify the request method
@@ -807,13 +834,45 @@ const Schedule: React.FC = () => {
     }
 
     const RescheduleButtonClick = () => {
+      const DisplayingSubjects = data['StartAngle']
+      .map((StartAngle: number, index: number) => ({
+        StartAngle, 
+        TaskDate: data['TaskDate'][index],
+        index // Store the original index
+      }))
+      .filter(({TaskDate}) => {
+        return TaskDate == currentDateStringFormat
+      })
+      .map(({TaskDate, index, StartAngle}, newIndex) => ({  // newIndex is made to index 0, 1 instead of 52, 53 etc.
+        TaskDate, index, StartAngle, newIndex
+      }))
+      .filter(({index, StartAngle, newIndex}) => {
+      if (rescheduleStatus == 'PriorStage') {
+        return StartAngle <= hourRotation 
+      }
+      else if (rescheduleStatus == 'FixingStage') {
+        if (RemovingSelections.includes(newIndex)) {    // Prevent Fixed and Removing list getting common
+          return StartAngle > hourRotation 
+        }
+      }
+      else if (rescheduleStatus == 'RemovingStage') {
+        // if (!FixedSelections.includes(newIndex)) {       // Removed this condition here because I want all angles 
+                                                            // after current angle
+          return StartAngle > hourRotation 
+        // }
+      }})
       rescheduleStatus === 'off' &&  setRescheduleStatus('PriorStage')
       if (rescheduleStatus === 'off') {
         setSelectedDate(currentDateStringFormat);
       }
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
-      rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('rescheduled')).then(() => setResButtonTitle('Back To Normal'))
+      if (DisplayingSubjects.length === 0 && rescheduleStatus === 'RemovingStage') {
+        Alert.alert("No Work Ahead", `Without any Work Ahead, Schedule cannot be made`)
+      }
+      else {
+        rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('rescheduled')).then(() => setResButtonTitle('Back To Normal'))
+      }
       rescheduleStatus == 'rescheduled' && setRescheduleStatus('off')
     }
 
@@ -984,6 +1043,69 @@ const Schedule: React.FC = () => {
       }
       
     };
+
+    async function IsStatsWorkRegistered() {
+      console.log("Previous Date: ", previousDateStringFormat)
+      if (ExistingSubjectsArray.length != 0) {
+        let totalCountForDelete = 0;
+        for (let index = 0; index < ExistingSubjectsArray.length; index++) {
+          const foundDate = ExistingSubjectsArray[index]["Dataframe"].find(stat => stat.Date === PrevToPrevDateStringFormat)
+          if (!foundDate) {
+            totalCountForDelete += 1;
+          }
+        }
+        if (totalCountForDelete == ExistingSubjectsArray.length) {
+          console.log("Total Count for Deletion is matching length of ExistingSubjectsArray")
+          dispatch(updateStreakInfo("Vanish"));
+          try {
+            const response = await fetch (
+            // Platform.OS === 'ios'? 'http://localhost:5000/UpdateStudent':'http://192.168.131.92:5000/UpdateStudent',
+            'https://rescheduler-server.onrender.com/UpdateStudent',
+            {
+            method: 'POST', // Specify the request method
+            headers: {
+                'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+            },
+            body: JSON.stringify({
+                "Type": "uniqueID",
+                "Value": StudentInfoData["uniqueID"],
+                "Updates": { "Streak": 1 } 
+              })
+            })
+            if (!response.ok) {  // Handle HTTP errors
+            throw new Error('Failed to fetch data from the server');
+            }
+          } catch (error) {
+              console.error('Catch Error: ', error);
+          }
+        }
+
+        let totalCountForBoard = 0;
+        for (let index = 0; index < ExistingSubjectsArray.length; index++) {
+          const foundDate = ExistingSubjectsArray[index]["Dataframe"].find(stat => stat.Date === previousDateStringFormat)
+          if (!foundDate) {
+            totalCountForBoard += 1;
+          }
+        }
+        if (totalCountForBoard == ExistingSubjectsArray.length) {
+          console.log("Total Count for Board is matching length of ExistingSubjectsArray")
+          navigation.navigate('StackScreens', {
+            screen: 'TaskCompletionBoardStack',
+            params: undefined
+          })
+        }
+      }
+    }
+
+    useEffect(() => {
+      IsStatsWorkRegistered()
+    }, [previousDay])
+    
+
+    useEffect(() => {
+      console.log("Reschedule Status: ", rescheduleStatus)
+    }, [rescheduleStatus])
+    
     
     useEffect(() => {
       console.log("PriorSelectionList: ", PriorSelections)

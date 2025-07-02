@@ -75,10 +75,37 @@ const PreviousSchedule = (props: PreviousSchedulePropsType) => {
     ],
   }
 
+  const colorArray = [
+    "rgba(175, 193, 85, 0.5)",
+    "rgba(182, 108, 239, 0.5)",
+    "rgba(78, 161, 40, 0.5)",
+    "rgba(71, 214, 63, 0.5)",
+    "rgba(19, 249, 16, 0.5)",
+    "rgba(69, 221, 118, 0.5)", 
+    "rgba(17, 150, 214, 0.5) ",
+    "rgba(174, 182, 155, 0.5)",
+    "rgba(54, 147, 187, 0.5) ",
+    "rgba(49, 107, 93, 0.5)",
+    "rgba(12, 248, 250, 0.5) ",
+    "rgba(146, 120, 43, 0.5)", 
+    "rgba(38, 3, 93, 0.5)",
+    "rgba(240, 19, 80, 0.5)",
+    "rgba(227, 127, 0, 0.5)",
+    "rgba(38, 131, 56, 0.5)",
+    "rgba(57, 190, 200, 0.5)",
+    "rgba(28, 79, 20, 0.5)",
+    "rgba(82, 176, 27, 0.5)",
+    "rgba(191, 115, 181, 0.5)"
+  ]
+
   // const dmyFormatConverter = (date: string) => {
   //   const [year, month, day] = date.split('-');
   //   return `${day}/${month}/${year}`;
   // }
+  function randomColorIndex() {
+    const randomIndex = Math.floor(Math.random() * colorArray.length);
+    return randomIndex;
+  }
 
   const ymdFormatConverter = (date: string) => {
       const [day, month, year] = date.split('/');
@@ -174,7 +201,7 @@ const PreviousSchedule = (props: PreviousSchedulePropsType) => {
               const StartAngle = data['StartAngle'][index]
               const EndAngle = data['EndAngle'][index]
               const TaskDate = data['TaskDate'][index]
-              const color = data['Slice_Color'][index]
+              const color = colorArray[randomColorIndex()]
               let newTask = {
                 uniqueID: nanoid(10),
                 StartTime: startTime,

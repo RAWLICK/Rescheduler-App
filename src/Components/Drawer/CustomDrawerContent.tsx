@@ -9,6 +9,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
 import { updateLocalStorageInfo } from '../../app/Slice';
 import { CommonActions } from '@react-navigation/native';
+import {persistor} from '../../app/Store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     const dispatch = useDispatch();
@@ -32,6 +34,10 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
     function LogoutPress() {
         dispatch(updateLocalStorageInfo("Logout"));
+
+        // Clear the persistor and AsyncStorage to remove all the data from the app
+        persistor.purge();
+        AsyncStorage.clear();
 
         // Resetting the navigation stack to SignInStack. Now the history of the previous screens will be cleared.
         // This is done to prevent the user from going back to the previous screens after logging out.
