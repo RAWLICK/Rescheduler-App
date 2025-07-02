@@ -12,7 +12,8 @@ import {
   Platform,
   SafeAreaView,
   ActivityIndicator,
-  Alert
+  Alert,
+  KeyboardAvoidingView
 } from 'react-native';
 import React from 'react';
 import {useState, useEffect} from 'react';
@@ -171,7 +172,7 @@ const SignIn = () => {
   const [IsRegistered, setIsRegistered] = useState("")
   const [Loading, setLoading] = useState(false)
   return (
-    <View style={{flex: 1}}>
+    <KeyboardAvoidingView style={{flex: 1}}>
       {/* <StatusBar>
       animated={true}
       backgroundColor='#FFFFFF'
@@ -190,7 +191,7 @@ const SignIn = () => {
           setLoading={setLoading}
         />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

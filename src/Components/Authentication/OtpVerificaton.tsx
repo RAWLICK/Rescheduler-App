@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, Platform, ActivityIndicator, Alert } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, Platform, ActivityIndicator, Alert, KeyboardAvoidingView } from 'react-native'
 import React from 'react'
 import OtpVerificationImage from '../Images/OtpVerificationImage.png'
 import ChevronLeftBlack from '../Images/ChevronLeftBlack.png'
@@ -1259,7 +1259,7 @@ const OtpVerificaton = () => {
     }
 
     return (
-        <View style={{ flex: 1, paddingTop: Platform.OS === 'ios'? insets.top : 0}}>
+        <KeyboardAvoidingView style={{ flex: 1, paddingTop: Platform.OS === 'ios'? insets.top : 0}}>
             <HeaderPanel />
             <VerificationPanel 
                 // confirmCode={confirmCode}   // Passing confirmCode to VerificationPanel
@@ -1272,7 +1272,7 @@ const OtpVerificaton = () => {
                 setLoading={setLoading}
                 Loading={Loading}
             />
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 

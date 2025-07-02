@@ -12,7 +12,8 @@ import {
     TextInput,
     Platform,
     ActivityIndicator,
-    Alert
+    Alert,
+    KeyboardAvoidingView
 } from 'react-native';
 import React from 'react';
 import { useState } from 'react';
@@ -182,14 +183,14 @@ const SignUp = () => {
     const [IsRegistered, setIsRegistered] = useState("")
     const [Loading, setLoading] = useState(false)
     return (
-        <View style={{ flex: 1 }}>
+        <KeyboardAvoidingView style={{ flex: 1 }}>
             {/* <StatusBar>
-      animated={true}
-      backgroundColor='#FFFFFF'
-      // barStyle={statusBarStyle}
-      // showHideTransition={statusBarTransition}
-      // hidden={hidden}
-      /> */}
+            animated={true}
+            backgroundColor='#FFFFFF'
+            // barStyle={statusBarStyle}
+            // showHideTransition={statusBarTransition}
+            // hidden={hidden}
+            /> */}
             <View style={{ flex: 1 }}>
                 <LogoSection />
                 <CredentialInputSection
@@ -201,7 +202,7 @@ const SignUp = () => {
                     setLoading={setLoading}
                 />
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 

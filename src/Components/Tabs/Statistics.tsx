@@ -27,7 +27,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Modal,
-  Platform
+  Platform,
+  KeyboardAvoidingView
 } from 'react-native';
 import { startOfWeek, startOfMonth, endOfWeek, endOfMonth, eachDayOfInterval, subWeeks, addDays, addWeeks, addMonths, subMonths, getMonth, getYear } from 'date-fns';
 import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
@@ -483,7 +484,7 @@ const Statistics = () => {
       backgroundColor="#D2CFE4" // Make the status bar transparent
       barStyle="dark-content"
     />
-      <View style={styles.mainStyle}>
+      <KeyboardAvoidingView style={styles.mainStyle}>
         <ScrollView>
         <View style={styles.heading}>
 
@@ -614,7 +615,7 @@ const Statistics = () => {
           </View>
         </View>
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
       <TrueSheet
       ref={ExistingSubjectSheet}
       sizes={['auto', 'large']}

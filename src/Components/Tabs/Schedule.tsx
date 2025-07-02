@@ -7,6 +7,7 @@ import LeftArrow from '../Images/LeftArrow.png'
 import ScheduleTableIcon from '../Images/ScheduleTable.png'
 import CalenderIcon from '../Images/Calender.png'
 import Doodle from '../Images/Doodle.jpg'
+import Reload from '../Images/Reload.png'
 import 'react-native-gesture-handler'
 import { Gesture, GestureDetector, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
@@ -161,6 +162,7 @@ type BottomOptionsAreaPropsType = {
   selectedDate: string,
   setSelectedDate: SetState<string>
   navigation: NavigationProp<any, any>
+  currentDateStringFormat: string
 }
 
 const UpperArea = (props: UpperAreaPropsType) => {
@@ -326,6 +328,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
 };
 
 const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
+  const currentDate = new Date();
   return (
     <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',marginRight: 60, marginLeft: 60}}>
       <View style={{backgroundColor: '#BFB8E9', flexDirection: 'row', paddingTop: 8, paddingBottom: 8, borderRadius: 10, elevation: 5}}>
@@ -345,6 +348,9 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
         </TrueSheet>
 
         <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={props.CalenderButton}>
+          {(props.currentDateStringFormat != props.selectedDate) &&
+            <View style={{backgroundColor: 'red', borderRadius: 20, height: 8, width: 8, marginLeft: 40}}></View>
+          }
           <Image source={CalenderIcon} style={{width: 29, height: 29}}/>
         </TouchableOpacity>
         <TrueSheet
@@ -1267,6 +1273,7 @@ const Schedule: React.FC = () => {
             />
 
             <BottomOptionsArea
+              currentDateStringFormat={currentDateStringFormat}
               ApiData={ApiData}
               rescheduleStatus={rescheduleStatus}
               ScheduleTableButton={ScheduleTableButton}

@@ -54,7 +54,7 @@ type DrawerParamList = {
    screen: keyof TabParamList;  // Match with TabParamList
    params?: TabParamList[keyof TabParamList];  // Include Tab parameters
   };
-  SettingsDrawer: undefined;
+  // SettingsDrawer: undefined;
   PartneredLibrariesDrawer: undefined;
   SubscriptionDrawer:  undefined;
   AppDistributorDrawer: undefined;
@@ -189,7 +189,7 @@ function App(): React.JSX.Element {
     }}
     >
       <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
-      <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/>
+      {/* <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/> */}
       <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
       <Drawer.Screen name="SubscriptionDrawer" component={Subscription} options={{ headerShown: false, title: "Subscription"}}/>
       { (StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&

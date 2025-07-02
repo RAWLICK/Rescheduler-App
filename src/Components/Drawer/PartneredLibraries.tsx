@@ -51,10 +51,10 @@ const PartneredLibraries = () => {
     const filteredData = useMemo(() => {
     return LibrarySearch.length > prevCount.current.length
     ? EditableDistributionsInfo?.filter((item) =>
-        item['City'].toLowerCase().includes(LibrarySearch.toLowerCase())
+        item['Local Address'].toLowerCase().includes(LibrarySearch.toLowerCase())
       )
     : AllDistributionsInfo?.filter((item) =>
-        item['City'].toLowerCase().includes(LibrarySearch.toLowerCase())
+        item['Local Address'].toLowerCase().includes(LibrarySearch.toLowerCase())
     );
     }, [LibrarySearch, EditableDistributionsInfo]);
 
@@ -142,7 +142,7 @@ const PartneredLibraries = () => {
               style={styles.input}
               onChangeText={setLibrarySearch}
               value={LibrarySearch}
-              placeholder='Search "Indra Nagar" '
+              placeholder='Search "Kapoorthala" '
               placeholderTextColor='#9b999c'
               keyboardType="default"/>
           </View>
