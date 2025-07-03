@@ -55,6 +55,8 @@ type PanGesture = ReturnType<typeof Gesture.Pan>;
 
 // Nested Components (Composition)
 type GroupPropsType = {
+  IsSaved: boolean;
+  setIsSaved: SetState<boolean>;
   PrevScheduleStatus: boolean;
   setPrevScheduleStatus: SetState<boolean>;
   AddFromExistingWorkButton: boolean;
@@ -109,9 +111,9 @@ const HeaderPanel = (props: GroupPropsType) => {
       </TouchableOpacity>
       <View style={styles.SaveButtonArea}>
         <TouchableOpacity
-          style={styles.SaveButtonBox}
+          style={[styles.SaveButtonBox, {backgroundColor: props.IsSaved ? '#83ff91' : '#ACC6FF'}]}
           onPress={props.SaveButton}>
-          <Text style={[styles.OptionText, {color: '#093471'}]}>Save</Text>
+          <Text style={[styles.OptionText, {color: '#093471'}]}>{props.IsSaved ? "Saved" : "Save"}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -432,6 +434,7 @@ const AddTiming = () => {
   const [EndAngle, setEndAngle] = useState<number>();
   const [colorIndex, setColorIndex] = useState(0);
   const [PrevScheduleStatus, setPrevScheduleStatus] = useState(false)
+  const [IsSaved, setIsSaved] = useState(false)
   const dispatch = useDispatch();
   const color = [
     "rgba(175, 193, 85, 0.5)",
@@ -762,7 +765,11 @@ const AddTiming = () => {
         });
       }
       dispatch(addScheduleObject(newTask));
-      setWorkToDo('');
+      setIsSaved(true)
+      setTimeout(() => {
+        setWorkToDo('');
+        setIsSaved(false)
+      }, 1500)
       try {
         const response = await fetch(
           // Platform.OS === 'ios'? 'http://localhost:5000/':'http://192.168.131.92:5000/',
@@ -806,7 +813,7 @@ const AddTiming = () => {
       else {
         Dialog.hide();
       }
-    }, [isConnected])
+  }, [isConnected])
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -821,6 +828,8 @@ const AddTiming = () => {
         {/* <PanGestureHandler> */}
         <View style={styles.mainStyle}>
           <HeaderPanel
+            IsSaved={IsSaved}
+            setIsSaved={setIsSaved}
             PrevScheduleStatus={PrevScheduleStatus}
             setPrevScheduleStatus={setPrevScheduleStatus}
             AddFromExistingWorkButton={AddFromExistingWorkButton}
@@ -855,6 +864,8 @@ const AddTiming = () => {
 
           <ScrollView>
             <AreaOne
+              IsSaved={IsSaved}
+              setIsSaved={setIsSaved}
               PrevScheduleStatus={PrevScheduleStatus}
               setPrevScheduleStatus={setPrevScheduleStatus}
               AddFromExistingWorkButton={AddFromExistingWorkButton}
@@ -888,6 +899,8 @@ const AddTiming = () => {
             />
 
             <AreaTwo
+              IsSaved={IsSaved}
+              setIsSaved={setIsSaved}
               PrevScheduleStatus={PrevScheduleStatus}
               setPrevScheduleStatus={setPrevScheduleStatus}
               AddFromExistingWorkButton={AddFromExistingWorkButton}
@@ -921,6 +934,8 @@ const AddTiming = () => {
             />
 
             <AreaThree
+              IsSaved={IsSaved}
+              setIsSaved={setIsSaved}
               PrevScheduleStatus={PrevScheduleStatus}
               setPrevScheduleStatus={setPrevScheduleStatus}
               AddFromExistingWorkButton={AddFromExistingWorkButton}

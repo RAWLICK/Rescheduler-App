@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity, Platform } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TextInput, Image, SafeAreaView, StatusBar, ListRenderItem, FlatList, ScrollView, Alert, TouchableOpacity, Platform, ActivityIndicator } from 'react-native'
 import React, { useMemo } from 'react'
 import { useState, useEffect, useRef, useCallback } from 'react';
 import SearchIcon from '../Images/SearchIcon.png'
@@ -23,6 +23,7 @@ import {CombinedNavigationProp} from '../../App';
 import { useFocusEffect } from '@react-navigation/native';
 import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 interface Item {
     id: number;
@@ -43,6 +44,8 @@ const AddingStudent = (props: AddingStudentType) => {
   const dispatch = useDispatch();
   const [StudentName, setStudentName] = useState('');
   const [PhoneNumber, setPhoneNumber] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [IsSaved, setIsSaved] = useState(false)
   let currentDate = new Date();
   let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
   let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
@@ -68,7 +71,7 @@ const AddingStudent = (props: AddingStudentType) => {
       return false;
     }
 
-    async function IsFunctionRegistered() {
+    async function IsNumberRegistered() {
       try {
           const response = await fetch(
           // Platform.OS === 'ios'? 'http://localhost:5000/MatchNumber':'http://192.168.31.141:5000/MatchNumber',
@@ -109,7 +112,8 @@ const AddingStudent = (props: AddingStudentType) => {
     else if (PhoneNumber.length < 10 || PhoneNumber.length > 10) {
       Alert.alert("Invalid Phone Number", "Please enter a valid 10 digit phone number")
     }
-    else if (await IsFunctionRegistered()) {
+    else if (await IsNumberRegistered()) {
+      setLoading(true)
       try {
         const response = await fetch(
           // Platform.OS === 'ios'? 'http://localhost:5000/UpdateStudent':'http://10.0.2.2:5000/UpdateStudent',
@@ -132,16 +136,26 @@ const AddingStudent = (props: AddingStudentType) => {
           }), // Convert the request payload to JSON.
         })
         if (!response.ok) {  // Handle HTTP errors
+          setLoading(false)
           throw new Error('Failed to fetch data to the server');
         }
         const fetched_data = await response.json();
         console.log("Fetched Message: ", fetched_data)
         dispatch(addStudentObject(newStudentTable));
+        setLoading(false)
+        setIsSaved(true)
+        setTimeout(() => {
+          setStudentName("")
+          setPhoneNumber("")
+          setIsSaved(false)
+        }, 3000)
       } catch (error) {
         console.error('Catch Error: ', error);
+        setLoading(false)
       }
     }
     else {
+      setLoading(true)
       let NewStudent = {
           "uniqueID": newStudentTable.uniqueID,
           "Name": newStudentTable.Student_Name,
@@ -173,15 +187,24 @@ const AddingStudent = (props: AddingStudentType) => {
         })
 
         if (!response.ok) {  // Handle HTTP errors
+          setLoading(false)
           throw new Error('Failed to add data to the server');
         }
         else if (response.ok) {
           const fetched_data = await response.json();
           console.log("Fetched Data: ", fetched_data)
           dispatch(addStudentObject(newStudentTable));
+          setLoading(false)
+          setIsSaved(true)
+          setTimeout(() => {
+            setStudentName("")
+            setPhoneNumber("")
+            setIsSaved(false)
+          }, 3000)
         }
       }   
       catch (error) {
+        setLoading(false)
         console.error('Catch Error: ', error);
       }
     }
@@ -241,16 +264,22 @@ const AddingStudent = (props: AddingStudentType) => {
 
       </View>
       <View style={{ height: 50, padding: 5 }}>
-        <TouchableOpacity style={styles.SaveButtonBox} onPress={SaveButton}>
-          <Text
-            style={{
-              fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
-              color: 'black',
-              fontSize: 18,
-            }}>
-            Save
-          </Text>
-        </TouchableOpacity>
+        {loading? 
+          <View style={styles.SaveButtonBox}>
+              <ActivityIndicator size="small" color="black" />
+          </View>
+          :
+          <TouchableOpacity style={[styles.SaveButtonBox, {backgroundColor: IsSaved ? '#83ff91' : '#ACC6FF'}]} onPress={SaveButton}>
+            <Text
+              style={{
+                fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
+                color: 'black',
+                fontSize: 18,
+              }}>
+              {IsSaved ? "Saved" : "Save"}
+            </Text>
+          </TouchableOpacity>
+        }
       </View>
     </View>
   );

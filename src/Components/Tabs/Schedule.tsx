@@ -256,7 +256,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
         <Text style={[{fontFamily: 'Geizer', fontSize: 30, color: 'white'}]}>{props.ResButtonTitle}</Text>
       </TouchableOpacity>
       <Modal transparent= {true} visible={props.rescheduleStatus !== 'off' && props.rescheduleStatus !== 'rescheduled'} animationType='fade'>
-      <TouchableWithoutFeedback onPress={props.handleOutsidePress}>
+      {/* <TouchableWithoutFeedback onPress={props.handleOutsidePress}> */}
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <BlurView
           style={styles.blurStyle}
@@ -321,7 +321,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           </View>
         </View>
       </View>
-    </TouchableWithoutFeedback>
+    {/* </TouchableWithoutFeedback> */}
     </Modal>
     </View>
   )
@@ -875,6 +875,9 @@ const Schedule: React.FC = () => {
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
       if (DisplayingSubjects.length === 0 && rescheduleStatus === 'RemovingStage') {
         Alert.alert("No Work Ahead", `Without any Work Ahead, Schedule cannot be made`)
+      }
+      else if (PriorSelections.length == 0 && FixedSelections.length == 0 && RemovingSelections.length == 0 && rescheduleStatus === 'RemovingStage') {
+        Alert.alert("No Work Selected", `Select out some work to get rescheduled`)
       }
       else {
         rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('rescheduled')).then(() => setResButtonTitle('Back To Normal'))

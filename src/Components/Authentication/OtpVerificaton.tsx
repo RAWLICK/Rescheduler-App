@@ -219,226 +219,226 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                         let yesterdayYear = yesterdayDate.getFullYear();
                         let yesterdayDateandMonth = `${yesterdayNumDate}/${yesterdayMonth}/${yesterdayYear}`;
                         const TestingSubjects = [
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "23:00",
-                                "EndTime": "24:00",
-                                "Work": "Hindi",
-                                "StartAngle": 690,
-                                "EndAngle": 720,
-                                "TaskDate": yesterdayDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "01:00",
-                                "EndTime": "02:00",
-                                "Work": "Physics",
-                                "StartAngle": 30,
-                                "EndAngle": 60,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "03:00",
-                                "EndTime": "04:00",
-                                "Work": "Chemistry",
-                                "StartAngle": 90,
-                                "EndAngle": 120,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "05:00",
-                                "EndTime": "06:00",
-                                "Work": "Biology",
-                                "StartAngle": 150,
-                                "EndAngle": 180,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "06:00",
-                                "EndTime": "07:00",
-                                "Work": "History",
-                                "StartAngle": 180,
-                                "EndAngle": 210,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "07:00",
-                                "EndTime": "08:00",
-                                "Work": "English",
-                                "StartAngle": 210,
-                                "EndAngle": 240,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "09:00",
-                                "EndTime": "10:00",
-                                "Work": "Maths",
-                                "StartAngle": 270,
-                                "EndAngle": 300,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            }
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "23:00",
+                            "EndTime": "24:00",
+                            "Work": "Hindi",
+                            "StartAngle": 690,
+                            "EndAngle": 720,
+                            "TaskDate": yesterdayDateandMonth,
+                            "Slice_Color": "rgba(175, 193, 85, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "01:00",
+                            "EndTime": "02:00",
+                            "Work": "Physics",
+                            "StartAngle": 30,
+                            "EndAngle": 60,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(182, 108, 239, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "03:00",
+                            "EndTime": "04:00",
+                            "Work": "Chemistry",
+                            "StartAngle": 90,
+                            "EndAngle": 120,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(78, 161, 40, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "05:00",
+                            "EndTime": "06:00",
+                            "Work": "Biology",
+                            "StartAngle": 150,
+                            "EndAngle": 180,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(71, 214, 63, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "06:00",
+                            "EndTime": "07:00",
+                            "Work": "History",
+                            "StartAngle": 180,
+                            "EndAngle": 210,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(19, 249, 16, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "07:00",
+                            "EndTime": "08:00",
+                            "Work": "English",
+                            "StartAngle": 210,
+                            "EndAngle": 240,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(69, 221, 118, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "09:00",
+                            "EndTime": "10:00",
+                            "Work": "Maths",
+                            "StartAngle": 270,
+                            "EndAngle": 300,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(17, 150, 214, 0.5) "
+                        }
                         ]
                         dispatch(addWholeScheduleArray(TestingSubjects))
                     }
                     else if (currentHourTime > 6 && currentHourTime < 12) {
                         const TestingSubjects = [
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "05:00",
-                                "EndTime": "06:00",
-                                "Work": "Physics",
-                                "StartAngle": 150,
-                                "EndAngle": 180,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "07:00",
-                                "EndTime": "08:00",
-                                "Work": "Chemistry",
-                                "StartAngle": 210,
-                                "EndAngle": 240,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "09:00",
-                                "EndTime": "10:00",
-                                "Work": "Biology",
-                                "StartAngle": 270,
-                                "EndAngle": 300,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "11:00",
-                                "EndTime": "12:00",
-                                "Work": "History",
-                                "StartAngle": 330,
-                                "EndAngle": 360,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "12:00",
-                                "EndTime": "13:00",
-                                "Work": "English",
-                                "StartAngle": 360,
-                                "EndAngle": 390,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "13:00",
-                                "EndTime": "14:00",
-                                "Work": "Maths",
-                                "StartAngle": 390,
-                                "EndAngle": 420,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "15:00",
-                                "EndTime": "16:00",
-                                "Work": "Hindi",
-                                "StartAngle": 450,
-                                "EndAngle": 480,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            }
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "05:00",
+                            "EndTime": "06:00",
+                            "Work": "Physics",
+                            "StartAngle": 150,
+                            "EndAngle": 180,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(175, 193, 85, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "07:00",
+                            "EndTime": "08:00",
+                            "Work": "Chemistry",
+                            "StartAngle": 210,
+                            "EndAngle": 240,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(182, 108, 239, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "09:00",
+                            "EndTime": "10:00",
+                            "Work": "Biology",
+                            "StartAngle": 270,
+                            "EndAngle": 300,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(78, 161, 40, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "11:00",
+                            "EndTime": "12:00",
+                            "Work": "History",
+                            "StartAngle": 330,
+                            "EndAngle": 360,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(71, 214, 63, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "12:00",
+                            "EndTime": "13:00",
+                            "Work": "English",
+                            "StartAngle": 360,
+                            "EndAngle": 390,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(19, 249, 16, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "13:00",
+                            "EndTime": "14:00",
+                            "Work": "Maths",
+                            "StartAngle": 390,
+                            "EndAngle": 420,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(69, 221, 118, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "15:00",
+                            "EndTime": "16:00",
+                            "Work": "Hindi",
+                            "StartAngle": 450,
+                            "EndAngle": 480,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(17, 150, 214, 0.5) "
+                        }
                         ]
                         dispatch(addWholeScheduleArray(TestingSubjects))
                     }
                     else if (currentHourTime > 12 && currentHourTime < 18) {
                         const TestingSubjects = [
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "11:00",
-                                "EndTime": "12:00",
-                                "Work": "Physics",
-                                "StartAngle": 330,
-                                "EndAngle": 360,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "13:00",
-                                "EndTime": "14:00",
-                                "Work": "Chemistry",
-                                "StartAngle": 390,
-                                "EndAngle": 420,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "15:00",
-                                "EndTime": "16:00",
-                                "Work": "Biology",
-                                "StartAngle": 450,
-                                "EndAngle": 480,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "17:00",
-                                "EndTime": "18:00",
-                                "Work": "History",
-                                "StartAngle": 510,
-                                "EndAngle": 540,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "18:00",
-                                "EndTime": "19:00",
-                                "Work": "English",
-                                "StartAngle": 540,
-                                "EndAngle": 570,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "19:00",
-                                "EndTime": "20:00",
-                                "Work": "Maths",
-                                "StartAngle": 570,
-                                "EndAngle": 600,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "21:00",
-                                "EndTime": "22:00",
-                                "Work": "Hindi",
-                                "StartAngle": 630,
-                                "EndAngle": 660,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            }
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "11:00",
+                            "EndTime": "12:00",
+                            "Work": "Physics",
+                            "StartAngle": 330,
+                            "EndAngle": 360,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(175, 193, 85, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "13:00",
+                            "EndTime": "14:00",
+                            "Work": "Chemistry",
+                            "StartAngle": 390,
+                            "EndAngle": 420,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(182, 108, 239, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "15:00",
+                            "EndTime": "16:00",
+                            "Work": "Biology",
+                            "StartAngle": 450,
+                            "EndAngle": 480,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(78, 161, 40, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "17:00",
+                            "EndTime": "18:00",
+                            "Work": "History",
+                            "StartAngle": 510,
+                            "EndAngle": 540,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(71, 214, 63, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "18:00",
+                            "EndTime": "19:00",
+                            "Work": "English",
+                            "StartAngle": 540,
+                            "EndAngle": 570,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(19, 249, 16, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "19:00",
+                            "EndTime": "20:00",
+                            "Work": "Maths",
+                            "StartAngle": 570,
+                            "EndAngle": 600,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(69, 221, 118, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "21:00",
+                            "EndTime": "22:00",
+                            "Work": "Hindi",
+                            "StartAngle": 630,
+                            "EndAngle": 660,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(17, 150, 214, 0.5) "
+                        }
                         ]
                         dispatch(addWholeScheduleArray(TestingSubjects))
                     }
@@ -449,76 +449,76 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                         let nextdayYear = nextdayDate.getFullYear();
                         let nextdayDateandMonth = `${nextdayNumDate}/${nextdayMonth}/${nextdayYear}`;
                         const TestingSubjects = [
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "17:00",
-                                "EndTime": "18:00",
-                                "Work": "Physics",
-                                "StartAngle": 510,
-                                "EndAngle": 540,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "19:00",
-                                "EndTime": "20:00",
-                                "Work": "Chemistry",
-                                "StartAngle": 570,
-                                "EndAngle": 600,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "21:00",
-                                "EndTime": "22:00",
-                                "Work": "Biology",
-                                "StartAngle": 630,
-                                "EndAngle": 660,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "23:00",
-                                "EndTime": "24:00",
-                                "Work": "History",
-                                "StartAngle": 690,
-                                "EndAngle": 720,
-                                "TaskDate": currentDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "00:00",
-                                "EndTime": "01:00",
-                                "Work": "English",
-                                "StartAngle": 0,
-                                "EndAngle": 30,
-                                "TaskDate": nextdayDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "01:00",
-                                "EndTime": "02:00",
-                                "Work": "Maths",
-                                "StartAngle": 30,
-                                "EndAngle": 60,
-                                "TaskDate": nextdayDateandMonth,
-                                "Slice_Color": "blue"
-                            },
-                            {
-                                "uniqueID": nanoid(10),
-                                "StartTime": "03:00",
-                                "EndTime": "04:00",
-                                "Work": "Hindi",
-                                "StartAngle": 90,
-                                "EndAngle": 120,
-                                "TaskDate": nextdayDateandMonth,
-                                "Slice_Color": "blue"
-                            }
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "17:00",
+                            "EndTime": "18:00",
+                            "Work": "Physics",
+                            "StartAngle": 510,
+                            "EndAngle": 540,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(175, 193, 85, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "19:00",
+                            "EndTime": "20:00",
+                            "Work": "Chemistry",
+                            "StartAngle": 570,
+                            "EndAngle": 600,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(182, 108, 239, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "21:00",
+                            "EndTime": "22:00",
+                            "Work": "Biology",
+                            "StartAngle": 630,
+                            "EndAngle": 660,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(78, 161, 40, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "23:00",
+                            "EndTime": "24:00",
+                            "Work": "History",
+                            "StartAngle": 690,
+                            "EndAngle": 720,
+                            "TaskDate": currentDateandMonth,
+                            "Slice_Color": "rgba(71, 214, 63, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "00:00",
+                            "EndTime": "01:00",
+                            "Work": "English",
+                            "StartAngle": 0,
+                            "EndAngle": 30,
+                            "TaskDate": nextdayDateandMonth,
+                            "Slice_Color": "rgba(19, 249, 16, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "01:00",
+                            "EndTime": "02:00",
+                            "Work": "Maths",
+                            "StartAngle": 30,
+                            "EndAngle": 60,
+                            "TaskDate": nextdayDateandMonth,
+                            "Slice_Color": "rgba(69, 221, 118, 0.5)"
+                        },
+                        {
+                            "uniqueID": nanoid(10),
+                            "StartTime": "03:00",
+                            "EndTime": "04:00",
+                            "Work": "Hindi",
+                            "StartAngle": 90,
+                            "EndAngle": 120,
+                            "TaskDate": nextdayDateandMonth,
+                            "Slice_Color": "rgba(17, 150, 214, 0.5) "
+                        }
                         ]
                         dispatch(addWholeScheduleArray(TestingSubjects))
                     }
@@ -687,7 +687,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 690,
                             "EndAngle": 720,
                             "TaskDate": yesterdayDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(175, 193, 85, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -697,7 +697,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 30,
                             "EndAngle": 60,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(182, 108, 239, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -707,7 +707,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 90,
                             "EndAngle": 120,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(78, 161, 40, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -717,7 +717,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 150,
                             "EndAngle": 180,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(71, 214, 63, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -727,7 +727,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 180,
                             "EndAngle": 210,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(19, 249, 16, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -737,7 +737,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 210,
                             "EndAngle": 240,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(69, 221, 118, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -747,7 +747,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 270,
                             "EndAngle": 300,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(17, 150, 214, 0.5) "
                         }
                     ]
                     dispatch(addWholeScheduleArray(TestingSubjects))
@@ -762,7 +762,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 150,
                             "EndAngle": 180,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(175, 193, 85, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -772,7 +772,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 210,
                             "EndAngle": 240,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(182, 108, 239, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -782,7 +782,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 270,
                             "EndAngle": 300,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(78, 161, 40, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -792,7 +792,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 330,
                             "EndAngle": 360,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(71, 214, 63, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -802,7 +802,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 360,
                             "EndAngle": 390,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(19, 249, 16, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -812,7 +812,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 390,
                             "EndAngle": 420,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(69, 221, 118, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -822,7 +822,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 450,
                             "EndAngle": 480,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(17, 150, 214, 0.5) "
                         }
                     ]
                     dispatch(addWholeScheduleArray(TestingSubjects))
@@ -837,7 +837,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 330,
                             "EndAngle": 360,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(175, 193, 85, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -847,7 +847,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 390,
                             "EndAngle": 420,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(182, 108, 239, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -857,7 +857,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 450,
                             "EndAngle": 480,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(78, 161, 40, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -867,7 +867,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 510,
                             "EndAngle": 540,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(71, 214, 63, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -877,7 +877,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 540,
                             "EndAngle": 570,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(19, 249, 16, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -887,7 +887,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 570,
                             "EndAngle": 600,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(69, 221, 118, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -897,7 +897,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 630,
                             "EndAngle": 660,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(17, 150, 214, 0.5) "
                         }
                     ]
                     dispatch(addWholeScheduleArray(TestingSubjects))
@@ -917,7 +917,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 510,
                             "EndAngle": 540,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(175, 193, 85, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -927,7 +927,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 570,
                             "EndAngle": 600,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(182, 108, 239, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -937,7 +937,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 630,
                             "EndAngle": 660,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(78, 161, 40, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -947,7 +947,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 690,
                             "EndAngle": 720,
                             "TaskDate": currentDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(71, 214, 63, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -957,7 +957,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 0,
                             "EndAngle": 30,
                             "TaskDate": nextdayDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(19, 249, 16, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -967,7 +967,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 30,
                             "EndAngle": 60,
                             "TaskDate": nextdayDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(69, 221, 118, 0.5)"
                         },
                         {
                             "uniqueID": nanoid(10),
@@ -977,7 +977,7 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                             "StartAngle": 90,
                             "EndAngle": 120,
                             "TaskDate": nextdayDateandMonth,
-                            "Slice_Color": "blue"
+                            "Slice_Color": "rgba(17, 150, 214, 0.5) "
                         }
                     ]
                     dispatch(addWholeScheduleArray(TestingSubjects))
@@ -1259,7 +1259,9 @@ const OtpVerificaton = () => {
     }
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1, paddingTop: Platform.OS === 'ios'? insets.top : 0}}>
+        <KeyboardAvoidingView 
+        style={{ flex: 1, paddingTop: Platform.OS === 'ios'? insets.top : 0}}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             <HeaderPanel />
             <VerificationPanel 
                 // confirmCode={confirmCode}   // Passing confirmCode to VerificationPanel

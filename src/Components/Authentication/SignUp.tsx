@@ -183,7 +183,10 @@ const SignUp = () => {
     const [IsRegistered, setIsRegistered] = useState("")
     const [Loading, setLoading] = useState(false)
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }}>
+        <KeyboardAvoidingView 
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
             {/* <StatusBar>
             animated={true}
             backgroundColor='#FFFFFF'

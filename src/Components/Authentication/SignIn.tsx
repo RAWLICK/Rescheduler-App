@@ -172,7 +172,11 @@ const SignIn = () => {
   const [IsRegistered, setIsRegistered] = useState("")
   const [Loading, setLoading] = useState(false)
   return (
-    <KeyboardAvoidingView style={{flex: 1}}>
+    <KeyboardAvoidingView 
+    style={{flex: 1}}
+    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    // keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+    >
       {/* <StatusBar>
       animated={true}
       backgroundColor='#FFFFFF'

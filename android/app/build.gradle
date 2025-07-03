@@ -80,8 +80,8 @@ android {
         applicationId "com.rescheduler"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.2"
+        versionCode 5
+        versionName "1.4"
         manifestPlaceholders = [
             auth0Domain: "dev-euawlucdljtesr0z.us.auth0.com",
             auth0Scheme: "${applicationId}.auth0"
