@@ -152,7 +152,7 @@ const AreaOne = (props: GroupPropsType) => {
             }}
             onPress={ExistingSubjectButton}
             >
-              <Text style={styles.OptionText}>Choose Subject</Text>
+              <Text style={styles.OptionText}>{props.WorkToDo == "" ? "Choose Subject" : props.WorkToDo}</Text>
           </TouchableOpacity>
         )}
         

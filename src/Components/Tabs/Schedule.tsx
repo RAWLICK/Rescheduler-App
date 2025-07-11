@@ -5,6 +5,7 @@ import ClockImage from '../Images/AnalogClockImage.png'
 import AddIcon from '../Images/Add.png'
 import LeftArrow from '../Images/LeftArrow.png'
 import ScheduleTableIcon from '../Images/ScheduleTable.png'
+import ClipboardIcon from '../Images/Clipboard.png'
 import CalenderIcon from '../Images/Calender.png'
 import Doodle from '../Images/Doodle.jpg'
 import Reload from '../Images/Reload.png'
@@ -64,6 +65,8 @@ import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import { addDays, subDays } from "date-fns";
 import { updateStreakInfo } from '../../app/Slice';
+import { CommonActions } from '@react-navigation/native';
+import { registerUserInfo } from '../../app/Slice';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -122,6 +125,8 @@ type UpperAreaPropsType = {
   timeEnd: string,
   duration: string,
   TwelveHourFormat: (time: string) => string
+  currentDateStringFormat: string,
+  selectedDate: string
 }
 
 type RescheduleButtonAreaPropsType = {
@@ -197,14 +202,19 @@ const UpperArea = (props: UpperAreaPropsType) => {
         return '';
     }
   }
+  let currentMonth = stringToMonthConverter(props.currentMonth)
+  let currentDate = props.currentDay.toString().padStart(2, '0')
+  let selectedMonth = stringToMonthConverter(Number(props.selectedDate.split('/')[1]))
+  let selectedDate = props.selectedDate.split('/')[0].padStart(2, '0')
+
   return (
     <View style={styles.UpperArea}>
       <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 0.5}}>
-          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.TwelveHourFormat(currentHourMinTime)}</Text>
+          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.currentDateStringFormat == props.selectedDate ? props.TwelveHourFormat(currentHourMinTime) : "-- --"}</Text>
         </View>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{stringToMonthConverter(props.currentMonth)} {props.currentDay.toString().padStart(2, '0')}</Text>
+          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.selectedDate == props.currentDateStringFormat ? currentMonth : selectedMonth} {props.selectedDate == props.currentDateStringFormat ? currentDate : selectedDate}</Text>
         </View>
       </View>
 
@@ -308,17 +318,17 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
             </ScrollView>
           )}
           </View>
-          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
-            {props.Loading ?
-            <View>
+          {props.Loading ? (
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
               <ActivityIndicator size="small" color="#ffffff" />
             </View>
-            :
-            <TouchableOpacity onPress={() => props.RescheduleButtonClick()}>
+          ) : (
+          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}} onPress={() => props.RescheduleButtonClick()}>
+            <View>
               <Text style={{color: '#457fdf', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
-            </TouchableOpacity>
-            }
-          </View>
+            </View>
+          </TouchableOpacity>
+          )}
         </View>
       </View>
     {/* </TouchableWithoutFeedback> */}
@@ -329,11 +339,28 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
 
 const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
   const currentDate = new Date();
+  function ClickingAddTiming() {
+    if (props.rescheduleStatus === 'rescheduled') {
+      Alert.alert('You have Rescheduled', 'Please click on "Back To Normal" to come back and add new timings of subjects')
+    }
+    else {
+      props.navigation.navigate('StackScreens', {screen: 'AddTimingStack'});
+    }
+  }
+
+  function ClickingCalender() {
+    if (props.rescheduleStatus === 'rescheduled') {
+      Alert.alert('You have Rescheduled', 'Please click on "Back To Normal" to come back and select date from Calender')
+    }
+    else {
+      props.CalenderButton();
+    }
+  }
   return (
     <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',marginRight: 60, marginLeft: 60}}>
       <View style={{backgroundColor: '#BFB8E9', flexDirection: 'row', paddingTop: 8, paddingBottom: 8, borderRadius: 10, elevation: 5}}>
         <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={props.ScheduleTableButton}>
-          <Image source={ScheduleTableIcon} style={{width: 35, height: 35}}/>
+          <Image source={ClipboardIcon} style={{width: 35, height: 35}}/>
         </TouchableOpacity>
         <TrueSheet
           ref={props.ScheduleTableSheet}
@@ -347,7 +374,7 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
           />
         </TrueSheet>
 
-        <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={props.CalenderButton}>
+        <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={ClickingCalender}>
           {(props.currentDateStringFormat != props.selectedDate) &&
             <View style={{backgroundColor: 'red', borderRadius: 20, height: 8, width: 8, marginLeft: 40}}></View>
           }
@@ -365,7 +392,7 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
         </TrueSheet>
 
         <TouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
-        onPress={()=> props.navigation.navigate('StackScreens', {screen: 'AddTimingStack'})}>
+        onPress={ClickingAddTiming}>
           <View style={{}}>
             <Image style={styles.AddIcon} source={AddIcon}/>
           </View>
@@ -758,10 +785,10 @@ const Schedule: React.FC = () => {
     
     useEffect(() => {
       if (rescheduleStatus === 'PriorStage') {
-        setDialogTitle('Any Prior Work to Choose ?');
+        setDialogTitle('Any Previous Work to Choose ?');
       }
       else if (rescheduleStatus === 'FixingStage') {
-        setDialogTitle('Any Work to remain fixed ?');
+        setDialogTitle('Any Work Timing to remain fixed ?');
       }
       else if (rescheduleStatus === 'RemovingStage') {
         setDialogTitle('Any Work to be Removed ?');
@@ -872,7 +899,17 @@ const Schedule: React.FC = () => {
         setSelectedDate(currentDateStringFormat);
       }
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
+
+      // if (rescheduleStatus === 'FixingStage' && PriorSelections.length === 0 && DisplayingSubjects.length === FixedSelections.length) {
+      //   Alert.alert("Same Schedule", `Selecting none of the Previous Work and Fixing all the Work Timing Ahead will result in same Schedule as before`)
+      //   return;
+      // }
+      console.log("PriorSelections Length: ", PriorSelections.length)
+      console.log("DisplayingSubjects Length: ", DisplayingSubjects.length)
+      console.log("DisplayingSubjects: ", DisplayingSubjects)
+      console.log("FixedSelections Length: ", FixedSelections.length)
       rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
+
       if (DisplayingSubjects.length === 0 && rescheduleStatus === 'RemovingStage') {
         Alert.alert("No Work Ahead", `Without any Work Ahead, Schedule cannot be made`)
       }
@@ -1106,6 +1143,73 @@ const Schedule: React.FC = () => {
       }
     }
 
+    async function RegularStudentInfoUpdate() {
+      try {
+          const StudentInfoResponse = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/GetStudentInfo':'http://10.0.2.2:5000/GetStudentInfo',
+          'https://rescheduler-server.onrender.com/GetStudentInfo',
+          { 
+            method: 'POST', // Specify the request method
+            headers: {
+              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+            },
+            body: JSON.stringify({
+              "Value": StudentInfoData["uniqueID"], // Use the uniqueID from StudentInfoData
+              "Type": "uniqueID"
+          }), // Convert the request payload to JSON.
+          })
+          
+          if (!StudentInfoResponse.ok) {  // Handle HTTP errors
+            throw new Error('Failed to add data to the server');
+          }
+          const fetched_StudentInfo = await StudentInfoResponse.json();
+          // console.log("Fetched StudentInfo: ", fetched_StudentInfo)
+          dispatch(registerUserInfo(fetched_StudentInfo))
+          
+      } catch (error) {
+          console.error('Catch Error: ', error);
+      }
+    }
+
+    function TrialValidity() {
+      const currentDate = new Date();
+      const formatDate = (dateStr: string) => {
+        const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
+        return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+      };
+      if (currentDate >= addDays(formatDate(StudentInfoData?.["Date Joined"] || ''), 7) && StudentInfoData?.["Subscription Type"] == "Free") {
+      // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
+        Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
+        return false;
+      }
+    }
+
+    // useEffect(() => {
+    //   RegularStudentInfoUpdate()
+    // }, [])
+
+    useEffect(() => {
+      if (TrialValidity() == false) {
+          navigation.dispatch(
+              CommonActions.reset({
+                  index: 0,
+                  routes: [
+                      {
+                          name: 'DrawerScreens',
+                          state: {
+                              routes: [
+                                  {
+                                      name: 'SubscriptionDrawer',
+                                  },
+                              ],
+                          },
+                      },
+                  ],
+              })
+          );
+      }
+    }, [])
+    
     useEffect(() => {
       IsStatsWorkRegistered()
     }, [previousDay])
@@ -1133,6 +1237,7 @@ const Schedule: React.FC = () => {
         setPriorSelections([])
         setFixedSelections([])
         setRemovingSelections([])
+        setApiData({} as ApiDataType)
       }
     }, [rescheduleStatus])
 
@@ -1234,6 +1339,8 @@ const Schedule: React.FC = () => {
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>
             <UpperArea
+              currentDateStringFormat={currentDateStringFormat}
+              selectedDate={selectedDate}
               rescheduleStatus={rescheduleStatus}
               currentHourTime={currentHourTime}
               currentMinTime={currentMinTime}

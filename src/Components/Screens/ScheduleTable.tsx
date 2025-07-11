@@ -237,7 +237,7 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
             <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}
              onPress={() => DeleteTask(uniqueID)}
              >
-              <Image source={Remove} style={{height: 20, width: 20}}/>
+              <Image source={Remove} style={{height: 20, width: 20, tintColor: 'red'}}/>
             </TouchableOpacity>
           </View>
           )

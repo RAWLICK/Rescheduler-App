@@ -518,20 +518,26 @@ const Statistics = () => {
 
         </View>
 
-        <View style={{justifyContent: 'center', alignItems: 'center', height: 40, flexDirection: 'row'}}>
-          <TouchableOpacity onPress={DecreaseWeekButton}>
-            <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
+        <View style={{height: 40, flexDirection: 'row'}}>
+          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}} onPress={DecreaseWeekButton}>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
+            </View>
           </TouchableOpacity>
-          <View style={{marginLeft: 15, marginRight: 15}}>
+          <View style={{flex: WeekTitle == "This Week" ? 0.7 : 1.5, justifyContent: 'center', alignItems: 'center'}}>
             <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>{WeekTitle}</Text>
           </View>
-          <TouchableOpacity onPress={IncreaseWeekButton} disabled={DaytoStringDate(selectedWeekStart) == DaytoStringDate(currentWeekStartDate)}>
-            <Image source={ChevronRightBlack}
-              style={[{height: 15, width: 15 },
-              DaytoStringDate(selectedWeekStart) == DaytoStringDate(currentWeekStartDate) && {opacity: 0.3}
-            ]}/>
+          <TouchableOpacity onPress={IncreaseWeekButton} disabled={DaytoStringDate(selectedWeekStart) == DaytoStringDate(currentWeekStartDate)} style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+            <View>
+              <Image source={ChevronRightBlack}
+                style={[{height: 15, width: 15 },
+                DaytoStringDate(selectedWeekStart) == DaytoStringDate(currentWeekStartDate) && {opacity: 0.3}
+              ]}/>
+            </View>
           </TouchableOpacity>
         </View>
+
+
         <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10}}>
           <View style={styles.weekReport}>
             <WeeklyBarChart
@@ -563,17 +569,21 @@ const Statistics = () => {
         </View>
 
         <View style={{marginTop: 10}}>
-          <View style={{justifyContent: 'center', alignItems: 'center', height: 40, flexDirection: 'row'}}>
-            <TouchableOpacity onPress={DecreaseMonthButton}>
-              <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
+          <View style={{height: 40, flexDirection: 'row'}}>
+            <TouchableOpacity onPress={DecreaseMonthButton} style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+              <View>
+                <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
+              </View>
             </TouchableOpacity>
-            <View style={{marginLeft: 15, marginRight: 15}}>
+            <View style={{marginLeft: 15, marginRight: 15, flex: MonthTitle == "This Month" ? 0.6 : 1, justifyContent: 'center', alignItems: 'center'}}>
               <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium'}}>{MonthTitle} {currentMonth != SelectedMonth && SelectedYear}</Text>
             </View>
-            <TouchableOpacity onPress={IncreaseMonthButton} disabled={currentMonth == SelectedMonth && SelectedYear == currentYear}>
-              <Image source={ChevronRightBlack} style={[{height: 15, width: 15 },
-              currentMonth == SelectedMonth && SelectedYear == currentYear && {opacity: 0.3}]}
-              />
+            <TouchableOpacity onPress={IncreaseMonthButton} disabled={currentMonth == SelectedMonth && SelectedYear == currentYear} style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+              <View>
+                <Image source={ChevronRightBlack} style={[{height: 15, width: 15 },
+                currentMonth == SelectedMonth && SelectedYear == currentYear && {opacity: 0.3}]}
+                />
+              </View>
             </TouchableOpacity>
           </View>
         </View>

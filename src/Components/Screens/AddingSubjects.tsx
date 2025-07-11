@@ -53,6 +53,7 @@ const DurationBox = (props: DurationBoxPropsType) => {
 const AddingSubjects = () => {
   const dispatch = useDispatch();
   const [SubjectName, setSubjectName] = useState('');
+  const [IsSaved, setIsSaved] = useState(false);
   const color = 'blue';
   const [showPicker, setShowPicker] = useState(false);
   const [durationString, setDurationString] = useState<string | null>('1h 0min');
@@ -82,6 +83,11 @@ const AddingSubjects = () => {
     }
     else {
       dispatch(addExistingSubjectsObject(newExistingSubject));
+      setIsSaved(true)
+      setTimeout(() => {
+        setSubjectName('');
+        setIsSaved(false)
+      }, 1500)
       try {
         const response = await fetch(
           // Platform.OS === 'ios'? 'http://localhost:5000/UpdateExistingSubjectsArray':'http://192.168.131.92:5000/UpdateExistingSubjectsArray',
@@ -199,14 +205,14 @@ const AddingSubjects = () => {
         </View> */}
       </View>
       <View style={{ height: 50, padding: 5 }}>
-        <TouchableOpacity style={styles.SaveButtonBox} onPress={ExistingSubjectSaveButton}>
+        <TouchableOpacity style={[styles.SaveButtonBox, { backgroundColor: IsSaved ? '#83ff91' : '#ACC6FF' }]} onPress={ExistingSubjectSaveButton}>
           <Text
             style={{
               fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee',
               color: 'black',
               fontSize: 18,
             }}>
-            Save
+            {IsSaved ? "Saved" : "Save"}
           </Text>
         </TouchableOpacity>
       </View>

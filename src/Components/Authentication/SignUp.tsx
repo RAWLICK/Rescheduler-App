@@ -13,10 +13,11 @@ import {
     Platform,
     ActivityIndicator,
     Alert,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    Keyboard,
 } from 'react-native';
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SignInIcon from '../Images/SignInIcon.png';
 import LinearGradient from 'react-native-linear-gradient';
 import SignInDoodleImage from '../Images/SignInDoodle.png';
@@ -182,6 +183,16 @@ const SignUp = () => {
     const [PhoneNumText, setPhoneNumText] = useState('');
     const [IsRegistered, setIsRegistered] = useState("")
     const [Loading, setLoading] = useState(false)
+
+    function CloseKeyboard() {
+        if (PhoneNumText.length === 10) {
+          Keyboard.dismiss();
+        }
+      }
+    
+      useEffect(() => {
+        CloseKeyboard()
+      }, [PhoneNumText])
     return (
         <KeyboardAvoidingView 
         style={{ flex: 1 }}
