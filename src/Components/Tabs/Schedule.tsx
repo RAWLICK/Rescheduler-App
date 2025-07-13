@@ -58,7 +58,7 @@ import { TaskCompletionPopUp } from '../Screens/TaskCompletionBoard';
 import { ScheduleArrayItem } from '../Screens/AddTiming';
 import { combineSlices } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux' 
-import { addScheduleObject, removeScheduleObject } from '../../app/Slice';
+import { addScheduleObject, removeScheduleObject, updateDemoStatus } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { data } from '../../Functions/Animated-Bar-Chart/constants';
 import useInternetCheck from '../Authentication/InternetCheck';
@@ -67,6 +67,9 @@ import { addDays, subDays } from "date-fns";
 import { updateStreakInfo } from '../../app/Slice';
 import { CommonActions } from '@react-navigation/native';
 import { registerUserInfo } from '../../app/Slice';
+import { MotiView } from 'moti';
+import {Easing as EasingNode} from 'react-native-reanimated';
+// import { Easing } from 'react-native';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -260,10 +263,44 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
       return StartAngle > props.hourRotation 
     }
   }})
+  const [toggle, setToggle] = useState(false);
+
+  // Toggle state repeatedly to re-trigger the animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setToggle((prev) => !prev);
+    }, 4000); // match your duration
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <View style={[styles.LowerArea]}>
+      {[...Array(3).keys()].map((index) => {
+        return (
+          // Don't Know how MotiView is working in iOS because it's package is not showing in Podfile.lock
+        <MotiView
+          key={`${index}-${toggle}`}
+          style={[styles.RescheduleButton, { position: 'absolute', width: 270, height: 40}]}
+          from={{
+            opacity: 0.4,
+            scaleX: 1,
+            scaleY: 1
+          }}
+          animate={{ opacity: 0, scaleX: 1.3, scaleY: 1.5 }}
+          transition={{
+            type: 'timing',
+            duration: 2000,
+            easing: EasingNode.out(EasingNode.ease),
+            // easing: EasingNode.inOut(EasingNode.quad),
+            delay: index * 400,
+            repeatReverse: false,
+            loop: true
+          }}
+        />
+      )})}
       <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
-        <Text style={[{fontFamily: 'Geizer', fontSize: 30, color: 'white'}]}>{props.ResButtonTitle}</Text>
+        <Text style={[{fontFamily: Platform.OS == 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg', fontSize: 23, color: 'white'}]}>{props.ResButtonTitle}</Text>
       </TouchableOpacity>
       <Modal transparent= {true} visible={props.rescheduleStatus !== 'off' && props.rescheduleStatus !== 'rescheduled'} animationType='fade'>
       {/* <TouchableWithoutFeedback onPress={props.handleOutsidePress}> */}
@@ -465,10 +502,10 @@ const Schedule: React.FC = () => {
     const [strokeStatus, setStrokeStatus] = useState(false)
     const [rescheduleStatus, setRescheduleStatus] = useState('off')
     const [DialogTitle, setDialogTitle] = useState('')
-    const [ResButtonTitle, setResButtonTitle] = useState('Reschedule')
+    const [ResButtonTitle, setResButtonTitle] = useState('Smart Compress')
     const [checked, setChecked] = useState(false);
     // const width = Dimensions.get('window').width;  // For Carousel
-    const [serverResponseMessage, setServerResponseMessage] = useState('')
+    const [serverResponseMessage, setServerResponseMessage] = useState(false)
     const ScheduleTableSheet = useRef<TrueSheet>(null);
     const CalenderSheet = useRef<TrueSheet>(null);
     const insets = useSafeAreaInsets();
@@ -476,6 +513,8 @@ const Schedule: React.FC = () => {
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
+    const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
+    const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
     const [Loading, setLoading] = useState(false)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
     
@@ -738,47 +777,48 @@ const Schedule: React.FC = () => {
           )}))}
 
           {rescheduleStatus == "rescheduled" && (
-          ApiData?.['Start_Angle']
-          .map((Start_Angle:number, index:number) => ({Start_Angle, index, End_Angle: ApiData['End_Angle'][index]}))
-          .filter(({End_Angle}) => End_Angle > hourRotation)
-          .filter(({Start_Angle}) => Start_Angle < hourRotation + 360)
-          .map(({index}) => {
-            // const uniqueID = data['uniqueID'][index]
-            const startAngle = ApiData['Start_Angle'][index];
-            const endAngle = ApiData['End_Angle'][index];
-            const sectorColor = color[index];
-            const startTime = ApiData['Start_Timing'][index]
-            const endTime = ApiData['End_Timing'][index]
-            const angleDuration = angleToTime(endAngle - startAngle)
-            const angleWork = ApiData['Work'][index]
-            
-            const angleOnPress = () => {
-              console.log('Pressed onOP');
-              settimeStart(TwelveHourFormat(startTime));
-              settimeEnd(TwelveHourFormat(endTime));
-              setWork(angleWork);
-              setduration(`(${angleDuration})`);
-              setangleColor(sectorColor);
-              setStrokeStatus(true);
-              // console.log(angleColor);
-            };
-
-            return(
-              <Path
-                // key={uniqueID}
-                key={startAngle}
-                d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, endAngle, startAngle)}
-                fill={sectorColor}  
-                onPressIn={()=> angleOnPress()}
-                onPressOut={LabelChanging}
-                // stroke={strokeStatus? '#000000' : 'none'}
-                // strokeDasharray="5,10"  // 10 units of stroke, 5 units of gap
-                // strokeDashoffset="0"    // Start from the beginning of the path
-
-                // stroke="url(#grad)"     //<Defs> Part
-                // strokeWidth="4"
-              />
-          )}))}
+            ApiData?.['Start_Angle']
+            .map((Start_Angle:number, index:number) => ({Start_Angle, index, End_Angle: ApiData['End_Angle'][index]}))
+            .filter(({End_Angle}) => End_Angle > hourRotation)
+            .filter(({Start_Angle}) => Start_Angle < hourRotation + 360)
+            .map(({index}) => {
+              // const uniqueID = data['uniqueID'][index]
+              const startAngle = ApiData['Start_Angle'][index];
+              const endAngle = ApiData['End_Angle'][index];
+              const sectorColor = color[index];
+              const startTime = ApiData['Start_Timing'][index]
+              const endTime = ApiData['End_Timing'][index]
+              const angleDuration = angleToTime(endAngle - startAngle)
+              const angleWork = ApiData['Work'][index]
+              
+              const angleOnPress = () => {
+                console.log('Pressed onOP');
+                settimeStart(TwelveHourFormat(startTime));
+                settimeEnd(TwelveHourFormat(endTime));
+                setWork(angleWork);
+                setduration(`(${angleDuration})`);
+                setangleColor(sectorColor);
+                setStrokeStatus(true);
+                // console.log(angleColor);
+              };
+  
+              return(
+                <Path
+                  // key={uniqueID}
+                  key={startAngle}
+                  d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, endAngle, startAngle)}
+                  fill={sectorColor}  
+                  onPressIn={()=> angleOnPress()}
+                  onPressOut={LabelChanging}
+                  // stroke={strokeStatus? '#000000' : 'none'}
+                  // strokeDasharray="5,10"  // 10 units of stroke, 5 units of gap
+                  // strokeDashoffset="0"    // Start from the beginning of the path
+  
+                  // stroke="url(#grad)"     //<Defs> Part
+                  // strokeWidth="4"
+                />
+            )})
+          )}
         </Svg>
       );
     }, [ScheduleArray, selectedDate, rescheduleStatus, minuteRotation]);
@@ -825,12 +865,12 @@ const Schedule: React.FC = () => {
         // setLoading(false);  // Set loading state to false
         const fetched_data = await response.json(); // Parse JSON response
         setApiData(fetched_data)
-        setServerResponseMessage(fetched_data.message);  // Update state with server response
+        setServerResponseMessage(true);  // Update state with server response
         // console.log("API_DATA: ", JSON.stringify(ApiData))
       } catch (error) {
         setLoading(false);  // Set loading state to false
-        console.error('Catch Error: ', error);
-        setServerResponseMessage('Failed to connect to the backend');  // Handle network error
+        console.log('Catch Error: ', error);
+        Alert.alert('No Internet', 'Please connect with the internet');  // Handle network error
       }
 
       try {
@@ -852,10 +892,11 @@ const Schedule: React.FC = () => {
         setLoading(false);  // Set loading state to false
         const fetched_data = await response.json(); // Parse JSON response
         console.log(fetched_data)
+        return true
       } catch (error) {
         setLoading(false);  // Set loading state to false
-        console.error('Catch Error: ', error);
-        setServerResponseMessage('Failed to connect to the backend');  // Handle network error
+        // console.error('Catch Error: ', error);
+        return false
       }
     };
 
@@ -866,7 +907,7 @@ const Schedule: React.FC = () => {
       // rescheduleStatus === 'RemovingStage' && setRescheduleStatus('FixingStage')
     }
 
-    const RescheduleButtonClick = () => {
+    const RescheduleButtonClick = async() => {
       const DisplayingSubjects = data['StartAngle']
       .map((StartAngle: number, index: number) => ({
         StartAngle, 
@@ -894,9 +935,11 @@ const Schedule: React.FC = () => {
           return StartAngle > hourRotation 
         // }
       }})
+      
       rescheduleStatus === 'off' &&  setRescheduleStatus('PriorStage')
       if (rescheduleStatus === 'off') {
         setSelectedDate(currentDateStringFormat);
+        // dispatch(updateDemoStatus(DemoNumberHere.DemoNumber + 1));
       }
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
 
@@ -917,7 +960,12 @@ const Schedule: React.FC = () => {
         Alert.alert("No Work Selected", `Select out some work to get rescheduled`)
       }
       else {
-        rescheduleStatus === 'RemovingStage' && sendNameToBackend().then(() => setRescheduleStatus('rescheduled')).then(() => setResButtonTitle('Back To Normal'))
+        rescheduleStatus === 'RemovingStage' && sendNameToBackend().then((result) => {
+          if (result) {
+            setRescheduleStatus('rescheduled')
+            setResButtonTitle('Back To Normal')
+          }
+        })
       }
       rescheduleStatus == 'rescheduled' && setRescheduleStatus('off')
     }
@@ -1214,11 +1262,9 @@ const Schedule: React.FC = () => {
       IsStatsWorkRegistered()
     }, [previousDay])
     
-
     useEffect(() => {
       console.log("Reschedule Status: ", rescheduleStatus)
     }, [rescheduleStatus])
-    
     
     useEffect(() => {
       console.log("PriorSelectionList: ", PriorSelections)
@@ -1233,7 +1279,8 @@ const Schedule: React.FC = () => {
     // Clearing the Arrays so that on reselection, the index doesn't get double assigned
     useEffect(() => {
       if (rescheduleStatus == 'off') {
-        setResButtonTitle('Reschedule');
+        setServerResponseMessage(false)
+        setResButtonTitle('Smart Compress');
         setPriorSelections([])
         setFixedSelections([])
         setRemovingSelections([])
@@ -1298,6 +1345,12 @@ const Schedule: React.FC = () => {
     useEffect(() => {
       checkAppVersion();
     }, [])
+
+    // useEffect(() => {
+    //   // console.log("DemoNumberHere: ", DemoNumberHere)
+    //   console.log("LocalStorageInfo: ", LocalStorageInfo)
+    // }, [LocalStorageInfo])
+    
     
     // Drawer and tab navigators are sibling-level navigators in your app architecture. When you switch from one drawer screen to another, you’re not actually unmounting and remounting the tab screen component — you’re just switching the visible screen. That's when you need to use the useFocusEffect to get the things done which are performed by useEffect.
     
@@ -1596,7 +1649,9 @@ const Schedule: React.FC = () => {
 
     LowerArea: {
       flex: 0.3,
-      // backgroundColor: 'black'
+      // backgroundColor: 'black',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
 
     RescheduleButton: {
@@ -1604,14 +1659,14 @@ const Schedule: React.FC = () => {
       height: 40,
       justifyContent: 'center',
       alignItems: 'center',
-      marginLeft: 60,
-      marginRight: 60,
+      paddingLeft: 60,
+      paddingRight: 60,
       borderRadius: 12,
-      marginTop: 5,
+      // marginTop: 5,
       borderRightWidth: 3,
       borderLeftWidth: 3,
       borderBottomWidth: 3,
-      borderColor: '#841AB6'
+      borderColor: '#841AB6',
     },
 
     AddIcon: {

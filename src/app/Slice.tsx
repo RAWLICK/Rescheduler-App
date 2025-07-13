@@ -58,7 +58,7 @@ const initialState = {
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
     ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[],
     StudentsDataArrayInitialState: [] as StudentsDataArrayType[],
-    DemoArrayInitialState: [{"DemoStatus": true}] as [{ "DemoStatus": boolean }]
+    DemoArrayInitialState: {"DemoNumber": 1} as { "DemoNumber": number }
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -343,10 +343,10 @@ export const StudentsDataArraySlice = createSlice({
 
 export const DemoArraySlice = createSlice({
     name: 'DemoArray',
-    initialState: initialState.DemoArrayInitialState,
+    initialState: initialState,
     reducers: {
         updateDemoStatus: (state, action) => {
-            state[0].DemoStatus = action.payload;
+            state.DemoArrayInitialState["DemoNumber"] = action.payload;
             console.log("Demo Data Updated")
         }
     }

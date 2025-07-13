@@ -28,6 +28,7 @@ import { useNavigation } from '@react-navigation/native';
 import {BlurView} from '@react-native-community/blur';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Auth0 from 'react-native-auth0';
+import {useAuth0, Auth0Provider} from 'react-native-auth0';
 import jwtDecode from 'jwt-decode';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 const { width, height } = Dimensions.get('window');
@@ -138,26 +139,30 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
         console.log("Failed to connect to the backend");
     }
   };
+  const {authorize, clearSession, user, getCredentials, error, isLoading} = useAuth0();
 
   const GoogleLogin = async () => {
-    try {
-      const credentials = await auth0Mail.webAuth.authorize({
-        scope: 'openid profile email',
-        // audience: 'https://YOUR_DOMAIN.auth0.com/userinfo',
-        redirectUri:
-        Platform.OS === 'ios'
-          ? 'com.rescheduler://dev-ohpipjjs64tqo7j8.us.auth0.com/callback'
-          : 'https://dev-ohpipjjs64tqo7j8.us.auth0.com/android/com.rescheduler/callback', // <-- Match exactly
-        connection: 'google-oauth2'
-      });
+    // try {
+    //   const credentials = await auth0Mail.webAuth.authorize({
+    //     scope: 'openid profile email',
+    //     // audience: 'https://YOUR_DOMAIN.auth0.com/userinfo',
+    //     redirectUri:
+    //     Platform.OS === 'ios'
+    //       ? 'com.rescheduler://dev-ohpipjjs64tqo7j8.us.auth0.com/callback'
+    //       : 'https://dev-ohpipjjs64tqo7j8.us.auth0.com/android/com.rescheduler/callback', // <-- Match exactly
+    //     connection: 'google-oauth2'
+    //   });
 
-      console.log("ID Token:", credentials.idToken);
-      console.log("Access Token:", credentials.accessToken);
+    //   console.log("ID Token:", credentials.idToken);
+    //   console.log("Access Token:", credentials.accessToken);
 
-      // You can store these in Redux, AsyncStorage, etc.
-    } catch (error) {
-      console.error("Login error", error);
-    }
+    //   // You can store these in Redux, AsyncStorage, etc.
+    // } catch (error) {
+    //   // console.error("Login error", error);
+    // }
+    await authorize({}, {});
+    const credentials = await getCredentials();
+    Alert.alert('AccessToken: ' + credentials?.accessToken);
   };
 
   const AppleLogin = async () => {
@@ -177,7 +182,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
 
       // You can store these in Redux, AsyncStorage, etc.
     } catch (error) {
-      console.error("Login error", error);
+      // console.error("Login error", error);
     }
   };
 
@@ -222,7 +227,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
           </View>
           }
           { !props.PhoneNumberSelected && 
-          <TouchableOpacity style={[styles.RegisterNewUserBox, {backgroundColor: 'orange'}]} onPress={PhoneNumberClicked}>
+          <TouchableOpacity style={[styles.RegisterNewUserBox, {backgroundColor: 'orange', elevation: 0}]} onPress={PhoneNumberClicked}>
             <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 16,
             color: 'white'}}>Continue With Phone Number</Text>
           </TouchableOpacity> 
@@ -275,6 +280,8 @@ const SignIn = () => {
   const [IsRegistered, setIsRegistered] = useState("")
   const [Loading, setLoading] = useState(false)
   const [PhoneNumberSelected, setPhoneNumberSelected] = useState(false)
+  // architgupta869@gmail.com
+  // My_Lord;6969
   
   function CloseKeyboard() {
     if (PhoneNumText.length === 10) {
