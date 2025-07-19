@@ -48,6 +48,10 @@ export type StudentsDataArrayType = {
     "Branch": string
 }
 
+export type DemoArrayType = {
+    "DemoNumber": number
+}
+
 // Initial State could both be array or object but we are using object beacause it can store a lot of things
 const initialState = {
     LocalStorageInfoInitialState: {
@@ -58,7 +62,7 @@ const initialState = {
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
     ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[],
     StudentsDataArrayInitialState: [] as StudentsDataArrayType[],
-    DemoArrayInitialState: {"DemoNumber": 1} as { "DemoNumber": number }
+    DemoArrayInitialState: {"DemoNumber": 1} as DemoArrayType
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -343,10 +347,10 @@ export const StudentsDataArraySlice = createSlice({
 
 export const DemoArraySlice = createSlice({
     name: 'DemoArray',
-    initialState: initialState,
+    initialState,
     reducers: {
         updateDemoStatus: (state, action) => {
-            state.DemoArrayInitialState["DemoNumber"] = action.payload;
+            // state.DemoArrayInitialState["DemoNumber"] = action.payload;
             console.log("Demo Data Updated")
         }
     }

@@ -69,8 +69,6 @@ import { CommonActions } from '@react-navigation/native';
 import { registerUserInfo } from '../../app/Slice';
 import { MotiView } from 'moti';
 import {Easing as EasingNode} from 'react-native-reanimated';
-// import { Easing } from 'react-native';
-// import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 export interface ApiDataType {
@@ -501,6 +499,7 @@ const Schedule: React.FC = () => {
     const [tintstatus, setTintStatus] = useState(false)
     const [strokeStatus, setStrokeStatus] = useState(false)
     const [rescheduleStatus, setRescheduleStatus] = useState('off')
+    let roughRescheduleStatus = "off";
     const [DialogTitle, setDialogTitle] = useState('')
     const [ResButtonTitle, setResButtonTitle] = useState('Smart Compress')
     const [checked, setChecked] = useState(false);
@@ -514,6 +513,7 @@ const Schedule: React.FC = () => {
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
     const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
+    // const FullState = useSelector((state: RootState) => state)
     const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
     const [Loading, setLoading] = useState(false)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
@@ -823,17 +823,6 @@ const Schedule: React.FC = () => {
       );
     }, [ScheduleArray, selectedDate, rescheduleStatus, minuteRotation]);
     
-    useEffect(() => {
-      if (rescheduleStatus === 'PriorStage') {
-        setDialogTitle('Any Previous Work to Choose ?');
-      }
-      else if (rescheduleStatus === 'FixingStage') {
-        setDialogTitle('Any Work Timing to remain fixed ?');
-      }
-      else if (rescheduleStatus === 'RemovingStage') {
-        setDialogTitle('Any Work to be Removed ?');
-      }
-    }, [rescheduleStatus]);
 
     for (let index = 0; index < ScheduleArray.length; index++) {
       const eachWork = ScheduleArray[index];
@@ -902,6 +891,7 @@ const Schedule: React.FC = () => {
 
     const DialogBackButton = () => {
       setRescheduleStatus('off')
+      roughRescheduleStatus = 'off';
       // rescheduleStatus === 'PriorStage' && setRescheduleStatus('off')
       // rescheduleStatus === 'FixingStage' && setRescheduleStatus('PriorStage')
       // rescheduleStatus === 'RemovingStage' && setRescheduleStatus('FixingStage')
@@ -921,15 +911,15 @@ const Schedule: React.FC = () => {
         TaskDate, index, StartAngle, newIndex
       }))
       .filter(({index, StartAngle, newIndex}) => {
-      if (rescheduleStatus == 'PriorStage') {
+      if (roughRescheduleStatus == 'PriorStage') {
         return StartAngle <= hourRotation 
       }
-      else if (rescheduleStatus == 'FixingStage') {
+      else if (roughRescheduleStatus == 'FixingStage') {
         if (RemovingSelections.includes(newIndex)) {    // Prevent Fixed and Removing list getting common
           return StartAngle > hourRotation 
         }
       }
-      else if (rescheduleStatus == 'RemovingStage') {
+      else if (roughRescheduleStatus == 'RemovingStage') {
         // if (!FixedSelections.includes(newIndex)) {       // Removed this condition here because I want all angles 
                                                             // after current angle
           return StartAngle > hourRotation 
@@ -939,24 +929,31 @@ const Schedule: React.FC = () => {
       rescheduleStatus === 'off' &&  setRescheduleStatus('PriorStage')
       if (rescheduleStatus === 'off') {
         setSelectedDate(currentDateStringFormat);
+        roughRescheduleStatus = 'PriorStage';
         // dispatch(updateDemoStatus(DemoNumberHere.DemoNumber + 1));
+        // console.log('DemoNumberHere: ', DemoNumberHere)
+        // console.log('FullState: ', FullState)
       }
+
       rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
+      if (rescheduleStatus === 'PriorStage') {
+        roughRescheduleStatus = 'FixingStage';
+      }
 
-      // if (rescheduleStatus === 'FixingStage' && PriorSelections.length === 0 && DisplayingSubjects.length === FixedSelections.length) {
-      //   Alert.alert("Same Schedule", `Selecting none of the Previous Work and Fixing all the Work Timing Ahead will result in same Schedule as before`)
-      //   return;
-      // }
-      console.log("PriorSelections Length: ", PriorSelections.length)
-      console.log("DisplayingSubjects Length: ", DisplayingSubjects.length)
-      console.log("DisplayingSubjects: ", DisplayingSubjects)
-      console.log("FixedSelections Length: ", FixedSelections.length)
-      rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
-
-      if (DisplayingSubjects.length === 0 && rescheduleStatus === 'RemovingStage') {
+      if (rescheduleStatus === 'FixingStage' && PriorSelections.length === 0 && DisplayingSubjects.length === FixedSelections.length) {
+        Alert.alert("Same Schedule", `Selecting none of the Previous Work and Fixing all the Work Timing Ahead will result in same Schedule as before`)
+        return;
+      }
+      else if (DisplayingSubjects.length === 0 && rescheduleStatus === 'FixingStage') {
+        console.log("DisplayingSubjects: ", DisplayingSubjects)
         Alert.alert("No Work Ahead", `Without any Work Ahead, Schedule cannot be made`)
       }
-      else if (PriorSelections.length == 0 && FixedSelections.length == 0 && RemovingSelections.length == 0 && rescheduleStatus === 'RemovingStage') {
+      else {
+        rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
+        roughRescheduleStatus = 'RemovingStage';
+      }
+
+      if (PriorSelections.length == 0 && FixedSelections.length == 0 && RemovingSelections.length == 0 && rescheduleStatus === 'RemovingStage') {
         Alert.alert("No Work Selected", `Select out some work to get rescheduled`)
       }
       else {
@@ -964,10 +961,15 @@ const Schedule: React.FC = () => {
           if (result) {
             setRescheduleStatus('rescheduled')
             setResButtonTitle('Back To Normal')
+            roughRescheduleStatus = 'rescheduled';
           }
         })
       }
+
       rescheduleStatus == 'rescheduled' && setRescheduleStatus('off')
+      if (rescheduleStatus == 'rescheduled') {
+        roughRescheduleStatus = 'off';
+      }
     }
 
     const handleOutsidePress = () => {
@@ -1257,6 +1259,18 @@ const Schedule: React.FC = () => {
           );
       }
     }, [])
+
+    useEffect(() => {
+      if (rescheduleStatus === 'PriorStage') {
+        setDialogTitle('Any Previous Work to Choose ?');
+      }
+      else if (rescheduleStatus === 'FixingStage') {
+        setDialogTitle('Any Work Timing to remain fixed ?');
+      }
+      else if (rescheduleStatus === 'RemovingStage') {
+        setDialogTitle('Any Work ahead to be Removed ?');
+      }
+    }, [rescheduleStatus]);
     
     useEffect(() => {
       IsStatsWorkRegistered()
@@ -1286,6 +1300,51 @@ const Schedule: React.FC = () => {
         setRemovingSelections([])
         setApiData({} as ApiDataType)
       }
+
+      // const DisplayingSubjects = data['StartAngle']
+      // .map((StartAngle: number, index: number) => ({
+      //   StartAngle, 
+      //   TaskDate: data['TaskDate'][index],
+      //   index // Store the original index
+      // }))
+      // .filter(({TaskDate}) => {
+      //   return TaskDate == currentDateStringFormat
+      // })
+      // .map(({TaskDate, index, StartAngle}, newIndex) => ({  // newIndex is made to index 0, 1 instead of 52, 53 etc.
+      //   TaskDate, index, StartAngle, newIndex
+      // }))
+      // .filter(({index, StartAngle, newIndex}) => {
+      // if (rescheduleStatus == 'PriorStage') {
+      //   return StartAngle <= hourRotation 
+      // }
+      // else if (rescheduleStatus == 'FixingStage') {
+      //   if (RemovingSelections.includes(newIndex)) {    // Prevent Fixed and Removing list getting common
+      //     return StartAngle > hourRotation 
+      //   }
+      // }
+      // else if (rescheduleStatus == 'RemovingStage') {
+      //   // if (!FixedSelections.includes(newIndex)) {       // Removed this condition here because I want all angles 
+      //                                                       // after current angle
+      //     return StartAngle > hourRotation 
+      //   // }
+      // }});
+
+      // if (DisplayingSubjects.length === 0 && rescheduleStatus === 'RemovingStage') {
+      //   Alert.alert("No Work Ahead", `Without any Work Ahead, Schedule cannot be made`, [
+      //     {
+      //       text: "OK",
+      //       onPress: () => {
+      //         setRescheduleStatus('RemovingStage')
+      //       },
+      //       style: "default" // can also be "cancel" or "destructive"
+      //     }
+      //   ],
+      //   { cancelable: true }
+      // )}
+      // else if (PriorSelections.length == 0 && FixedSelections.length == 0 && RemovingSelections.length == 0 && rescheduleStatus === 'RemovingStage') {
+      //   Alert.alert("No Work Selected", `Select out some work to get rescheduled`)
+      // }
+
     }, [rescheduleStatus])
 
     useEffect(() => {
@@ -1347,9 +1406,8 @@ const Schedule: React.FC = () => {
     }, [])
 
     // useEffect(() => {
-    //   // console.log("DemoNumberHere: ", DemoNumberHere)
-    //   console.log("LocalStorageInfo: ", LocalStorageInfo)
-    // }, [LocalStorageInfo])
+    //   console.log("DemoNumberHere: ", DemoNumberHere)
+    // }, [DemoNumberHere])
     
     
     // Drawer and tab navigators are sibling-level navigators in your app architecture. When you switch from one drawer screen to another, you’re not actually unmounting and remounting the tab screen component — you’re just switching the visible screen. That's when you need to use the useFocusEffect to get the things done which are performed by useEffect.

@@ -94,12 +94,10 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             if (fetched_data === "true") {
                 navigation.navigate('StackScreens', { screen: 'SignInStack' });
                 if (Platform.OS === 'android') {
-                Dialog.show({
-                    type: ALERT_TYPE.WARNING,
-                    title: 'Already Registered',
-                    textBody: "Please Sign In",
-                    button: 'Sign In',
-                })
+                Alert.alert(
+                    "Already Registered", "Please Sign In",
+                    [{ text: "Sign In" }]
+                )
                 }
                 else if (Platform.OS === 'ios') {
                 Alert.alert(

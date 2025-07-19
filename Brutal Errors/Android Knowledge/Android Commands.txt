@@ -1,3 +1,18 @@
 watchman watch-del-all: 
 - It does NOT delete Watchman itself — it simply clears all the directories that Watchman is currently watching. After running it You don’t need to do anything else. 
 - Next time Metro runs, it will tell Watchman what to watch again automatically.
+
+Generate SHA1 or SHA256 key:
+- First run this whole command below at once in your terminal to generate default debug store(debug.keystore):
+mkdir -p ~/.android && keytool -genkey -v \
+ -keystore ~/.android/debug.keystore \
+ -alias androiddebugkey \
+ -storepass android -keypass android \
+ -keyalg RSA -keysize 2048 -validity 10000 \
+ -dname "CN=Android Debug,O=Android,C=US"
+
+- Then run this below SHA-1 command at once in terminal:
+keytool -list -v \
+ -keystore ~/.android/debug.keystore \
+ -alias androiddebugkey \
+ -storepass android -keypass android
