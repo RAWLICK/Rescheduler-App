@@ -7,7 +7,8 @@ import Infinity from '../Images/Infinity.png'
 import LogOut from '../Images/LogOut.png'
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
-import { updateLocalStorageInfo } from '../../app/Slice';
+import { updateLocalStorageInfo
+ } from '../../app/Slice';
 import { CommonActions } from '@react-navigation/native';
 import {persistor} from '../../app/Store';
 import AsyncStorage from '@react-native-async-storage/async-storage';

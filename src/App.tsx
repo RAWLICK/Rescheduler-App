@@ -109,8 +109,8 @@ function App(): React.JSX.Element {
   const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
 
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-  const LocalStorageInfoData = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
-  console.log(StudentInfoData)
+  const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
+  const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
 
   function TrialValidity() {
     const currentDate = new Date();
@@ -245,7 +245,7 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      {/* <NativeStack.Navigator initialRouteName={LocalStorageInfoData["IsLoggedIn"]? "DrawerScreens": "StackScreens"}> */}
+      {/* <NativeStack.Navigator initialRouteName={LocalStorageInfo["IsLoggedIn"]? "DrawerScreens": "StackScreens"}> */}
       <NativeStack.Navigator initialRouteName={"DrawerScreens"}>
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>

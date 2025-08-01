@@ -17,7 +17,8 @@ import {
     withSpring
   } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux' 
-import { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, updateLocalStorageInfo, updateDemoStatus } from '../../app/Slice';
+import { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, updateLocalStorageInfo,
+  } from '../../app/Slice';
 import { updateStreakInfo } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { ExistingSubjectsArrayItem } from '../../app/Slice';

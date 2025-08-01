@@ -23,6 +23,7 @@ import {CombinedNavigationProp} from '../../App';
 import { useFocusEffect } from '@react-navigation/native';
 import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+import { addWholeStudentsDataArray } from '../../app/Slice';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 interface Item {
@@ -309,6 +310,7 @@ const AppDistributor = () => {
         }
         return null;
     };
+
     async function RenderDistributor() {
       try {
         const response = await fetch(
@@ -442,6 +444,31 @@ const AppDistributor = () => {
       await AddingStudentsSheet.current?.present();
     }
 
+    async function RegularLibraryStudentInfoUpdate () {
+      try {
+        const LibraryStudentsResponse = await fetch(
+        // Platform.OS === 'ios'? 'http://localhost:5000/GetAllStudents':'http://192.168.31.141:5000/GetAllStudents',
+        'https://rescheduler-server.onrender.com/GetAllStudents',
+        { 
+        method: 'POST', // Specify the request method
+        headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+        },
+        body: JSON.stringify({ "Distribution ID": StudentInfoData["Distribution ID"] }), // Convert the request payload to JSON.
+        })
+        
+        if (!LibraryStudentsResponse.ok) {  // Handle HTTP errors
+        throw new Error('Failed to download data from the server');
+        }
+        const fetched_LibraryStudentsResponse = await LibraryStudentsResponse.json();
+        console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
+        dispatch(addWholeStudentsDataArray(fetched_LibraryStudentsResponse))
+    
+      } catch (error) {
+        console.error('Catch Error: ', error);
+      }
+    }
+
     useEffect(() => {
       // console.log("Is Connected from Settings: ", isConnected)
       if (isConnected == false) {
@@ -457,6 +484,10 @@ const AppDistributor = () => {
       }
     }, [isConnected])
 
+    useEffect(() => {
+      RegularLibraryStudentInfoUpdate();
+    }, [])
+    
     // useFocusEffect(
     //   useCallback(() => {
     //     StatusBar.setBackgroundColor("#d6d3da")

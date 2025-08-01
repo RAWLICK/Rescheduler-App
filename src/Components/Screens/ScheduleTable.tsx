@@ -210,7 +210,7 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
   return (
     <View style={{backgroundColor: '#e7e7e7'}}>
       <View style={styles.HeadingArea}>
-        <Text style={styles.Heading}>{Title}</Text>
+        <Text style={[styles.Heading, Title == 'Rescheduled Table' ? { color: '#833cfb' } : {}]}>{Title}</Text>
       </View>
       <View style={styles.ScheduleArea}>
         <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>

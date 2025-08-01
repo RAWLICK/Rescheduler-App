@@ -13,7 +13,8 @@ import {
     Keyboard,
     TouchableWithoutFeedback,
     Button,
-    Dimensions
+    Dimensions,
+    Alert
   } from 'react-native';
   import { BlurView } from "@react-native-community/blur";
 import React from 'react'
@@ -74,6 +75,7 @@ const PreviousSchedule = (props: PreviousSchedulePropsType) => {
     "rgba(191, 115, 181, 0.5)"
     ],
   }
+  const RecentDayWorksList: ScheduleArrayItem[] = []
 
   const colorArray = [
     "rgba(175, 193, 85, 0.5)",
@@ -144,21 +146,61 @@ const PreviousSchedule = (props: PreviousSchedulePropsType) => {
     }
   };
 
-  const RecentDayWorksList: ScheduleArrayItem[] = []
-
   function ApplyButton() {
     for (let index = 0; index < RecentDayWorksList.length; index++) {
       const eachWork = RecentDayWorksList[index];
-      dispatch(addScheduleObject(eachWork));
+      function MatchingWorks() {
+        const foundWorks = ScheduleArray.filter((item) => item.TaskDate == currentDateStringFormat)
+        for (let index = 0; index < foundWorks.length; index++) {
+          const element = foundWorks[index];
+          if (element["Work"].toLowerCase() == eachWork.Work.toLowerCase()) {
+            return true
+          }
+        }
+      }
+
+      function MatchingTimings() {
+        const foundWorks = ScheduleArray.filter((item) => item.TaskDate == currentDateStringFormat)
+        for (let index = 0; index < foundWorks.length; index++) {
+          const element = foundWorks[index];
+          if (eachWork.StartAngle && eachWork.EndAngle) {
+            if
+              (
+              eachWork.StartAngle > Number(element["StartAngle"]) && eachWork.StartAngle < Number(element["EndAngle"])
+              || eachWork.EndAngle < Number(element["EndAngle"]) && eachWork.EndAngle > Number(element["StartAngle"])
+              || eachWork.EndAngle == Number(element["EndAngle"]) && eachWork.StartAngle == Number(element["StartAngle"])
+              || eachWork.StartAngle == Number(element["StartAngle"])
+              || eachWork.EndAngle == Number(element["EndAngle"])
+              )
+              {
+              console.log("StartAngle: ", eachWork.StartAngle)
+              console.log("element StartAngle: ", Number(element["StartAngle"]))
+              console.log("EndAngle: ", eachWork.EndAngle)
+              console.log("element EndAngle: ", Number(element["EndAngle"]))
+            return true
+            }
+          }
+        }
+      }
+
+      if (MatchingWorks() == true) {
+        Alert.alert("Duplicate Work", `You have a ${eachWork.Work} Work already present in today's Schedule so we couldn't add it again`)
+      }
+      else if (MatchingTimings() == true) {
+        Alert.alert("Timings Collided", `${eachWork.Work} time period is colliding with another time period in today's Schedule so we couldn't add it`)
+      }
+      else {
+        dispatch(addScheduleObject(eachWork));
+        props.setPrevScheduleStatus(false)
+        props.navigation.navigate('DrawerScreens', {
+          screen: 'TabsDrawer',
+          params: {
+            screen: 'ScheduleTab',
+            params: undefined
+          },
+        })
+      }
     }
-    props.setPrevScheduleStatus(false)
-    props.navigation.navigate('DrawerScreens', {
-      screen: 'TabsDrawer',
-      params: {
-        screen: 'ScheduleTab',
-        params: undefined
-      },
-    })
   }
 
   return (

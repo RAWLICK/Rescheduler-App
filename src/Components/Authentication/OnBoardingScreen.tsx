@@ -11,25 +11,24 @@ import { NavigationProp, useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux' 
 import { RootState } from '../../app/Store';
-import { updateLocalStorageInfo, updateDemoStatus } from '../../app/Slice';
+import { updateLocalStorageInfo, 
+ } from '../../app/Slice';
 
 const OnBoardingScreen = () => {
     const navigation = useNavigation<NavigationProp<any, any>>();
     const dispatch = useDispatch();
-    const DemoStatement = useSelector((state: RootState) => state.DemoArraySliceReducer)
     const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState);
     const Done = () => {
-        dispatch(updateDemoStatus(true));
         dispatch(updateLocalStorageInfo("FirstLaunch"));
         navigation.navigate('StackScreens', { screen: 'SignInStack' })
     }
-    useEffect(() => {
-      console.log("DemoStatement", DemoStatement);
-    }, [DemoStatement])
+    // useEffect(() => {
+    //   console.log("DemoStatement", DemoStatement);
+    // }, [DemoStatement])
 
-    useEffect(() => {
-      console.log("LocalStorageInfo", LocalStorageInfo);
-    }, [LocalStorageInfo])
+    // useEffect(() => {
+    //   console.log("LocalStorageInfo", LocalStorageInfo);
+    // }, [LocalStorageInfo])
     
   return (
       <Onboarding

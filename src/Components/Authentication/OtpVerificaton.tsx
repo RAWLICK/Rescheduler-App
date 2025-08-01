@@ -11,7 +11,8 @@ import { useState, useEffect } from 'react';
 // import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useDispatch, useSelector } from 'react-redux' 
 import { registerUserInfo } from '../../app/Slice';
-import { addWholeScheduleArray, addWholeExistingSubjectsArray, addWholeStudentsDataArray, updateLocalStorageInfo } from '../../app/Slice';
+import { addWholeScheduleArray, addWholeExistingSubjectsArray, addWholeStudentsDataArray, updateLocalStorageInfo
+} from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Auth0 from 'react-native-auth0';
@@ -119,7 +120,6 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                     fetched_StudentInfo = await StudentInfoResponse.json();
                     console.log("Fetched StudentInfo: ", fetched_StudentInfo)
                     dispatch(registerUserInfo(fetched_StudentInfo))
-                    
                 } catch (error) {
                     console.error('Catch Error: ', error);
                     props.setLoading(false)

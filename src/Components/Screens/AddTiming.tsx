@@ -657,7 +657,6 @@ const AddTiming = () => {
         // playSound();
       }
     })
-
     .onFinalize(() => {
       // console.log("Pressed onFinalize")
     });
@@ -665,19 +664,6 @@ const AddTiming = () => {
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{translateX: clamp(FinalRadar.value, 10, 310)}],
   }));
-
-  useEffect(() => {
-    setStartTime(currentTime);
-    setTaskDate(currentDateandMonth);
-  }, []);
-
-  useEffect(() => {
-    setEndTime(AdjustedEndTime(StartTime));
-  }, [StartTime, Duration])
-  
-  useEffect(() => {
-    degreeConverter(StartTime, EndTime);
-  }, [StartTime, EndTime]);
 
   function randomColorIndex() {
     const randomIndex = Math.floor(Math.random() * color.length);
@@ -796,6 +782,19 @@ const AddTiming = () => {
     };
   };
 
+  useEffect(() => {
+    setStartTime(currentTime);
+    setTaskDate(currentDateandMonth);
+  }, []);
+
+  useEffect(() => {
+    setEndTime(AdjustedEndTime(StartTime));
+  }, [StartTime, Duration])
+  
+  useEffect(() => {
+    degreeConverter(StartTime, EndTime);
+  }, [StartTime, EndTime]);
+  
   useEffect(() => {
     console.log("Color Index: ", colorIndex)
   }, [colorIndex])

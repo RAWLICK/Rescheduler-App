@@ -58,7 +58,10 @@ import { TaskCompletionPopUp } from '../Screens/TaskCompletionBoard';
 import { ScheduleArrayItem } from '../Screens/AddTiming';
 import { combineSlices } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux' 
-import { addScheduleObject, removeScheduleObject, updateDemoStatus } from '../../app/Slice';
+import { addScheduleObject, removeScheduleObject,
+   updateLocalStorageInfo,
+   DemoUpdateLocalStorageInfo
+   } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { data } from '../../Functions/Animated-Bar-Chart/constants';
 import useInternetCheck from '../Authentication/InternetCheck';
@@ -69,6 +72,7 @@ import { CommonActions } from '@react-navigation/native';
 import { registerUserInfo } from '../../app/Slice';
 import { MotiView } from 'moti';
 import {Easing as EasingNode} from 'react-native-reanimated';
+import {persistor} from '../../app/Store';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 export interface ApiDataType {
@@ -281,17 +285,17 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           key={`${index}-${toggle}`}
           style={[styles.RescheduleButton, { position: 'absolute', width: 270, height: 40}]}
           from={{
-            opacity: 0.4,
+            opacity: 0.5,
             scaleX: 1,
             scaleY: 1
           }}
           animate={{ opacity: 0, scaleX: 1.3, scaleY: 1.5 }}
           transition={{
             type: 'timing',
-            duration: 2000,
+            duration: 1500,
             easing: EasingNode.out(EasingNode.ease),
             // easing: EasingNode.inOut(EasingNode.quad),
-            delay: index * 400,
+            delay: index * 700,
             repeatReverse: false,
             loop: true
           }}
@@ -499,7 +503,7 @@ const Schedule: React.FC = () => {
     const [tintstatus, setTintStatus] = useState(false)
     const [strokeStatus, setStrokeStatus] = useState(false)
     const [rescheduleStatus, setRescheduleStatus] = useState('off')
-    let roughRescheduleStatus = "off";
+    const roughRescheduleStatus = useRef("off");
     const [DialogTitle, setDialogTitle] = useState('')
     const [ResButtonTitle, setResButtonTitle] = useState('Smart Compress')
     const [checked, setChecked] = useState(false);
@@ -514,7 +518,7 @@ const Schedule: React.FC = () => {
     const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
     const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
     // const FullState = useSelector((state: RootState) => state)
-    const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
+    // const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
     const [Loading, setLoading] = useState(false)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
     
@@ -823,7 +827,6 @@ const Schedule: React.FC = () => {
       );
     }, [ScheduleArray, selectedDate, rescheduleStatus, minuteRotation]);
     
-
     for (let index = 0; index < ScheduleArray.length; index++) {
       const eachWork = ScheduleArray[index];
       if (eachWork["TaskDate"] == currentDateStringFormat) {
@@ -891,7 +894,7 @@ const Schedule: React.FC = () => {
 
     const DialogBackButton = () => {
       setRescheduleStatus('off')
-      roughRescheduleStatus = 'off';
+      roughRescheduleStatus.current = 'off';
       // rescheduleStatus === 'PriorStage' && setRescheduleStatus('off')
       // rescheduleStatus === 'FixingStage' && setRescheduleStatus('PriorStage')
       // rescheduleStatus === 'RemovingStage' && setRescheduleStatus('FixingStage')
@@ -911,48 +914,50 @@ const Schedule: React.FC = () => {
         TaskDate, index, StartAngle, newIndex
       }))
       .filter(({index, StartAngle, newIndex}) => {
-      if (roughRescheduleStatus == 'PriorStage') {
+      // Here roughRescheduleStatus is used instead of rescheduleStatus because I want to use the current status of rescheduleStatus
+      if (roughRescheduleStatus.current == 'PriorStage') {
         return StartAngle <= hourRotation 
       }
-      else if (roughRescheduleStatus == 'FixingStage') {
-        if (RemovingSelections.includes(newIndex)) {    // Prevent Fixed and Removing list getting common
+      else if (roughRescheduleStatus.current == 'FixingStage') {
+        // Removed including excluding condition here because I want all angles after current angle
           return StartAngle > hourRotation 
-        }
       }
-      else if (roughRescheduleStatus == 'RemovingStage') {
-        // if (!FixedSelections.includes(newIndex)) {       // Removed this condition here because I want all angles 
-                                                            // after current angle
+      else if (roughRescheduleStatus.current == 'RemovingStage') {
+       // Removed including excluding condition here because I want all angles after current angle
           return StartAngle > hourRotation 
-        // }
       }})
       
-      rescheduleStatus === 'off' &&  setRescheduleStatus('PriorStage')
+      // Changing to PriorStage
       if (rescheduleStatus === 'off') {
+        setRescheduleStatus('PriorStage')
         setSelectedDate(currentDateStringFormat);
-        roughRescheduleStatus = 'PriorStage';
-        // dispatch(updateDemoStatus(DemoNumberHere.DemoNumber + 1));
-        // console.log('DemoNumberHere: ', DemoNumberHere)
-        // console.log('FullState: ', FullState)
+        roughRescheduleStatus.current = 'PriorStage';
       }
-
-      rescheduleStatus === 'PriorStage' && setRescheduleStatus('FixingStage')
+      
+      // Changing to FixingStage
       if (rescheduleStatus === 'PriorStage') {
-        roughRescheduleStatus = 'FixingStage';
+        setRescheduleStatus('FixingStage')
+        roughRescheduleStatus.current = 'FixingStage';
       }
 
-      if (rescheduleStatus === 'FixingStage' && PriorSelections.length === 0 && DisplayingSubjects.length === FixedSelections.length) {
+      // Changing to RemovingStage
+      if (DisplayingSubjects.length === 0 && rescheduleStatus === 'FixingStage') {
+        console.log("DisplayingSubjects: ", DisplayingSubjects)
+        Alert.alert("No Work Ahead", `Without any Work Ahead, Schedule cannot be made`)
+        return;
+      }
+      else if (rescheduleStatus === 'FixingStage' && PriorSelections.length === 0 && DisplayingSubjects.length === FixedSelections.length) {
         Alert.alert("Same Schedule", `Selecting none of the Previous Work and Fixing all the Work Timing Ahead will result in same Schedule as before`)
         return;
       }
-      else if (DisplayingSubjects.length === 0 && rescheduleStatus === 'FixingStage') {
-        console.log("DisplayingSubjects: ", DisplayingSubjects)
-        Alert.alert("No Work Ahead", `Without any Work Ahead, Schedule cannot be made`)
-      }
       else {
         rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
-        roughRescheduleStatus = 'RemovingStage';
+        if (rescheduleStatus === 'FixingStage') {
+          roughRescheduleStatus.current = 'RemovingStage';
+        }
       }
 
+      // Changing to Rescheduled Stage
       if (PriorSelections.length == 0 && FixedSelections.length == 0 && RemovingSelections.length == 0 && rescheduleStatus === 'RemovingStage') {
         Alert.alert("No Work Selected", `Select out some work to get rescheduled`)
       }
@@ -961,14 +966,15 @@ const Schedule: React.FC = () => {
           if (result) {
             setRescheduleStatus('rescheduled')
             setResButtonTitle('Back To Normal')
-            roughRescheduleStatus = 'rescheduled';
+            roughRescheduleStatus.current = 'rescheduled';
           }
         })
       }
 
-      rescheduleStatus == 'rescheduled' && setRescheduleStatus('off')
+      // Changing back to Off Stage
       if (rescheduleStatus == 'rescheduled') {
-        roughRescheduleStatus = 'off';
+        setRescheduleStatus('off')
+        roughRescheduleStatus.current = 'off';
       }
     }
 
@@ -1233,33 +1239,44 @@ const Schedule: React.FC = () => {
         return false;
       }
     }
-
+    
     // useEffect(() => {
-    //   RegularStudentInfoUpdate()
+    //   if (TrialValidity() == false) {
+    //       navigation.dispatch(
+    //           CommonActions.reset({
+    //               index: 0,
+    //               routes: [
+    //                   {
+    //                       name: 'DrawerScreens',
+    //                       state: {
+    //                           routes: [
+    //                               {
+    //                                   name: 'SubscriptionDrawer',
+    //                               },
+    //                           ],
+    //                       },
+    //                   },
+    //               ],
+    //           })
+    //       );
+    //   }
     // }, [])
 
     useEffect(() => {
-      if (TrialValidity() == false) {
-          navigation.dispatch(
-              CommonActions.reset({
-                  index: 0,
-                  routes: [
-                      {
-                          name: 'DrawerScreens',
-                          state: {
-                              routes: [
-                                  {
-                                      name: 'SubscriptionDrawer',
-                                  },
-                              ],
-                          },
-                      },
-                  ],
-              })
-          );
-      }
+      roughRescheduleStatus.current = "off"
     }, [])
 
+    useEffect(() => {
+      const intervalId = setInterval(() => {
+        const d = new Date(); 
+        const currentsec = d.getSeconds();
+        setFiveSecGap(currentsec)
+      }, 5000);
+  
+      // Clean up the interval on unmount
+      return () => clearInterval(intervalId);
+    }, []);
+    
     useEffect(() => {
       if (rescheduleStatus === 'PriorStage') {
         setDialogTitle('Any Previous Work to Choose ?');
@@ -1278,6 +1295,7 @@ const Schedule: React.FC = () => {
     
     useEffect(() => {
       console.log("Reschedule Status: ", rescheduleStatus)
+      console.log("rough Reschedule Status: ", roughRescheduleStatus.current)
     }, [rescheduleStatus])
     
     useEffect(() => {
@@ -1346,17 +1364,6 @@ const Schedule: React.FC = () => {
       // }
 
     }, [rescheduleStatus])
-
-    useEffect(() => {
-      const intervalId = setInterval(() => {
-        const d = new Date(); 
-        const currentsec = d.getSeconds();
-        setFiveSecGap(currentsec)
-      }, 5000);
-  
-      // Clean up the interval on unmount
-      return () => clearInterval(intervalId);
-    }, []);
 
     useEffect(() => {
       LabelChanging();

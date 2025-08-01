@@ -34,7 +34,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { StudentInfoDataType } from '../../app/Slice';
 import { ScheduleArrayItem } from '../Screens/AddTiming';
 import { ExistingSubjectsArrayItem } from '../../app/Slice';
-import { addWholeScheduleArray, addWholeExistingSubjectsArray, addWholeStudentsDataArray, updateLocalStorageInfo, registerUserInfo } from '../../app/Slice';
+import { addWholeScheduleArray, addWholeExistingSubjectsArray, addWholeStudentsDataArray, updateLocalStorageInfo, registerUserInfo
+ } from '../../app/Slice';
 import { addDays, set, subDays } from "date-fns";
 import { CommonActions } from '@react-navigation/native';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
@@ -1130,8 +1131,8 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
         Platform.OS === 'ios'
           ? 'com.rescheduler://dev-ohpipjjs64tqo7j8.us.auth0.com/ios/com.rescheduler/callback'
           : 
-          // 'https://dev-ohpipjjs64tqo7j8.us.auth0.com/android/com.rescheduler/callback', // <-- Match exactly
-          'com.rescheduler://dev-ohpipjjs64tqo7j8.us.auth0.com/android/com.rescheduler/callback', // <-- Match exactly          
+          'https://dev-ohpipjjs64tqo7j8.us.auth0.com/android/com.rescheduler/callback', // <-- Match exactly
+          // 'com.rescheduler://dev-ohpipjjs64tqo7j8.us.auth0.com/android/com.rescheduler/callback', // <-- Match exactly          
 
         connection: 'google-oauth2'
       });
@@ -1190,7 +1191,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
         <View style={[styles.MotiveHeadingBox]}>
           <Text style={styles.MotiveHeading}>Sign In</Text>
         </View>
-        <View>
+        {/* <View>
           { props.PhoneNumberSelected && 
           <TouchableOpacity style={{flexDirection: 'row', borderWidth: 1, borderColor: '#c2c0c7', borderRadius: 10, padding: 10, marginBottom: 10, justifyContent: 'center', alignItems: 'center', columnGap: 15, shadowColor: '#000', shadowOffset: {width: 0, height: 3}, shadowOpacity: 0.2, shadowRadius: 2, backgroundColor: 'white'}} onPress={() => props.setPhoneNumberSelected(false)}>
               <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: 'black'}}>Continue With </Text>
@@ -1242,7 +1243,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             color: 'white'}}>Continue With Phone Number</Text>
           </TouchableOpacity> 
           }
-        </View>
+        </View> */}
         { props.PhoneNumberSelected &&
         <View>
           <View style={styles.CredentialBox}>
@@ -1289,7 +1290,7 @@ const SignIn = () => {
   const [PhoneNumText, setPhoneNumText] = useState('');
   const [IsRegistered, setIsRegistered] = useState("")
   const [Loading, setLoading] = useState(false)
-  const [PhoneNumberSelected, setPhoneNumberSelected] = useState(false)
+  const [PhoneNumberSelected, setPhoneNumberSelected] = useState(true)
   // architgupta869@gmail.com
   // My_Lord;6969
   
@@ -1369,6 +1370,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'orange',
     borderRadius: 10,
     height: 50,
+    shadowColor: '#000', shadowOffset: {width: 0, height: 3}, shadowOpacity: 0.2, shadowRadius: 2
   },
   PhoneNumberText: {
     flex: 0.85,
