@@ -157,8 +157,8 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      // <Stack.Navigator initialRouteName={LocalStorageInfoData["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
-      <Stack.Navigator initialRouteName={"SignInStack"}>
+      <Stack.Navigator initialRouteName={LocalStorageInfo["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
+      {/* <Stack.Navigator initialRouteName={"SignInStack"}> */}
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -245,8 +245,8 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      {/* <NativeStack.Navigator initialRouteName={LocalStorageInfo["IsLoggedIn"]? "DrawerScreens": "StackScreens"}> */}
-      <NativeStack.Navigator initialRouteName={"DrawerScreens"}>
+      <NativeStack.Navigator initialRouteName={LocalStorageInfo["IsLoggedIn"]? "DrawerScreens": "StackScreens"}>
+      {/* <NativeStack.Navigator initialRouteName={"DrawerScreens"}> */}
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
       </NativeStack.Navigator>

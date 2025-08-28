@@ -72,6 +72,7 @@ import { CommonActions } from '@react-navigation/native';
 import { registerUserInfo } from '../../app/Slice';
 import { MotiView } from 'moti';
 import {Easing as EasingNode} from 'react-native-reanimated';
+import InAppReview from 'react-native-in-app-review';
 import {persistor} from '../../app/Store';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -176,6 +177,7 @@ type BottomOptionsAreaPropsType = {
 }
 
 const UpperArea = (props: UpperAreaPropsType) => {
+  // console.log("Upper Area is made ran")
   const currentHourMinTime = `${props.currentHourTime.toString().padStart(2, '0')}:${props.currentMinTime.toString().padStart(2, '0')}`
   const stringToMonthConverter = (currentMonth: number) => {
     switch (currentMonth) {
@@ -239,6 +241,19 @@ const UpperArea = (props: UpperAreaPropsType) => {
 };
 
 const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
+  // console.log("Reschedule Button Area is made ran");
+  const requestReview = () => {
+    if (InAppReview.isAvailable()) {
+      InAppReview.RequestInAppReview()
+        .then((hasFlowFinishedSuccessfully) => {
+          console.log('In-App Review Flow:', hasFlowFinishedSuccessfully);
+        })
+        .catch((error) => {
+          console.log('In-App Review Error:', error);
+        });
+    }
+  };
+
   const DisplayingSubjects = props.data['StartAngle']
   .map((StartAngle: number, index: number) => ({
     StartAngle, 
@@ -304,6 +319,9 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
       <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
         <Text style={[{fontFamily: Platform.OS == 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg', fontSize: 23, color: 'white'}]}>{props.ResButtonTitle}</Text>
       </TouchableOpacity>
+      {/* <TouchableOpacity style={[styles.RescheduleButton]} onPress={requestReview}>
+        <Text style={[{fontFamily: Platform.OS == 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg', fontSize: 23, color: 'white'}]}>{props.ResButtonTitle}</Text>
+      </TouchableOpacity> */}
       <Modal transparent= {true} visible={props.rescheduleStatus !== 'off' && props.rescheduleStatus !== 'rescheduled'} animationType='fade'>
       {/* <TouchableWithoutFeedback onPress={props.handleOutsidePress}> */}
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -377,6 +395,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
 };
 
 const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
+  // console.log("BottomOptionsArea is made ran");
   const currentDate = new Date();
   function ClickingAddTiming() {
     if (props.rescheduleStatus === 'rescheduled') {
@@ -648,6 +667,7 @@ const Schedule: React.FC = () => {
     // }, [])
 
     const TwelveHourFormat = (time: string) => {
+      // console.log("TwelveHourFormat is made ran");
       let NumberHour = Number(time.split(':', 1))
       let MinuteHour = Number(time.slice(3, 5))
       if (NumberHour > 12) {
@@ -665,6 +685,7 @@ const Schedule: React.FC = () => {
     }
 
     function angleToTime(angle: number) {
+      // console.log("angleToTime is made ran");
       // Each hour represents 30 degrees (360 degrees / 12 hours)
       const hours = Math.floor(angle / 30);
       
@@ -698,6 +719,7 @@ const Schedule: React.FC = () => {
     }
 
     const SingleAngle = useCallback(() => {
+      // console.log("SingleAngle is made ran");
       const hardRadius = 150;
       const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
         // The - 90 is used to adjust the angle so that 0 degrees points upwards, which is common in many applications like graphical rendering.
@@ -837,6 +859,7 @@ const Schedule: React.FC = () => {
     // In the backend API case, ensure to have a 3rd device to share the same network in both PC and real device emulator and also ensure that Windows Firewall is closed.
 
     const sendNameToBackend = async () => {
+      // console.log("sendNameToBackend is made ran");
       setLoading(true);  // Set loading state to true
       try {
         const response = await fetch(
@@ -893,6 +916,7 @@ const Schedule: React.FC = () => {
     };
 
     const DialogBackButton = () => {
+      // console.log("DialogBackButton is made ran");
       setRescheduleStatus('off')
       roughRescheduleStatus.current = 'off';
       // rescheduleStatus === 'PriorStage' && setRescheduleStatus('off')
@@ -901,6 +925,7 @@ const Schedule: React.FC = () => {
     }
 
     const RescheduleButtonClick = async() => {
+      // console.log("RescheduleButtonClick is made ran");
       const DisplayingSubjects = data['StartAngle']
       .map((StartAngle: number, index: number) => ({
         StartAngle, 
@@ -984,6 +1009,7 @@ const Schedule: React.FC = () => {
     };
 
     const handleCheckboxChange = (index: number, checked: boolean) => {
+      // console.log("handleCheckboxChange is made ran");
       if (rescheduleStatus == 'PriorStage') {
         setPriorSelections((prevSelections) => {
           if (checked) {
@@ -1025,6 +1051,7 @@ const Schedule: React.FC = () => {
     };
 
     function LabelChanging() {
+      // console.log("LabelChanging is made ran");
       if (rescheduleStatus != "rescheduled") {
         for (let index = 0; index < data["TaskDate"].length; index++) {
           const uniqueID = data['uniqueID'][index]
@@ -1088,6 +1115,7 @@ const Schedule: React.FC = () => {
     }
 
     const checkAppVersion = async () => {
+      // console.log("checkAppVersion is made ran");
       const currentVersion = DeviceInfo.getVersion(); // e.g., "1.0.0"
       try {
         const Fetched_VersionInfo = await fetch('https://rescheduler-server.onrender.com/GetVersionInfo');
@@ -1147,6 +1175,7 @@ const Schedule: React.FC = () => {
     };
 
     async function IsStatsWorkRegistered() {
+      // console.log("IsStatsWorkRegistered is made ran");
       console.log("Previous Date: ", previousDateStringFormat)
       if (ExistingSubjectsArray.length != 0) {
         let totalCountForDelete = 0;

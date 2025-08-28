@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, memo } from 'react'
 import { useState, useRef, useCallback } from 'react'
 import Navbar from '../Navbar/Navbar'
 import { BarChart } from 'react-native-chart-kit'
@@ -55,7 +55,8 @@ type MonthlyAnalyticsModalPropsType = {
   setMonthlyAnalyticsStatus: SetState<boolean>
 }
 
-const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
+const WeeklyAnalyticsModal = React.memo((props: WeeklyAnalyticsModalPropsType) => {
+  console.log("WeeklyAnalyticsModal is made run");
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
   function StringDateToDateConvert(stringDate: string) {
     // + converts string to number
@@ -63,6 +64,7 @@ const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
     const createdDate = new Date(Date.UTC(+year, +month - 1, +day))
     return createdDate
   }
+
   return (
     <Modal transparent= {true} visible={props.WeekAnalyticsStatus} animationType='fade'>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -127,9 +129,10 @@ const WeeklyAnalyticsModal = (props: WeeklyAnalyticsModalPropsType) => {
       </View>
     </Modal>
   )
-}
+});
 
-const MonthlyAnalyticsModal = (props: MonthlyAnalyticsModalPropsType) => {
+const MonthlyAnalyticsModal = React.memo((props: MonthlyAnalyticsModalPropsType) => {
+  console.log("MonthlyAnalyticsModal is made run");
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
     const filteredData: {"uniqueID": string, "Subject": string, "value": number, "activeStrokeColor": string}[] = []
 
@@ -221,7 +224,7 @@ const MonthlyAnalyticsModal = (props: MonthlyAnalyticsModalPropsType) => {
       </View>
     </Modal>
   )
-}
+});
 
 const Statistics = () => {
   const [WeekChange, setWeekChange] = useState<number>(0);
@@ -249,10 +252,12 @@ const Statistics = () => {
   const [FakeWork, setFakeWork] = useState('FakeWork')
   
   async function ExistingSubjectButton () {
+    console.log("ExistingSubjectButton is made run");
     await ExistingSubjectSheet.current?.present();
   }
 
   const scrollToPosition = () => {
+    console.log("scrollToPosition is made run");
     if (MonthBoxPos == 'up') {
       scrollViewRef.current?.scrollTo({
         y: +162, // Scroll 162px vertically
@@ -270,6 +275,7 @@ const Statistics = () => {
   };
   
   const scrollingCondition = () => {
+    console.log("scrollingCondition is made run");
     if (currentDate >= new Date(currentYear, currentMonth, 15)) {
       // set timeout is used because instant mounting of screen doesn't effect changes in scrolling. Also it appeals the UI luckily.
       setTimeout(() => {
@@ -283,6 +289,7 @@ const Statistics = () => {
   }
 
   const WordMonth = (date: number) => {
+    console.log("WordMonth is made run");
     let MonthExtract = date;
     const Months = [
       'January',
@@ -302,12 +309,14 @@ const Statistics = () => {
   };
 
   function DayToWeekTitle(date: Date) {
+    console.log("DayToWeekTitle is made run");
     const numberDate = date.getDate();
     const month = date.getMonth();
     return `Week from ${numberDate} ${WordMonth(month)}`
   }
 
   function DaytoStringDate(date: Date) {
+    console.log("DaytoStringDate is made run");
     const numberDate = date.getDate();
     const month = date.getMonth();
     const year = date.getFullYear();
@@ -315,6 +324,7 @@ const Statistics = () => {
   }
 
   function IncreaseWeekButton () {
+    console.log("IncreaseWeekButton is made run");
     const IncreasedWeekStart = addWeeks(selectedWeekStart, 1)
     setSelectedWeekStart(IncreasedWeekStart)
     setselectedWeekEnd(endOfWeek(IncreasedWeekStart, {weekStartsOn: 1}))
@@ -326,6 +336,7 @@ const Statistics = () => {
   }
 
   function DecreaseWeekButton () {
+    console.log("DecreaseWeekButton is made run");
     const DecreasedWeekStart = subWeeks(selectedWeekStart, 1)
     setSelectedWeekStart(DecreasedWeekStart)
     setselectedWeekEnd(endOfWeek(DecreasedWeekStart, {weekStartsOn: 1}))
@@ -337,6 +348,7 @@ const Statistics = () => {
   }
 
   function IncreaseMonthButton () {
+    console.log("IncreaseMonthButton is made run");
     let IncreasedMonth = SelectedMonth + 1
     if(IncreasedMonth > 11) {
       IncreasedMonth = 0
@@ -356,6 +368,7 @@ const Statistics = () => {
   }
 
   function DecreaseMonthButton () {
+    console.log("DecreaseMonthButton is made run");
     let DecreasedMonth = SelectedMonth - 1
     if(DecreasedMonth < 0) {
       DecreasedMonth = 11
@@ -389,7 +402,8 @@ const Statistics = () => {
     StartDateNumber: number;
   }
 
-  const NestedCircularProgress = (props: NestedCircularProgressPropsType) => {
+  const NestedCircularProgress = React.memo((props: NestedCircularProgressPropsType) => {
+    console.log("NestedCircularProgress is made run");
     const filteredData: {"uniqueID": string, "Subject": string, "value": number, "radius": number, "activeStrokeColor": string, "inActiveStrokeColor": string }[] = []
 
     function parseDate(dateStr: string) {
@@ -477,7 +491,7 @@ const Statistics = () => {
         <NestedCircularProgress index={props.index + 1} StartDateNumber={props.StartDateNumber}/>
       </CircularProgressBase>
     )
-  }
+  });
 
   useEffect(() => {
     const intervalId = setInterval(() => {

@@ -16,3 +16,9 @@ keytool -list -v \
  -keystore ~/.android/debug.keystore \
  -alias androiddebugkey \
  -storepass android -keypass android
+
+Command to Generate build file(.aab file):
+- First change the version of the app
+- cd android
+- ./gradlew bundleRelease
+- Locate .aab file in -> android > app > build > outputs > bundle > app-release.aab

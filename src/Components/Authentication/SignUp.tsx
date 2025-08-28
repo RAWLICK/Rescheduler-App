@@ -179,18 +179,18 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
 
 const SignUp = () => {
     const [PhoneNumText, setPhoneNumText] = useState('');
-    const [IsRegistered, setIsRegistered] = useState("")
-    const [Loading, setLoading] = useState(false)
+    const [IsRegistered, setIsRegistered] = useState("");
+    const [Loading, setLoading] = useState(false);
 
     function CloseKeyboard() {
         if (PhoneNumText.length === 10) {
           Keyboard.dismiss();
         }
-      }
+    }
     
-      useEffect(() => {
-        CloseKeyboard()
-      }, [PhoneNumText])
+    useEffect(() => {
+    CloseKeyboard()
+    }, [PhoneNumText])
     return (
         <KeyboardAvoidingView 
         style={{ flex: 1 }}

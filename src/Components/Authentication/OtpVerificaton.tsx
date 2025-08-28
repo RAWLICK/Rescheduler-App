@@ -136,7 +136,8 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                         'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
                       },
                       body: JSON.stringify({
-                        "Phone Number": props.PhoneNumber
+                        "Type": "Phone Number",
+                        "Value": props.PhoneNumber
                     }), // Convert the request payload to JSON.
                     })
                     
@@ -166,7 +167,8 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                         'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
                       },
                       body: JSON.stringify({
-                        "Phone Number": props.PhoneNumber
+                        "Type": "Phone Number",
+                        "Value": props.PhoneNumber
                     }), // Convert the request payload to JSON.
                     })
                     

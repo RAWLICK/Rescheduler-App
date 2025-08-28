@@ -54,7 +54,7 @@ const OnBoardingScreen = () => {
             {
                 backgroundColor: '#c882fc',
                 image: <Image source={CheckingTasks} style={{height: 350, width: 350, borderRadius: 30}}/>,
-                title: 'Choose Pending Tasks and the Rescheduler smartly organizes them, giving you an optimized plan',
+                title: 'Choose Pending Tasks and the Rescheduler smartly organizes them, giving you an optimized plan using Smart Compress',
                 titleStyles: {fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 20},
                 subtitle: '',
                 subTitleStyles: {fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold'}
