@@ -46,6 +46,7 @@ type StackParamList = {
   OtpVerificationStack: { Process: string, PhoneNumber: string };
   TaskCompletionBoardStack: undefined;
   OnBoardingScreenStack: undefined;
+  // RoughComponentStack: undefined;
   // RoughCompTwo: undefined;
 };
 
@@ -159,7 +160,7 @@ function App(): React.JSX.Element {
     return (
       <Stack.Navigator initialRouteName={LocalStorageInfo["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
       {/* <Stack.Navigator initialRouteName={"SignInStack"}> */}
-        <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false }}/>
+        <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false}}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
         <Stack.Screen name="OtpVerificationStack" component={OtpVerificaton} options={{ headerShown: false }} />

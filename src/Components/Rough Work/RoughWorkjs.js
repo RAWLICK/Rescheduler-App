@@ -1,5 +1,8 @@
-let arrayOne = []
-let arrayNest = []
-arrayNest.push("15", "14", "13")
-arrayOne.push(arrayNest)
-console.log("arrayOne: ", arrayOne)
+const function1 = () => {
+    console.log("Function 1 is called");
+    function function2() {
+        console.log("Function 2 is called");
+    }
+    function2();
+}
+function1();

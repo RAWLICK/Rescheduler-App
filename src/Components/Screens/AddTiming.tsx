@@ -15,7 +15,7 @@ import {
   Alert
 } from 'react-native';
 import React from 'react';
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef, memo, useCallback} from 'react';
 import ChevronRight from '../Images/ChevronRight.png';
 import ChevronLeft from '../Images/ChevronLeft.png';
 import RightArrow from '../Images/RightArrow.png';
@@ -93,7 +93,71 @@ type GroupPropsType = {
   setNoteText: SetState<string>;
 };
 
-const HeaderPanel = (props: GroupPropsType) => {
+type TextInputCompProps = {
+  onSave: (value: string) => void;
+};
+
+type HeaderPanelProps = {
+  IsSaved: boolean;
+  SaveButton: () => void;
+  navigation: CombinedNavigationProp;
+};
+
+type AreaOneProps = {
+  WorkToDo: string;
+  setWorkToDo: SetState<string>;
+  AddFromExistingWorkButton: boolean;
+  setAddFromExistingWorkButton: SetState<boolean>;
+  // AddFromExistingWorkToggleSwitch: () => void;
+  navigation: CombinedNavigationProp;
+  color: string;
+}
+
+type AreaTwoProps = {
+  setTaskDate: SetState<string>;
+  setStartTime: SetState<string>;
+  setEndTime: SetState<string>;
+  PrevScheduleStatus: boolean;
+  setPrevScheduleStatus: SetState<boolean>;
+  navigation: CombinedNavigationProp;
+  ScheduleArray: ScheduleArrayItem[];
+  Message: string;
+  DateTimeState: string;
+  setDateTimeState: SetState<string>;
+  TaskDate: string;
+  StartTime: string;
+  EndTime: string;
+  Duration: string;
+  DurationBoxes: number[];
+  DurationTag: string[];
+  pan: PanGesture;
+  animatedStyles: {
+    transform: {
+      translateX: number;
+    }[];
+  };
+}
+
+type AreaThreeProps = {
+}
+
+const TextInputComp = React.memo((props: TextInputCompProps) => {
+  // console.log("TextInputComp is made run");
+  const [WorkToDo, setWorkToDo] = useState('');
+  return (
+    <TextInput
+      style={styles.OptionText}
+      value={WorkToDo}
+      onChangeText={setWorkToDo}
+      onBlur={() => {props.onSave(WorkToDo)}}
+      placeholder="Subject Name"
+      placeholderTextColor="#666666">
+    </TextInput>
+  );
+});
+
+const HeaderPanel = React.memo((props: HeaderPanelProps) => {
+  // console.log("HeaderPanel is made run");
   return (
     <View style={styles.HeaderPanel}>
       <TouchableOpacity
@@ -118,9 +182,11 @@ const HeaderPanel = (props: GroupPropsType) => {
       </View>
     </View>
   );
-};
+});
 
-const AreaOne = (props: GroupPropsType) => {
+const AreaOne = React.memo((props: AreaOneProps) => {
+  // console.log("AreaOne is made run");
+  const AddFromExistingWorkToggleSwitch = () => props.setAddFromExistingWorkButton(previousState => !previousState)
   const ExistingSubjectSheet = useRef<TrueSheet>(null);
 
   async function ExistingSubjectButton () {
@@ -136,12 +202,7 @@ const AreaOne = (props: GroupPropsType) => {
             flex: 1,
             justifyContent: 'center'
           }}>
-            <TextInput
-            style={styles.OptionText}
-            value={props.WorkToDo}
-            onChangeText={props.setWorkToDo}
-            placeholder="Subject Name"
-            placeholderTextColor="#666666"></TextInput>
+            <TextInputComp onSave={props.setWorkToDo}/>
         </View>
         ) : (
           <TouchableOpacity
@@ -198,7 +259,7 @@ const AreaOne = (props: GroupPropsType) => {
             trackColor={{false: '#767577', true: '#81b0ff'}}
             thumbColor={props.AddFromExistingWorkButton ? '#f5dd4b' : '#f4f3f4'}
             // ios_backgroundColor="#3e3e3e"
-            onValueChange={props.AddFromExistingWorkToggleSwitch}
+            onValueChange={AddFromExistingWorkToggleSwitch}
             value={props.AddFromExistingWorkButton}
           />
         </TouchableOpacity>
@@ -217,9 +278,93 @@ const AreaOne = (props: GroupPropsType) => {
       </TrueSheet>
     </>
   );
-};
+});
 
-const AreaTwo = (props: GroupPropsType) => {
+const AreaTwo = React.memo((props: AreaTwoProps) => {
+  // console.log("AreaTwo is made run");
+  const hideDatePicker = () => {
+    // console.log("hideDatePicker is made run");
+    props.setDateTimeState('off');
+  };
+
+  const handleConfirm = (date: Date) => {
+    // console.log("handleConfirm is made run");
+    // .padStart is added to provide a leading 0 to a singular number
+    if (props.DateTimeState == 'date') {
+      props.setTaskDate(
+        `${
+          date.getDate().toString().padStart(2, '0') +
+          '/' +
+          (date.getMonth() + 1).toString().padStart(2, '0') +
+          '/' +
+          date.getFullYear()
+        }`,
+      );
+    } else if (props.DateTimeState == 'month') {
+      props.setTaskDate(
+        `${
+          date.getDate().toString().padStart(2, '0') +
+          '/' +
+          (date.getMonth() + 1).toString().padStart(2, '0') +
+          '/' +
+          date.getFullYear()
+        }`,
+      );
+    } else if (props.DateTimeState == 'StartTiming') {
+      props.setStartTime(
+        `${
+          date.getHours().toString().padStart(2, '0') +
+          ':' +
+          date.getMinutes().toString().padStart(2, '0')
+        }`,
+      );
+    } else if (props.DateTimeState == 'EndTiming') {
+      props.setEndTime(
+        `${
+          date.getHours().toString().padStart(2, '0') +
+          ':' +
+          date.getMinutes().toString().padStart(2, '0')
+        }`,
+      );
+    }
+    hideDatePicker();
+  };
+
+  const WordMonth = (date: string) => {
+    // console.log("WordMonth is made run");
+    let MonthExtract = Number(date.slice(3, 5)) - 1;
+    const Months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return Months[MonthExtract];
+  };
+
+  const TwelveHourFormat = (time: string) => {
+    // console.log("TwelveHourFormat is made run");
+    let NumberHour = Number(time.split(':', 1));
+    let MinuteHour = Number(time.slice(3, 5));
+    if (NumberHour > 12) {
+      return `${NumberHour - 12}:${time.slice(3, 5)} PM`;
+    } else if (NumberHour == 12 && MinuteHour >= 0) {
+      return `${time} PM`;
+    } else if (time.length > 5) {
+      return time;
+    } else {
+      return `${time} AM`;
+    }
+  };
+
   return (
     <View style={styles.areaTwo}>
       <TouchableOpacity style={styles.UpperOption} onPress={() => props.setPrevScheduleStatus(true)}>
@@ -249,21 +394,21 @@ const AreaTwo = (props: GroupPropsType) => {
             <DateTimePickerModal
               isVisible={props.DateTimeState == 'date' ? true : false}
               mode="date"
-              onConfirm={props.handleConfirm}
-              onCancel={props.hideDatePicker}
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
             />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.MonthBox}
             onPress={() => props.setDateTimeState('month')}>
             <Text style={styles.MonthText}>
-              {props.WordMonth(props.TaskDate)}
+              {WordMonth(props.TaskDate)}
             </Text>
             <DateTimePickerModal
               isVisible={props.DateTimeState == 'month' ? true : false}
               mode="date"
-              onConfirm={props.handleConfirm}
-              onCancel={props.hideDatePicker}
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
             />
           </TouchableOpacity>
         </View>
@@ -278,13 +423,13 @@ const AreaTwo = (props: GroupPropsType) => {
             style={styles.TimingStartBox}
             onPress={() => props.setDateTimeState('StartTiming')}>
             <Text style={styles.TimingStartText}>
-              {props.TwelveHourFormat(props.StartTime)}
+              {TwelveHourFormat(props.StartTime)}
             </Text>
             <DateTimePickerModal
               isVisible={props.DateTimeState == 'StartTiming' ? true : false}
               mode="time"
-              onConfirm={props.handleConfirm}
-              onCancel={props.hideDatePicker}
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
             />
           </TouchableOpacity>
           <View>
@@ -294,13 +439,13 @@ const AreaTwo = (props: GroupPropsType) => {
             style={styles.TimingEndBox}
             onPress={() => props.setDateTimeState('EndTiming')}>
             <Text style={styles.TimingEndText}>
-              {props.TwelveHourFormat(props.EndTime)}
+              {TwelveHourFormat(props.EndTime)}
             </Text>
             <DateTimePickerModal
               isVisible={props.DateTimeState == 'EndTiming' ? true : false}
               mode="time"
-              onConfirm={props.handleConfirm}
-              onCancel={props.hideDatePicker}
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
             />
           </TouchableOpacity>
         </View>
@@ -320,7 +465,6 @@ const AreaTwo = (props: GroupPropsType) => {
             Duration ({props.Duration})
           </Text>
         </View>
-        {/* 9D9EA0 */}
         <View style={styles.DurationPiecesTotalBox}>
           {props.DurationBoxes.map((index, i) => {
             return (
@@ -334,7 +478,6 @@ const AreaTwo = (props: GroupPropsType) => {
                   i == 15
                     ? {borderTopRightRadius: 4, borderBottomRightRadius: 4}
                     : {},
-                  /*CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}*/
                 ]}></View>
             );
           })}
@@ -360,26 +503,12 @@ const AreaTwo = (props: GroupPropsType) => {
           })}
         </View>
       </View>
-
-      {/* <View style={styles.BottomOption}>
-        <View style={styles.AllDayFeatureBox}>
-          <Text style={styles.OptionText}>Mini Alarm</Text>
-        </View>
-        <View style={styles.AllDayToggleButtonBox}>
-          <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor={props.isEnabled ? '#f5dd4b' : '#f4f3f4'}
-            // ios_backgroundColor="#3e3e3e"
-            onValueChange={props.toggleSwitch}
-            value={props.isEnabled}
-          />
-        </View>
-      </View> */}
     </View>
   );
-};
+});
 
-const AreaThree = (props: GroupPropsType) => {
+const AreaThree = React.memo((props: AreaThreeProps) => {
+  // console.log("AreaThree is made run");
   return (
     <View style={styles.areaThree}>
       <View style={{marginTop: 10}}>
@@ -397,8 +526,8 @@ const AreaThree = (props: GroupPropsType) => {
       </View>
     </View>
   );
-};
-
+});
+ 
 export interface ScheduleArrayItem {
   uniqueID: string;
   StartTime: string;
@@ -416,7 +545,7 @@ import { random } from 'nanoid';
 const AddTiming = () => {
   const isConnected = useInternetCheck();
   const [AddFromExistingWorkButton, setAddFromExistingWorkButton] = useState(false)
-  const AddFromExistingWorkToggleSwitch = () => setAddFromExistingWorkButton(previousState => !previousState)
+  // const AddFromExistingWorkToggleSwitch = () => setAddFromExistingWorkButton(previousState => !previousState)
   const Message = 'Keep Faith';
   const navigation = useNavigation<CombinedNavigationProp>();
   const DurationBoxes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -424,12 +553,12 @@ const AddTiming = () => {
   const [NoteText, setNoteText] = useState('');
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const [WorkToDo, setWorkToDo] = useState('');
   const [DateTimeState, setDateTimeState] = useState('off');
   const [StartTime, setStartTime] = useState('');
   const [EndTime, setEndTime] = useState('');
   const [TaskDate, setTaskDate] = useState('');
   const [Duration, setDuration] = useState('1h');
-  const [WorkToDo, setWorkToDo] = useState('');
   const [StartAngle, setStartAngle] = useState<number>();
   const [EndAngle, setEndAngle] = useState<number>();
   const [colorIndex, setColorIndex] = useState(0);
@@ -497,30 +626,10 @@ const AddTiming = () => {
   var Sound = require('react-native-sound');
   Sound.setCategory('Playback');
 
-  const hideDatePicker = () => {
-    setDateTimeState('off');
-  };
-
-  const WordMonth = (date: string) => {
-    let MonthExtract = Number(date.slice(3, 5)) - 1;
-    const Months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return Months[MonthExtract];
-  };
+  console.log("AddTiming is made run")
 
   function elaborateDuration(duration: string) {
+    // console.log("elaborateDuration is made run");
     if (duration.includes('min') && !duration.includes('h')) {
         const addingHour = 0
         const addingMinute = Number(duration.split(' ')[0])
@@ -538,63 +647,8 @@ const AddTiming = () => {
     }
   }
 
-  const handleConfirm = (date: Date) => {
-    // .padStart is added to provide a leading 0 to a singular number
-    if (DateTimeState == 'date') {
-      setTaskDate(
-        `${
-          date.getDate().toString().padStart(2, '0') +
-          '/' +
-          (date.getMonth() + 1).toString().padStart(2, '0') +
-          '/' +
-          date.getFullYear()
-        }`,
-      );
-    } else if (DateTimeState == 'month') {
-      setTaskDate(
-        `${
-          date.getDate().toString().padStart(2, '0') +
-          '/' +
-          (date.getMonth() + 1).toString().padStart(2, '0') +
-          '/' +
-          date.getFullYear()
-        }`,
-      );
-    } else if (DateTimeState == 'StartTiming') {
-      setStartTime(
-        `${
-          date.getHours().toString().padStart(2, '0') +
-          ':' +
-          date.getMinutes().toString().padStart(2, '0')
-        }`,
-      );
-    } else if (DateTimeState == 'EndTiming') {
-      setEndTime(
-        `${
-          date.getHours().toString().padStart(2, '0') +
-          ':' +
-          date.getMinutes().toString().padStart(2, '0')
-        }`,
-      );
-    }
-    hideDatePicker();
-  };
-
-  const TwelveHourFormat = (time: string) => {
-    let NumberHour = Number(time.split(':', 1));
-    let MinuteHour = Number(time.slice(3, 5));
-    if (NumberHour > 12) {
-      return `${NumberHour - 12}:${time.slice(3, 5)} PM`;
-    } else if (NumberHour == 12 && MinuteHour >= 0) {
-      return `${time} PM`;
-    } else if (time.length > 5) {
-      return time;
-    } else {
-      return `${time} AM`;
-    }
-  };
-
   const degreeConverter = (StartTime: string, EndTime: string) => {
+    // console.log("degreeConverter is made run");
     let StartTimeHour = Number(StartTime.split(':')[0]);
     let StartTimeMinute = Number(StartTime.split(':')[1]);
     let EndTimeHour = Number(EndTime.split(':')[0]);
@@ -606,6 +660,7 @@ const AddTiming = () => {
   };
 
   function AdjustedEndTime (StartTime: string) {
+    // console.log("AdjustedEndTime is made run");
     const StartHour = Number(StartTime.split(":")[0])
     const StartMin = Number(StartTime.split(":")[1])
     const [addHour, addMinute] = elaborateDuration(Duration);
@@ -666,11 +721,13 @@ const AddTiming = () => {
   }));
 
   function randomColorIndex() {
+    // console.log("randomColorIndex is made run");
     const randomIndex = Math.floor(Math.random() * color.length);
     return randomIndex;
   }
 
-  const SaveButton = async () => {
+  const SaveButton = useCallback (async () => {
+    // console.log("SaveButton is made run");
     let newTask = {
       uniqueID: nanoid(10),
       StartTime: StartTime,
@@ -780,7 +837,7 @@ const AddTiming = () => {
         console.error('Catch Error: ', error);
       }
     };
-  };
+  }, [WorkToDo]);
 
   useEffect(() => {
     setStartTime(currentTime);
@@ -824,103 +881,36 @@ const AddTiming = () => {
         // hidden={hidden}
       />
       <GestureHandlerRootView>
-        {/* <PanGestureHandler> */}
         <View style={styles.mainStyle}>
           <HeaderPanel
             IsSaved={IsSaved}
-            setIsSaved={setIsSaved}
-            PrevScheduleStatus={PrevScheduleStatus}
-            setPrevScheduleStatus={setPrevScheduleStatus}
-            AddFromExistingWorkButton={AddFromExistingWorkButton}
-            setAddFromExistingWorkButton={setAddFromExistingWorkButton}
-            AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
-            NoteText={NoteText}
-            setNoteText={setNoteText}
             navigation={navigation}
-            ScheduleArray={ScheduleArray}
-            Message={Message}
             SaveButton={SaveButton}
-            WorkToDo={WorkToDo}
-            setWorkToDo={setWorkToDo}
-            color={color[0]}
-            DateTimeState={DateTimeState}
-            setDateTimeState={setDateTimeState}
-            TaskDate={TaskDate}
-            handleConfirm={handleConfirm}
-            hideDatePicker={hideDatePicker}
-            WordMonth={WordMonth}
-            TwelveHourFormat={TwelveHourFormat}
-            StartTime={StartTime}
-            EndTime={EndTime}
-            Duration={Duration}
-            DurationBoxes={DurationBoxes}
-            DurationTag={DurationTag}
-            pan={pan}
-            animatedStyles={animatedStyles}
-            isEnabled={isEnabled}
-            toggleSwitch={toggleSwitch}
           />
 
           <ScrollView>
             <AreaOne
-              IsSaved={IsSaved}
-              setIsSaved={setIsSaved}
-              PrevScheduleStatus={PrevScheduleStatus}
-              setPrevScheduleStatus={setPrevScheduleStatus}
               AddFromExistingWorkButton={AddFromExistingWorkButton}
               setAddFromExistingWorkButton={setAddFromExistingWorkButton}
-              AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
-              NoteText={NoteText}
-              setNoteText={setNoteText}
+              // AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
               navigation={navigation}
-              ScheduleArray={ScheduleArray}
-              Message={Message}
-              SaveButton={SaveButton}
               WorkToDo={WorkToDo}
               setWorkToDo={setWorkToDo}
               color={color[0]}
-              DateTimeState={DateTimeState}
-              setDateTimeState={setDateTimeState}
-              TaskDate={TaskDate}
-              handleConfirm={handleConfirm}
-              hideDatePicker={hideDatePicker}
-              WordMonth={WordMonth}
-              TwelveHourFormat={TwelveHourFormat}
-              StartTime={StartTime}
-              EndTime={EndTime}
-              Duration={Duration}
-              DurationBoxes={DurationBoxes}
-              DurationTag={DurationTag}
-              pan={pan}
-              animatedStyles={animatedStyles}
-              isEnabled={isEnabled}
-              toggleSwitch={toggleSwitch}
             />
 
             <AreaTwo
-              IsSaved={IsSaved}
-              setIsSaved={setIsSaved}
+              setTaskDate={setTaskDate}
+              setStartTime={setStartTime}
+              setEndTime={setEndTime}
               PrevScheduleStatus={PrevScheduleStatus}
               setPrevScheduleStatus={setPrevScheduleStatus}
-              AddFromExistingWorkButton={AddFromExistingWorkButton}
-              setAddFromExistingWorkButton={setAddFromExistingWorkButton}
-              AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
-              NoteText={NoteText}
-              setNoteText={setNoteText}
               navigation={navigation}
               ScheduleArray={ScheduleArray}
               Message={Message}
-              SaveButton={SaveButton}
-              WorkToDo={WorkToDo}
-              setWorkToDo={setWorkToDo}
-              color={color[0]}
               DateTimeState={DateTimeState}
               setDateTimeState={setDateTimeState}
               TaskDate={TaskDate}
-              handleConfirm={handleConfirm}
-              hideDatePicker={hideDatePicker}
-              WordMonth={WordMonth}
-              TwelveHourFormat={TwelveHourFormat}
               StartTime={StartTime}
               EndTime={EndTime}
               Duration={Duration}
@@ -928,47 +918,11 @@ const AddTiming = () => {
               DurationTag={DurationTag}
               pan={pan}
               animatedStyles={animatedStyles}
-              isEnabled={isEnabled}
-              toggleSwitch={toggleSwitch}
             />
 
-            <AreaThree
-              IsSaved={IsSaved}
-              setIsSaved={setIsSaved}
-              PrevScheduleStatus={PrevScheduleStatus}
-              setPrevScheduleStatus={setPrevScheduleStatus}
-              AddFromExistingWorkButton={AddFromExistingWorkButton}
-              setAddFromExistingWorkButton={setAddFromExistingWorkButton}
-              AddFromExistingWorkToggleSwitch={AddFromExistingWorkToggleSwitch}
-              NoteText={NoteText}
-              setNoteText={setNoteText}
-              navigation={navigation}
-              ScheduleArray={ScheduleArray}
-              Message={Message}
-              SaveButton={SaveButton}
-              WorkToDo={WorkToDo}
-              setWorkToDo={setWorkToDo}
-              color={color[0]}
-              DateTimeState={DateTimeState}
-              setDateTimeState={setDateTimeState}
-              TaskDate={TaskDate}
-              handleConfirm={handleConfirm}
-              hideDatePicker={hideDatePicker}
-              WordMonth={WordMonth}
-              TwelveHourFormat={TwelveHourFormat}
-              StartTime={StartTime}
-              EndTime={EndTime}
-              Duration={Duration}
-              DurationBoxes={DurationBoxes}
-              DurationTag={DurationTag}
-              pan={pan}
-              animatedStyles={animatedStyles}
-              isEnabled={isEnabled}
-              toggleSwitch={toggleSwitch}
-            />
+            <AreaThree/>
           </ScrollView>
         </View>
-        {/* </PanGestureHandler> */}
       </GestureHandlerRootView>
     </SafeAreaView>
   );

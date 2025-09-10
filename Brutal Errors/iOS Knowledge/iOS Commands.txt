@@ -25,3 +25,30 @@ keytool -list -v \
  -keystore ~/.android/debug.keystore \
  -alias androiddebugkey \
  -storepass android -keypass android
+
+ Creating a symlink(sudo ln -s /opt/homebrew/bin/idb_companion /usr/local/bin/idb_companion):
+- Creating a symlink with terminal is a way through which you can make a location point out another location. This command in brackets did this.
+•	ln -s → means “make a symbolic link” (like a shortcut/alias).
+•	/opt/homebrew/bin/idb_companion → the actual location of your idb_companion file.
+•	/usr/local/bin/idb_companion → the new shortcut location.
+
+So now, when any program (like idb) tries to run idb_companion, it can find it in /usr/local/bin (which is always in your system’s PATH).
+Think of it like:
+📂 /opt/homebrew/bin/idb_companion = real file
+📂 /usr/local/bin/idb_companion = shortcut pointing to it
+
+Commands to write after a package removal:
+- cd ios
+- pod deintegrate
+- pod install --repo-update
+
+Command to write after adding a package:
+- cd ios
+- pod install
+
+- Command to connect to connect to phone wirelessly:
+  Connect with your phone with wire and open wireless debugging (maybe)
+  Type Command: adb tcpip 5555
+  Then, adb connect 10.243.77.233:5555
+  Here <10.243.77.233> should be replaced by the IP address present in your phone
+  When you will type adb devices, you will get the list of connected devices In which there will be a device of the name of your IP address

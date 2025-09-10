@@ -5,6 +5,7 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+
 # platform :ios, '12.0' min_ios_version_supported
 platform :ios, '15.6'
 # use_modular_headers!
@@ -27,6 +28,22 @@ target 'Rescheduler' do
     :app_path => "#{Pod::Config.instance.installation_root}/..",
     :hermes_enabled => true
   )
+
+  # ✅ Added Flipper here
+  # use_flipper!({
+  #   'Flipper' => '0.182.0',
+  #   'Flipper-Folly' => '2.6.10',
+  #   'Flipper-RSocket' => '1.4.3',
+  # })
+
+  # ✅ Flipper pods
+  # pod 'FlipperKit', '~> 0.273.0'
+  # pod 'FlipperKit/FlipperKitLayoutPlugin', '~> 0.273.0'
+  # pod 'FlipperKit/SKIOSNetworkPlugin', '~> 0.273.0'
+  # pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~> 0.273.0'
+  # pod 'FlipperKit/FlipperKitReactPlugin', '~> 0.273.0'
+  # pod 'Flipper-Folly', '2.6.10'
+  # pod 'Flipper-RSocket', '1.4.3'
 
   target 'ReschedulerTests' do
     inherit! :complete

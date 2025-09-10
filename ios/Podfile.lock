@@ -990,7 +990,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-in-app-review (4.3.5):
+  - react-native-flipper (0.273.0):
     - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
@@ -1460,7 +1460,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
-  - react-native-in-app-review (from `../node_modules/react-native-in-app-review`)
+  - react-native-flipper (from `../node_modules/react-native-flipper`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-otp-verify (from `../node_modules/react-native-otp-verify`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -1579,8 +1579,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
-  react-native-in-app-review:
-    :path: "../node_modules/react-native-in-app-review"
+  react-native-flipper:
+    :path: "../node_modules/react-native-flipper"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-otp-verify:
@@ -1698,7 +1698,7 @@ SPEC CHECKSUMS:
   React-logger: 780b9ee9cec7d44eabc4093de90107c379078cb6
   React-Mapbuffer: f544f00b98dbdd8cbae96dd2bdb8b47f719976e0
   react-native-blur: 207ec2bf853b9a3b7751e3a29f7f497e69010b44
-  react-native-in-app-review: 668f4c80d7f95945e0ad7833e98c466cb40d6808
+  react-native-flipper: 70c11e7e5df1ee8e30ce4f93cd5caa709d52cc4f
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-otp-verify: 6d153f8a8e8392c6a51f9d94c090dc16d7c756b2
   react-native-pager-view: 90192f541fedc60fbfbadcd788b9d90632582612
@@ -1741,6 +1741,6 @@ SPEC CHECKSUMS:
   TrueSheet: 480b670120fae917a2b23f642175d575e1ff66c9
   Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
 
-PODFILE CHECKSUM: 33afc13261c3090bec1a0d3fa7f3ea13544148fe
+PODFILE CHECKSUM: 4ac066ecbbdbac8acefca4311364776d370f904c
 
 COCOAPODS: 1.16.2

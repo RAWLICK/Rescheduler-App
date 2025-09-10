@@ -10,6 +10,7 @@ type CalenderViewProps = {
   setSelectedDate: SetState<string>
 }
 const CalenderView = (props: CalenderViewProps) => {
+  // console.log("Calendar View got rendered")
   const [selected, setSelected] = useState('');
   const dmyFormatConverter = (date: string) => {
     const [year, month, day] = date.split('-');

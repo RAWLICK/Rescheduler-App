@@ -24,6 +24,7 @@ type ScheduleTablePropsType = {
 }
 
 const ScheduleTable = (props: ScheduleTablePropsType) => {
+  // console.log("Schedule Table got rendered")
   const dispatch = useDispatch();
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
   const [Title, setTitle] = useState('')

@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import { useState, useEffect, memo, useRef, useCallback } from 'react';
+import { useState, useEffect, memo, useRef, useCallback, useMemo } from 'react';
 import ClockImage from '../Images/AnalogClockImage.png'
 // import Holder from '../Images/Holder.png'
 import AddIcon from '../Images/Add.png'
@@ -72,7 +72,6 @@ import { CommonActions } from '@react-navigation/native';
 import { registerUserInfo } from '../../app/Slice';
 import { MotiView } from 'moti';
 import {Easing as EasingNode} from 'react-native-reanimated';
-import InAppReview from 'react-native-in-app-review';
 import {persistor} from '../../app/Store';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -85,43 +84,7 @@ export interface ApiDataType {
   "End_Angle": number[];
 }
 
-const Clock = () => {
-  const [hourRotation, setHourRotation] = useState(0);
-  const [minuteRotation, setMinuteRotation] = useState(0);
-  const [secondRotation, setSecondRotation] = useState(0);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      const d = new Date();
-      const hTime = d.getHours();
-      const mTime = d.getMinutes();
-      const sTime = d.getSeconds();
-
-      const hRotation = 30 * hTime + 0.5 * mTime + (0.5 / 60) * sTime; // 30 degrees per hour + 0.5 degrees per minute + 0.0083 degrees per second
-      const mRotation = 6 * mTime;
-      const sRotation = 6 * sTime;
-
-      // Update the state, which will trigger a re-render
-      setHourRotation(hRotation);
-      setMinuteRotation(mRotation);
-      setSecondRotation(sRotation);
-    }, 1000);
-
-    // Clean up the interval on unmount
-    return () => clearInterval(intervalId);
-  }, []);
-
-  return (
-  <ImageBackground source={ClockImage}  style={styles.Clock}>
-    <View style={[styles.hour, { transform: [{ rotate: `${hourRotation}deg` }] }]}></View>
-    <View style={[styles.minute, { transform: [{ rotate: `${minuteRotation}deg` }] }]}></View>
-    <View style={[styles.second, { transform: [{ rotate: `${secondRotation}deg` }] }]}></View>
-  </ImageBackground>
-  );
-};
-
 type UpperAreaPropsType = {
-  rescheduleStatus: string,
   currentHourTime: number, 
   currentMinTime: number, 
   currentMonth: number, 
@@ -130,20 +93,27 @@ type UpperAreaPropsType = {
   timeStart: string, 
   timeEnd: string,
   duration: string,
-  TwelveHourFormat: (time: string) => string
   currentDateStringFormat: string,
   selectedDate: string
 }
 
 type RescheduleButtonAreaPropsType = {
+  sendNameToBackend: () => Promise<boolean>;
+  setResButtonTitle: SetState<string>;
+  setSelectedDate: SetState<string>;
+  setPriorSelections: React.Dispatch<React.SetStateAction<number[]>>;
+  setFixedSelections: React.Dispatch<React.SetStateAction<number[]>>;
+  setRemovingSelections: React.Dispatch<React.SetStateAction<number[]>>;
+  roughRescheduleStatus: React.MutableRefObject<string>;
+  setRescheduleStatus: React.Dispatch<React.SetStateAction<string>>,
   Loading: boolean,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   ResButtonTitle: string;
   PriorSelections: number[];
   FixedSelections: number[];
   RemovingSelections: number[];
+  currentDateStringFormat: string,
   rescheduleStatus: string, 
-  DialogBackButton: () => void, 
   DialogTitle: string, 
   data: {
     StartTime: string[];
@@ -155,12 +125,8 @@ type RescheduleButtonAreaPropsType = {
     Slice_Color: string[];
   }, 
   hourRotation: number, 
-  checked: boolean, 
-  handleCheckboxChange: (index: number, checked: boolean) => void,
-  RescheduleButtonClick: () => void,
+  checked: boolean,
   selectedDate: string,
-  currentDateStringFormat: string,
-  handleOutsidePress: () => void
 }
 
 type BottomOptionsAreaPropsType = {
@@ -176,8 +142,39 @@ type BottomOptionsAreaPropsType = {
   currentDateStringFormat: string
 }
 
-const UpperArea = (props: UpperAreaPropsType) => {
-  // console.log("Upper Area is made ran")
+const Clock = React.memo(() => {
+  // console.log("Clock is made run")
+  const [time, setTime] = useState(new Date())
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      // Update the state, which will trigger a re-render
+      setTime(new Date());
+    }, 1000);
+
+    // Clean up the interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const hTime = time.getHours();
+  const mTime = time.getMinutes();
+  const sTime = time.getSeconds();
+
+  const hRotation = 30 * hTime + 0.5 * mTime + (0.5 / 60) * sTime; // 30 degrees per hour + 0.5 degrees per minute + 0.0083 degrees per second
+  const mRotation = 6 * mTime;
+  const sRotation = 6 * sTime;
+
+  return (
+  <ImageBackground source={ClockImage}  style={styles.Clock}>
+    <View style={[styles.hour, { transform: [{ rotate: `${hRotation}deg` }] }]}></View>
+    <View style={[styles.minute, { transform: [{ rotate: `${mRotation}deg` }] }]}></View>
+    <View style={[styles.second, { transform: [{ rotate: `${sRotation}deg` }] }]}></View>
+  </ImageBackground>
+  );
+});
+
+const UpperArea = React.memo((props: UpperAreaPropsType) => {
+  console.log("Upper Area is made ran")
   const currentHourMinTime = `${props.currentHourTime.toString().padStart(2, '0')}:${props.currentMinTime.toString().padStart(2, '0')}`
   const stringToMonthConverter = (currentMonth: number) => {
     switch (currentMonth) {
@@ -214,11 +211,29 @@ const UpperArea = (props: UpperAreaPropsType) => {
   let selectedMonth = stringToMonthConverter(Number(props.selectedDate.split('/')[1]))
   let selectedDate = props.selectedDate.split('/')[0].padStart(2, '0')
 
+  const TwelveHourFormat = (time: string) => {
+    // console.log("TwelveHourFormat is made ran");
+    let NumberHour = Number(time.split(':', 1))
+    let MinuteHour = Number(time.slice(3, 5))
+    if (NumberHour > 12) {
+      return `${(NumberHour - 12).toString().padStart(2, '0')}:${time.slice(3, 5)} PM`
+    }
+    else if (NumberHour == 12 && MinuteHour >= 0) {
+      return `${time} PM`
+    }
+    else if (time.length > 5) {
+      return time
+    }
+    else {
+      return `${time} AM`
+    }
+  }
+
   return (
     <View style={styles.UpperArea}>
       <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 0.5}}>
-          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.currentDateStringFormat == props.selectedDate ? props.TwelveHourFormat(currentHourMinTime) : "-- --"}</Text>
+          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.currentDateStringFormat == props.selectedDate ? TwelveHourFormat(currentHourMinTime) : "-- --"}</Text>
         </View>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.selectedDate == props.currentDateStringFormat ? currentMonth : selectedMonth} {props.selectedDate == props.currentDateStringFormat ? currentDate : selectedDate}</Text>
@@ -238,21 +253,11 @@ const UpperArea = (props: UpperAreaPropsType) => {
       )} */}
     </View>
   )
-};
+});
 
-const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
-  // console.log("Reschedule Button Area is made ran");
-  const requestReview = () => {
-    if (InAppReview.isAvailable()) {
-      InAppReview.RequestInAppReview()
-        .then((hasFlowFinishedSuccessfully) => {
-          console.log('In-App Review Flow:', hasFlowFinishedSuccessfully);
-        })
-        .catch((error) => {
-          console.log('In-App Review Error:', error);
-        });
-    }
-  };
+const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) => {
+  console.log("Reschedule Button Area is made ran");
+  const [toggle, setToggle] = useState(false);
 
   const DisplayingSubjects = props.data['StartAngle']
   .map((StartAngle: number, index: number) => ({
@@ -280,20 +285,151 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
       return StartAngle > props.hourRotation 
     }
   }})
-  const [toggle, setToggle] = useState(false);
 
+  const handleOutsidePress = () => {
+    console.log("handleOutsidePress re-rendered")
+    Keyboard.dismiss();                   // Close keyboard if open
+    props.setRescheduleStatus("off")        // Close modal
+  };
+
+  const DialogBackButton = () => {
+    props.setRescheduleStatus('off')
+    props.roughRescheduleStatus.current = 'off';
+  }
+
+  const handleCheckboxChange = (index: number, checked: boolean) => {
+    console.log("handleCheckboxChange is made ran");
+    if (props.rescheduleStatus == 'PriorStage') {
+      props.setPriorSelections((prevSelections) => {
+        if (checked) {
+          const newSelections = [...prevSelections, index]
+          return newSelections.sort((a, b) => a - b);
+        } 
+        else {
+          const newSelections = prevSelections.filter((item) => item !== index);
+          return newSelections.sort((a, b) => a - b);
+        }
+      })
+    }
+    else if (props.rescheduleStatus == 'FixingStage') {
+      props.setFixedSelections((prevSelections) => {
+        if (checked) {
+          const newSelections = [...prevSelections, index]
+          return newSelections.sort((a, b) => a - b);
+        } 
+        else {
+          const newSelections = prevSelections.filter((item) => item !== index);
+          return newSelections.sort((a, b) => a - b);
+        }
+      })
+      // console.log("FixedSelectionList: ", FixedSelections)
+    }
+    else if (props.rescheduleStatus == 'RemovingStage') {
+      props.setRemovingSelections((prevSelections) => {
+        if (checked) {
+          const newSelections = [...prevSelections, index]
+          return newSelections.sort((a, b) => a - b);
+        } 
+        else {
+          const newSelections = prevSelections.filter((item) => item !== index);
+          return newSelections.sort((a, b) => a - b);
+        }
+      })
+      // console.log("RemovingSelectionList: ", RemovingSelections)
+    }
+  };
+
+  const RescheduleButtonClick = async () => {
+      // console.log("RescheduleButtonClick is made ran");
+      const DisplayingSubjects = props.data['StartAngle']
+      .map((StartAngle: number, index: number) => ({
+        StartAngle, 
+        TaskDate: props.data['TaskDate'][index],
+        index // Store the original index
+      }))
+      .filter(({TaskDate}) => {
+        return TaskDate == props.currentDateStringFormat
+      })
+      .map(({TaskDate, index, StartAngle}, newIndex) => ({  // newIndex is made to index 0, 1 instead of 52, 53 etc.
+        TaskDate, index, StartAngle, newIndex
+      }))
+      .filter(({index, StartAngle, newIndex}) => {
+      // Here roughRescheduleStatus is used instead of rescheduleStatus because I want to use the current status of rescheduleStatus
+      if (props.roughRescheduleStatus.current == 'PriorStage') {
+        return StartAngle <= props.hourRotation 
+      }
+      else if (props.roughRescheduleStatus.current == 'FixingStage') {
+        // Removed including excluding condition here because I want all angles after current angle
+          return StartAngle > props.hourRotation 
+      }
+      else if (props.roughRescheduleStatus.current == 'RemovingStage') {
+       // Removed including excluding condition here because I want all angles after current angle
+          return StartAngle > props.hourRotation 
+      }})
+      
+      // Changing to PriorStage
+      if (props.rescheduleStatus === 'off') {
+        props.setRescheduleStatus('PriorStage')
+        props.setSelectedDate(props.currentDateStringFormat);
+        props.roughRescheduleStatus.current = 'PriorStage';
+      }
+      
+      // Changing to FixingStage
+      if (props.rescheduleStatus === 'PriorStage') {
+        props.setRescheduleStatus('FixingStage')
+        props.roughRescheduleStatus.current = 'FixingStage';
+      }
+
+      // Changing to RemovingStage
+      if (DisplayingSubjects.length === 0 && props.rescheduleStatus === 'FixingStage') {
+        console.log("DisplayingSubjects: ", DisplayingSubjects)
+        Alert.alert("No Work Ahead", `Without any Work Ahead, Schedule cannot be made`)
+        return;
+      }
+      else if (props.rescheduleStatus === 'FixingStage' && props.PriorSelections.length === 0 && DisplayingSubjects.length === props.FixedSelections.length) {
+        Alert.alert("Same Schedule", `Selecting none of the Previous Work and Fixing all the Work Timing Ahead will result in same Schedule as before`)
+        return;
+      }
+      else {
+        props.rescheduleStatus === 'FixingStage' && props.setRescheduleStatus('RemovingStage')
+        if (props.rescheduleStatus === 'FixingStage') {
+          props.roughRescheduleStatus.current = 'RemovingStage';
+        }
+      }
+
+      // Changing to Rescheduled Stage
+      if (props.PriorSelections.length == 0 && props.FixedSelections.length == 0 && props.RemovingSelections.length == 0 && props.rescheduleStatus === 'RemovingStage') {
+        Alert.alert("No Work Selected", `Select out some work to get rescheduled`)
+      }
+      else {
+        props.rescheduleStatus === 'RemovingStage' && props.sendNameToBackend().then((result) => {
+          if (result) {
+            props.setRescheduleStatus('rescheduled')
+            props.setResButtonTitle('Back To Normal')
+            props.roughRescheduleStatus.current = 'rescheduled';
+          }
+        })
+      }
+
+      // Changing back to Off Stage
+      if (props.rescheduleStatus == 'rescheduled') {
+        props.setRescheduleStatus('off')
+        props.roughRescheduleStatus.current = 'off';
+      }
+  }
+  
   // Toggle state repeatedly to re-trigger the animation
   useEffect(() => {
     const interval = setInterval(() => {
       setToggle((prev) => !prev);
-    }, 4000); // match your duration
+    }, 10000); // match your duration
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <View style={[styles.LowerArea]}>
-      {[...Array(3).keys()].map((index) => {
+      {[...Array(2).keys()].map((index) => {
         return (
           // Don't Know how MotiView is working in iOS because it's package is not showing in Podfile.lock
         <MotiView
@@ -309,27 +445,21 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
             type: 'timing',
             duration: 1500,
             easing: EasingNode.out(EasingNode.ease),
-            // easing: EasingNode.inOut(EasingNode.quad),
             delay: index * 700,
             repeatReverse: false,
             loop: true
           }}
         />
       )})}
-      <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => props.RescheduleButtonClick()}>
+      <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
         <Text style={[{fontFamily: Platform.OS == 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg', fontSize: 23, color: 'white'}]}>{props.ResButtonTitle}</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity style={[styles.RescheduleButton]} onPress={requestReview}>
-        <Text style={[{fontFamily: Platform.OS == 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg', fontSize: 23, color: 'white'}]}>{props.ResButtonTitle}</Text>
-      </TouchableOpacity> */}
       <Modal transparent= {true} visible={props.rescheduleStatus !== 'off' && props.rescheduleStatus !== 'rescheduled'} animationType='fade'>
-      {/* <TouchableWithoutFeedback onPress={props.handleOutsidePress}> */}
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <BlurView
           style={styles.blurStyle}
           blurType="light"
           blurAmount={10}
-          // reducedTransparencyFallbackColor="light"
         />
         <View style={[styles.selectionDialogBox]}>
         <BlurView
@@ -339,7 +469,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           // reducedTransparencyFallbackColor="black"
           />
         <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
-          <TouchableOpacity onPress={props.DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <TouchableOpacity onPress={DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Image source={LeftArrow} style={{height: 17, width: 17}}/>
           </TouchableOpacity>
           <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
@@ -363,12 +493,11 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
                   size={25}
                   isChecked={false}
                   fillColor="#2173BD"
-                  // unFillColor="#FFFFFF"
                   text={String(props.data['Work'][index])}
                   iconStyle={{ borderColor: "red" }}
                   innerIconStyle={{ borderWidth: 2 }}
                   textStyle={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', color: '#fff', textDecorationLine: 'none' }}
-                  onPress={(isChecked: boolean) => props.handleCheckboxChange(newIndex, isChecked)}
+                  onPress={(isChecked: boolean) => handleCheckboxChange(newIndex, isChecked)}
                 />
               </View>
             )})}
@@ -380,7 +509,7 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
               <ActivityIndicator size="small" color="#ffffff" />
             </View>
           ) : (
-          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}} onPress={() => props.RescheduleButtonClick()}>
+          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}} onPress={() => RescheduleButtonClick()}>
             <View>
               <Text style={{color: '#457fdf', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
             </View>
@@ -388,15 +517,13 @@ const RescheduleButtonArea = (props: RescheduleButtonAreaPropsType) => {
           )}
         </View>
       </View>
-    {/* </TouchableWithoutFeedback> */}
     </Modal>
     </View>
   )
-};
+});
 
-const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
-  // console.log("BottomOptionsArea is made ran");
-  const currentDate = new Date();
+const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
+  console.log("BottomOptionsArea is made ran");
   function ClickingAddTiming() {
     if (props.rescheduleStatus === 'rescheduled') {
       Alert.alert('You have Rescheduled', 'Please click on "Back To Normal" to come back and add new timings of subjects')
@@ -407,6 +534,7 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
   }
 
   function ClickingCalender() {
+    console.log("Clicking Calender got run")
     if (props.rescheduleStatus === 'rescheduled') {
       Alert.alert('You have Rescheduled', 'Please click on "Back To Normal" to come back and select date from Calender')
     }
@@ -458,7 +586,7 @@ const BottomOptionsArea = (props: BottomOptionsAreaPropsType) => {
       </View>
     </View>
   )
-};
+});
 
 const Schedule: React.FC = () => {
     const isConnected = useInternetCheck();
@@ -469,26 +597,30 @@ const Schedule: React.FC = () => {
     const currentHourTime = currentDate.getHours();
     const currentMinTime = currentDate.getMinutes();
     const currentSecTime = currentDate.getSeconds();
-    // const currentDay = currentDate.getDate();
-    const [currentDay, setCurrentDay] = useState(currentDate.getDate())
+    const pd = subDays(currentDate, 1);
+    const ptpd = subDays(currentDate, 2);
+    const hRotation = 30 * currentHourTime + 0.5 * currentMinTime + (0.5 / 60) * 30; // Calculate hour rotation based on current time
+    const mRotation = 6 * currentMinTime;
+    const sRotation = 6 * currentSecTime;
+    const currentDay = currentDate.getDate();
     const currentMonth = currentDate.getMonth() + 1;
     const currentYear = currentDate.getFullYear();
     const currentDateStringFormat = (`${currentDay.toString().padStart(2, '0')}/${currentMonth.toString().padStart(2, '0')}/${currentYear}`)
-    const [previousDate, setPreviousDate] = useState(subDays(new Date(), 1))
-    const [previousDay, setPreviousDay] = useState(previousDate.getDate())
+    const previousDate = pd
+    const previousDay = pd.getDate()
     const previousDayMonth = previousDate.getMonth() + 1;
     const previousDayYear = previousDate.getFullYear();
     const previousDateStringFormat = (`${previousDay.toString().padStart(2, '0')}/${previousDayMonth.toString().padStart(2, '0')}/${previousDayYear}`)
-    const [PrevToPrevDate, setPrevToPrevDate] = useState(subDays(new Date(), 2))
-    const [PrevToPrevDay, setPrevToPrevDay] = useState(PrevToPrevDate.getDate())
+    const PrevToPrevDate = ptpd
+    const PrevToPrevDay = ptpd.getDate();
     const PrevToPrevDayMonth = PrevToPrevDate.getMonth() + 1
     const PrevToPrevDayYear = PrevToPrevDate.getFullYear();
     const PrevToPrevDateStringFormat = (`${PrevToPrevDay.toString().padStart(2, '0')}/${PrevToPrevDayMonth.toString().padStart(2, '0')}/${PrevToPrevDayYear}`)
 
     const [selectedDate, setSelectedDate] = useState(currentDateStringFormat);
-    const [hourRotation, setHourRotation] = useState(0);
-    const [minuteRotation, setMinuteRotation] = useState(0);
-    const [secondRotation, setSecondRotation] = useState(0);
+    const hourRotation = hRotation;
+    const minuteRotation = mRotation;
+    const secondRotation = sRotation;
     const [FiveSecGap, setFiveSecGap] = useState(1)
     const angle = useSharedValue(0);
     const startAngle = useSharedValue(0);
@@ -541,7 +673,7 @@ const Schedule: React.FC = () => {
     const [Loading, setLoading] = useState(false)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
     
-    const data = {
+    const data = useMemo(() => ({
       "uniqueID": ScheduleArray.map((item: ScheduleArrayItem) => item.uniqueID),
       "StartTime": ScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),
       "EndTime": ScheduleArray.map((item: ScheduleArrayItem) => item.EndTime),
@@ -550,7 +682,7 @@ const Schedule: React.FC = () => {
       "EndAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
       "TaskDate": ScheduleArray.map((item: ScheduleArrayItem) => item.TaskDate),
       "Slice_Color": ScheduleArray.map((item: ScheduleArrayItem) => item.Slice_Color),
-    }
+    }), [ScheduleArray])
     
     const [ApiData, setApiData] = useState<ApiDataType>({} as ApiDataType)
     
@@ -561,25 +693,7 @@ const Schedule: React.FC = () => {
     useEffect(() => {
       const intervalId = setInterval(() => {
         const d = new Date();
-        const pd = subDays(new Date(), 1);
-        const ptpd = subDays(new Date(), 2);
-        const hTime = d.getHours();
-        const mTime = d.getMinutes();
-        const sTime = d.getSeconds();
-  
-        const hRotation = 30 * hTime + 0.5 * mTime + (0.5 / 60) * 30; // Calculate hour rotation based on current time
-        const mRotation = 6 * mTime;
-        const sRotation = 6 * sTime;
-  
-        setHourRotation(hRotation);
-        setMinuteRotation(mRotation);
-        setSecondRotation(sRotation);
         setCurrentDate(d);
-        setPreviousDate(pd);
-        setPrevToPrevDate(ptpd);
-        setCurrentDay(d.getDate());
-        setPreviousDay(pd.getDate());
-        setPrevToPrevDay(ptpd.getDate());
       }, 1000);
   
       // Clean up the interval on unmount
@@ -858,7 +972,7 @@ const Schedule: React.FC = () => {
 
     // In the backend API case, ensure to have a 3rd device to share the same network in both PC and real device emulator and also ensure that Windows Firewall is closed.
 
-    const sendNameToBackend = async () => {
+    const sendNameToBackend = useCallback(async () => {
       // console.log("sendNameToBackend is made ran");
       setLoading(true);  // Set loading state to true
       try {
@@ -913,142 +1027,7 @@ const Schedule: React.FC = () => {
         // console.error('Catch Error: ', error);
         return false
       }
-    };
-
-    const DialogBackButton = () => {
-      // console.log("DialogBackButton is made ran");
-      setRescheduleStatus('off')
-      roughRescheduleStatus.current = 'off';
-      // rescheduleStatus === 'PriorStage' && setRescheduleStatus('off')
-      // rescheduleStatus === 'FixingStage' && setRescheduleStatus('PriorStage')
-      // rescheduleStatus === 'RemovingStage' && setRescheduleStatus('FixingStage')
-    }
-
-    const RescheduleButtonClick = async() => {
-      // console.log("RescheduleButtonClick is made ran");
-      const DisplayingSubjects = data['StartAngle']
-      .map((StartAngle: number, index: number) => ({
-        StartAngle, 
-        TaskDate: data['TaskDate'][index],
-        index // Store the original index
-      }))
-      .filter(({TaskDate}) => {
-        return TaskDate == currentDateStringFormat
-      })
-      .map(({TaskDate, index, StartAngle}, newIndex) => ({  // newIndex is made to index 0, 1 instead of 52, 53 etc.
-        TaskDate, index, StartAngle, newIndex
-      }))
-      .filter(({index, StartAngle, newIndex}) => {
-      // Here roughRescheduleStatus is used instead of rescheduleStatus because I want to use the current status of rescheduleStatus
-      if (roughRescheduleStatus.current == 'PriorStage') {
-        return StartAngle <= hourRotation 
-      }
-      else if (roughRescheduleStatus.current == 'FixingStage') {
-        // Removed including excluding condition here because I want all angles after current angle
-          return StartAngle > hourRotation 
-      }
-      else if (roughRescheduleStatus.current == 'RemovingStage') {
-       // Removed including excluding condition here because I want all angles after current angle
-          return StartAngle > hourRotation 
-      }})
-      
-      // Changing to PriorStage
-      if (rescheduleStatus === 'off') {
-        setRescheduleStatus('PriorStage')
-        setSelectedDate(currentDateStringFormat);
-        roughRescheduleStatus.current = 'PriorStage';
-      }
-      
-      // Changing to FixingStage
-      if (rescheduleStatus === 'PriorStage') {
-        setRescheduleStatus('FixingStage')
-        roughRescheduleStatus.current = 'FixingStage';
-      }
-
-      // Changing to RemovingStage
-      if (DisplayingSubjects.length === 0 && rescheduleStatus === 'FixingStage') {
-        console.log("DisplayingSubjects: ", DisplayingSubjects)
-        Alert.alert("No Work Ahead", `Without any Work Ahead, Schedule cannot be made`)
-        return;
-      }
-      else if (rescheduleStatus === 'FixingStage' && PriorSelections.length === 0 && DisplayingSubjects.length === FixedSelections.length) {
-        Alert.alert("Same Schedule", `Selecting none of the Previous Work and Fixing all the Work Timing Ahead will result in same Schedule as before`)
-        return;
-      }
-      else {
-        rescheduleStatus === 'FixingStage' && setRescheduleStatus('RemovingStage')
-        if (rescheduleStatus === 'FixingStage') {
-          roughRescheduleStatus.current = 'RemovingStage';
-        }
-      }
-
-      // Changing to Rescheduled Stage
-      if (PriorSelections.length == 0 && FixedSelections.length == 0 && RemovingSelections.length == 0 && rescheduleStatus === 'RemovingStage') {
-        Alert.alert("No Work Selected", `Select out some work to get rescheduled`)
-      }
-      else {
-        rescheduleStatus === 'RemovingStage' && sendNameToBackend().then((result) => {
-          if (result) {
-            setRescheduleStatus('rescheduled')
-            setResButtonTitle('Back To Normal')
-            roughRescheduleStatus.current = 'rescheduled';
-          }
-        })
-      }
-
-      // Changing back to Off Stage
-      if (rescheduleStatus == 'rescheduled') {
-        setRescheduleStatus('off')
-        roughRescheduleStatus.current = 'off';
-      }
-    }
-
-    const handleOutsidePress = () => {
-      Keyboard.dismiss();                   // Close keyboard if open
-      setRescheduleStatus("off")        // Close modal
-    };
-
-    const handleCheckboxChange = (index: number, checked: boolean) => {
-      // console.log("handleCheckboxChange is made ran");
-      if (rescheduleStatus == 'PriorStage') {
-        setPriorSelections((prevSelections) => {
-          if (checked) {
-            const newSelections = [...prevSelections, index]
-            return newSelections.sort((a, b) => a - b);
-          } 
-          else {
-            const newSelections = prevSelections.filter((item) => item !== index);
-            return newSelections.sort((a, b) => a - b);
-          }
-        })
-      }
-      else if (rescheduleStatus == 'FixingStage') {
-        setFixedSelections((prevSelections) => {
-          if (checked) {
-            const newSelections = [...prevSelections, index]
-            return newSelections.sort((a, b) => a - b);
-          } 
-          else {
-            const newSelections = prevSelections.filter((item) => item !== index);
-            return newSelections.sort((a, b) => a - b);
-          }
-        })
-        // console.log("FixedSelectionList: ", FixedSelections)
-      }
-      else if (rescheduleStatus == 'RemovingStage') {
-        setRemovingSelections((prevSelections) => {
-          if (checked) {
-            const newSelections = [...prevSelections, index]
-            return newSelections.sort((a, b) => a - b);
-          } 
-          else {
-            const newSelections = prevSelections.filter((item) => item !== index);
-            return newSelections.sort((a, b) => a - b);
-          }
-        })
-        // console.log("RemovingSelectionList: ", RemovingSelections)
-      }
-    };
+    }, [PriorSelections, FixedSelections, RemovingSelections]);
 
     function LabelChanging() {
       // console.log("LabelChanging is made ran");
@@ -1106,13 +1085,13 @@ const Schedule: React.FC = () => {
       }
     }
 
-    async function ScheduleTableButton () {
+    const ScheduleTableButton = useCallback(async () => {
       await ScheduleTableSheet.current?.present();
-    }
+    }, []);
 
-    async function CalenderButton () {
+    const CalenderButton = useCallback(async () => {
       await CalenderSheet.current?.present();
-    }
+    }, []);
 
     const checkAppVersion = async () => {
       // console.log("checkAppVersion is made ran");
@@ -1176,7 +1155,7 @@ const Schedule: React.FC = () => {
 
     async function IsStatsWorkRegistered() {
       // console.log("IsStatsWorkRegistered is made ran");
-      console.log("Previous Date: ", previousDateStringFormat)
+      // console.log("Previous Date: ", previousDateStringFormat)
       if (ExistingSubjectsArray.length != 0) {
         let totalCountForDelete = 0;
         for (let index = 0; index < ExistingSubjectsArray.length; index++) {
@@ -1186,7 +1165,7 @@ const Schedule: React.FC = () => {
           }
         }
         if (totalCountForDelete == ExistingSubjectsArray.length) {
-          console.log("Total Count for Deletion is matching length of ExistingSubjectsArray")
+          // console.log("Total Count for Deletion is matching length of ExistingSubjectsArray")
           dispatch(updateStreakInfo("Vanish"));
           try {
             const response = await fetch (
@@ -1323,19 +1302,19 @@ const Schedule: React.FC = () => {
     }, [previousDay])
     
     useEffect(() => {
-      console.log("Reschedule Status: ", rescheduleStatus)
-      console.log("rough Reschedule Status: ", roughRescheduleStatus.current)
+      // console.log("Reschedule Status: ", rescheduleStatus)
+      // console.log("rough Reschedule Status: ", roughRescheduleStatus.current)
     }, [rescheduleStatus])
     
-    useEffect(() => {
-      console.log("PriorSelectionList: ", PriorSelections)
-    }, [PriorSelections]);
-    useEffect(() => {
-      console.log("FixedSelectionsList: ", FixedSelections)
-    }, [FixedSelections]);
-    useEffect(() => {
-      console.log("RemovingSelectionsList: ", RemovingSelections)
-    }, [RemovingSelections]);
+    // useEffect(() => {
+    //   console.log("PriorSelectionList: ", PriorSelections)
+    // }, [PriorSelections]);
+    // useEffect(() => {
+    //   console.log("FixedSelectionsList: ", FixedSelections)
+    // }, [FixedSelections]);
+    // useEffect(() => {
+    //   console.log("RemovingSelectionsList: ", RemovingSelections)
+    // }, [RemovingSelections]);
     
     // Clearing the Arrays so that on reselection, the index doesn't get double assigned
     useEffect(() => {
@@ -1407,7 +1386,7 @@ const Schedule: React.FC = () => {
     // }, [ApiData])
 
     useEffect(() => {
-      console.log("Is Connected in Schedule.tsx: ", isConnected)
+      // console.log("Is Connected in Schedule.tsx: ", isConnected)
       if (isConnected == false) {
         if (Platform.OS == 'android') {
           Dialog.show({
@@ -1488,12 +1467,10 @@ const Schedule: React.FC = () => {
             <UpperArea
               currentDateStringFormat={currentDateStringFormat}
               selectedDate={selectedDate}
-              rescheduleStatus={rescheduleStatus}
               currentHourTime={currentHourTime}
               currentMinTime={currentMinTime}
               currentDay={currentDay}
               currentMonth={currentMonth}
-              TwelveHourFormat={TwelveHourFormat}
               Work={Work}
               timeStart={timeStart}
               timeEnd={timeEnd}
@@ -1510,36 +1487,44 @@ const Schedule: React.FC = () => {
             </View>
 
             <RescheduleButtonArea
-             Loading={Loading}
-             setLoading={setLoading}
-             ResButtonTitle={ResButtonTitle}
-             PriorSelections={PriorSelections}
+              sendNameToBackend={sendNameToBackend}
+              setResButtonTitle={setResButtonTitle}
+              setSelectedDate={setSelectedDate}
+              setPriorSelections={setPriorSelections}
+              setFixedSelections={setFixedSelections}
+              setRemovingSelections={setRemovingSelections}
+              roughRescheduleStatus={roughRescheduleStatus}
+              setRescheduleStatus={setRescheduleStatus}
+              Loading={Loading}
+              setLoading={setLoading}
+              ResButtonTitle={ResButtonTitle}
+              PriorSelections={PriorSelections}
              FixedSelections={FixedSelections}
              RemovingSelections={RemovingSelections}
              currentDateStringFormat={currentDateStringFormat}
-             handleOutsidePress={handleOutsidePress}
+            //  handleOutsidePress={handleOutsidePress}
              rescheduleStatus={rescheduleStatus} 
-             DialogBackButton={DialogBackButton} 
+            //  DialogBackButton={DialogBackButton} 
              DialogTitle={DialogTitle} 
              data={data} 
              hourRotation={hourRotation} 
              checked={checked} 
-             handleCheckboxChange={handleCheckboxChange} 
-             RescheduleButtonClick={RescheduleButtonClick}
+            //  handleCheckboxChange={handleCheckboxChange} 
+            //  RescheduleButtonClick={RescheduleButtonClick}
              selectedDate={selectedDate}
             />
 
             <BottomOptionsArea
-              currentDateStringFormat={currentDateStringFormat}
               ApiData={ApiData}
               rescheduleStatus={rescheduleStatus}
               ScheduleTableButton={ScheduleTableButton}
               ScheduleTableSheet={ScheduleTableSheet}
               CalenderButton={CalenderButton}
               CalenderSheet={CalenderSheet}
-              navigation={navigation}
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
+              navigation={navigation}
+              currentDateStringFormat={currentDateStringFormat}
             />
             {/* <Taskbar activeState='Schedule'/> */}
           </View>
