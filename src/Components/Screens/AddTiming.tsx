@@ -54,44 +54,6 @@ type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PanGesture = ReturnType<typeof Gesture.Pan>;
 
 // Nested Components (Composition)
-type GroupPropsType = {
-  IsSaved: boolean;
-  setIsSaved: SetState<boolean>;
-  PrevScheduleStatus: boolean;
-  setPrevScheduleStatus: SetState<boolean>;
-  AddFromExistingWorkButton: boolean;
-  setAddFromExistingWorkButton: SetState<boolean>;
-  AddFromExistingWorkToggleSwitch: () => void;
-  navigation: CombinedNavigationProp;
-  ScheduleArray: ScheduleArrayItem[];
-  Message: string;
-  SaveButton: () => void;
-  WorkToDo: string;
-  setWorkToDo: SetState<string>;
-  color: string;
-  DateTimeState: string;
-  setDateTimeState: SetState<string>;
-  TaskDate: string;
-  handleConfirm: (date: Date) => void;
-  hideDatePicker: () => void;
-  WordMonth: (date: string) => string;
-  TwelveHourFormat: (time: string) => string;
-  StartTime: string;
-  EndTime: string;
-  Duration: string;
-  DurationBoxes: number[];
-  DurationTag: string[];
-  pan: PanGesture;
-  animatedStyles: {
-    transform: {
-      translateX: number;
-    }[];
-  };
-  isEnabled: boolean;
-  toggleSwitch: () => void;
-  NoteText: string;
-  setNoteText: SetState<string>;
-};
 
 type TextInputCompProps = {
   onSave: (value: string) => void;
@@ -143,13 +105,13 @@ type AreaThreeProps = {
 
 const TextInputComp = React.memo((props: TextInputCompProps) => {
   // console.log("TextInputComp is made run");
-  const [WorkToDo, setWorkToDo] = useState('');
+  // const [WorkToDo, setWorkToDo] = useState('');
   return (
     <TextInput
       style={styles.OptionText}
-      value={WorkToDo}
-      onChangeText={setWorkToDo}
-      onBlur={() => {props.onSave(WorkToDo)}}
+      // value={WorkToDo}
+      onChangeText={props.onSave}
+      // onBlur={() => {props.onSave(WorkToDo)}}
       placeholder="Subject Name"
       placeholderTextColor="#666666">
     </TextInput>
@@ -192,6 +154,11 @@ const AreaOne = React.memo((props: AreaOneProps) => {
   async function ExistingSubjectButton () {
     await ExistingSubjectSheet.current?.present();
   }
+
+  const handleTextChange = useCallback((text: string) => {
+    props.setWorkToDo(text);
+  }, []);
+
   return (
     <>
     <View style={[styles.areaOne]}>
@@ -202,7 +169,7 @@ const AreaOne = React.memo((props: AreaOneProps) => {
             flex: 1,
             justifyContent: 'center'
           }}>
-            <TextInputComp onSave={props.setWorkToDo}/>
+            <TextInputComp onSave={handleTextChange}/>
         </View>
         ) : (
           <TouchableOpacity
@@ -223,27 +190,6 @@ const AreaOne = React.memo((props: AreaOneProps) => {
           </TouchableOpacity>
         }
       </View>
-
-      {/* {!props.AddFromExistingWorkButton && 
-      <TouchableOpacity style={styles.MiddleOption}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-          }}>
-          <Text style={styles.OptionText}>Color Assigned</Text>
-        </View>
-        <View
-          style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-          <View
-            style={[
-              styles.angleInfoColor,
-              {backgroundColor: `${props.color}`},
-            ]}></View>
-        </View>
-      </TouchableOpacity>
-      } */}
 
       <View style={styles.BottomOption}>
         <View
@@ -585,7 +531,37 @@ const AddTiming = () => {
     "rgba(57, 190, 200, 0.5)",
     "rgba(28, 79, 20, 0.5)",
     "rgba(82, 176, 27, 0.5)",
-    "rgba(191, 115, 181, 0.5)"
+    "rgba(191, 115, 181, 0.5)",
+    "rgba(233, 87, 63, 0.5)",
+    "rgba(91, 62, 173, 0.5)",
+    "rgba(123, 201, 82, 0.5)",
+    "rgba(255, 182, 77, 0.5)",
+    "rgba(59, 141, 214, 0.5)",
+    "rgba(212, 79, 174, 0.5)",
+    "rgba(73, 207, 187, 0.5)",
+    "rgba(244, 94, 13, 0.5)",
+    "rgba(92, 178, 240, 0.5)",
+    "rgba(161, 107, 224, 0.5)",
+    "rgba(245, 221, 76, 0.5)",
+    "rgba(66, 232, 161, 0.5)",
+    "rgba(184, 77, 105, 0.5)",
+    "rgba(237, 148, 212, 0.5)",
+    "rgba(33, 107, 176, 0.5)",
+    "rgba(112, 214, 94, 0.5)",
+    "rgba(230, 114, 44, 0.5)",
+    "rgba(56, 90, 141, 0.5)",
+    "rgba(147, 189, 63, 0.5)",
+    "rgba(214, 73, 63, 0.5)",
+    "rgba(78, 207, 119, 0.5)",
+    "rgba(179, 96, 240, 0.5)",
+    "rgba(250, 141, 61, 0.5)",
+    "rgba(74, 163, 232, 0.5)",
+    "rgba(212, 217, 99, 0.5)",
+    "rgba(95, 54, 156, 0.5)",
+    "rgba(247, 80, 131, 0.5)",
+    "rgba(129, 212, 178, 0.5)",
+    "rgba(241, 174, 70, 0.5)",
+    "rgba(67, 133, 101, 0.5)"
   ]
   const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)

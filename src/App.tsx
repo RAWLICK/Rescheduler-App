@@ -114,16 +114,17 @@ function App(): React.JSX.Element {
   const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
 
   function TrialValidity() {
-    const currentDate = new Date();
-    const formatDate = (dateStr: string) => {
-      const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
-      return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
-    };
-    if (currentDate >= addDays(formatDate(StudentInfoData["Date Joined"]), 7) && StudentInfoData["Subscription Type"] == "Free") {
-    // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
-      Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
-      return false;
-    }
+    // const currentDate = new Date();
+    // const formatDate = (dateStr: string) => {
+    //   const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
+    //   return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+    // };
+    // if (currentDate >= addDays(formatDate(StudentInfoData["Date Joined"]), 7) && StudentInfoData["Subscription Type"] == "Free") {
+    // // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
+    //   Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
+    //   return false;
+    // }
+    return true;
   }
 
   useEffect(() => {
@@ -159,7 +160,7 @@ function App(): React.JSX.Element {
   function StackScreen() {
     return (
       <Stack.Navigator initialRouteName={LocalStorageInfo["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
-      {/* <Stack.Navigator initialRouteName={"SignInStack"}> */}
+      {/* <Stack.Navigator initialRouteName={"TaskCompletionBoardStack"}> */}
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false}}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -247,7 +248,7 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <NativeStack.Navigator initialRouteName={LocalStorageInfo["IsLoggedIn"]? "DrawerScreens": "StackScreens"}>
-      {/* <NativeStack.Navigator initialRouteName={"DrawerScreens"}> */}
+      {/* <NativeStack.Navigator initialRouteName={"StackScreens"}> */}
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
       </NativeStack.Navigator>

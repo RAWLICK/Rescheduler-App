@@ -54,7 +54,7 @@ import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
 import CalenderView from '../Screens/CalenderView'
 import TaskCompletionBoard from '../Screens/TaskCompletionBoard';
-import { TaskCompletionPopUp } from '../Screens/TaskCompletionBoard';
+// import { TaskCompletionPopUp } from '../Screens/TaskCompletionBoard';
 import { ScheduleArrayItem } from '../Screens/AddTiming';
 import { combineSlices } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux' 
@@ -429,31 +429,34 @@ const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) =
 
   return (
     <View style={[styles.LowerArea]}>
-      {[...Array(2).keys()].map((index) => {
-        return (
-          // Don't Know how MotiView is working in iOS because it's package is not showing in Podfile.lock
-        <MotiView
-          key={`${index}-${toggle}`}
-          style={[styles.RescheduleButton, { position: 'absolute', width: 270, height: 40}]}
-          from={{
-            opacity: 0.5,
-            scaleX: 1,
-            scaleY: 1
-          }}
-          animate={{ opacity: 0, scaleX: 1.3, scaleY: 1.5 }}
-          transition={{
-            type: 'timing',
-            duration: 1500,
-            easing: EasingNode.out(EasingNode.ease),
-            delay: index * 700,
-            repeatReverse: false,
-            loop: true
-          }}
-        />
-      )})}
-      <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
-        <Text style={[{fontFamily: Platform.OS == 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg', fontSize: 23, color: 'white'}]}>{props.ResButtonTitle}</Text>
-      </TouchableOpacity>
+      <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        {[...Array(2).keys()].map((index) => {
+          return (
+            // Don't Know how MotiView is working in iOS because it's package is not showing in Podfile.lock
+          <MotiView
+            key={`${index}-${toggle}`}
+            style={[styles.RescheduleButton, { position: 'absolute', width: 280, height: 40}]}
+            from={{
+              opacity: 0.5,
+              scaleX: 1,
+              scaleY: 1
+            }}
+            animate={{ opacity: 0, scaleX: 1.15, scaleY: 1.5 }}
+            transition={{
+              type: 'timing',
+              duration: 1500,
+              easing: EasingNode.out(EasingNode.ease),
+              delay: index * 700,
+              repeatReverse: false,
+              loop: true
+            }}
+          />
+        )})}
+      
+        <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
+          <Text style={[{fontFamily: Platform.OS == 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg', fontSize: 23, color: 'white'}]}>{props.ResButtonTitle}</Text>
+        </TouchableOpacity>
+      </View>
       <Modal transparent= {true} visible={props.rescheduleStatus !== 'off' && props.rescheduleStatus !== 'rescheduled'} animationType='fade'>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <BlurView
@@ -1198,7 +1201,7 @@ const Schedule: React.FC = () => {
           }
         }
         if (totalCountForBoard == ExistingSubjectsArray.length) {
-          console.log("Total Count for Board is matching length of ExistingSubjectsArray")
+          // console.log("Total Count for Board is matching length of ExistingSubjectsArray")
           navigation.navigate('StackScreens', {
             screen: 'TaskCompletionBoardStack',
             params: undefined
@@ -1728,20 +1731,16 @@ const Schedule: React.FC = () => {
 
     LowerArea: {
       flex: 0.3,
-      // backgroundColor: 'black',
       justifyContent: 'center',
-      alignItems: 'center',
     },
 
     RescheduleButton: {
       backgroundColor: '#B020F4',
       height: 40,
+      width: 280,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingLeft: 60,
-      paddingRight: 60,
       borderRadius: 12,
-      // marginTop: 5,
       borderRightWidth: 3,
       borderLeftWidth: 3,
       borderBottomWidth: 3,
@@ -1754,11 +1753,6 @@ const Schedule: React.FC = () => {
     },
 
     overlay: {
-      // position: 'absolute',
-      // top: 0,
-      // left: 0,
-      // right: 0,
-      // bottom: 0,
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
       // zIndex: 1000, // Ensure the overlay is on top
     }

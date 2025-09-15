@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo } from 'react'
 import { BACKGROUND_COLOR, data } from './constants.ts'
 import SingleBarChart from './SingleBarChart.tsx'
 import { demoData } from './constants.ts'
@@ -22,7 +22,7 @@ type WeeklyBarChartPropsType = {
   selectedWeekEnd: Date;
 }
 
-export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
+function WeeklyBarChart(props: WeeklyBarChartPropsType) {
   const [WeekChangeImport, setWeekChangeImport ] = useState<number>(0)
   const {WeekChange} = require('../../Components/Tabs/Statistics.tsx')
   const currentDate = new Date();
@@ -111,6 +111,8 @@ export default function WeeklyBarChart(props: WeeklyBarChartPropsType) {
     </>
   )
 }
+
+export default memo(WeeklyBarChart);
 
 const styles = StyleSheet.create({
     container: {

@@ -14,9 +14,13 @@ import {
   Button,
   Dimensions
 } from 'react-native';
+import Video from 'react-native-video';
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { RouteProp } from '@react-navigation/native';
+import ConsitencyVideo from '../Images/Consistensy_Video.mp4'
+const { height, width } = Dimensions.get("window");
+
 
 type TestingPropsType = {
   TestingHeading: string
@@ -62,7 +66,7 @@ const RoughComponent: React.FC<RoughCompProps> = ({ route }) => {
 
   return (
     <View style={styles.mainPage}>
-      <View style={styles.TitleArea}>
+      {/* <View style={styles.TitleArea}>
         <Text style={{color: 'black'}}>RoughComponent</Text>
         <Text style={{color: 'black'}}>Imported Value: {parentParam}</Text>
         <Text style={{color: 'black'}}>Imported Number: {secondParam}</Text>
@@ -72,7 +76,14 @@ const RoughComponent: React.FC<RoughCompProps> = ({ route }) => {
 
       <View style={styles.ButtonArea}>
         <Button title='Move to RoughComp2' onPress={()=> navigation.navigate('StackScreens', {screen: 'RoughCompTwo'})}/>
-      </View>
+      </View> */}
+      <Video source={{uri: ConsitencyVideo}}
+       style={styles.VideoStyle}   // ✅ fill screen like reels
+        muted={false}
+        controls={false}    // hide controls for reels effect
+        playWhenInactive={false}
+        playInBackground={false}
+       />
     </View>
   )
 }
@@ -92,5 +103,11 @@ const styles = StyleSheet.create({
 
   ButtonArea: {
     margin: 10
+  },
+  
+  VideoStyle: {
+    ...StyleSheet.absoluteFillObject, // makes video cover entire screen
+    width: width,
+    height: height, 
   }
 })

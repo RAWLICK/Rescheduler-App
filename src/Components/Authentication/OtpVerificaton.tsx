@@ -76,16 +76,17 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
     });  
 
     function TrialValidity() {
-        const currentDate = new Date();
-        const formatDate = (dateStr: string) => {
-          const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
-          return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
-        };
-        if (currentDate >= addDays(formatDate(fetched_StudentInfo?.["Date Joined"] || ''), 7) && fetched_StudentInfo?.["Subscription Type"] == "Free") {
-        // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
-          Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
-          return false;
-        }
+        // const currentDate = new Date();
+        // const formatDate = (dateStr: string) => {
+        //   const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
+        //   return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
+        // };
+        // if (currentDate >= addDays(formatDate(fetched_StudentInfo?.["Date Joined"] || ''), 7) && fetched_StudentInfo?.["Subscription Type"] == "Free") {
+        // // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
+        //   Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
+        //   return false;
+        // }
+        return true;
     }
 
     async function VerifyButton() {

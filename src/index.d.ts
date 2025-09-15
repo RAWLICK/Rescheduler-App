@@ -3,6 +3,10 @@ declare module '*jpg'
 declare module '*jpeg'
 declare module 'react-native-chart-kit'
 declare module '*.mp3' {
-    const src: number;
-    export default src;
-  }
+  const src: number;
+  export default src;
+}
+declare module '*.mp4' {
+  const src: NodeRequire;
+  export default src;
+}

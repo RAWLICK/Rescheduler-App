@@ -1,5 +1,5 @@
 import { Modal, StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground, StatusBar, Platform, Alert } from 'react-native'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { BlurView } from "@react-native-community/blur";
 import {
@@ -51,68 +51,68 @@ type PercentageArrayType = {
     }
 }
 
-type TaskCompletionPopUpPropsType = {
-  popUpIsVisible: boolean
-  setPopUpIsVisible: SetState<boolean>
-  NextPopUpClick: () => void
-  PercentageArray: PercentageArrayType[]
-}
+// type TaskCompletionPopUpPropsType = {
+//   popUpIsVisible: boolean
+//   setPopUpIsVisible: SetState<boolean>
+//   NextPopUpClick: () => void
+//   PercentageArray: PercentageArrayType[]
+// }
 
-export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
-  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-  const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
+// export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
+//   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+//   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
   
-  return (
-    <Modal visible={props.popUpIsVisible} animationType='fade' transparent= {true}>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <BlurView
-          style={styles.blurStyle}
-          blurType="light"
-          blurAmount={10}
-          reducedTransparencyFallbackColor="light"
-        />
-            <View style={{height: height * 0.17, width: width * 0.8, borderRadius: 15, overflow: 'hidden', borderWidth: 1, borderColor: 'grey', padding: 10}}>
-            <BlurView
-              style={styles.blurStyle}
-              blurType="dark"
-              blurAmount={50}
-              reducedTransparencyFallbackColor="black"
-            />
-              <View style={{flex:1, rowGap: 10}}>
-                <LinearGradient colors={['#f3b607', '#cdd309']} style={{flex: 5, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 10}}>
-                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of {StudentInfoData.Streak} </Text>
-                  <LottieView source={AnimatedFire} autoPlay loop style={styles.lottie}></LottieView>
-                </LinearGradient>
-                <View style={{flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-                    <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
-                    <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}> By registering {props.PercentageArray.length}/{ExistingSubjectsArray.length} works </Text>
-                    <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
-                </View>
-                <TouchableOpacity style={{flex: 3, justifyContent: 'center', alignItems: 'center', backgroundColor: '#457fdf', borderRadius: 10}} onPress={props.NextPopUpClick}>
-                    <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>Next</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-        </View>
-    </Modal>
-  )
-}
+//   return (
+//     <Modal visible={props.popUpIsVisible} animationType='fade' transparent= {true}>
+//         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+//         <BlurView
+//           style={styles.blurStyle}
+//           blurType="light"
+//           blurAmount={10}
+//           reducedTransparencyFallbackColor="light"
+//         />
+//             <View style={{height: height * 0.17, width: width * 0.8, borderRadius: 15, overflow: 'hidden', borderWidth: 1, borderColor: 'grey', padding: 10}}>
+//             <BlurView
+//               style={styles.blurStyle}
+//               blurType="dark"
+//               blurAmount={50}
+//               reducedTransparencyFallbackColor="black"
+//             />
+//               <View style={{flex:1, rowGap: 10}}>
+//                 <LinearGradient colors={['#f3b607', '#cdd309']} style={{flex: 5, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 10}}>
+//                   <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of {StudentInfoData.Streak} </Text>
+//                   <LottieView source={AnimatedFire} autoPlay loop style={styles.lottie}></LottieView>
+//                 </LinearGradient>
+//                 <View style={{flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+//                     <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
+//                     <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}> By registering {props.PercentageArray.length}/{ExistingSubjectsArray.length} works </Text>
+//                     <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
+//                 </View>
+//                 <TouchableOpacity style={{flex: 3, justifyContent: 'center', alignItems: 'center', backgroundColor: '#457fdf', borderRadius: 10}} onPress={props.NextPopUpClick}>
+//                     <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>Next</Text>
+//                 </TouchableOpacity>
+//               </View>
+//             </View>
+//         </View>
+//     </Modal>
+//   )
+// }
 
 const TaskCompletionBoard = () => {
+  // let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
+  // let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  // let currentYear = currentDate.getFullYear();
+  // const [currentMin, setCurrentMin] = useState(currentDate.getMinutes());
+  // const [boardIsVisible, setBoardIsVisible] = useState(true);
+  // const [popUpIsVisible, setPopUpIsVisible] = useState(false);
+  // const currentDate = new Date();
   const dispatch = useDispatch();
   const navigation = useNavigation<CombinedNavigationProp>();
-  const currentDate = new Date();
-  let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
-  let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-  let currentYear = currentDate.getFullYear();
   const [previousDate, setPreviousDate] = useState(subDays(new Date(), 1))
-  const [previousDay, setPreviousDay] = useState(previousDate.getDate())
+  const previousDay = previousDate.getDate() 
   const previousDayMonth = previousDate.getMonth() + 1;
   const previousDayYear = previousDate.getFullYear();
   const previousDateStringFormat = (`${previousDay.toString().padStart(2, '0')}/${previousDayMonth.toString().padStart(2, '0')}/${previousDayYear}`)
-  const [currentMin, setCurrentMin] = useState(currentDate.getMinutes());
-  const [boardIsVisible, setBoardIsVisible] = useState(true);
-  const [popUpIsVisible, setPopUpIsVisible] = useState(false);
   const DurationBoxes = [0, 1, 2, 3];
   const DurationTag = ['0%', '25%', '50%', '75%', '✓'];
   const [Duration, setDuration] = useState('1h');
@@ -137,9 +137,70 @@ const TaskCompletionBoard = () => {
   ];
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
-  const DemoStatus = useSelector((state: RootState) => state.DemoArraySliceReducer)
+  // const DemoStatus = useSelector((state: RootState) => state.DemoArraySliceReducer)
 
-  const updatePercentageArray = (uniqueID: string, percentage: number, Current_Duration: string) => {
+  // console.log("TaskCompletionBoard is made run")
+
+  // const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
+  //   return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
+  // }
+
+  // const TaskCompletionBoardVisibility = () => {
+  //   useEffect(() => {
+  //     const interval = setInterval(() => {
+  //       const newMin = new Date().getMinutes();
+  //       if (newMin !== currentMin) {
+  //         setCurrentMin(newMin);
+  //         setBoardIsVisible(true);
+  //       }
+  //     }, 1000);
+
+  //     const timeout = setTimeout(() => {
+  //       setBoardIsVisible(false);
+  //       // setPopUpIsVisible(true);
+  //     }, 15000);
+
+  //     return () => {
+  //       clearInterval(interval);
+  //       clearTimeout(timeout);
+  //     };
+  //   }, [currentMin]);
+
+  //   return boardIsVisible;
+  // }
+
+  // async function onDisplayNotification() {
+  //   // Request permissions (required for iOS)
+  //   await notifee.requestPermission()
+
+  //   // Create a channel (required for Android)
+  //   const channelId = await notifee.createChannel({
+  //     id: 'default',
+  //     name: 'Default Channel',
+  //   });
+
+  //   // Display a notification
+  //   await notifee.displayNotification({
+  //     title: 'Schedule got Messed Up?',
+  //     body: 'Easily reschedule your messed up routine using Rescheduler ',
+  //     android: {
+  //       channelId,
+  //       // smallIcon: 'appicon', // optional, defaults to 'ic_launcher'.
+  //       // pressAction is needed if you want the notification to open the app when pressed
+  //       pressAction: {
+  //         id: 'default',
+  //       },
+  //     },
+  //   });
+  // }
+
+  // const NextPopUpClick = () => {
+  //   console.log("Next Button in popup Clicked")
+  //   setPopUpIsVisible(false);
+  //   setPercentageArray([])
+  // }
+
+  const updatePercentageArray = useCallback((uniqueID: string, percentage: number, Current_Duration: string) => {
     function getTimeByPercentage(timeString: string, percentage: number) {
       // Extract hours and minutes from the input string
       const hourMatch = timeString.match(/(\d+)\s*h/);
@@ -191,35 +252,7 @@ const TaskCompletionBoard = () => {
       }
       return newArray;
     });
-  };
-
-  const formatTime = (pickedDuration: { hours: number, minutes: number, seconds: number}) => {
-    return `${pickedDuration.hours}hr ${pickedDuration.minutes}min`
-  }
-
-  const TaskCompletionBoardVisibility = () => {
-    useEffect(() => {
-      const interval = setInterval(() => {
-        const newMin = new Date().getMinutes();
-        if (newMin !== currentMin) {
-          setCurrentMin(newMin);
-          setBoardIsVisible(true);
-        }
-      }, 1000);
-
-      const timeout = setTimeout(() => {
-        setBoardIsVisible(false);
-        // setPopUpIsVisible(true);
-      }, 15000);
-
-      return () => {
-        clearInterval(interval);
-        clearTimeout(timeout);
-      };
-    }, [currentMin]);
-
-    return boardIsVisible;
-  }
+  }, []);
 
   function DisplayingPercentage (uniqueID: string) {
     const found = PercentageArray.find((item) => item.SubjectUniqueID === uniqueID);
@@ -227,31 +260,6 @@ const TaskCompletionBoard = () => {
       return found.percentage;
     }
     return '-- '
-  }
-
-  async function onDisplayNotification() {
-    // Request permissions (required for iOS)
-    await notifee.requestPermission()
-
-    // Create a channel (required for Android)
-    const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-    });
-
-    // Display a notification
-    await notifee.displayNotification({
-      title: 'Schedule got Messed Up?',
-      body: 'Easily reschedule your messed up routine using Rescheduler ',
-      android: {
-        channelId,
-        // smallIcon: 'appicon', // optional, defaults to 'ic_launcher'.
-        // pressAction is needed if you want the notification to open the app when pressed
-        pressAction: {
-          id: 'default',
-        },
-      },
-    });
   }
   
   const OkBoardClick = async () => {
@@ -312,18 +320,12 @@ const TaskCompletionBoard = () => {
     const intervalId = setInterval(() => {
       const pd = subDays(new Date(), 1);
       setPreviousDate(pd);
-      setPreviousDay(pd.getDate())
+      // setPreviousDay(pd.getDate())
     }, 1000);
 
     // Clean up the interval on unmount
     return () => clearInterval(intervalId);
   }, []);
-
-  const NextPopUpClick = () => {
-    console.log("Next Button in popup Clicked")
-    setPopUpIsVisible(false);
-    setPercentageArray([])
-  }
 
   useEffect(() => {
     console.log("StudentInfo:", StudentInfoData);
@@ -568,14 +570,14 @@ const TaskCompletionBoard = () => {
             </View>
         </View>
       </ImageBackground>
-    {popUpIsVisible && (
+    {/* {popUpIsVisible && (
     <TaskCompletionPopUp
       popUpIsVisible={popUpIsVisible}
       setPopUpIsVisible={setPopUpIsVisible}
       NextPopUpClick={NextPopUpClick}
       PercentageArray={PercentageArray}
      />
-    )}
+    )} */}
     </GestureHandlerRootView>
   )
 }

@@ -1,12 +1,13 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import { memo } from 'react';
 import { BACKGROUND_COLOR, data } from './constants.ts'
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type SingleBarChartProps = {
     value: number
 }
-export default function SingleBarChart(props: SingleBarChartProps) {
+function SingleBarChart(props: SingleBarChartProps) {
     const MAX_BAR_HEIGHT = 150;
     const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -19,5 +20,7 @@ export default function SingleBarChart(props: SingleBarChartProps) {
       </Animated.View>
   )
 }
+
+export default memo(SingleBarChart);
 
 const styles = StyleSheet.create({})
