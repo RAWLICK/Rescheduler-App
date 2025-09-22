@@ -331,7 +331,6 @@ const TaskCompletionBoard = () => {
     console.log("StudentInfo:", StudentInfoData);
   }, [StudentInfoData])
   
-
   // useEffect(() => {
   //   console.log("DemoStatus:", DemoStatus.DemoStatus);
   // }, [DemoStatus.DemoStatus]);
@@ -387,7 +386,7 @@ const TaskCompletionBoard = () => {
                   const FinalRadar = useSharedValue<number>(85);
                   const uniqueID = eachSubject["uniqueID"];
                   const Current_Duration = eachSubject["Current_Duration"]
-                  const lastPercentage = useSharedValue<number>(25);
+                  const lastPercentage = useSharedValue<number>(32);
 
                   const pan = Gesture.Pan()
                   .onBegin(() => {
