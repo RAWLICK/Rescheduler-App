@@ -518,8 +518,11 @@ const TaskCompletionBoard = () => {
                                     i == 3
                                     ? {borderTopRightRadius: 4, borderBottomRightRadius: 4}
                                     : {},
-                                    /*CoveredDurBoxes.includes(i)? {backgroundColor: '#9D9EA0'} : {backgroundColor: '#595a5c'}*/
-                                ]}></View>
+                                    // i <= (lastPercentage.value / 25 - 1) && lastPercentage.value != 32
+                                    // ? {backgroundColor: '#cccdcfff'}
+                                    // : {backgroundColor: '#7d7e7fff'}
+                                ]}>
+                                </View>
                             );
                             })}
                         </View>

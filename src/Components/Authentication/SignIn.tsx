@@ -40,6 +40,8 @@ import { addDays, set, subDays } from "date-fns";
 import { CommonActions } from '@react-navigation/native';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import { nanoid } from "@reduxjs/toolkit";
+import Video from 'react-native-video';
+import ConsitencyVideo from '../Images/Consistensy_Video.mp4'
 const { width, height } = Dimensions.get('window');
 
 type LogoSectionPropsType = {};
@@ -77,6 +79,20 @@ const LogoSection = () => {
     </LinearGradient>
   );
 };
+
+const ConceptVideo = () => {
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
+      <Video source={{uri: ConsitencyVideo}}
+      style={styles.VideoStyle}   // ✅ fill screen like reels
+          muted={false}
+          controls={false}    // hide controls for reels effect
+          playWhenInactive={false}
+          playInBackground={false}
+      />
+    </View>
+  )
+}
 
 const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
   let fetched_StudentInfo: StudentInfoDataType | null = null
@@ -234,6 +250,15 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
           console.error('Catch Error: ', error);
           props.setLoading(false)
       }
+
+      // <ConceptVideo/>
+      // <Video source={{uri: ConsitencyVideo}} style={styles.VideoStyle}   // ✅ fill screen like reels
+      //   muted={false}
+      //   controls={false}    // hide controls for reels effect
+      //   playWhenInactive={false}
+      //   playInBackground={false}
+      // />
+
       navigation.dispatch(
           CommonActions.reset({
               index: 0,
@@ -1477,6 +1502,11 @@ const SignIn = () => {
 };
 
 const styles = StyleSheet.create({
+  VideoStyle: {
+    ...StyleSheet.absoluteFillObject, // makes video cover entire screen
+    width: width,
+    height: height
+  },
   RegisterNewUserText: {
     fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
     fontSize: 17,

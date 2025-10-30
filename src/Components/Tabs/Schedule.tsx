@@ -256,7 +256,7 @@ const UpperArea = React.memo((props: UpperAreaPropsType) => {
 });
 
 const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) => {
-  console.log("Reschedule Button Area is made ran");
+  // console.log("Reschedule Button Area is made ran");
   const [toggle, setToggle] = useState(false);
 
   const DisplayingSubjects = props.data['StartAngle']
@@ -670,9 +670,9 @@ const Schedule: React.FC = () => {
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
-    const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
+    // const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
     // const FullState = useSelector((state: RootState) => state)
-    // const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
+    const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
     const [Loading, setLoading] = useState(false)
     const TodayScheduleArray: ScheduleArrayItem[] = [];
     
@@ -1419,9 +1419,14 @@ const Schedule: React.FC = () => {
       }
     }, [isConnected])
 
-    useEffect(() => {
-      checkAppVersion();
-    }, [])
+    // useEffect(() => {
+    //   dispatch(updateLocalStorageInfo("Login"))
+    //   console.log("LocalStorageInfo: ", LocalStorageInfo)
+    // }, [rescheduleStatus])
+
+    // useEffect(() => {
+    //   checkAppVersion();
+    // }, [])
 
     // useEffect(() => {
     //   console.log("DemoNumberHere: ", DemoNumberHere)

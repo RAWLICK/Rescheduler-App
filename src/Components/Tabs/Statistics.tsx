@@ -700,7 +700,7 @@ const styles = StyleSheet.create({
   },
   safeView: {
     flex: 1,
-    backgroundColor: '#D2CFE4',
+    backgroundColor: '#D2CFE4'
     // backgroundColor: 'black'
   },
 

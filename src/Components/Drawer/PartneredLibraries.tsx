@@ -26,7 +26,7 @@ const PartneredLibraries = () => {
     const [DistributionDataToRender, setDistributionDataToRender] = useState<DistribtionInfoType[] | undefined>()
 
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-    console.log(StudentInfoData)
+    // console.log(StudentInfoData)
 
     async function RenderAllDistributionsInfo() {
       try {
@@ -79,7 +79,7 @@ const PartneredLibraries = () => {
     }, [LibrarySearch]);
 
     useEffect(() => {
-      console.log("EditableDistributionsInfo: ", EditableDistributionsInfo)
+      // console.log("EditableDistributionsInfo: ", EditableDistributionsInfo)
       RenderAllDistributionsInfo();
     }, [])
     
@@ -87,7 +87,7 @@ const PartneredLibraries = () => {
     useFocusEffect(
       useCallback(() => {
         // StatusBar.setBackgroundColor("#d6d3da")
-        console.log("EditableDistributionsInfo: ", EditableDistributionsInfo)
+        // console.log("EditableDistributionsInfo: ", EditableDistributionsInfo)
         RenderAllDistributionsInfo();
         return () => {
           // optional cleanup when screen is unfocused

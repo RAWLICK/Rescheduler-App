@@ -18,6 +18,7 @@ keytool -list -v \
  -storepass android -keypass android
 
 Command to Generate build file(.aab file):
+- Check Production Measures on Sticky Notes
 - First change the version of the app
 - cd android
 - ./gradlew bundleRelease

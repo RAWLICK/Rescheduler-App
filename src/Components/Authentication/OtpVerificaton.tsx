@@ -22,8 +22,36 @@ import { ScheduleArrayItem } from '../Screens/AddTiming';
 import { ExistingSubjectsArrayItem } from '../../app/Slice';
 import { addDays, subDays } from "date-fns";
 import { CommonActions } from '@react-navigation/native';
+import Video from 'react-native-video';
+import ConsitencyVideo from '../Images/Consistensy_Video.mp4'
 const { width, height } = Dimensions.get('window');
 type HeaderPanelPropsType = {};
+
+type VerificationPanelPropsType = {
+    // confirmCode: () => Promise<void>;
+    // StudentInfoData: StudentInfoDataType | undefined;
+    // setStudentInfoData: React.Dispatch<React.SetStateAction<StudentInfoDataType | undefined>>;
+    Process : string | undefined;
+    PhoneNumber: string | undefined;
+    EnteredOTP: string;
+    setEnteredOTP: React.Dispatch<React.SetStateAction<string>>;
+    Loading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const ConceptVideo = () => {
+    return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
+            <Video source={{uri: ConsitencyVideo}}
+            style={styles.VideoStyle}   // ✅ fill screen like reels
+                muted={false}
+                controls={false}    // hide controls for reels effect
+                playWhenInactive={false}
+                playInBackground={false}
+            />
+        </View>
+    )
+}
 
 const HeaderPanel = () => {
     const navigation = useNavigation<NavigationProp<any, any>>();
@@ -40,18 +68,6 @@ const HeaderPanel = () => {
         </View>
     )
 }
-
-type VerificationPanelPropsType = {
-    // confirmCode: () => Promise<void>;
-    // StudentInfoData: StudentInfoDataType | undefined;
-    // setStudentInfoData: React.Dispatch<React.SetStateAction<StudentInfoDataType | undefined>>;
-    Process : string | undefined;
-    PhoneNumber: string | undefined;
-    EnteredOTP: string;
-    setEnteredOTP: React.Dispatch<React.SetStateAction<string>>;
-    Loading: boolean;
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-};
 
 const VerificationPanel = (props: VerificationPanelPropsType) => {  
     const [Countdown, setCountdown] = useState<number>(60)
@@ -558,6 +574,8 @@ const VerificationPanel = (props: VerificationPanelPropsType) => {
                 }
 
                 dispatch(updateLocalStorageInfo("Login"));
+
+                <ConceptVideo/>
 
                 // Resetting the navigation stack to SignInStack. Now the history of the previous screens will be cleared.
                 // This is done to prevent the user from going back to the otp screens after logging in.
@@ -1285,6 +1303,11 @@ export default OtpVerificaton
 
 
 const styles = StyleSheet.create({
+    VideoStyle: {
+        ...StyleSheet.absoluteFillObject, // makes video cover entire screen
+        width: width,
+        height: height
+    },
     ResendOTPTextTwo: {
         fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
         fontSize: 13,

@@ -1,0 +1,77 @@
+Error 6:
+Getting this error in Apple's terminal when writing 'npm run ios':
+- error EACCES: permission denied, mkdir '/var/folders/zz/zyxvpxvq6csfxvn_n0000000000000/T/metro-cache/00'.
+- I thought that the cause of this error is I have deleted Caches(size- 3GB) from Xcode Build File inside Developer < Storage
+- The Real problem was upgrading to MacOS sequioa 15.7 which changed the ownership of the directories causing such error, rather than fault of deleting caches file
+
+
+Tried Efforts:
+- sudo rm -rf /var/folders/zz/zyxvpxvq6csfxvn_n0000000000000/T/metro-cache
+- [
+    cd ios
+    rm -rf build
+    pod deintegrate
+    pod install
+    cd ..
+    npm run ios
+]
+- [ 
+    rm -rf ~/Library/Developer/Xcode/DerivedData
+    rm -rf /tmp/metro-*
+    rm -rf /tmp/react-*
+    rm -rf /var/folders/*/*/*/metro-cache
+]
+- sudo chown -R $(whoami) /var/folders
+- [
+    rm -rf node_modules
+    npm install
+]
+- [
+    ls -ld /var/folders/zz/zyxvpxvq6csfxvn_n0000000000000/T
+    Output- drwx------  52 root  wheel  1664 Oct 29 21:14 /var/folders/zz/zyxvpxvq6csfxvn_n0000000000000/T
+    ChatGPT Explanation: 
+    - That /var/folders/.../T directory is owned by root, not your user (architgupta).
+
+    - So when Metro (the JS bundler) tries to cache files there, macOS blocks it — because your React Native process doesn’t have permission to write in a folder owned by root.
+
+    - This usually happens if you ran Metro or your app once with sudo, which created those cache directories under the root account.
+]
+- Now Xcode Caches have however returned of completely 3GB. Also I have also downloaded Command Lines Tool update for another 2.5GB but still nothing is happening
+
+- [
+   - sudo chown -R root:architgupta /usr/local/lib/node_modules/
+   (Gave error: illegal username)
+   - sudo chown -R root:staff /usr/local/lib/node_modules/
+   - sudo chmod -R 775 /usr/local/lib/node_modules/
+]
+
+-[
+    The main reason is getting permission denied during this command in Apple terminal:
+    Command: ls -ld /var/folders/zz/zyxvpxvq6csfxvn_n0000000000000/T/metro-cache
+    Output: ls: /var/folders/zz/zyxvpxvq6csfxvn_n0000000000000/T/metro-cache: Permission denied
+]
+
+Succeded Efforts:
+[
+    Adding this command in .zshrc file:
+    export TMPDIR=$HOME/.reactnative_tmp
+
+    What it did:
+    TMPDIR(Temporary Directory) is an environment variable that tells macOS and Node.js where to store temporary files.
+    By default, it points to a system-protected directory like:
+    /var/folders/zz/zyxvpxvq6csfxvn_n0000000000000/T/
+    which caused your “EACCES: permission denied” errors.
+    $HOME = your home directory (/Users/architgupta).
+    It points all future React Native (and other temp operations) to a safe location:
+
+    Here, we changed it to:
+    $PWD/.metro_tmp
+    $PWD = your current project folder,
+    → .metro_tmp = a local subfolder we created there.
+    PWD(Present Working Directory)
+
+    So now, all temporary files (including Metro cache) are written inside your project, not the system folder.
+    mkdir -p .metro_tmp
+    Creates that .metro_tmp folder if it doesn’t already exist.
+    -p just means “don’t complain if it already exists”.
+]

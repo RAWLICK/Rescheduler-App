@@ -11,6 +11,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const { width, height } = Dimensions.get('window');
 import {CombinedNavigationProp} from '../../App';
 
+type AllBranchesListType = {
+    LocalAddress: string;
+    City: string;
+    State: string;
+};
+
 const AdminPanel = () => {
     let currentDate = new Date();
     let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
@@ -26,14 +32,15 @@ const AdminPanel = () => {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [LocalAddress, setLocalAddress] = useState("")
     const [numberOfBranch, setNumberOfBranch] = useState(1)
-    const [AllBranchesList, setAllBranchesList] = useState([''])
+    const [AllBranchesList, setAllBranchesList] = useState<AllBranchesListType[]>([])
     const DistributionTypeData = [
         { label: 'Library', value: '1' }
     ];
     const [DistributionTypeValue, setDistributionTypeValue] = useState("");
     const [isDistributionTypeFocus, setDistributionTypeIsFocus] = useState(false);
     const CityData = [
-        { label: 'Lucknow', value: '1' }
+        { label: 'Lucknow', value: '1' },
+        { label: 'Kanpur', value: '2' }
     ];
     const [CityValue, setCityValue] = useState("");
     const [isCityFocus, setIsCityFocus] = useState(false);
@@ -56,9 +63,15 @@ const AdminPanel = () => {
         }
     }
 
+    function IncreasingBranch() {
+        setNumberOfBranch(numberOfBranch + 1)
+        const newBranch = { LocalAddress: "", City: "", State: "" }
+        setAllBranchesList(prev => [...prev, newBranch])
+    }
+
     function handleBranchChange(text: string, index: number) {
         const upDatedBranchList = [...AllBranchesList]
-        upDatedBranchList[index] = text
+        // upDatedBranchList[index] = text
         setAllBranchesList(upDatedBranchList)
     }
 
@@ -114,6 +127,11 @@ const AdminPanel = () => {
             }
             };
     }
+
+    useEffect(() => {
+        console.log("All Branches: ", AllBranchesList);
+    }, [AllBranchesList])
+    
     
     // useFocusEffect(
     //     useCallback(() => {
@@ -160,7 +178,7 @@ const AdminPanel = () => {
                     padding: 30,
                     paddingRight: 15,
                     paddingLeft: 15,
-                    paddingBottom: 15
+                    paddingBottom: 15,
                 }}>
                     <View style={{rowGap: 3}}>
                     <View style={[styles.UpperOption, { height: 65 }]}>
@@ -296,7 +314,7 @@ const AdminPanel = () => {
                             setIsCityFocus(false);
                         }}
                         />
-                    </View>
+                    </View> 
 
                     <View>
                         <Dropdown
@@ -341,9 +359,9 @@ const AdminPanel = () => {
                                     <Image source={NormalMinus} style={{height: 20, width: 20}}/>
                                 </TouchableOpacity>
                                 <View style={{backgroundColor: '#9D9EA0', padding: 5, borderRadius: 3}}>
-                                    <Text>{numberOfBranch}</Text>
+                                    <Text style={{color: 'black'}}>{numberOfBranch}</Text>
                                 </View>
-                                <TouchableOpacity onPress={() => setNumberOfBranch(numberOfBranch + 1)}>
+                                <TouchableOpacity onPress={IncreasingBranch}>
                                     <Image source={Normal_Plus} style={{height: 20, width: 20}}/>
                                 </TouchableOpacity>
                             </View>
@@ -353,29 +371,85 @@ const AdminPanel = () => {
                     {new Array(numberOfBranch - 1).fill(null).map(( __, index) => {
                     return (
                         <View key={index}>
-                            <View style={[styles.MiddleOption, { height: 65, marginBottom: 3 }]}>
-                                <TextInput
-                                style={styles.OptionText}
-                                value={AllBranchesList[index]}
-                                onChangeText={(text) => handleBranchChange(text, index)}
-                                placeholder={`Branch Name ${index + 2}`}
-                                placeholderTextColor="#6a6a6a">
-                                </TextInput>
+                            <View style={{backgroundColor: '#222328', borderRadius: 5, paddingLeft: 20, paddingRight: 20,height: 130, flexDirection: 'column'}}>
+                                <View style={{flex: 1, justifyContent: 'center'}}>
+                                    <TextInput
+                                    style={styles.OptionText}
+                                    // value={AllBranchesList[index]}
+                                    onChangeText={(text) => handleBranchChange(text, index)}
+                                    placeholder={`Local Address of Branch ${index + 2}`}
+                                    placeholderTextColor="#6a6a6a">
+                                    </TextInput>
+                                </View>
+
+                                <View style={{flex: 1, flexDirection: 'row', columnGap: 50}}>
+                                    <View style={{flex: 1}}>
+                                        <Dropdown
+                                        style={[styles.dropdown, {paddingLeft: 5, paddingRight: 0}]}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        data={CityData}
+                                        itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
+                                        itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, height: 50, justifyContent: 'center'}}
+                                        containerStyle={{borderRadius: 10}}
+                                        // search
+                                        maxHeight={300}
+                                        labelField="label"
+                                        valueField="value"
+                                        placeholder={'Select City'}
+                                        searchPlaceholder="Search..."
+                                        // value={}
+                                        // onFocus={}
+                                        // onBlur={}
+                                        onChange={item => {
+                                            setAllBranchesList(prev => {
+                                                const updatedBranches = [...prev];
+                                                updatedBranches[index]['City'] = item.label;
+                                                return updatedBranches;
+                                            });
+                                        }}
+                                        />
+                                    </View>
+                                    <View style={{flex: 1}}>
+                                        <Dropdown
+                                        style={[styles.dropdown, {paddingLeft: 0, paddingRight: 5}]}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        data={StateData}
+                                        itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
+                                        itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, height: 50, justifyContent: 'center'}}
+                                        containerStyle={{borderRadius: 10}}
+                                        // search
+                                        maxHeight={300}
+                                        labelField="label"
+                                        valueField="value"
+                                        placeholder={"Select State"}
+                                        searchPlaceholder="Search..."
+                                        // value={}
+                                        // onFocus={}
+                                        // onBlur={}
+                                        onChange={item => {
+                                            // setStateValue(item.value);
+                                            setAllBranchesList(prev => {
+                                                const updatedBranches = [...prev];
+                                                updatedBranches[index]['State'] = item.label;
+                                                return updatedBranches;
+                                            });
+                                            setIsStateFocus(false);
+                                        }}
+                                        />
+                                    </View>
+                                </View>
                             </View>
-                            {/* <View style={[styles.MiddleOption, { height: 65 }]}>
-                                <TextInput
-                                style={styles.OptionText}
-                                value={AllBranchesList[index]}
-                                onChangeText={(text) => handleBranchChange(text, index)}
-                                placeholder={`Branch ${index + 2} (Local Address)`}
-                                placeholderTextColor="#6a6a6a">
-                                </TextInput>
-                            </View> */}
                         </View>
                     )
                     })}
                     </View>
-                    <View style={{ height: 50, marginTop: 12, marginBottom: insets.bottom }}>
+                    <View style={{ height: 50, marginTop: 12, marginBottom: insets.bottom}}>
                     {loading? 
                         <View style={styles.SaveButtonBox}>
                             <ActivityIndicator size="small" color="black" />
@@ -439,12 +513,9 @@ const styles = StyleSheet.create({
       },
     
       MiddleOption: {
-        // flex: 1,
         flexDirection: 'row',
         backgroundColor: '#222328',
         borderRadius: 5,
-        // marginBottom: 1,
-        // marginTop: 1,
         paddingLeft: 20,
         paddingRight: 20,
       },
