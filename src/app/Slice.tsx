@@ -6,6 +6,9 @@ import { ScheduleArrayItem } from "../Components/Screens/AddTiming";
 export type LocalStorageInfoDataType = {
     "IsLoggedIn": boolean,
     "IsFirstLaunch": boolean,
+    "StatsEnabled": boolean,
+    "Schedule_Walkthrough_Completed": boolean,
+    "Statistics_Walkthrough_Completed": boolean
 }
 
 export type StudentInfoDataType = {
@@ -56,7 +59,10 @@ export type DemoArrayType = {
 const initialState = {
     LocalStorageInfoInitialState: {
         "IsLoggedIn": false,
-        "IsFirstLaunch": true
+        "IsFirstLaunch": true,
+        "StatsEnabled": true,
+        "Schedule_Walkthrough_Completed": false,
+        "Statistics_Walkthrough_Completed": false
     } as LocalStorageInfoDataType,
     StudentInfoInitialState: {} as StudentInfoDataType,
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
@@ -91,6 +97,18 @@ export const LocalStorageInfoSlice = createSlice({
             }
             else if (action.payload == "FirstLaunch") {
                 state.LocalStorageInfoInitialState["IsFirstLaunch"] = false
+            }
+            else if (action.payload == "EnableStats") { 
+                state.LocalStorageInfoInitialState["StatsEnabled"] = true
+            }
+            else if (action.payload == "DisableStats") {
+                state.LocalStorageInfoInitialState["StatsEnabled"] = false
+            }
+            else if (action.payload == "Schedule_Walkthrough_Completed") {
+                state.LocalStorageInfoInitialState["Schedule_Walkthrough_Completed"] = true
+            }
+            else if (action.payload == "Statistics_Walkthrough_Completed") {
+                state.LocalStorageInfoInitialState["Statistics_Walkthrough_Completed"] = true
             }
         }
     }

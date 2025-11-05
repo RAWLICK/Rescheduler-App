@@ -28,8 +28,11 @@ import {
   Dimensions,
   Modal,
   Platform,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Switch
 } from 'react-native';
+import { updateLocalStorageInfo } from '../../app/Slice';
+import { useDispatch } from 'react-redux';
 import { startOfWeek, startOfMonth, endOfWeek, endOfMonth, eachDayOfInterval, subWeeks, addDays, addWeeks, addMonths, subMonths, getMonth, getYear } from 'date-fns';
 import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
 import { useSelector } from 'react-redux';
@@ -350,6 +353,12 @@ const Statistics = () => {
   const ExistingSubjectSheet = useRef<TrueSheet>(null);
   const [MonthBoxPos, setMonthBoxPos] = useState('up')
   const [FakeWork, setFakeWork] = useState('FakeWork')
+  const [StatsEnabled, setStatsEnabled] = useState(false)
+  const dispatch = useDispatch();
+  const StatToggleSwitch = () => {
+    setStatsEnabled(previous => !previous)
+    dispatch(updateLocalStorageInfo(StatsEnabled ? "DisableStats" : "EnableStats"))
+  };
   
   async function ExistingSubjectButton () {
     console.log("ExistingSubjectButton is made run");
@@ -532,11 +541,25 @@ const Statistics = () => {
     />
       <KeyboardAvoidingView style={styles.mainStyle}>
         <ScrollView>
-        <View style={styles.heading}>
-
+        <View style={{paddingLeft: 10, paddingRight: 10, height: 80, marginBottom: 5}}>
+          <View style={{borderRadius: 20, flex: 1, flexDirection: 'row', borderColor: '#837DA8', borderWidth: 1, borderBottomWidth: 5}}>
+            <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 15}}>
+              <Text style={{fontFamily: 'sf-pro-display-medium'}}>Ask Daily Work Done Report to Access Statistics and Gain Streak</Text>
+            </View>
+            <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-end', paddingRight: 15}}>
+              <Switch
+                trackColor={{ false: '#ccc', true: '#81b0ff' }}
+                thumbColor={StatsEnabled ? '#007AFF' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={StatToggleSwitch}
+                value={StatsEnabled}
+              />
+            </View>
+          </View>
+          
         </View>
 
-        <View style={{height: 40, flexDirection: 'row'}}>
+        <View style={{height: 40, flexDirection: 'row', opacity: StatsEnabled ? 1 : 0.5, pointerEvents: StatsEnabled ? 'auto' : 'none'}}>
           <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}} onPress={DecreaseWeekButton}>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <Image source={ChevronLeftBlack} style={{height: 15, width: 15}}/>
@@ -556,7 +579,7 @@ const Statistics = () => {
         </View>
 
 
-        <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10}}>
+        <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10, opacity: StatsEnabled ? 1 : 0.5, pointerEvents: StatsEnabled ? 'auto' : 'none'}}>
           <View style={styles.weekReport}>
             <WeeklyBarChart
               selectedWeekStart={selectedWeekStart}
@@ -586,7 +609,7 @@ const Statistics = () => {
           />
         </View>
 
-        <View style={{marginTop: 10}}>
+        <View style={{marginTop: 10, opacity: StatsEnabled ? 1 : 0.5, pointerEvents: StatsEnabled ? 'auto' : 'none'}}>
           <View style={{height: 40, flexDirection: 'row'}}>
             <TouchableOpacity onPress={DecreaseMonthButton} style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
               <View>
@@ -605,7 +628,7 @@ const Statistics = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10}}>
+        <View style={{paddingLeft: 10, paddingRight: 10, rowGap: 10, opacity: StatsEnabled ? 1 : 0.5, pointerEvents: StatsEnabled ? 'auto' : 'none'}}>
           <View style={[styles.monthReport]}>
             <ScrollView style={{height: 162}} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
               <View style={styles.monthGraphSheet}>

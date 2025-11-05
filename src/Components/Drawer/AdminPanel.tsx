@@ -71,7 +71,7 @@ const AdminPanel = () => {
 
     function handleBranchChange(text: string, index: number) {
         const upDatedBranchList = [...AllBranchesList]
-        // upDatedBranchList[index] = text
+        upDatedBranchList[index]['LocalAddress'] = text
         setAllBranchesList(upDatedBranchList)
     }
 
@@ -128,6 +128,24 @@ const AdminPanel = () => {
             };
     }
 
+    function findingCityValue(cityName: string) {
+        for (let i = 0; i < CityData.length; i++) {
+            if (CityData[i].label == cityName) {
+                return CityData[i].value;
+            }
+        }
+        return "";
+    }
+
+    function findingStateValue(stateName: string) {
+        for (let i = 0; i < StateData.length; i++) {
+            if (StateData[i].label == stateName) {
+                return StateData[i].value;
+            }
+        }
+        return "";
+    }
+
     useEffect(() => {
         console.log("All Branches: ", AllBranchesList);
     }, [AllBranchesList])
@@ -172,13 +190,14 @@ const AdminPanel = () => {
                 </View>
 
                 <ScrollView
+                contentContainerStyle={{paddingBottom: 200}}
                 style={{
                     flex: 1,
                     backgroundColor: '#1b1b1d',
                     padding: 30,
                     paddingRight: 15,
                     paddingLeft: 15,
-                    paddingBottom: 15,
+                    paddingBottom: 15
                 }}>
                     <View style={{rowGap: 3}}>
                     <View style={[styles.UpperOption, { height: 65 }]}>
@@ -239,7 +258,7 @@ const AdminPanel = () => {
                         iconStyle={styles.iconStyle}
                         data={DistributionTypeData}
                         itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
-                        itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
+                        itemContainerStyle={{backgroundColor: 'white', borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
                         containerStyle={{borderRadius: 10}}
                         // search
                         maxHeight={300}
@@ -298,7 +317,7 @@ const AdminPanel = () => {
                         iconStyle={styles.iconStyle}
                         data={CityData}
                         itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
-                        itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
+                        itemContainerStyle={{backgroundColor: 'white', borderRadius: 10, paddingHorizontal: 30, height: 50, justifyContent: 'center'}}
                         containerStyle={{borderRadius: 10}}
                         // search
                         maxHeight={300}
@@ -375,7 +394,7 @@ const AdminPanel = () => {
                                 <View style={{flex: 1, justifyContent: 'center'}}>
                                     <TextInput
                                     style={styles.OptionText}
-                                    // value={AllBranchesList[index]}
+                                    value={AllBranchesList[index]['LocalAddress']}
                                     onChangeText={(text) => handleBranchChange(text, index)}
                                     placeholder={`Local Address of Branch ${index + 2}`}
                                     placeholderTextColor="#6a6a6a">
@@ -392,7 +411,7 @@ const AdminPanel = () => {
                                         iconStyle={styles.iconStyle}
                                         data={CityData}
                                         itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
-                                        itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, height: 50, justifyContent: 'center'}}
+                                        itemContainerStyle={{backgroundColor: 'white', borderRadius: 10, height: 50, justifyContent: 'center'}}
                                         containerStyle={{borderRadius: 10}}
                                         // search
                                         maxHeight={300}
@@ -400,7 +419,7 @@ const AdminPanel = () => {
                                         valueField="value"
                                         placeholder={'Select City'}
                                         searchPlaceholder="Search..."
-                                        // value={}
+                                        value={findingCityValue(AllBranchesList[index]?.City)}
                                         // onFocus={}
                                         // onBlur={}
                                         onChange={item => {
@@ -421,7 +440,7 @@ const AdminPanel = () => {
                                         iconStyle={styles.iconStyle}
                                         data={StateData}
                                         itemTextStyle={{fontFamily: Platform.OS === 'ios' ? 'FuturaNo2DEE-Medi' : 'futura-no-2-medium-dee', height: 25, color: 'black', fontSize: 18}}
-                                        itemContainerStyle={{backgroundColor: 'grey', borderRadius: 10, height: 50, justifyContent: 'center'}}
+                                        itemContainerStyle={{backgroundColor: 'white', borderRadius: 10, height: 50, justifyContent: 'center'}}
                                         containerStyle={{borderRadius: 10}}
                                         // search
                                         maxHeight={300}
@@ -429,11 +448,10 @@ const AdminPanel = () => {
                                         valueField="value"
                                         placeholder={"Select State"}
                                         searchPlaceholder="Search..."
-                                        // value={}
+                                        value={findingStateValue(AllBranchesList[index]?.State)}
                                         // onFocus={}
                                         // onBlur={}
                                         onChange={item => {
-                                            // setStateValue(item.value);
                                             setAllBranchesList(prev => {
                                                 const updatedBranches = [...prev];
                                                 updatedBranches[index]['State'] = item.label;
@@ -554,7 +572,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         backgroundColor: '#222328',
         paddingLeft: 20,
-        paddingRight: 20,
+        paddingRight: 20
       },
       icon: {
         marginRight: 15,

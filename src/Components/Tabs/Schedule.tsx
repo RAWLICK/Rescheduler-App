@@ -29,6 +29,12 @@ import { CombinedNavigationProp, CombinedRouteProp } from '../../App';
 import { nanoid } from 'nanoid';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DeviceInfo from 'react-native-device-info';
+import {
+  CopilotProvider,
+  CopilotStep,
+  walkthroughable,
+  useCopilot
+} from "react-native-copilot";
 
 import {
   ScrollView,
@@ -74,6 +80,9 @@ import { MotiView } from 'moti';
 import {Easing as EasingNode} from 'react-native-reanimated';
 import {persistor} from '../../app/Store';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+const CopilotText = walkthroughable(Text);
+const CopilotView = walkthroughable(View);
+const CopilotImageBackground = walkthroughable(ImageBackground);
 
 export interface ApiDataType {
   "Durations": string[];
@@ -165,15 +174,20 @@ const Clock = React.memo(() => {
   const sRotation = 6 * sTime;
 
   return (
-  <ImageBackground source={ClockImage}  style={styles.Clock}>
-    <View style={[styles.hour, { transform: [{ rotate: `${hRotation}deg` }] }]}></View>
-    <View style={[styles.minute, { transform: [{ rotate: `${mRotation}deg` }] }]}></View>
-    <View style={[styles.second, { transform: [{ rotate: `${sRotation}deg` }] }]}></View>
-  </ImageBackground>
+    <CopilotStep text="This Clock shows you, your subjects in a time-based pie chart like a sectograph" order={2} name="profileView">
+      <CopilotImageBackground source={ClockImage}  style={styles.Clock}>
+        <View style={[styles.hour, { transform: [{ rotate: `${hRotation}deg` }] }]}></View>
+        <View style={[styles.minute, { transform: [{ rotate: `${mRotation}deg` }] }]}></View>
+        <View style={[styles.second, { transform: [{ rotate: `${sRotation}deg` }] }]}></View>
+      </CopilotImageBackground>
+    </CopilotStep>
   );
 });
 
 const UpperArea = React.memo((props: UpperAreaPropsType) => {
+  const { start, copilotEvents } = useCopilot();
+    const [secondStepActive, setSecondStepActive] = useState(true);
+    const [lastEvent, setLastEvent] = useState<string | null>(null);
   console.log("Upper Area is made ran")
   const currentHourMinTime = `${props.currentHourTime.toString().padStart(2, '0')}:${props.currentMinTime.toString().padStart(2, '0')}`
   const stringToMonthConverter = (currentMonth: number) => {
@@ -229,29 +243,40 @@ const UpperArea = React.memo((props: UpperAreaPropsType) => {
     }
   }
 
-  return (
-    <View style={styles.UpperArea}>
-      <View style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 0.5}}>
-          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.currentDateStringFormat == props.selectedDate ? TwelveHourFormat(currentHourMinTime) : "-- --"}</Text>
-        </View>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.selectedDate == props.currentDateStringFormat ? currentMonth : selectedMonth} {props.selectedDate == props.currentDateStringFormat ? currentDate : selectedDate}</Text>
-        </View>
-      </View>
+  useEffect(() => {
+      copilotEvents.on("stepChange", (step) => {
+        setLastEvent(`stepChange: ${step?.name}`);
+      });
+      copilotEvents.on("start", () => {
+        setLastEvent(`start`);
+      });
+      copilotEvents.on("stop", () => {
+        setLastEvent(`stop`);
+      });
+    }, [copilotEvents]);
 
-      <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5, elevation: 5}}>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'grey',  borderBottomWidth: 0.5}}>
-          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.Work} {props.duration}</Text>
-        </View>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}}>
-          <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.timeStart} - {props.timeEnd}</Text>
-        </View>
-      </View>
-      {/* {infoVisible && (
-        <AngleInfo/>
-      )} */}
-    </View>
+  return (
+      <CopilotStep text="This shows you time for the Subject you tapped on the Watch and what Time it is currently" order={1} name="profileView">
+        <CopilotView style={styles.UpperArea}>
+          <TouchableOpacity style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}} onPress={() => start()}>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 0.5}}>
+              <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.currentDateStringFormat == props.selectedDate ? TwelveHourFormat(currentHourMinTime) : "-- --"}</Text>
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.selectedDate == props.currentDateStringFormat ? currentMonth : selectedMonth} {props.selectedDate == props.currentDateStringFormat ? currentDate : selectedDate}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={{flex: 1, backgroundColor: '#FFFFFF', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 5, borderTopLeftRadius: 5, elevation: 5}}>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'grey',  borderBottomWidth: 0.5}}>
+              <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.Work} {props.duration}</Text>
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}}>
+              <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.timeStart} - {props.timeEnd}</Text>
+            </View>
+          </View>
+        </CopilotView>
+      </CopilotStep>
   )
 });
 
@@ -667,6 +692,7 @@ const Schedule: React.FC = () => {
     const CalenderSheet = useRef<TrueSheet>(null);
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
+    
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
@@ -1419,6 +1445,8 @@ const Schedule: React.FC = () => {
       }
     }, [isConnected])
 
+    
+
     // useEffect(() => {
     //   dispatch(updateLocalStorageInfo("Login"))
     //   console.log("LocalStorageInfo: ", LocalStorageInfo)
@@ -1507,19 +1535,19 @@ const Schedule: React.FC = () => {
               setLoading={setLoading}
               ResButtonTitle={ResButtonTitle}
               PriorSelections={PriorSelections}
-             FixedSelections={FixedSelections}
-             RemovingSelections={RemovingSelections}
-             currentDateStringFormat={currentDateStringFormat}
-            //  handleOutsidePress={handleOutsidePress}
-             rescheduleStatus={rescheduleStatus} 
-            //  DialogBackButton={DialogBackButton} 
-             DialogTitle={DialogTitle} 
-             data={data} 
-             hourRotation={hourRotation} 
-             checked={checked} 
-            //  handleCheckboxChange={handleCheckboxChange} 
-            //  RescheduleButtonClick={RescheduleButtonClick}
-             selectedDate={selectedDate}
+              FixedSelections={FixedSelections}
+              RemovingSelections={RemovingSelections}
+              currentDateStringFormat={currentDateStringFormat}
+              //  handleOutsidePress={handleOutsidePress}
+              rescheduleStatus={rescheduleStatus} 
+              //  DialogBackButton={DialogBackButton} 
+              DialogTitle={DialogTitle} 
+              data={data} 
+              hourRotation={hourRotation} 
+              checked={checked} 
+              //  handleCheckboxChange={handleCheckboxChange} 
+              //  RescheduleButtonClick={RescheduleButtonClick}
+              selectedDate={selectedDate}
             />
 
             <BottomOptionsArea
@@ -1534,7 +1562,10 @@ const Schedule: React.FC = () => {
               navigation={navigation}
               currentDateStringFormat={currentDateStringFormat}
             />
-            {/* <Taskbar activeState='Schedule'/> */}
+
+            {/* <TouchableOpacity onPress={() => setTimeout(() => start(), 50)}>
+              <Text>Click me</Text>
+            </TouchableOpacity> */}
           </View>
         </View>
       {/* </PanGestureHandler>
