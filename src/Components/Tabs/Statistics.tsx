@@ -357,7 +357,7 @@ const Statistics = () => {
   const dispatch = useDispatch();
   const StatToggleSwitch = () => {
     setStatsEnabled(previous => !previous)
-    dispatch(updateLocalStorageInfo(StatsEnabled ? "DisableStats" : "EnableStats"))
+    // dispatch(updateLocalStorageInfo(StatsEnabled ? "DisableStats" : "EnableStats"))
   };
   
   async function ExistingSubjectButton () {

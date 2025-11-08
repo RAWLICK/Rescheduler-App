@@ -24,7 +24,7 @@ const PartneredLibraries = () => {
     const [AllDistributionsInfo, setAllDistributionsInfo] = useState<DistribtionInfoType[]>()
     const [EditableDistributionsInfo, setEditableDistributionsInfo] = useState<DistribtionInfoType[] | undefined>()
     const [DistributionDataToRender, setDistributionDataToRender] = useState<DistribtionInfoType[] | undefined>()
-
+    
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     // console.log(StudentInfoData)
 

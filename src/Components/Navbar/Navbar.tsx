@@ -2,8 +2,6 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react
 import React from 'react'
 import { useState } from 'react'
 import DrawerImage from '../Images/Drawer.png'
-import ThreeDotsImage from '../Images/ThreeDots.png'
-import LinearGradient from 'react-native-linear-gradient';
 import StreakFire from '../Images/StreakFire.png'
 import { useNavigation, NavigationProp, DrawerActions, useNavigationState } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux' 

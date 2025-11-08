@@ -7,6 +7,8 @@ import LeftArrow from '../Images/LeftArrow.png'
 import ScheduleTableIcon from '../Images/ScheduleTable.png'
 import ClipboardIcon from '../Images/Clipboard.png'
 import CalenderIcon from '../Images/Calender.png'
+import DrawerImage from '../Images/Drawer.png'
+import StreakFire from '../Images/StreakFire.png'
 import Doodle from '../Images/Doodle.jpg'
 import Reload from '../Images/Reload.png'
 import 'react-native-gesture-handler'
@@ -56,7 +58,7 @@ import {
   Linking,
   Alert
 } from 'react-native';
-import Navbar from '../Navbar/Navbar';
+// import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
 import CalenderView from '../Screens/CalenderView'
 import TaskCompletionBoard from '../Screens/TaskCompletionBoard';
@@ -74,7 +76,7 @@ import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import { addDays, subDays } from "date-fns";
 import { updateStreakInfo } from '../../app/Slice';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, DrawerActions } from '@react-navigation/native';
 import { registerUserInfo } from '../../app/Slice';
 import { MotiView } from 'moti';
 import {Easing as EasingNode} from 'react-native-reanimated';
@@ -82,7 +84,7 @@ import {persistor} from '../../app/Store';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 const CopilotText = walkthroughable(Text);
 const CopilotView = walkthroughable(View);
-const CopilotImageBackground = walkthroughable(ImageBackground);
+const CopilotTouchableOpacity = walkthroughable(TouchableOpacity);
 
 export interface ApiDataType {
   "Durations": string[];
@@ -151,6 +153,30 @@ type BottomOptionsAreaPropsType = {
   currentDateStringFormat: string
 }
 
+const Navbar = () => {
+  const navigation = useNavigation<CombinedNavigationProp>();
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  return (
+    <View style={styles.mainNav}>
+      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+      onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+      >
+        <Image source={DrawerImage} style={styles.DrawerImage}/>
+      </TouchableOpacity>
+      <View style={{flex: 4, flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={{color: '#6A1293', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20}}>Re</Text>
+        <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20, color: '#FFFFFF'}}>scheduler</Text>
+      </View>
+      <CopilotStep text="Build your Streak by adding how much time you study each subject every day" order={7} name="StreakView">
+        <CopilotView style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginRight: 10}}>
+          <Image source={StreakFire} style={styles.ThreeDotsImage}/>
+          <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', fontSize: 20, color: '#6A1293'}}>{StudentInfoData["Streak"]}</Text>
+        </CopilotView>
+      </CopilotStep>
+    </View>
+  )
+}
+
 const Clock = React.memo(() => {
   // console.log("Clock is made run")
   const [time, setTime] = useState(new Date())
@@ -174,20 +200,19 @@ const Clock = React.memo(() => {
   const sRotation = 6 * sTime;
 
   return (
-    <CopilotStep text="This Clock shows you, your subjects in a time-based pie chart like a sectograph" order={2} name="profileView">
-      <CopilotImageBackground source={ClockImage}  style={styles.Clock}>
-        <View style={[styles.hour, { transform: [{ rotate: `${hRotation}deg` }] }]}></View>
-        <View style={[styles.minute, { transform: [{ rotate: `${mRotation}deg` }] }]}></View>
-        <View style={[styles.second, { transform: [{ rotate: `${sRotation}deg` }] }]}></View>
-      </CopilotImageBackground>
-    </CopilotStep>
+    <CopilotStep text="This Clock shows how your subjects fit into your day, like parts of a Pie Chart" order={1} name="ClockView">
+      <CopilotView style={{position: 'absolute'}}>
+        <ImageBackground source={ClockImage}  style={styles.Clock}>
+          <View style={[styles.hour, { transform: [{ rotate: `${hRotation}deg` }] }]}></View>
+          <View style={[styles.minute, { transform: [{ rotate: `${mRotation}deg` }] }]}></View>
+          <View style={[styles.second, { transform: [{ rotate: `${sRotation}deg` }] }]}></View>
+        </ImageBackground>
+      </CopilotView>
+     </CopilotStep>
   );
 });
 
 const UpperArea = React.memo((props: UpperAreaPropsType) => {
-  const { start, copilotEvents } = useCopilot();
-    const [secondStepActive, setSecondStepActive] = useState(true);
-    const [lastEvent, setLastEvent] = useState<string | null>(null);
   console.log("Upper Area is made ran")
   const currentHourMinTime = `${props.currentHourTime.toString().padStart(2, '0')}:${props.currentMinTime.toString().padStart(2, '0')}`
   const stringToMonthConverter = (currentMonth: number) => {
@@ -243,22 +268,10 @@ const UpperArea = React.memo((props: UpperAreaPropsType) => {
     }
   }
 
-  useEffect(() => {
-      copilotEvents.on("stepChange", (step) => {
-        setLastEvent(`stepChange: ${step?.name}`);
-      });
-      copilotEvents.on("start", () => {
-        setLastEvent(`start`);
-      });
-      copilotEvents.on("stop", () => {
-        setLastEvent(`stop`);
-      });
-    }, [copilotEvents]);
-
   return (
-      <CopilotStep text="This shows you time for the Subject you tapped on the Watch and what Time it is currently" order={1} name="profileView">
+      <CopilotStep text="When you tap a Subject on the Clock, this shows its Time along with current time" order={2} name="AnalogTimeView">
         <CopilotView style={styles.UpperArea}>
-          <TouchableOpacity style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}} onPress={() => start()}>
+          <TouchableOpacity style={{flex: 0.5, backgroundColor: '#FFFFFF', marginBottom: 3, flexDirection: 'row', borderTopLeftRadius: 15, borderTopRightRadius: 15, borderBottomRightRadius: 5, borderBottomLeftRadius: 5, elevation: 5}}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 0.5}}>
               <Text style={{color: 'black', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>{props.currentDateStringFormat == props.selectedDate ? TwelveHourFormat(currentHourMinTime) : "-- --"}</Text>
             </View>
@@ -282,6 +295,7 @@ const UpperArea = React.memo((props: UpperAreaPropsType) => {
 
 const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) => {
   // console.log("Reschedule Button Area is made ran");
+  const dispatch = useDispatch();
   const [toggle, setToggle] = useState(false);
 
   const DisplayingSubjects = props.data['StartAngle']
@@ -395,6 +409,7 @@ const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) =
       // Changing to PriorStage
       if (props.rescheduleStatus === 'off') {
         props.setRescheduleStatus('PriorStage')
+        // dispatch(updateLocalStorageInfo("Login")); 
         props.setSelectedDate(props.currentDateStringFormat);
         props.roughRescheduleStatus.current = 'PriorStage';
       }
@@ -453,100 +468,102 @@ const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) =
   }, []);
 
   return (
-    <View style={[styles.LowerArea]}>
-      <View style={{justifyContent: 'center', alignItems: 'center'}}>
-        {[...Array(2).keys()].map((index) => {
-          return (
-            // Don't Know how MotiView is working in iOS because it's package is not showing in Podfile.lock
-          <MotiView
-            key={`${index}-${toggle}`}
-            style={[styles.RescheduleButton, { position: 'absolute', width: 280, height: 40}]}
-            from={{
-              opacity: 0.5,
-              scaleX: 1,
-              scaleY: 1
-            }}
-            animate={{ opacity: 0, scaleX: 1.15, scaleY: 1.5 }}
-            transition={{
-              type: 'timing',
-              duration: 1500,
-              easing: EasingNode.out(EasingNode.ease),
-              delay: index * 700,
-              repeatReverse: false,
-              loop: true
-            }}
-          />
-        )})}
-      
-        <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
-          <Text style={[{fontFamily: Platform.OS == 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg', fontSize: 23, color: 'white'}]}>{props.ResButtonTitle}</Text>
-        </TouchableOpacity>
-      </View>
-      <Modal transparent= {true} visible={props.rescheduleStatus !== 'off' && props.rescheduleStatus !== 'rescheduled'} animationType='fade'>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <BlurView
-          style={styles.blurStyle}
-          blurType="light"
-          blurAmount={10}
-        />
-        <View style={[styles.selectionDialogBox]}>
+    <CopilotStep text="Smart Compress plans your day for you. Select what's left to do and what can't change, and it'll adjust the rest to make your schedule fit the remaining time" order={6} name="RescheduleButtonView">
+      <CopilotView style={[styles.LowerArea]}>
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          {[...Array(2).keys()].map((index) => {
+            return (
+              // Don't Know how MotiView is working in iOS because it's package is not showing in Podfile.lock
+            <MotiView
+              key={`${index}-${toggle}`}
+              style={[styles.RescheduleButton, { position: 'absolute', width: 280, height: 40}]}
+              from={{
+                opacity: 0.5,
+                scaleX: 1,
+                scaleY: 1
+              }}
+              animate={{ opacity: 0, scaleX: 1.15, scaleY: 1.5 }}
+              transition={{
+                type: 'timing',
+                duration: 1500,
+                easing: EasingNode.out(EasingNode.ease),
+                delay: index * 700,
+                repeatReverse: false,
+                loop: true
+              }}
+            />
+          )})}
+        
+          <TouchableOpacity style={[styles.RescheduleButton]} onPress={() => RescheduleButtonClick()}>
+            <Text style={[{fontFamily: Platform.OS == 'ios' ? 'CoolveticaRg-Regular' : 'coolvetica rg', fontSize: 23, color: 'white'}]}>{props.ResButtonTitle}</Text>
+          </TouchableOpacity>
+        </View>
+        <Modal transparent= {true} visible={props.rescheduleStatus !== 'off' && props.rescheduleStatus !== 'rescheduled'} animationType='fade'>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <BlurView
-          style={styles.blurStyle}
-          blurType="dark"
-          blurAmount={50}
-          // reducedTransparencyFallbackColor="black"
+            style={styles.blurStyle}
+            blurType="light"
+            blurAmount={10}
           />
-        <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
-          <TouchableOpacity onPress={DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Image source={LeftArrow} style={{height: 17, width: 17}}/>
-          </TouchableOpacity>
-          <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>{props.DialogTitle}</Text>
-          </View>
-          <View style={{flex: 1}}></View>
-        </View>
-        <View style={{flex: 5, paddingLeft: DisplayingSubjects.length === 0 ? 0 : 20, paddingBottom: DisplayingSubjects.length === 0 ? 0 : 5}}>
-          {DisplayingSubjects.length === 0 ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={{ color: 'white', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold'}}>
-                No work left for this Section
-              </Text>
+          <View style={[styles.selectionDialogBox]}>
+          <BlurView
+            style={styles.blurStyle}
+            blurType="dark"
+            blurAmount={50}
+            // reducedTransparencyFallbackColor="black"
+            />
+          <View style={{flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderColor: 'grey'}}>
+            <TouchableOpacity onPress={DialogBackButton} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Image source={LeftArrow} style={{height: 17, width: 17}}/>
+            </TouchableOpacity>
+            <View style={{flex: 8, borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{fontSize: 15, fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#fff'}}>{props.DialogTitle}</Text>
             </View>
-          ) : (
-          <ScrollView>
-          {DisplayingSubjects.map(({index, newIndex}) => {
-            return(
-              <View style={{margin: 5}} key={index}>
-                <BouncyCheckbox
-                  size={25}
-                  isChecked={false}
-                  fillColor="#2173BD"
-                  text={String(props.data['Work'][index])}
-                  iconStyle={{ borderColor: "red" }}
-                  innerIconStyle={{ borderWidth: 2 }}
-                  textStyle={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', color: '#fff', textDecorationLine: 'none' }}
-                  onPress={(isChecked: boolean) => handleCheckboxChange(newIndex, isChecked)}
-                />
+            <View style={{flex: 1}}></View>
+          </View>
+          <View style={{flex: 5, paddingLeft: DisplayingSubjects.length === 0 ? 0 : 20, paddingBottom: DisplayingSubjects.length === 0 ? 0 : 5}}>
+            {DisplayingSubjects.length === 0 ? (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color: 'white', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold'}}>
+                  No work left for this Section
+                </Text>
               </View>
-            )})}
-            </ScrollView>
-          )}
+            ) : (
+            <ScrollView>
+            {DisplayingSubjects.map(({index, newIndex}) => {
+              return(
+                <View style={{margin: 5}} key={index}>
+                  <BouncyCheckbox
+                    size={25}
+                    isChecked={false}
+                    fillColor="#2173BD"
+                    text={String(props.data['Work'][index])}
+                    iconStyle={{ borderColor: "red" }}
+                    innerIconStyle={{ borderWidth: 2 }}
+                    textStyle={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', color: '#fff', textDecorationLine: 'none' }}
+                    onPress={(isChecked: boolean) => handleCheckboxChange(newIndex, isChecked)}
+                  />
+                </View>
+              )})}
+              </ScrollView>
+            )}
+            </View>
+            {props.Loading ? (
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
+                <ActivityIndicator size="small" color="#ffffff" />
+              </View>
+            ) : (
+            <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}} onPress={() => RescheduleButtonClick()}>
+              <View>
+                <Text style={{color: '#457fdf', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
+              </View>
+            </TouchableOpacity>
+            )}
           </View>
-          {props.Loading ? (
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}}>
-              <ActivityIndicator size="small" color="#ffffff" />
-            </View>
-          ) : (
-          <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1, borderColor: 'grey'}} onPress={() => RescheduleButtonClick()}>
-            <View>
-              <Text style={{color: '#457fdf', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17}}>Next</Text>
-            </View>
-          </TouchableOpacity>
-          )}
         </View>
-      </View>
-    </Modal>
-    </View>
+      </Modal>
+      </CopilotView>
+    </CopilotStep>
   )
 });
 
@@ -554,7 +571,7 @@ const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
   console.log("BottomOptionsArea is made ran");
   function ClickingAddTiming() {
     if (props.rescheduleStatus === 'rescheduled') {
-      Alert.alert('You have Rescheduled', 'Please click on "Back To Normal" to come back and add new timings of subjects')
+      Alert.alert('You have used Smart Compress', 'Please click on "Back To Normal" to come back and add new timings of subjects')
     }
     else {
       props.navigation.navigate('StackScreens', {screen: 'AddTimingStack'});
@@ -564,18 +581,21 @@ const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
   function ClickingCalender() {
     console.log("Clicking Calender got run")
     if (props.rescheduleStatus === 'rescheduled') {
-      Alert.alert('You have Rescheduled', 'Please click on "Back To Normal" to come back and select date from Calender')
+      Alert.alert('You have used Smart Compress', 'Please click on "Back To Normal" to come back and select date from Calender')
     }
     else {
       props.CalenderButton();
     }
   }
   return (
+    
     <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',marginRight: 60, marginLeft: 60}}>
       <View style={{backgroundColor: '#BFB8E9', flexDirection: 'row', paddingTop: 8, paddingBottom: 8, borderRadius: 10, elevation: 5}}>
-        <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={props.ScheduleTableButton}>
-          <Image source={ClipboardIcon} style={{width: 35, height: 35}}/>
-        </TouchableOpacity>
+        <CopilotStep text="Here you can see your schedule listed by time — like how you plan it on paper" order={3} name="ScheduleTableView">
+          <CopilotTouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={props.ScheduleTableButton}>
+            <Image source={ClipboardIcon} style={{width: 35, height: 35}}/>
+          </CopilotTouchableOpacity>
+        </CopilotStep>
         <TrueSheet
           ref={props.ScheduleTableSheet}
           sizes={['auto', 'large']}
@@ -587,13 +607,14 @@ const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
           selectedDate={props.selectedDate}
           />
         </TrueSheet>
-
-        <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={ClickingCalender}>
-          {(props.currentDateStringFormat != props.selectedDate) &&
-            <View style={{backgroundColor: 'red', borderRadius: 20, height: 8, width: 8, marginLeft: 40}}></View>
-          }
-          <Image source={CalenderIcon} style={{width: 29, height: 29}}/>
-        </TouchableOpacity>
+        <CopilotStep text="This lets you pick a date to see or plan your Schedule for that Day" order={4} name="CalenderView">
+          <CopilotTouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={ClickingCalender}>
+            {(props.currentDateStringFormat != props.selectedDate) &&
+              <View style={{backgroundColor: 'red', borderRadius: 20, height: 8, width: 8, marginLeft: 40}}></View>
+            }
+            <Image source={CalenderIcon} style={{width: 29, height: 29}}/>
+          </CopilotTouchableOpacity>
+        </CopilotStep>
         <TrueSheet
         ref={props.CalenderSheet}
         sizes={['auto', 'large']}
@@ -604,13 +625,14 @@ const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
            setSelectedDate={props.setSelectedDate}
           />
         </TrueSheet>
-
-        <TouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
-        onPress={ClickingAddTiming}>
-          <View style={{}}>
-            <Image style={styles.AddIcon} source={AddIcon}/>
-          </View>
-        </TouchableOpacity>
+        <CopilotStep text="This lets you Add a new timing for a Subject" order={5} name="AddTimingView">
+          <CopilotTouchableOpacity style={[{ flex: 1, justifyContent: 'center', alignItems: 'center'}]} 
+          onPress={ClickingAddTiming}>
+            <View style={{}}>
+              <Image style={styles.AddIcon} source={AddIcon}/>
+            </View>
+          </CopilotTouchableOpacity>
+        </CopilotStep>
       </View>
     </View>
   )
@@ -692,6 +714,9 @@ const Schedule: React.FC = () => {
     const CalenderSheet = useRef<TrueSheet>(null);
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
+    const { start, copilotEvents } = useCopilot();
+    const [secondStepActive, setSecondStepActive] = useState(true);
+    const [lastEvent, setLastEvent] = useState<string | null>(null);
     
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
@@ -1445,8 +1470,18 @@ const Schedule: React.FC = () => {
       }
     }, [isConnected])
 
+    useEffect(() => {
+      copilotEvents.on("stepChange", (step) => {
+        setLastEvent(`stepChange: ${step?.name}`);
+      });
+      copilotEvents.on("start", () => {
+        setLastEvent(`start`);
+      });
+      copilotEvents.on("stop", () => {
+        setLastEvent(`stop`);
+      });
+    }, [copilotEvents]);
     
-
     // useEffect(() => {
     //   dispatch(updateLocalStorageInfo("Login"))
     //   console.log("LocalStorageInfo: ", LocalStorageInfo)
@@ -1563,9 +1598,9 @@ const Schedule: React.FC = () => {
               currentDateStringFormat={currentDateStringFormat}
             />
 
-            {/* <TouchableOpacity onPress={() => setTimeout(() => start(), 50)}>
+            <TouchableOpacity onPress={() => start()}>
               <Text>Click me</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
         </View>
       {/* </PanGestureHandler>
@@ -1591,6 +1626,22 @@ const Schedule: React.FC = () => {
       flexDirection: 'column',
       backgroundColor: '#D2CFE4'
     },
+
+    mainNav: {
+      flexDirection: 'row',
+      // backgroundColor: '#BD54EE',
+      height: 55
+    },
+
+    DrawerImage: {
+      height: 30,
+      width: 30
+    }, 
+
+    ThreeDotsImage: {
+      height: 40,
+      width: 40
+    },
   
     UpperArea: {
       flex: 0.7,
@@ -1598,7 +1649,7 @@ const Schedule: React.FC = () => {
       justifyContent: 'center',
       paddingLeft: 15,
       paddingRight: 15,
-      paddingBottom: 5
+      paddingBottom: 5,
     },
   
     angleInfo: {
@@ -1675,11 +1726,11 @@ const Schedule: React.FC = () => {
     Clock: {
       height: 350, 
       width: 350, 
-      position: 'absolute', 
+      // position: 'absolute', 
       justifyContent: 'center', 
       alignItems: 'center',
       pointerEvents: 'none',
-      zIndex: 1
+      zIndex: 1,
     },
   
     hour: {
@@ -1744,7 +1795,7 @@ const Schedule: React.FC = () => {
       justifyContent: 'center',
       alignItems: 'center',
       alignSelf: 'center',
-      zIndex: 0
+      zIndex: -1
     },
 
     selectionDialogBox: {
