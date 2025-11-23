@@ -247,8 +247,8 @@ function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <NativeStack.Navigator initialRouteName={LocalStorageInfo["IsLoggedIn"]? "DrawerScreens": "StackScreens"}>
-      {/* <NativeStack.Navigator initialRouteName={"StackScreens"}> */}
+      {/* <NativeStack.Navigator initialRouteName={LocalStorageInfo["IsLoggedIn"]? "DrawerScreens": "StackScreens"}> */}
+      <NativeStack.Navigator initialRouteName={"DrawerScreens"}>
         <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
         <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
       </NativeStack.Navigator>

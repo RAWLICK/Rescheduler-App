@@ -1,6 +1,5 @@
 import React, { useEffect, memo } from 'react'
 import { useState, useRef, useCallback } from 'react'
-import Navbar from '../Navbar/Navbar'
 import { BarChart } from 'react-native-chart-kit'
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 import WeeklyBarChart from '../../Functions/Animated-Bar-Chart/WeeklyBarChart'
@@ -31,6 +30,12 @@ import {
   KeyboardAvoidingView,
   Switch
 } from 'react-native';
+import {
+  CopilotProvider,
+  CopilotStep,
+  walkthroughable,
+  useCopilot
+} from "react-native-copilot";
 import { updateLocalStorageInfo } from '../../app/Slice';
 import { useDispatch } from 'react-redux';
 import { startOfWeek, startOfMonth, endOfWeek, endOfMonth, eachDayOfInterval, subWeeks, addDays, addWeeks, addMonths, subMonths, getMonth, getYear } from 'date-fns';
@@ -40,6 +45,9 @@ import { RootState } from '../../app/Store';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import AddingSubjects from '../Screens/AddingSubjects'
 import { ExistingSubjectsArrayItem } from '../../app/Slice';
+const CopilotView = walkthroughable(View);
+const CopilotTouchableOpacity = walkthroughable(TouchableOpacity);
+
 // import { SafeAreaView } from 'react-native-safe-area-context';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -353,8 +361,11 @@ const Statistics = () => {
   const ExistingSubjectSheet = useRef<TrueSheet>(null);
   const [MonthBoxPos, setMonthBoxPos] = useState('up')
   const [FakeWork, setFakeWork] = useState('FakeWork')
-  const [StatsEnabled, setStatsEnabled] = useState(false)
+  const [StatsEnabled, setStatsEnabled] = useState(true)
   const dispatch = useDispatch();
+  const { start, copilotEvents } = useCopilot();
+  const [lastEvent, setLastEvent] = useState<string | null>(null);
+  
   const StatToggleSwitch = () => {
     setStatsEnabled(previous => !previous)
     // dispatch(updateLocalStorageInfo(StatsEnabled ? "DisableStats" : "EnableStats"))
@@ -520,6 +531,18 @@ const Statistics = () => {
     scrollingCondition();
   }, [currentDay])
 
+  useEffect(() => {
+    copilotEvents.on("stepChange", (step) => {
+      setLastEvent(`stepChange: ${step?.name}`);
+    });
+    copilotEvents.on("start", () => {
+      setLastEvent(`start`);
+    });
+    copilotEvents.on("stop", () => {
+      setLastEvent(`stop`);
+    });
+  }, [copilotEvents]);
+
   // useFocusEffect(
   //   useCallback(() => {
   //     if (Platform.OS === 'android') {
@@ -586,11 +609,13 @@ const Statistics = () => {
               selectedWeekEnd={selectedWeekEnd}
             />
           </View>
-          <TouchableOpacity onPress={ExistingSubjectButton} style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: 5}}>
-            <Image source={AddTwo} style={{height: 20, width: 20}}/>
-            <Text style={{color: 'white', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Add Subjects in Stats</Text>
-          </TouchableOpacity>
-
+          {/* <CopilotStep text="This is " order={1} name="AddStatSubjectButton"> */}
+            <TouchableOpacity onPress={ExistingSubjectButton} style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: 5}}>
+              <Image source={AddTwo} style={{height: 20, width: 20}}/>
+              <Text style={{color: 'white', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Add Subjects in Stats</Text>
+            </TouchableOpacity>
+          {/* </CopilotStep> */}
+          
           <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }} onPress={() => setWeeklyAnalyticsStatus(true)}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
               <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Week Analytics</Text>

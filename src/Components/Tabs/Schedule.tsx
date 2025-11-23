@@ -82,7 +82,6 @@ import { MotiView } from 'moti';
 import {Easing as EasingNode} from 'react-native-reanimated';
 import {persistor} from '../../app/Store';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
-const CopilotText = walkthroughable(Text);
 const CopilotView = walkthroughable(View);
 const CopilotTouchableOpacity = walkthroughable(TouchableOpacity);
 
@@ -714,8 +713,7 @@ const Schedule: React.FC = () => {
     const CalenderSheet = useRef<TrueSheet>(null);
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
-    const { start, copilotEvents } = useCopilot();
-    const [secondStepActive, setSecondStepActive] = useState(true);
+    const { start, copilotEvents } = useCopilot();  // start is ran using onLayout in main View
     const [lastEvent, setLastEvent] = useState<string | null>(null);
     
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
@@ -735,7 +733,7 @@ const Schedule: React.FC = () => {
       "StartAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.StartAngle),
       "EndAngle": ScheduleArray.map((item: ScheduleArrayItem) => item.EndAngle),
       "TaskDate": ScheduleArray.map((item: ScheduleArrayItem) => item.TaskDate),
-      "Slice_Color": ScheduleArray.map((item: ScheduleArrayItem) => item.Slice_Color),
+      "Slice_Color": ScheduleArray.map((item: ScheduleArrayItem) => item.Slice_Color)
     }), [ScheduleArray])
     
     const [ApiData, setApiData] = useState<ApiDataType>({} as ApiDataType)
@@ -1479,6 +1477,8 @@ const Schedule: React.FC = () => {
       });
       copilotEvents.on("stop", () => {
         setLastEvent(`stop`);
+        dispatch(updateLocalStorageInfo("Schedule_Walkthrough_Completed"))
+        console.log("Steps Completed")
       });
     }, [copilotEvents]);
     
@@ -1510,7 +1510,7 @@ const Schedule: React.FC = () => {
         };
       }, [])
     );
-
+    
     return (
       <>
       <View style={styles.safeView}>
@@ -1522,7 +1522,12 @@ const Schedule: React.FC = () => {
         barStyle="dark-content"
       />
       {/* #BD54EE, 6c099b */}
-        <View style={styles.mainStyle}>
+        <View style={styles.mainStyle} 
+              onLayout={() => {
+                if (LocalStorageInfo["Schedule_Walkthrough_Completed"] == false) {
+                  start(); 
+                } 
+                }}>
           <LinearGradient
             // x = 0 is the left edge of the component.
             // x = 1 is the right edge of the component.
@@ -1597,10 +1602,6 @@ const Schedule: React.FC = () => {
               navigation={navigation}
               currentDateStringFormat={currentDateStringFormat}
             />
-
-            <TouchableOpacity onPress={() => start()}>
-              <Text>Click me</Text>
-            </TouchableOpacity>
           </View>
         </View>
       {/* </PanGestureHandler>
