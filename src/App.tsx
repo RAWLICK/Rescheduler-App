@@ -95,10 +95,10 @@ export type CombinedNavigationProp =
         CompositeNavigationProp<
         MaterialTopTabNavigationProp<TopTabParamList>,
         StackNavigationProp<StackParamList>
-      > 
-    >   
-  >
->;
+        > 
+      >   
+    >
+  >;
 
 export type CombinedRouteProp = RouteProp<StackParamList, keyof StackParamList> | RouteProp<DrawerParamList, keyof DrawerParamList> | RouteProp<TabParamList, keyof TabParamList> | RouteProp<NativeStackParamList, keyof NativeStackParamList>
 
@@ -109,9 +109,10 @@ function App(): React.JSX.Element {
   const NativeStack = createNativeStackNavigator<NativeStackParamList>();
   const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
 
-  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-  const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
-  const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
+  // const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  // const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
+  // const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
+  // const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
 
   function TrialValidity() {
     // const currentDate = new Date();
@@ -159,8 +160,8 @@ function App(): React.JSX.Element {
 
   function StackScreen() {
     return (
-      <Stack.Navigator initialRouteName={LocalStorageInfo["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
-      {/* // <Stack.Navigator initialRouteName={"TaskCompletionBoardStack"}> */}
+      // <Stack.Navigator initialRouteName={LocalStorageInfo["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
+      <Stack.Navigator initialRouteName={"TaskCompletionBoardStack"}>
         <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false}}/>
         <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -174,7 +175,8 @@ function App(): React.JSX.Element {
 
   function DrawerNav() {
     return (
-    <Drawer.Navigator initialRouteName={TrialValidity() == false? "SubscriptionDrawer" : "TabsDrawer"}
+    // <Drawer.Navigator initialRouteName={TrialValidity() == false? "SubscriptionDrawer" : "TabsDrawer"}
+    <Drawer.Navigator initialRouteName={"TabsDrawer"}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
       drawerStyle: {
@@ -194,12 +196,12 @@ function App(): React.JSX.Element {
       {/* <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/> */}
       <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
       <Drawer.Screen name="SubscriptionDrawer" component={Subscription} options={{ headerShown: false, title: "Subscription"}}/>
-      { (StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&
+      {/* { (StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&
       <Drawer.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
       }
       { StudentInfoData?.["Type of Account"] == "Admin" &&
       <Drawer.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
-      }
+      } */}
     </Drawer.Navigator>
     )
   }

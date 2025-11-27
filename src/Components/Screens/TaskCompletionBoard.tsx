@@ -51,61 +51,61 @@ type PercentageArrayType = {
     }
 }
 
-// type TaskCompletionPopUpPropsType = {
-//   popUpIsVisible: boolean
-//   setPopUpIsVisible: SetState<boolean>
-//   NextPopUpClick: () => void
-//   PercentageArray: PercentageArrayType[]
-// }
+type TaskCompletionPopUpPropsType = {
+  popUpIsVisible: boolean
+  setPopUpIsVisible: SetState<boolean>
+  NextPopUpClick: () => void
+  PercentageArray: PercentageArrayType[]
+}
 
-// export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
-//   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-//   const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
+export const TaskCompletionPopUp = (props: TaskCompletionPopUpPropsType) => {
+  const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+  const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState);
   
-//   return (
-//     <Modal visible={props.popUpIsVisible} animationType='fade' transparent= {true}>
-//         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-//         <BlurView
-//           style={styles.blurStyle}
-//           blurType="light"
-//           blurAmount={10}
-//           reducedTransparencyFallbackColor="light"
-//         />
-//             <View style={{height: height * 0.17, width: width * 0.8, borderRadius: 15, overflow: 'hidden', borderWidth: 1, borderColor: 'grey', padding: 10}}>
-//             <BlurView
-//               style={styles.blurStyle}
-//               blurType="dark"
-//               blurAmount={50}
-//               reducedTransparencyFallbackColor="black"
-//             />
-//               <View style={{flex:1, rowGap: 10}}>
-//                 <LinearGradient colors={['#f3b607', '#cdd309']} style={{flex: 5, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 10}}>
-//                   <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of {StudentInfoData.Streak} </Text>
-//                   <LottieView source={AnimatedFire} autoPlay loop style={styles.lottie}></LottieView>
-//                 </LinearGradient>
-//                 <View style={{flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-//                     <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
-//                     <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}> By registering {props.PercentageArray.length}/{ExistingSubjectsArray.length} works </Text>
-//                     <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
-//                 </View>
-//                 <TouchableOpacity style={{flex: 3, justifyContent: 'center', alignItems: 'center', backgroundColor: '#457fdf', borderRadius: 10}} onPress={props.NextPopUpClick}>
-//                     <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>Next</Text>
-//                 </TouchableOpacity>
-//               </View>
-//             </View>
-//         </View>
-//     </Modal>
-//   )
-// }
+  return (
+    <Modal visible={props.popUpIsVisible} animationType='fade' transparent= {true}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <BlurView
+          style={styles.blurStyle}
+          blurType="light"
+          blurAmount={10}
+          reducedTransparencyFallbackColor="light"
+        />
+            <View style={{height: height * 0.17, width: width * 0.8, borderRadius: 15, overflow: 'hidden', borderWidth: 1, borderColor: 'grey', padding: 10}}>
+            <BlurView
+              style={styles.blurStyle}
+              blurType="dark"
+              blurAmount={50}
+              reducedTransparencyFallbackColor="black"
+            />
+              <View style={{flex:1, rowGap: 10}}>
+                <LinearGradient colors={['#f3b607', '#cdd309']} style={{flex: 5, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderRadius: 10}}>
+                  <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy', color: '#333333', fontSize: 14}}>You just reached a streak of {StudentInfoData.Streak} </Text>
+                  <LottieView source={AnimatedFire} autoPlay loop style={styles.lottie}></LottieView>
+                </LinearGradient>
+                <View style={{flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+                    <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
+                    <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}> By registering {props.PercentageArray.length}/{ExistingSubjectsArray.length} works </Text>
+                    <LottieView source={ConfettiAnimation} autoPlay loop style={styles.confettiLottie}></LottieView>
+                </View>
+                <TouchableOpacity style={{flex: 3, justifyContent: 'center', alignItems: 'center', backgroundColor: '#457fdf', borderRadius: 10}} onPress={props.NextPopUpClick}>
+                    <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'white'}}>Next</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+        </View>
+    </Modal>
+  )
+}
 
 const TaskCompletionBoard = () => {
   // let currentNumDate = currentDate.getDate().toString().padStart(2, '0');
   // let currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
   // let currentYear = currentDate.getFullYear();
-  // const [currentMin, setCurrentMin] = useState(currentDate.getMinutes());
+  // const [currentMin, setCurrentMin] = useState(new Date().getMinutes());
   // const [boardIsVisible, setBoardIsVisible] = useState(true);
-  // const [popUpIsVisible, setPopUpIsVisible] = useState(false);
-  // const currentDate = new Date();
+  const [popUpIsVisible, setPopUpIsVisible] = useState(false);
+  const currentDate = new Date();
   const dispatch = useDispatch();
   const navigation = useNavigation<CombinedNavigationProp>();
   const [previousDate, setPreviousDate] = useState(subDays(new Date(), 1))
@@ -194,11 +194,11 @@ const TaskCompletionBoard = () => {
   //   });
   // }
 
-  // const NextPopUpClick = () => {
-  //   console.log("Next Button in popup Clicked")
-  //   setPopUpIsVisible(false);
-  //   setPercentageArray([])
-  // }
+  const NextPopUpClick = () => {
+    console.log("Next Button in popup Clicked")
+    setPopUpIsVisible(false);
+    // setPercentageArray([])
+  }
 
   const updatePercentageArray = useCallback((uniqueID: string, percentage: number, Current_Duration: string) => {
     function getTimeByPercentage(timeString: string, percentage: number) {
@@ -275,7 +275,7 @@ const TaskCompletionBoard = () => {
     console.log("Streak Info: ", StudentInfoData)
     dispatch(addExistingSubjectsWorkDoneObject(PercentageArray));
     dispatch(updateStreakInfo("Increase"));
-    // setPopUpIsVisible(true);
+    setPopUpIsVisible(true);
     // onDisplayNotification();
 
     navigation.navigate('DrawerScreens', {
@@ -326,10 +326,6 @@ const TaskCompletionBoard = () => {
     // Clean up the interval on unmount
     return () => clearInterval(intervalId);
   }, []);
-
-  useEffect(() => {
-    console.log("StudentInfo:", StudentInfoData);
-  }, [StudentInfoData])
   
   // useEffect(() => {
   //   console.log("DemoStatus:", DemoStatus.DemoStatus);
@@ -572,14 +568,14 @@ const TaskCompletionBoard = () => {
             </View>
         </View>
       </ImageBackground>
-    {/* {popUpIsVisible && (
+    {popUpIsVisible && (
     <TaskCompletionPopUp
       popUpIsVisible={popUpIsVisible}
       setPopUpIsVisible={setPopUpIsVisible}
       NextPopUpClick={NextPopUpClick}
       PercentageArray={PercentageArray}
      />
-    )} */}
+    )}
     </GestureHandlerRootView>
   )
 }

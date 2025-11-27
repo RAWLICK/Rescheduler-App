@@ -68,7 +68,7 @@ import { combineSlices } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux' 
 import { addScheduleObject, removeScheduleObject,
    updateLocalStorageInfo,
-   DemoUpdateLocalStorageInfo
+  //  DemoUpdateLocalStorageInfo
    } from '../../app/Slice';
 import { RootState } from '../../app/Store';
 import { data } from '../../Functions/Animated-Bar-Chart/constants';
@@ -1300,27 +1300,50 @@ const Schedule: React.FC = () => {
       }
     }
     
-    // useEffect(() => {
-    //   if (TrialValidity() == false) {
-    //       navigation.dispatch(
-    //           CommonActions.reset({
-    //               index: 0,
-    //               routes: [
-    //                   {
-    //                       name: 'DrawerScreens',
-    //                       state: {
-    //                           routes: [
-    //                               {
-    //                                   name: 'SubscriptionDrawer',
-    //                               },
-    //                           ],
-    //                       },
-    //                   },
-    //               ],
-    //           })
-    //       );
-    //   }
-    // }, [])
+    useEffect(() => {
+      if (TrialValidity() == false) {
+          navigation.dispatch(
+              CommonActions.reset({
+                  index: 0,
+                  routes: [
+                      {
+                          name: 'DrawerScreens',
+                          state: {
+                              routes: [
+                                  {
+                                      name: 'SubscriptionDrawer',
+                                  },
+                              ],
+                          },
+                      },
+                  ],
+              })
+          );
+      }
+    }, [])
+
+    useEffect(() => {
+      if (LocalStorageInfo["IsLoggedIn"] == false) {
+        // console.log("Going back to LogIn Screen")
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    {
+                        name: 'StackScreens',
+                        state: {
+                            routes: [
+                                {
+                                    name: 'SignInStack',
+                                },
+                            ],
+                        },
+                    },
+                ],
+            })
+        );
+      }
+    }, [])
 
     useEffect(() => {
       roughRescheduleStatus.current = "off"
@@ -1336,6 +1359,11 @@ const Schedule: React.FC = () => {
       // Clean up the interval on unmount
       return () => clearInterval(intervalId);
     }, []);
+
+    useEffect(() => {
+      checkAppVersion();
+      RegularStudentInfoUpdate();
+    }, [])
     
     useEffect(() => {
       if (rescheduleStatus === 'PriorStage') {
@@ -1350,7 +1378,9 @@ const Schedule: React.FC = () => {
     }, [rescheduleStatus]);
     
     useEffect(() => {
-      IsStatsWorkRegistered()
+      if (LocalStorageInfo["StatsEnabled"] == true) {
+        IsStatsWorkRegistered();
+      }
     }, [previousDay])
     
     useEffect(() => {
@@ -1481,20 +1511,10 @@ const Schedule: React.FC = () => {
         console.log("Steps Completed")
       });
     }, [copilotEvents]);
-    
-    // useEffect(() => {
-    //   dispatch(updateLocalStorageInfo("Login"))
-    //   console.log("LocalStorageInfo: ", LocalStorageInfo)
-    // }, [rescheduleStatus])
 
-    // useEffect(() => {
-    //   checkAppVersion();
-    // }, [])
-
-    // useEffect(() => {
-    //   console.log("DemoNumberHere: ", DemoNumberHere)
-    // }, [DemoNumberHere])
-    
+    useEffect(() => {
+      console.log("Local Storage Info: ", LocalStorageInfo)
+    }, [])
     
     // Drawer and tab navigators are sibling-level navigators in your app architecture. When you switch from one drawer screen to another, you’re not actually unmounting and remounting the tab screen component — you’re just switching the visible screen. That's when you need to use the useFocusEffect to get the things done which are performed by useEffect.
     

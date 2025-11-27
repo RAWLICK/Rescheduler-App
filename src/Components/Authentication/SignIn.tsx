@@ -40,6 +40,7 @@ import { addDays, set, subDays } from "date-fns";
 import { CommonActions } from '@react-navigation/native';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import { nanoid } from "@reduxjs/toolkit";
+import { RootState } from '../../app/Store';
 // import Video from 'react-native-video';
 import ConsitencyVideo from '../Images/Consistensy_Video.mp4'
 const { width, height } = Dimensions.get('window');
@@ -158,6 +159,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
           fetched_StudentInfo = await StudentInfoResponse.json();
           console.log("Fetched StudentInfo: ", fetched_StudentInfo)
           dispatch(registerUserInfo(fetched_StudentInfo))
+          dispatch(updateLocalStorageInfo("Login"))
       } catch (error) {
           console.error('Catch Error: ', error);
           props.setLoading(false)
@@ -1458,8 +1460,8 @@ const SignIn = () => {
   const [IsRegistered, setIsRegistered] = useState("")
   const [Loading, setLoading] = useState(false)
   const [PhoneNumberSelected, setPhoneNumberSelected] = useState(true)
-  // architgupta869@gmail.com
-  // My_Lord;6969
+  const navigation = useNavigation<NavigationProp<any, any>>();
+  const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
   
   function CloseKeyboard() {
     if (PhoneNumText.length === 10) {
@@ -1470,6 +1472,28 @@ const SignIn = () => {
   useEffect(() => {
     CloseKeyboard()
   }, [PhoneNumText])
+
+  useEffect(() => {
+    if (LocalStorageInfo["IsFirstLaunch"] == true) {
+      navigation.dispatch(
+          CommonActions.reset({
+              index: 0,
+              routes: [
+                  {
+                      name: 'StackScreens',
+                      state: {
+                          routes: [
+                              {
+                                  name: 'OnBoardingScreenStack',
+                              },
+                          ],
+                      },
+                  },
+              ],
+          })
+      );
+    }
+  }, [])
   
   return (
     <KeyboardAvoidingView 

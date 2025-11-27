@@ -829,10 +829,6 @@ const AddTiming = () => {
   }, [StartTime, EndTime]);
   
   useEffect(() => {
-    console.log("Color Index: ", colorIndex)
-  }, [colorIndex])
-  
-  useEffect(() => {
       console.log("Is Connected from Settings: ", isConnected)
       if (isConnected == false) {
         Dialog.show({

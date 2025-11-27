@@ -19,7 +19,6 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     const [NameHeading, setNameHeading] = useState("")
     const [SubscriptionHeading, setSubscriptionHeading] = useState("")
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-    console.log(StudentInfoData)
 
     function SubscriptionHeadingDecider() {
         if (StudentInfoData['Subscription Type'] == "Free") {

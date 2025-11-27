@@ -147,7 +147,7 @@ const AdminPanel = () => {
     }
 
     useEffect(() => {
-        console.log("All Branches: ", AllBranchesList);
+        // console.log("All Branches: ", AllBranchesList);
     }, [AllBranchesList])
     
     

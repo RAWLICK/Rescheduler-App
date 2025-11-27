@@ -60,7 +60,7 @@ const initialState = {
     LocalStorageInfoInitialState: {
         "IsLoggedIn": false,
         "IsFirstLaunch": true,
-        "StatsEnabled": true,
+        "StatsEnabled": false,
         "Schedule_Walkthrough_Completed": false,
         "Statistics_Walkthrough_Completed": false
     } as LocalStorageInfoDataType,
@@ -68,10 +68,10 @@ const initialState = {
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
     ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[],
     StudentsDataArrayInitialState: [] as StudentsDataArrayType[],
-    DemoArrayInitialState: {
-        "IsLoggedIn": false,
-        "IsFirstLaunch": true
-    } as LocalStorageInfoDataType,
+    // DemoArrayInitialState: {
+    //     "IsLoggedIn": false,
+    //     "IsFirstLaunch": true
+    // } as LocalStorageInfoDataType,
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -366,23 +366,23 @@ export const StudentsDataArraySlice = createSlice({
     }
 })
 
-export const DemoArraySlice = createSlice({
-    name: 'DemoArray',
-    initialState,
-    reducers: {
-        DemoUpdateLocalStorageInfo: (state, action) => {
-            if (action.payload == "Login") {
-                state.DemoArrayInitialState["IsLoggedIn"] = true
-            }
-            else if (action.payload == "Logout") {
-                state.DemoArrayInitialState["IsLoggedIn"] = false
-            }
-            else if (action.payload == "FirstLaunch") {
-                state.DemoArrayInitialState["IsFirstLaunch"] = false
-            }
-        }
-    }
-})
+// export const DemoArraySlice = createSlice({
+//     name: 'DemoArray',
+//     initialState,
+//     reducers: {
+//         DemoUpdateLocalStorageInfo: (state, action) => {
+//             if (action.payload == "Login") {
+//                 state.DemoArrayInitialState["IsLoggedIn"] = true
+//             }
+//             else if (action.payload == "Logout") {
+//                 state.DemoArrayInitialState["IsLoggedIn"] = false
+//             }
+//             else if (action.payload == "FirstLaunch") {
+//                 state.DemoArrayInitialState["IsFirstLaunch"] = false
+//             }
+//         }
+//     }
+// })
 
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
 export const { updateLocalStorageInfo } = LocalStorageInfoSlice.actions
@@ -391,7 +391,7 @@ export const { addScheduleObject, removeScheduleObject, addWholeScheduleArray } 
 export const { addExistingSubjectsObject, EditExistingSubjectObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, addWholeExistingSubjectsArray } = ExistingSubjectsArraySlice.actions
 export const { addStudentObject, removeStudentObject, addWholeStudentsDataArray } = StudentsDataArraySlice.actions
 // export const { updateDemoStatus } = DemoArraySlice.actions
-export const { DemoUpdateLocalStorageInfo } = DemoArraySlice.actions
+// export const { DemoUpdateLocalStorageInfo } = DemoArraySlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 
@@ -401,7 +401,7 @@ const rootReducer = combineReducers({
     ScheduleArraySliceReducer: ScheduleArraySlice.reducer,
     ExistingSubjectsArraySliceReducer: ExistingSubjectsArraySlice.reducer,
     StudentsDataArraySliceReducer: StudentsDataArraySlice.reducer,
-    DemoArraySliceReducer: DemoArraySlice.reducer,
+    // DemoArraySliceReducer: DemoArraySlice.reducer,
 })
 
 export { rootReducer };

@@ -23,7 +23,6 @@ const Subscription = () => {
   const insets = useSafeAreaInsets();
 
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-  console.log(StudentInfoData)
 
   function TrialValidity() {
     const currentDate = new Date();

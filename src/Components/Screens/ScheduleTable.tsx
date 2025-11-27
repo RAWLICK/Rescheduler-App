@@ -207,7 +207,6 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
     RingAlarm();
   }, [hourRotation, RingAlarmArray])
   
-  
   return (
     <View style={{backgroundColor: '#e7e7e7'}}>
       <View style={styles.HeadingArea}>

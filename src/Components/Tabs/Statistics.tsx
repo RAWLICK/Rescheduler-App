@@ -361,14 +361,14 @@ const Statistics = () => {
   const ExistingSubjectSheet = useRef<TrueSheet>(null);
   const [MonthBoxPos, setMonthBoxPos] = useState('up')
   const [FakeWork, setFakeWork] = useState('FakeWork')
-  const [StatsEnabled, setStatsEnabled] = useState(true)
+  const [StatsEnabled, setStatsEnabled] = useState(false)
   const dispatch = useDispatch();
-  const { start, copilotEvents } = useCopilot();
-  const [lastEvent, setLastEvent] = useState<string | null>(null);
+  // const { start, copilotEvents } = useCopilot();
+  // const [lastEvent, setLastEvent] = useState<string | null>(null);
   
   const StatToggleSwitch = () => {
     setStatsEnabled(previous => !previous)
-    // dispatch(updateLocalStorageInfo(StatsEnabled ? "DisableStats" : "EnableStats"))
+    dispatch(updateLocalStorageInfo(StatsEnabled ? "DisableStats" : "EnableStats"))
   };
   
   async function ExistingSubjectButton () {
@@ -531,17 +531,17 @@ const Statistics = () => {
     scrollingCondition();
   }, [currentDay])
 
-  useEffect(() => {
-    copilotEvents.on("stepChange", (step) => {
-      setLastEvent(`stepChange: ${step?.name}`);
-    });
-    copilotEvents.on("start", () => {
-      setLastEvent(`start`);
-    });
-    copilotEvents.on("stop", () => {
-      setLastEvent(`stop`);
-    });
-  }, [copilotEvents]);
+  // useEffect(() => {
+  //   copilotEvents.on("stepChange", (step) => {
+  //     setLastEvent(`stepChange: ${step?.name}`);
+  //   });
+  //   copilotEvents.on("start", () => {
+  //     setLastEvent(`start`);
+  //   });
+  //   copilotEvents.on("stop", () => {
+  //     setLastEvent(`stop`);
+  //   });
+  // }, [copilotEvents]);
 
   // useFocusEffect(
   //   useCallback(() => {

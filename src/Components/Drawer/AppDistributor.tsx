@@ -346,7 +346,7 @@ const AppDistributor = () => {
 
     useEffect(() => {
       RenderDistributor();
-      console.log("Library Branches Data: ", LibraryBranchesData)
+      // console.log("Library Branches Data: ", LibraryBranchesData)
     }, [StudentInfoData])
     
     useEffect(() => {
@@ -461,7 +461,7 @@ const AppDistributor = () => {
         throw new Error('Failed to download data from the server');
         }
         const fetched_LibraryStudentsResponse = await LibraryStudentsResponse.json();
-        console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
+        // console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
         dispatch(addWholeStudentsDataArray(fetched_LibraryStudentsResponse))
     
       } catch (error) {
