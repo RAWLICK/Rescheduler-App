@@ -24,6 +24,10 @@ target 'Rescheduler' do
 
   # Enable Video Caching
   $RNVideoUseVideoCaching=true
+
+  pod 'react-native-video', :path => '../node_modules/react-native-video', :modular_headers => true
+  pod 'SPTPersistentCache', :modular_headers => true
+  pod 'DVAssetLoaderDelegate', :modular_headers => true
   
   use_react_native!(
     :path => config[:reactNativePath],

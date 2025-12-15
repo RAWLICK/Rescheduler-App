@@ -150,7 +150,6 @@ const AdminPanel = () => {
         // console.log("All Branches: ", AllBranchesList);
     }, [AllBranchesList])
     
-    
     // useFocusEffect(
     //     useCallback(() => {
     //         StatusBar.setBackgroundColor("#d6d3da")
@@ -170,12 +169,16 @@ const AdminPanel = () => {
                     <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
                         <TouchableOpacity
                             onPress={() =>
+                            // navigation.navigate('DrawerScreens', {
+                            //     screen: 'TabsDrawer',
+                            //     params: {
+                            //     screen: 'ScheduleTab',
+                            //     params: undefined
+                            //     },
+                            // })
                             navigation.navigate('DrawerScreens', {
-                                screen: 'TabsDrawer',
-                                params: {
-                                screen: 'ScheduleTab',
+                                screen: 'SubscriptionDrawer',
                                 params: undefined
-                                },
                             })
                             }
                             style={styles.BackButtonBox}>

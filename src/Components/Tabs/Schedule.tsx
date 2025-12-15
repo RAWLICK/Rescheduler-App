@@ -80,8 +80,12 @@ import { CommonActions, DrawerActions } from '@react-navigation/native';
 import { registerUserInfo } from '../../app/Slice';
 import { MotiView } from 'moti';
 import {Easing as EasingNode} from 'react-native-reanimated';
+import Video from 'react-native-video';
 import {persistor} from '../../app/Store';
+import CountdownVideo from '../Images/Countdown.mp4'
+import ConsistencyVideo from '../Images/Consistensy_Video.mp4'
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+const { width, height } = Dimensions.get('window');
 const CopilotView = walkthroughable(View);
 const CopilotTouchableOpacity = walkthroughable(TouchableOpacity);
 
@@ -200,7 +204,7 @@ const Clock = React.memo(() => {
 
   return (
     <CopilotStep text="This Clock shows how your subjects fit into your day, like parts of a Pie Chart" order={1} name="ClockView">
-      <CopilotView style={{position: 'absolute'}}>
+      <CopilotView style={{position: 'absolute', pointerEvents: 'none'}}>
         <ImageBackground source={ClockImage}  style={styles.Clock}>
           <View style={[styles.hour, { transform: [{ rotate: `${hRotation}deg` }] }]}></View>
           <View style={[styles.minute, { transform: [{ rotate: `${mRotation}deg` }] }]}></View>
@@ -637,7 +641,30 @@ const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
   )
 });
 
+const ConceptVideo = () => {
+  const navigation = useNavigation<NavigationProp<any, any>>();
+  const dispatch = useDispatch();
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
+      <Video source={{uri: ConsistencyVideo}}
+          style={styles.VideoStyle}   // ✅ fill screen like reels
+          muted={false}
+          controls={false}    // hide controls for reels effect
+          playWhenInactive={false}
+          playInBackground={false}
+          repeat={false}
+          onEnd={() => dispatch(updateLocalStorageInfo("VideoPlayed"))}
+          onLoad={() => {
+          console.log("Video Loaded!");
+          // onVideoLoaded();      // 👈 signal the parent
+        }}
+      />
+    </View>
+  )
+}
+
 const Schedule: React.FC = () => {
+    // const [VideoPlayed, setVideoPlayed] = useState(false);
     const isConnected = useInternetCheck();
     const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
@@ -1276,14 +1303,15 @@ const Schedule: React.FC = () => {
           })
           
           if (!StudentInfoResponse.ok) {  // Handle HTTP errors
-            throw new Error('Failed to add data to the server');
+            throw new Error('Error in RegularStudentInfoUpdate Response');
           }
           const fetched_StudentInfo = await StudentInfoResponse.json();
+          console.log("Fetched RegularStudentInfoUpdate")
           // console.log("Fetched StudentInfo: ", fetched_StudentInfo)
           dispatch(registerUserInfo(fetched_StudentInfo))
           
       } catch (error) {
-          console.error('Catch Error: ', error);
+          console.error('Catch Error(RegularStudentInfoUpdate): ', error);
       }
     }
 
@@ -1511,10 +1539,6 @@ const Schedule: React.FC = () => {
         console.log("Steps Completed")
       });
     }, [copilotEvents]);
-
-    useEffect(() => {
-      console.log("Local Storage Info: ", LocalStorageInfo)
-    }, [])
     
     // Drawer and tab navigators are sibling-level navigators in your app architecture. When you switch from one drawer screen to another, you’re not actually unmounting and remounting the tab screen component — you’re just switching the visible screen. That's when you need to use the useFocusEffect to get the things done which are performed by useEffect.
     
@@ -1530,6 +1554,10 @@ const Schedule: React.FC = () => {
         };
       }, [])
     );
+
+    useEffect(() => {
+      console.log("Local Storage Info: ", LocalStorageInfo)
+    }, [])
     
     return (
       <>
@@ -1542,10 +1570,16 @@ const Schedule: React.FC = () => {
         barStyle="dark-content"
       />
       {/* #BD54EE, 6c099b */}
+        {LocalStorageInfo["VideoPlayed"] == false && (
+          <ConceptVideo/>
+        )}
+        {LocalStorageInfo["VideoPlayed"] == true && (
         <View style={styles.mainStyle} 
               onLayout={() => {
                 if (LocalStorageInfo["Schedule_Walkthrough_Completed"] == false) {
-                  start(); 
+                  setTimeout(() => {
+                    start(); 
+                  }, 2000);
                 } 
                 }}>
           <LinearGradient
@@ -1624,6 +1658,7 @@ const Schedule: React.FC = () => {
             />
           </View>
         </View>
+        )}
       {/* </PanGestureHandler>
       </GestureHandlerRootView> */}
       </View>
@@ -1632,6 +1667,12 @@ const Schedule: React.FC = () => {
 }
 
   const styles = StyleSheet.create({
+      VideoStyle: {
+      ...StyleSheet.absoluteFillObject, // makes video cover entire screen
+      width: width,
+      height: height
+    },
+
     safeView: {
       flex: 1,
       backgroundColor: 'transparent'

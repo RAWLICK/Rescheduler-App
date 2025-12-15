@@ -7,6 +7,7 @@ export type LocalStorageInfoDataType = {
     "IsLoggedIn": boolean,
     "IsFirstLaunch": boolean,
     "StatsEnabled": boolean,
+    "VideoPlayed": boolean,
     "Schedule_Walkthrough_Completed": boolean,
     "Statistics_Walkthrough_Completed": boolean
 }
@@ -61,6 +62,7 @@ const initialState = {
         "IsLoggedIn": false,
         "IsFirstLaunch": true,
         "StatsEnabled": false,
+        "VideoPlayed": false,
         "Schedule_Walkthrough_Completed": false,
         "Statistics_Walkthrough_Completed": false
     } as LocalStorageInfoDataType,
@@ -68,10 +70,6 @@ const initialState = {
     ScheduleArrayInitialState: [] as ScheduleArrayItem[],
     ExistingSubjectsArrayInitialState: [] as ExistingSubjectsArrayItem[],
     StudentsDataArrayInitialState: [] as StudentsDataArrayType[],
-    // DemoArrayInitialState: {
-    //     "IsLoggedIn": false,
-    //     "IsFirstLaunch": true
-    // } as LocalStorageInfoDataType,
 }
 
 // Slices have name which completely depends on you but keep in mind to make a legitmate name because when you will use redux-toolkit for chrome extension, then this slice name will be the one to be displayed. There will be multiple slices and each slice will have a name, initialState and reducers.
@@ -97,6 +95,9 @@ export const LocalStorageInfoSlice = createSlice({
             }
             else if (action.payload == "FirstLaunch") {
                 state.LocalStorageInfoInitialState["IsFirstLaunch"] = false
+            }
+            else if (action.payload == "VideoPlayed") {
+                state.LocalStorageInfoInitialState["VideoPlayed"] = true
             }
             else if (action.payload == "EnableStats") { 
                 state.LocalStorageInfoInitialState["StatsEnabled"] = true
@@ -390,8 +391,6 @@ export const { registerUserInfo, updateStreakInfo } = StudentInfoSlice.actions
 export const { addScheduleObject, removeScheduleObject, addWholeScheduleArray } = ScheduleArraySlice.actions
 export const { addExistingSubjectsObject, EditExistingSubjectObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, addWholeExistingSubjectsArray } = ExistingSubjectsArraySlice.actions
 export const { addStudentObject, removeStudentObject, addWholeStudentsDataArray } = StudentsDataArraySlice.actions
-// export const { updateDemoStatus } = DemoArraySlice.actions
-// export const { DemoUpdateLocalStorageInfo } = DemoArraySlice.actions
 
 // Exporting reducers like this so that Store can have access to it because store also restricts access to the places from where the state could be updated.
 
@@ -400,8 +399,7 @@ const rootReducer = combineReducers({
     StudentInfoSliceReducer: StudentInfoSlice.reducer,
     ScheduleArraySliceReducer: ScheduleArraySlice.reducer,
     ExistingSubjectsArraySliceReducer: ExistingSubjectsArraySlice.reducer,
-    StudentsDataArraySliceReducer: StudentsDataArraySlice.reducer,
-    // DemoArraySliceReducer: DemoArraySlice.reducer,
+    StudentsDataArraySliceReducer: StudentsDataArraySlice.reducer
 })
 
 export { rootReducer };

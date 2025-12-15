@@ -567,7 +567,7 @@ const Statistics = () => {
         <View style={{paddingLeft: 10, paddingRight: 10, height: 80, marginBottom: 5}}>
           <View style={{borderRadius: 20, flex: 1, flexDirection: 'row', borderColor: '#837DA8', borderWidth: 1, borderBottomWidth: 5}}>
             <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 15}}>
-              <Text style={{fontFamily: 'sf-pro-display-medium'}}>Ask Daily Work Done Report to Access Statistics and Gain Streak</Text>
+              <Text style={{fontFamily: 'sf-pro-display-medium', color: 'black'}}>Ask Daily Work Done Report to Access Statistics and Gain Streak</Text>
             </View>
             <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-end', paddingRight: 15}}>
               <Switch
@@ -610,13 +610,13 @@ const Statistics = () => {
             />
           </View>
           {/* <CopilotStep text="This is " order={1} name="AddStatSubjectButton"> */}
-            <TouchableOpacity onPress={ExistingSubjectButton} style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: 5}}>
+            <TouchableOpacity onPress={ExistingSubjectButton} style={{height: 40, backgroundColor: '#457fdf', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 10, elevation: StatsEnabled ? 5 : 0}}>
               <Image source={AddTwo} style={{height: 20, width: 20}}/>
               <Text style={{color: 'white', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Add Subjects in Stats</Text>
             </TouchableOpacity>
           {/* </CopilotStep> */}
           
-          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }} onPress={() => setWeeklyAnalyticsStatus(true)}>
+          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: StatsEnabled ? 5 : 0 }} onPress={() => setWeeklyAnalyticsStatus(true)}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
               <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Week Analytics</Text>
             </View>
@@ -691,7 +691,7 @@ const Statistics = () => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: 5 }} onPress={() => setMonthlyAnalyticsStatus(true)}>
+          <TouchableOpacity style={{ height: 40, backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', paddingLeft: 20, paddingRight: 20, elevation: StatsEnabled ? 5 : 0 }} onPress={() => setMonthlyAnalyticsStatus(true)}>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
               <Text style={{color: '#000000', fontFamily: 'sf-pro-display-medium', fontSize: 15}}>Month Analytics</Text>
             </View>

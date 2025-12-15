@@ -32,12 +32,24 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         }
     }
 
+    const resetPersist = async () => {
+        await persistor.flush(); // write everything pending
+        await persistor.purge(); // delete persisted reducers
+        
+        // small delay lets purge finish
+        await new Promise(r => setTimeout(r, 100));
+
+        await AsyncStorage.clear(); // now safe to clear underlying storage
+    };
+
+
     function LogoutPress() {
         dispatch(updateLocalStorageInfo("Logout"));
 
         // Clear the persistor and AsyncStorage to remove all the data from the app
-        persistor.purge();
-        AsyncStorage.clear();
+        // persistor.purge();
+        // AsyncStorage.clear();
+        resetPersist();
 
         // Resetting the navigation stack to SignInStack. Now the history of the previous screens will be cleared.
         // This is done to prevent the user from going back to the previous screens after logging out.
@@ -88,7 +100,6 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             icon={() => <Image source={require('../Images/LogOut.png')} style={{width: 25, height: 25}}/>}
             style={{marginTop: 'auto'}}
         />
-
     </DrawerContentScrollView>
   )
 }

@@ -842,6 +842,7 @@ const AddTiming = () => {
         Dialog.hide();
       }
   }, [isConnected])
+  
 
   return (
     <SafeAreaView style={styles.safeView}>

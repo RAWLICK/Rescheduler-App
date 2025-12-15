@@ -41,8 +41,9 @@ import { CommonActions } from '@react-navigation/native';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import { nanoid } from "@reduxjs/toolkit";
 import { RootState } from '../../app/Store';
-// import Video from 'react-native-video';
+import Video from 'react-native-video';
 import ConsitencyVideo from '../Images/Consistensy_Video.mp4'
+import CountdownVideo from '../Images/Countdown.mp4'
 const { width, height } = Dimensions.get('window');
 
 type LogoSectionPropsType = {};
@@ -81,19 +82,25 @@ const LogoSection = () => {
   );
 };
 
-const ConceptVideo = () => {
-  return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
-      {/* <Video source={{uri: ConsitencyVideo}}
-      style={styles.VideoStyle}   // ✅ fill screen like reels
-          muted={false}
-          controls={false}    // hide controls for reels effect
-          playWhenInactive={false}
-          playInBackground={false}
-      /> */}
-    </View>
-  )
-}
+// const ConceptVideo = () => {
+//   const navigation = useNavigation<NavigationProp<any, any>>();
+//   return (
+//     <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
+//       <Video source={{uri: CountdownVideo}}
+//       style={styles.VideoStyle}   // ✅ fill screen like reels
+//           muted={false}
+//           controls={false}    // hide controls for reels effect
+//           playWhenInactive={false}
+//           playInBackground={false}
+//           repeat={false}
+//           onLoad={() => {
+//           console.log("Video Loaded!");
+//           // onVideoLoaded();      // 👈 signal the parent
+//         }}
+//       />
+//     </View>
+//   )
+// }
 
 const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
   let fetched_StudentInfo: StudentInfoDataType | null = null
@@ -157,7 +164,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             throw new Error('Failed to add data to the server');
           }
           fetched_StudentInfo = await StudentInfoResponse.json();
-          console.log("Fetched StudentInfo: ", fetched_StudentInfo)
+          // console.log("Fetched StudentInfo: ", fetched_StudentInfo)
           dispatch(registerUserInfo(fetched_StudentInfo))
           dispatch(updateLocalStorageInfo("Login"))
       } catch (error) {
@@ -186,7 +193,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
           }
           // props.setLoading(false)
           fetched_ScheduleArray = await ScheduleArrayResponse.json();
-          console.log("Fetched ScheduleArray: ", fetched_ScheduleArray)
+          // console.log("Fetched ScheduleArray: ", fetched_ScheduleArray)
           dispatch(addWholeScheduleArray(fetched_ScheduleArray))
           // console.log("Student Signed In");
           // navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
@@ -216,7 +223,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             throw new Error('Failed to download data from the server');
           }
           fetched_ExistingSubjectsArray = await ExistingSubjectsResponse.json();
-          console.log("Fetched ExistingSubjectsArray: ", fetched_ExistingSubjectsArray)
+          // console.log("Fetched ExistingSubjectsArray: ", fetched_ExistingSubjectsArray)
           dispatch(addWholeExistingSubjectsArray(fetched_ExistingSubjectsArray))
 
           // Fetching Library Students Info
@@ -237,7 +244,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
                   throw new Error('Failed to download data from the server');
                   }
                   const fetched_LibraryStudentsResponse = await LibraryStudentsResponse.json();
-                  console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
+                  // console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
                   dispatch(addWholeStudentsDataArray(fetched_LibraryStudentsResponse))
               
               } catch (error) {
@@ -260,7 +267,6 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
       //   playWhenInactive={false}
       //   playInBackground={false}
       // />
-
       navigation.dispatch(
           CommonActions.reset({
               index: 0,
@@ -382,7 +388,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
                 throw new Error('Failed to add data to the server');
               }
               fetched_StudentInfo = await StudentInfoResponse.json();
-              console.log("Fetched StudentInfo: ", fetched_StudentInfo)
+              // console.log("Fetched StudentInfo: ", fetched_StudentInfo)
               dispatch(registerUserInfo(fetched_StudentInfo))
               
           } catch (error) {
@@ -460,7 +466,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
                       throw new Error('Failed to download data from the server');
                       }
                       const fetched_LibraryStudentsResponse = await LibraryStudentsResponse.json();
-                      console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
+                      // console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
                       dispatch(addWholeStudentsDataArray(fetched_LibraryStudentsResponse))
                   
                   } catch (error) {
@@ -1449,7 +1455,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             </TouchableOpacity>
           </View>
         </View>
-      }
+        }
       </View>
     </View>
   );
@@ -1501,13 +1507,6 @@ const SignIn = () => {
     behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     // keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
     >
-      {/* <StatusBar>
-      animated={true}
-      backgroundColor='#FFFFFF'
-      // barStyle={statusBarStyle}
-      // showHideTransition={statusBarTransition}
-      // hidden={hidden}
-      /> */}
       <View style={{flex: 1}}>
         <LogoSection/>
         <CredentialInputSection
@@ -1520,6 +1519,7 @@ const SignIn = () => {
           Loading={Loading}
           setLoading={setLoading}
         />
+        {/* <ConceptVideo/> */}
       </View>
     </KeyboardAvoidingView>
   );

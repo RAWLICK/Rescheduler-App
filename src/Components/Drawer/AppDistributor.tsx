@@ -508,12 +508,15 @@ const AppDistributor = () => {
             <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
               <TouchableOpacity
                 onPress={() =>
+                  // navigation.navigate('DrawerScreens', {
+                  //   screen: 'TabsDrawer',
+                  //   params: {
+                  //     screen: 'ScheduleTab',
+                  //     params: undefined
+                  //   },
                   navigation.navigate('DrawerScreens', {
-                    screen: 'TabsDrawer',
-                    params: {
-                      screen: 'ScheduleTab',
-                      params: undefined
-                    },
+                    screen: 'SubscriptionDrawer',
+                    params: undefined
                   })
                 }
                 style={styles.BackButtonBox}>

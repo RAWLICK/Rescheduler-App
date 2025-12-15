@@ -46,6 +46,8 @@ type StackParamList = {
   OtpVerificationStack: { Process: string, PhoneNumber: string };
   TaskCompletionBoardStack: undefined;
   OnBoardingScreenStack: undefined;
+  AppDistributorDrawer: undefined;
+  AdminPanelDrawer: undefined;
   // RoughComponentStack: undefined;
   // RoughCompTwo: undefined;
 };
@@ -58,8 +60,8 @@ type DrawerParamList = {
   // SettingsDrawer: undefined;
   PartneredLibrariesDrawer: undefined;
   SubscriptionDrawer:  undefined;
-  AppDistributorDrawer: undefined;
-  AdminPanelDrawer: undefined;
+  // AppDistributorDrawer: undefined;
+  // AdminPanelDrawer: undefined;
 };
 
 type TabParamList = {
@@ -107,7 +109,7 @@ function App(): React.JSX.Element {
   const Drawer = createDrawerNavigator<DrawerParamList>();
   const Tab = createBottomTabNavigator<TabParamList>();
   const NativeStack = createNativeStackNavigator<NativeStackParamList>();
-  const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
+  // const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
 
   // const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
   // const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
@@ -168,6 +170,8 @@ function App(): React.JSX.Element {
         <Stack.Screen name="OtpVerificationStack" component={OtpVerificaton} options={{ headerShown: false }} />
         <Stack.Screen name="TaskCompletionBoardStack" component={TaskCompletionBoard} options={{ headerShown: false }} />
         <Stack.Screen name="OnBoardingScreenStack" component={OnBoardingScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
+        <Stack.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
         {/* <Stack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
       </Stack.Navigator>
     );

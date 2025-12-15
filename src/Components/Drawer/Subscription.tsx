@@ -160,6 +160,31 @@ const Subscription = () => {
             }}>Join Our Partnered Libraries</Text>
           </TouchableOpacity>
       </View>
+
+      <View style={{flexDirection: 'row', marginTop: 30, gap: 5}}>
+        {(StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&
+        <TouchableOpacity style={{flex: 1, justifyContent: 'center',
+            alignItems: 'center',
+            height: 50,
+            borderRadius: 13,
+            backgroundColor: '#dbb931ff',
+            elevation: 3}}
+            onPress={() => navigation.navigate('StackScreens', { screen: 'AppDistributorDrawer' })}>
+            <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'black'}}>App Distributor</Text>
+        </TouchableOpacity>
+        }
+        { StudentInfoData?.["Type of Account"] == "Admin" &&
+        <TouchableOpacity style={{flex: 1, justifyContent: 'center',
+            alignItems: 'center',
+            height: 50,
+            borderRadius: 13,
+            backgroundColor: '#999393',
+            elevation: 3}}
+            onPress={() => navigation.navigate('StackScreens', { screen: 'AdminPanelDrawer' })}>
+            <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'black'}}>Admin Panel</Text>
+        </TouchableOpacity>
+        }
+      </View>
       </View>
     </View>
   )

@@ -82,8 +82,7 @@ const PartneredLibraries = () => {
       // console.log("EditableDistributionsInfo: ", EditableDistributionsInfo)
       RenderAllDistributionsInfo();
     }, [])
-    
-
+  
     useFocusEffect(
       useCallback(() => {
         // StatusBar.setBackgroundColor("#d6d3da")

@@ -7,9 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const persistConfig = {
     key: 'root',                                    // Key for storage
     storage: AsyncStorage,                          // Use AsyncStorage as storage engine
-    whitelist: ['LocalStorageInfoSliceReducer', 'ScheduleArraySliceReducer', 'ExistingSubjectsArraySliceReducer', 'StudentsDataArraySliceReducer', 'StudentInfoSliceReducer',
-      //  'DemoArraySliceReducer'
-      ]       // Specify slices to persist
+    whitelist: ['LocalStorageInfoSliceReducer', 'ScheduleArraySliceReducer', 'ExistingSubjectsArraySliceReducer', 'StudentsDataArraySliceReducer', 'StudentInfoSliceReducer']       // Specify slices to persist
   };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
