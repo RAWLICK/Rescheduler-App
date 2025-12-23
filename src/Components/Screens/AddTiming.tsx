@@ -236,6 +236,7 @@ const AreaTwo = React.memo((props: AreaTwoProps) => {
   const handleConfirm = (date: Date) => {
     // console.log("handleConfirm is made run");
     // .padStart is added to provide a leading 0 to a singular number
+    console.log("Printing Date Parameter from handleConfirm: ", date)
     if (props.DateTimeState == 'date') {
       props.setTaskDate(
         `${
@@ -257,6 +258,7 @@ const AreaTwo = React.memo((props: AreaTwoProps) => {
         }`,
       );
     } else if (props.DateTimeState == 'StartTiming') {
+      // console.log("handleConfirm Button is clicked for Start Timing")
       props.setStartTime(
         `${
           date.getHours().toString().padStart(2, '0') +
@@ -715,6 +717,8 @@ const AddTiming = () => {
       Slice_Color: color[randomColorIndex()]
     };
 
+    console.log("New Task: ", newTask)
+
     function MatchingWorks() {
       const foundWorks = ScheduleArray.filter((item) => item.TaskDate == currentDateandMonth)
       for (let index = 0; index < foundWorks.length; index++) {
@@ -842,8 +846,11 @@ const AddTiming = () => {
         Dialog.hide();
       }
   }, [isConnected])
-  
 
+  useEffect(() => {
+    console.log("Start Time: ", StartTime)
+  }, [])
+  
   return (
     <SafeAreaView style={styles.safeView}>
       <StatusBar

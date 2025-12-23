@@ -81,6 +81,7 @@ import { registerUserInfo } from '../../app/Slice';
 import { MotiView } from 'moti';
 import {Easing as EasingNode} from 'react-native-reanimated';
 import Video from 'react-native-video';
+import { useIsFocused } from '@react-navigation/native';
 import {persistor} from '../../app/Store';
 import CountdownVideo from '../Images/Countdown.mp4'
 import ConsistencyVideo from '../Images/Consistensy_Video.mp4'
@@ -644,11 +645,13 @@ const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
 const ConceptVideo = () => {
   const navigation = useNavigation<NavigationProp<any, any>>();
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
       <Video source={{uri: ConsistencyVideo}}
           style={styles.VideoStyle}   // ✅ fill screen like reels
           muted={false}
+          paused={!isFocused}    
           controls={false}    // hide controls for reels effect
           playWhenInactive={false}
           playInBackground={false}
@@ -1389,7 +1392,7 @@ const Schedule: React.FC = () => {
     }, []);
 
     useEffect(() => {
-      checkAppVersion();
+      // checkAppVersion();
       RegularStudentInfoUpdate();
     }, [])
     
@@ -1670,7 +1673,7 @@ const Schedule: React.FC = () => {
       VideoStyle: {
       ...StyleSheet.absoluteFillObject, // makes video cover entire screen
       width: width,
-      height: height
+      height: height,
     },
 
     safeView: {
