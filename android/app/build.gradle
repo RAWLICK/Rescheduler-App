@@ -50,6 +50,9 @@ react {
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
+    
+    /* Autolinking */
+    autolinkLibrariesWithApp()
 }
 
 /**
@@ -80,7 +83,7 @@ android {
         applicationId "com.rescheduler"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
+        versionCode 14
         versionName "1.6.5"
         manifestPlaceholders = [
             // auth0Domain: "dev-euawlucdljtesr0z.us.auth0.com",   // For OTP Auth
@@ -88,6 +91,18 @@ android {
             // auth0Scheme: "${applicationId}.auth0"
             auth0Scheme: "https"
         ]   // Auth0 configuration
+    }
+    // externalNativeBuild {
+    //   // For ndk-build, instead use the ndkBuild block.
+    //   cmake {
+    //     // Passes optional arguments to CMake.
+    //     arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+    //   }
+    // }
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
     signingConfigs {
         debug {
@@ -135,7 +150,5 @@ dependencies {
         implementation jscFlavor
     }
 }
-
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
 

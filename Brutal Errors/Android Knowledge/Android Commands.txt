@@ -41,3 +41,9 @@ Think of it like:
   Then, adb connect 10.243.77.233:5555
   Here <10.243.77.233> should be replaced by the IP address present in your phone
   When you will type adb devices, you will get the list of connected devices In which there will be a device of the name of your IP address
+
+- Command to solve gradle errors(knowing the reason):
+./gradlew <task> --stacktrace: This tells the reason 'Caused By:'. You must use it always and rather than seeing the error at the end, observe the error from the start.
+./gradlew <task> --info: If stacktrace isn't enough, then use info.
+./gradlew <task> --scan: Used by experts. Gives Exact dependency tree, Plugin compatibility, JVM & OS info, Deprecated APIs. Example: Plugin requires Gradle >= 8.9
+where '<task>' is the error name of red font color
