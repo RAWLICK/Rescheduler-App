@@ -93,6 +93,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
   const navigation = useNavigation<NavigationProp<any, any>>();
   const [GmailLoading, setGmailLoading] = useState(false);
   const [AppleLoading, setAppleLoading] = useState(false);
+  const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
 
   function TrialValidity() {
     const currentDate = new Date();
@@ -1328,6 +1329,10 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
   function PhoneNumberClicked() {
     props.setPhoneNumberSelected(true)
   }
+
+  useEffect(() => {
+    console.log("Local Storage Info: ", LocalStorageInfo)
+  }, [])
   
   return (
     <View style={{flex: 0.5, backgroundColor: '#ab7be9'}}>

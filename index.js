@@ -74,10 +74,10 @@ const Root = () => (
             // tooltipComponent={CustomTooltip}
             tooltipStyle={{
                 borderRadius: 16, // 👈 rounded corners for tooltip box
-                backgroundColor: 'black',
+                // backgroundColor: 'black',
                 padding: 12
             }}
-            arrowColor='black'
+            // arrowColor='black'
             labels={{
                 next: 'Next',
                 previous: 'Back',

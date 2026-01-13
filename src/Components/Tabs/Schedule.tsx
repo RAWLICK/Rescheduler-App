@@ -343,6 +343,7 @@ const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) =
   const handleCheckboxChange = (index: number, checked: boolean) => {
     console.log("handleCheckboxChange is made ran");
     if (props.rescheduleStatus == 'PriorStage') {
+      console.log("On Prior")
       props.setPriorSelections((prevSelections) => {
         if (checked) {
           const newSelections = [...prevSelections, index]
@@ -988,7 +989,8 @@ const Schedule: React.FC = () => {
                 d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, endAngle, startAngle)}
                 fill={sectorColor}  
                 onPressIn={()=> angleOnPress()}
-                onPressOut={LabelChanging}
+                // onPressOut={LabelChanging}
+                onResponderRelease={LabelChanging}
                 // stroke={strokeStatus? '#000000' : 'none'}
                 // strokeDasharray="5,10"  // 10 units of stroke, 5 units of gap
                 // strokeDashoffset="0"    // Start from the beginning of the path
@@ -1113,6 +1115,7 @@ const Schedule: React.FC = () => {
 
     function LabelChanging() {
       // console.log("LabelChanging is made ran");
+      console.log("OnPressOut Fired");
       if (rescheduleStatus != "rescheduled") {
         for (let index = 0; index < data["TaskDate"].length; index++) {
           const uniqueID = data['uniqueID'][index]
@@ -1330,6 +1333,11 @@ const Schedule: React.FC = () => {
         return false;
       }
     }
+
+    useEffect(() => {
+      checkAppVersion();
+      RegularStudentInfoUpdate();
+    }, [])
     
     useEffect(() => {
       if (TrialValidity() == false) {
@@ -1390,11 +1398,6 @@ const Schedule: React.FC = () => {
       // Clean up the interval on unmount
       return () => clearInterval(intervalId);
     }, []);
-
-    useEffect(() => {
-      // checkAppVersion();
-      RegularStudentInfoUpdate();
-    }, [])
     
     useEffect(() => {
       if (rescheduleStatus === 'PriorStage') {

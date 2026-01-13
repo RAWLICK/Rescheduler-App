@@ -564,14 +564,14 @@ const Statistics = () => {
     />
       <KeyboardAvoidingView style={styles.mainStyle}>
         <ScrollView>
-        <View style={{paddingLeft: 10, paddingRight: 10, height: 80, marginBottom: 5}}>
+        <View style={{paddingLeft: 10, paddingRight: 10, height: 80, marginBottom: 5, marginTop: 10}}>
           <View style={{borderRadius: 20, flex: 1, flexDirection: 'row', borderColor: '#837DA8', borderWidth: 1, borderBottomWidth: 5}}>
             <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 15}}>
               <Text style={{fontFamily: 'sf-pro-display-medium', color: 'black'}}>Ask Daily Work Done Report to Access Statistics and Gain Streak</Text>
             </View>
             <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-end', paddingRight: 15}}>
               <Switch
-                trackColor={{ false: '#ccc', true: '#81b0ff' }}
+                trackColor={{ false: '#807f7fff', true: '#81b0ff' }}
                 thumbColor={StatsEnabled ? '#007AFF' : '#f4f3f4'}
                 ios_backgroundColor="#3e3e3e"
                 onValueChange={StatToggleSwitch}

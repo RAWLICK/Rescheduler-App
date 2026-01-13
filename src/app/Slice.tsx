@@ -3,6 +3,7 @@ import { createSlice} from "@reduxjs/toolkit";
 import { combineReducers } from "@reduxjs/toolkit";
 import { ScheduleArrayItem } from "../Components/Screens/AddTiming";
 
+// ⚠️ Add all edits of Keys in Slice in Migrations too for Older Users
 export type LocalStorageInfoDataType = {
     "IsLoggedIn": boolean,
     "IsFirstLaunch": boolean,

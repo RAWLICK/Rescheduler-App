@@ -1,13 +1,64 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { rootReducer } from "../app/Slice";
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistStore, persistReducer, createMigrate } from 'redux-persist';
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const migrations = {
+  // ⚠️ Never try to change this version 1, all changes should be done in version 2. 
+  // ⚠️ Change the version number in persistConfig below also when making changes.
+  1: (state: any) => {
+    if (!state) return state;
+
+    return {
+      ...state,
+
+      LocalStorageInfoSliceReducer: {
+        ...state.LocalStorageInfoSliceReducer,
+
+        // ✅ new keys with safe default values
+        "VideoPlayed": false,
+        "Schedule_Walkthrough_Completed": false,
+        "Statistics_Walkthrough_Completed": false
+      }
+    }
+
+  }
+}
+
+// const migrations = {
+//   1: (state: any) => {
+//     if (!state) return state;
+
+//     const localSlice = state.LocalStorageInfoSliceReducer || {};
+//     const localInfo = localSlice.LocalStorageInfoInitialState || {};
+
+//     return {
+//       ...state,
+
+//       LocalStorageInfoSliceReducer: {
+//         ...localSlice,
+
+//         LocalStorageInfoInitialState: {
+//           ...localInfo,
+
+//           // ✅ new keys safely added
+//           VideoPlayed: localInfo.VideoPlayed ?? false,
+//           Schedule_Walkthrough_Completed: localInfo.Schedule_Walkthrough_Completed ?? false,
+//           Statistics_Walkthrough_Completed: localInfo.Statistics_Walkthrough_Completed ?? false,
+//         },
+//       },
+//     };
+//   },
+// };
+
+
 const persistConfig = {
     key: 'root',                                    // Key for storage
+    version: 1,                                     // Migration Version Number
     storage: AsyncStorage,                          // Use AsyncStorage as storage engine
-    whitelist: ['LocalStorageInfoSliceReducer', 'ScheduleArraySliceReducer', 'ExistingSubjectsArraySliceReducer', 'StudentsDataArraySliceReducer', 'StudentInfoSliceReducer']       // Specify slices to persist
+    whitelist: ['LocalStorageInfoSliceReducer', 'ScheduleArraySliceReducer', 'ExistingSubjectsArraySliceReducer', 'StudentsDataArraySliceReducer', 'StudentInfoSliceReducer'],       // Specify slices to persist
+    migrate: createMigrate(migrations, { debug: false }),
   };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

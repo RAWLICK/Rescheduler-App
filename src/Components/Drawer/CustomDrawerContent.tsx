@@ -33,15 +33,20 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     }
 
     const resetPersist = async () => {
-        await persistor.flush(); // write everything pending
-        await persistor.purge(); // delete persisted reducers
+        try {
+            await persistor.flush(); // write everything pending
+            await persistor.purge(); // delete persisted reducers
+            
+            // small delay lets purge finish
+            await new Promise(r => setTimeout(r, 100));
+
+            await AsyncStorage.clear(); // now safe to clear underlying storage
+            console.log('Persist storage cleared');
+        } catch (error) {
+            console.log('Persist clear error', error);
+        }
         
-        // small delay lets purge finish
-        await new Promise(r => setTimeout(r, 100));
-
-        await AsyncStorage.clear(); // now safe to clear underlying storage
     };
-
 
     function LogoutPress() {
         dispatch(updateLocalStorageInfo("Logout"));
@@ -77,7 +82,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             <Text style={{ fontSize: 24, fontFamily: 'sf-pro-display-bold', color: 'white'}}>{StudentInfoData.Name == ""? "Hello, Mate": StudentInfoData.Name}</Text>
             {StudentInfoData['Subscription Type'] == "Free" &&
             <View style={{backgroundColor: '#8dc2f7', width: 120, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, paddingVertical: 2}}>
-                <Text style={{color: '#05498d', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>{SubscriptionHeading}</Text>
+                <Text style={{color: '#05498d', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>Free Trial - 7 Days</Text>
             </View>
             }
             {StudentInfoData['Subscription Type'] == "Library" &&
