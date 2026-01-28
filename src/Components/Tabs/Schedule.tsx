@@ -148,9 +148,9 @@ type BottomOptionsAreaPropsType = {
   ApiData: ApiDataType
   rescheduleStatus: string;
   ScheduleTableButton: () => Promise<void>,
-  ScheduleTableSheet: RefObject<TrueSheet>,
+  ScheduleTableSheet: RefObject<TrueSheet | null>,
   CalenderButton: () => Promise<void>,
-  CalenderSheet: RefObject<TrueSheet>,
+  CalenderSheet: RefObject<TrueSheet | null>,
   selectedDate: string,
   setSelectedDate: SetState<string>
   navigation: NavigationProp<any, any>
@@ -603,7 +603,8 @@ const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
         </CopilotStep>
         <TrueSheet
           ref={props.ScheduleTableSheet}
-          sizes={['auto', 'large']}
+          style={{width: Dimensions.get('window').width}}
+          detents={['auto']}
           cornerRadius={24}
         >
           <ScheduleTable
@@ -621,9 +622,10 @@ const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
           </CopilotTouchableOpacity>
         </CopilotStep>
         <TrueSheet
-        ref={props.CalenderSheet}
-        sizes={['auto', 'large']}
-        cornerRadius={24}
+          ref={props.CalenderSheet}
+          cornerRadius={24}
+          detents={['auto']}
+          style={{width: Dimensions.get('window').width}}
         >
           <CalenderView
            selectedDate={props.selectedDate} 
@@ -1033,7 +1035,8 @@ const Schedule: React.FC = () => {
                   d={getSingleAnglePath(hardRadius, hardRadius, hardRadius, endAngle, startAngle)}
                   fill={sectorColor}  
                   onPressIn={()=> angleOnPress()}
-                  onPressOut={LabelChanging}
+                  // onPressOut={LabelChanging}
+                  onResponderRelease={LabelChanging}
                   // stroke={strokeStatus? '#000000' : 'none'}
                   // strokeDasharray="5,10"  // 10 units of stroke, 5 units of gap
                   // strokeDashoffset="0"    // Start from the beginning of the path
@@ -1115,8 +1118,8 @@ const Schedule: React.FC = () => {
 
     function LabelChanging() {
       // console.log("LabelChanging is made ran");
-      console.log("OnPressOut Fired");
       if (rescheduleStatus != "rescheduled") {
+        // console.log("Non-rescheduled table is chosen")
         for (let index = 0; index < data["TaskDate"].length; index++) {
           const uniqueID = data['uniqueID'][index]
           const startAngle = data['StartAngle'][index];
@@ -1128,7 +1131,9 @@ const Schedule: React.FC = () => {
           const angleWork = data['Work'][index]
           const TaskDate = data['TaskDate'][index]
           if (TaskDate === selectedDate) {
+            // console.log("TaskDate Equals Selected Date")
             if (hourRotation >= startAngle && hourRotation <= endAngle) {
+              console.log("A Time is alotted")
               setWork(angleWork);
               setduration(`(${angleDuration})`);
               settimeStart(TwelveHourFormat(startTime));
@@ -1136,6 +1141,7 @@ const Schedule: React.FC = () => {
               break;
             }
             else if (hourRotation < startAngle || hourRotation > endAngle) {
+              console.log("Free time was registered")
               setWork('Free Time');
               setduration("");
               settimeStart("");
@@ -1491,7 +1497,7 @@ const Schedule: React.FC = () => {
 
     useEffect(() => {
       LabelChanging();
-    }, [ScheduleArray, rescheduleStatus, FiveSecGap])
+    }, [ScheduleArray, rescheduleStatus, FiveSecGap, data])
 
     // useEffect(() => {
     //   console.log("Today's ScheduleArray: ", TodayScheduleArray)

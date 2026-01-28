@@ -31,7 +31,7 @@ const CalenderView = (props: CalenderViewProps) => {
         setSelected(day.dateString);
       }}
       markedDates={{
-        [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'}
+        [selected]: {selected: true, disableTouchEvent: true}
       }}
       style={{
         borderWidth: 1,

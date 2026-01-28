@@ -28,7 +28,7 @@ type EditDialogBoxPropsTypes = {
 type ExistingSubjectsPropsType = {
   WorkToDo: string
   setWorkToDo: SetState<string>
-  ExistingSubjectSheet: React.RefObject<TrueSheet>
+  ExistingSubjectSheet: React.RefObject<TrueSheet | null>
 }
 
 const EditDialogBox = (props: EditDialogBoxPropsTypes) => {
@@ -181,15 +181,17 @@ const ExistingSubjects = (props: ExistingSubjectsPropsType) => {
         
         <TrueSheet
           ref={AddingSubjectsSheet}
-          sizes={['auto', 'large']}
+          detents={['auto']}
+          style={{width: Dimensions.get('window').width}}
           cornerRadius={24}
         >
           <AddingSubjects/>
         </TrueSheet>
 
         <TrueSheet
+          detents={['auto']}
+          style={{width: Dimensions.get('window').width}}
           ref={EditingSubjectsSheet}
-          sizes={['auto', 'large']}
           cornerRadius={24}
         >
           <EditingSubjects

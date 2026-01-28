@@ -12,7 +12,8 @@ import {
   Platform,
   Button,
   Keyboard,
-  Alert
+  Alert,
+  Dimensions
 } from 'react-native';
 import React from 'react';
 import {useState, useEffect, useRef, memo, useCallback} from 'react';
@@ -23,6 +24,7 @@ import LockImage from '../Images/Lock.png'
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import 'react-native-gesture-handler';
 import {useNavigation} from '@react-navigation/native';
+import Sound from "react-native-sound";
 import {
   Gesture,
   GestureDetector,
@@ -213,7 +215,8 @@ const AreaOne = React.memo((props: AreaOneProps) => {
     </View>
     <TrueSheet
       ref={ExistingSubjectSheet}
-      sizes={['auto', 'large']}
+      detents={['auto']}
+      style={{width: Dimensions.get('window').width}}
       cornerRadius={24}
       >
         <ExistingSubjects 
@@ -601,7 +604,7 @@ const AddTiming = () => {
   const [CoveredDurBoxes, setCoveredDurBoxes] = useState<number[]>([
     0, 1, 2, 3,
   ]);
-  var Sound = require('react-native-sound');
+  // var Sound = require('react-native-sound');
   Sound.setCategory('Playback');
 
   console.log("AddTiming is made run")

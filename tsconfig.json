@@ -1,26 +1,22 @@
 {
+  "extends": "@react-native/typescript-config",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "jsx": "react-native",      // Enables JSX for React Native
-    "strict": true,             // Enables strict type checking
-    "moduleResolution": "node",
-    "allowJs": true,            // Optional: allows JavaScript files
-    "esModuleInterop": true,    // Provides better compatibility with CommonJS modules
-    "skipLibCheck": true,       // Skips checking type definitions in node_modules
-    "resolveJsonModule": true,  // Allows importing JSON files
-    "noEmit": true,             // Disables emitting files
-    "isolatedModules": true ,    // Ensures every file is treated as a separate module
-    "allowImportingTsExtensions": true
+    "strict": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "allowImportingTsExtensions": true,
+    "types": ["jest"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": [
     "node_modules",
     "babel.config.js",
     "metro.config.js",
-    "jest.config.js"
+    "jest.config.js",
+    "ios",
+    "android"
   ]
 }

@@ -31,8 +31,6 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
   const [RingAlarmArray, setRingAlarmArray] = useState<number[]>([])
   const [hourRotation, setHourRotation] = useState(0);
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-  // Import the react-native-sound module
-  var Sound = require('react-native-sound');
 
   // Enable playback in silence mode
   Sound.setCategory('Playback');
@@ -47,7 +45,6 @@ const ScheduleTable = (props: ScheduleTablePropsType) => {
     }
   }, [props.rescheduleStatus])
   
-
   const data = {
     "uniqueID": ScheduleArray.map((item: ScheduleArrayItem) => item.uniqueID),
     "StartTime": ScheduleArray.map((item: ScheduleArrayItem) => item.StartTime),

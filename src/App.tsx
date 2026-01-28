@@ -115,7 +115,6 @@ function App(): React.JSX.Element {
   // const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
   // const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
   // const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
-
   function TrialValidity() {
     // const currentDate = new Date();
     // const formatDate = (dateStr: string) => {
@@ -135,30 +134,6 @@ function App(): React.JSX.Element {
       SplashScreen.hide();
     }, 1000);
   }, [])
-
-  type CustomTabButtonPropTypes = {
-    label: string,
-    onPress: ((e: GestureResponderEvent) => void) | undefined,
-    Icon: ImageSourcePropType,
-    isFocused: boolean | undefined
-  }
-
-  function CustomTabButton ({label, onPress, Icon, isFocused}: CustomTabButtonPropTypes) {
-    const insets = useSafeAreaInsets();
-    return (
-      <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center',
-        //  paddingBottom: insets.bottom > 0 ? insets.bottom : 4
-        }}
-      onPress={onPress}>  
-        <View style={[styles.IconView,
-          {backgroundColor: isFocused ? '#C1BED5' : '#d2cfe4'}
-          ]}>
-          <Image source={Icon} style={[styles.TaskbarIcons, {tintColor: isFocused ? 'black' : 'grey'}]}/>
-        </View>
-        <Text style={[styles.IconTitle, {fontFamily: isFocused ? 'sf-pro-display-bold' : 'sf-pro-display-medium'}, {color: isFocused ? 'black' : 'grey'}]}>{label}</Text>
-      </TouchableOpacity>
-    );
-  };
 
   function StackScreen() {
     return (
@@ -214,34 +189,39 @@ function App(): React.JSX.Element {
     return (
       <Tab.Navigator initialRouteName="ScheduleTab"
        screenOptions={ ({route}) => ({
-        tabBarButton: (props) => {
-          const {onPress, accessibilityState} = props;
-          const isFocused = accessibilityState?.selected || false;
-          // const label = route.options?.tabBarLabel || route.name
-          const label = route.name === 'ScheduleTab' ? 'Schedule' :
-                    route.name === 'StatisticsTab' ? 'Statistics' :
-                    route.name;
-          let icon;
-          if (route.name == 'ScheduleTab') {
-            icon = RescheduleIcon;
-          }
-          else if (route.name == 'StatisticsTab') {
-            icon = StatisticsIcon;
-          }
-          return (
-            <CustomTabButton
-             label={label}
-             Icon={icon}
-             isFocused={isFocused}
-             onPress={onPress} />
-          );
-        },
-
         tabBarStyle: {
           backgroundColor: '#d2cfe4',
           height: Platform.OS == 'ios' ? 70 : 60,
           paddingBottom: Platform.OS == 'ios' ? 8 : 10,
         },
+        tabBarIcon: ({ focused }) => (
+        <View
+          style={[
+            styles.IconView,
+            { backgroundColor: focused ? "#C1BED5" : "#d2cfe4" },
+          ]}
+        >
+          <Image
+            source={route.name === "ScheduleTab" ? RescheduleIcon : StatisticsIcon}
+            style={{ tintColor: focused ? "black" : "grey",
+              height: 25, width: 25
+             }}
+          />
+        </View>
+        ),
+        tabBarLabel: ({ focused }) => (
+        <Text
+          style={{
+            color: focused ? "black" : "grey",
+            fontFamily: focused
+              ? "sf-pro-display-bold"
+              : "sf-pro-display-medium",
+            fontSize: 11,
+          }}
+        >
+          {route.name === "ScheduleTab" ? "Schedule" : "Statistics"}
+        </Text>
+        )
       })}
       >
         <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false }}/>

@@ -1,5 +1,7 @@
 const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
-const exclusionList = require('metro-config/src/defaults/exclusionList');
+// const exclusionList = require('metro-config/src/defaults/exclusionList');
+// const { exclusionList } = require('metro-config');
+const defaultConfig = getDefaultConfig(__dirname);
 
 /**
  * Metro configuration
@@ -9,10 +11,11 @@ const exclusionList = require('metro-config/src/defaults/exclusionList');
  */
 const config = {
     resolver: {
-      // Exclude certain paths or unnecessary files from being watched
-      blacklistRE: exclusionList([
-        /node_modules\/.*\/node_modules\/.*/, // Prevent nested `node_modules` from being watched
-      ]),
+      assetExts: [...defaultConfig.resolver.assetExts, 'lottie'], // Add 'lottie' to asset extensions
+      // Modern replacement of blacklistRE
+      blockList: [
+        /node_modules\/.*\/node_modules\/.*/,
+      ],
     },
     transformer: {
       enableFlipper: false,  // Disable Flipper for debugging
