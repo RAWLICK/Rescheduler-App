@@ -55,37 +55,41 @@ const Subscription = () => {
       />
       <View style={{ paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : insets.top }}>
         <View style={{ height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-          <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center' }}>
-            {TrialValidity() == false ?
-              <TouchableOpacity onPress={() => navigation.navigate('StackScreens', { screen: 'SignInStack'}) } style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          {TrialValidity() == false ?
+            <TouchableOpacity 
+            onPress={() => navigation.navigate('StackScreens', { screen: 'SignInStack'}) }
+            style={{ flex: 0.25, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 10 }}>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 <Image source={require('../Images/LogOut.png')} style={{width: 30, height: 30}}/>
-              </TouchableOpacity>
-              :
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate('DrawerScreens', {
-                    screen: 'TabsDrawer',
-                    params: {
-                      screen: 'ScheduleTab',
-                      params: undefined
-                    },
-                  })
-                }
+              </View>
+            </TouchableOpacity>
+            :
+            <TouchableOpacity 
+            onPress={() =>
+              navigation.navigate('DrawerScreens', {
+                screen: 'TabsDrawer',
+                params: {
+                  screen: 'ScheduleTab',
+                  params: undefined
+                },
+              })
+            }
+            style={{ flex: 0.25, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 10 }}>
+              <View
                 style={styles.BackButtonBox}>
                 <Image source={LeftArrow} style={styles.BackButtonImage} />
-              </TouchableOpacity>
-            }
-            
-          </View>
-          <View style={{ flex: 0.8, justifyContent: 'center', alignItems: 'center' }}>
+              </View>
+            </TouchableOpacity>
+          }
+          <View style={{ flex: 0.5, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: 'black' }}>Subscription</Text>
           </View>
-          <View style={{ flex: 0.1 }}>
+          <View style={{ flex: 0.25}}>
           </View>
         </View>
       </View>
       <View style={{ flex: 1, backgroundColor: '#d3bdfa', padding: 15 }}>
-        <View style={{ height: 70, backgroundColor: 'white', borderRadius: 20, padding: 10, flexDirection: 'row' }}>
+        <View style={{ height: 70, backgroundColor: 'white', borderRadius: 20, padding: 10, flexDirection: 'row', columnGap: 10 }}>
           <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center' }}>
             <Image source={ProductivityIcon} style={{ height: 35, width: 35 }} />
           </View>

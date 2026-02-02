@@ -103,6 +103,7 @@ const AdminPanel = () => {
                 "Other Branches List": AllBranchesList
             }
             try {
+            console.log("NewDistributorAdd: ", NewDistributorAdd)
             const response = await fetch(
             // Platform.OS === 'ios'? 'http://localhost:5000/addDistributor':'http://10.0.2.2:5000/addDistributor',
             'https://rescheduler-server.onrender.com/addDistributor',

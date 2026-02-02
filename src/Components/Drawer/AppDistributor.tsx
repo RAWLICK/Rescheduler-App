@@ -498,35 +498,28 @@ const AppDistributor = () => {
     // );
 
   return (
-    <SafeAreaView style={styles.safeView}>
+    <View style={styles.safeView}>
       <StatusBar
       animated={true}
       backgroundColor="#d6d3da"
       />
       <View style={styles.mainStyle}>
           <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-            <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
-              <TouchableOpacity
-                onPress={() =>
-                  // navigation.navigate('DrawerScreens', {
-                  //   screen: 'TabsDrawer',
-                  //   params: {
-                  //     screen: 'ScheduleTab',
-                  //     params: undefined
-                  //   },
-                  navigation.navigate('DrawerScreens', {
-                    screen: 'SubscriptionDrawer',
-                    params: undefined
-                  })
-                }
-                style={styles.BackButtonBox}>
+            <TouchableOpacity
+            onPress={() =>
+            navigation.navigate('DrawerScreens', {
+              screen: 'SubscriptionDrawer',
+              params: undefined
+            })} 
+            style={{flex: 0.25, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 10}}>
+              <View style={styles.BackButtonBox}>
                 <Image source={LeftArrow} style={styles.BackButtonImage} />
-              </TouchableOpacity>
-            </View>
-            <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'center'}}>
+              </View>
+            </TouchableOpacity>
+            <View style={{flex: 0.5, justifyContent: 'center', alignItems: 'center'}}>
               <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: 'black'}}>App Distributor</Text>
             </View>
-            <View style={{flex: 0.1}}>
+            <View style={{flex: 0.25}}>
             </View>
           </View>
           <View style={{flex: 1, padding: 10, paddingRight: width * 0.04, paddingLeft: width * 0.04}}>
@@ -626,7 +619,8 @@ const AppDistributor = () => {
 
             <TrueSheet
               ref={AddingStudentsSheet}
-              sizes={['auto', 'large']}
+              style={{width: Dimensions.get('window').width}}
+              detents={['auto']}
               cornerRadius={24}
             >
               <AddingStudent 
@@ -636,7 +630,7 @@ const AppDistributor = () => {
             </TrueSheet>
           </View>
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 

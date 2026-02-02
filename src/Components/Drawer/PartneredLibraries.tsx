@@ -94,40 +94,41 @@ const PartneredLibraries = () => {
       }, [])
     );
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <View style={{flex: 1}}>
       <StatusBar
         animated={true}
         backgroundColor="#d6d3da"
       />
       <View style={{flex: 1, paddingTop: StatusBar.currentHeight}}>
         <View style={{height: height * 0.05, backgroundColor: '#d6d3da', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-          <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
-            <TouchableOpacity
-              onPress={() => {
-                if (TrialValidity() == false) {
-                  navigation.navigate('DrawerScreens', {
-                  screen: 'SubscriptionDrawer',
-                  params: undefined,
-                })
-                }
-                else {
-                  navigation.navigate('DrawerScreens', {
-                  screen: 'TabsDrawer',
-                  params: {
-                    screen: 'ScheduleTab',
-                    params: undefined
-                  },
-                })
-                }
-              }}
+          <TouchableOpacity 
+          onPress={() => {
+            if (TrialValidity() == false) {
+              navigation.navigate('DrawerScreens', {
+              screen: 'SubscriptionDrawer',
+              params: undefined,
+            })
+            }
+            else {
+              navigation.navigate('DrawerScreens', {
+              screen: 'TabsDrawer',
+              params: {
+                screen: 'ScheduleTab',
+                params: undefined
+              },
+            })
+            }
+          }}
+          style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 10}}>
+            <View
               style={styles.BackButtonBox}>
               <Image source={LeftArrow} style={styles.BackButtonImage} />
-            </TouchableOpacity>
-          </View>
-          <View style={{flex: 0.8, justifyContent: 'center', alignItems: 'center'}}>
+            </View>
+          </TouchableOpacity>
+          <View style={{flex: 0.6, justifyContent: 'center', alignItems: 'center'}}>
             <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: 'black'}}>Our Partnered Libraries</Text>
           </View>
-          <View style={{flex: 0.1}}>
+          <View style={{flex: 0.2}}>
           </View>
         </View>
         <View style={{padding: 10, paddingRight: width * 0.04, paddingLeft: width * 0.04}}>
@@ -146,8 +147,9 @@ const PartneredLibraries = () => {
               keyboardType="default"/>
           </View>
           <View style={{height: 400, borderColor: '#d6d3da', borderWidth: 1, borderRadius: 15, marginTop: 10, paddingTop: 5, paddingLeft: 5, paddingRight: 5}}>
+            {/* .reverse mutates the original array which we don't want so we used .slice which creates a shallow copy which is then safely mutated by .reverse */}
             <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
-            {DistributionDataToRender?.map((i, index) => (
+            {DistributionDataToRender?.slice().reverse().map((i, index) => (
               <View style={styles.Schedules} key={index}>
                 <View style={{flex: 0.8, padding: 10, paddingLeft: 30}}>
                   <View style={{flex: 0.6, justifyContent: 'center'}}>
@@ -163,7 +165,7 @@ const PartneredLibraries = () => {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 

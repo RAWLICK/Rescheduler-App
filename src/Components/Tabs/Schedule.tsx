@@ -12,7 +12,7 @@ import StreakFire from '../Images/StreakFire.png'
 import Doodle from '../Images/Doodle.jpg'
 import Reload from '../Images/Reload.png'
 import 'react-native-gesture-handler'
-import { Gesture, GestureDetector, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 import Svg, { Circle, Path, Defs, Stop } from 'react-native-svg';
 import Sound from 'react-native-sound';
@@ -29,7 +29,7 @@ import { TrueSheet } from "@lodev09/react-native-true-sheet"
 import { RouteProp } from '@react-navigation/native';
 import { CombinedNavigationProp, CombinedRouteProp } from '../../App';
 import { nanoid } from 'nanoid';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import DeviceInfo from 'react-native-device-info';
 import {
   CopilotProvider,
@@ -53,7 +53,6 @@ import {
   TouchableWithoutFeedback,
   Button,
   Dimensions,
-  SafeAreaView,
   ActivityIndicator,
   Linking,
   Alert
@@ -86,6 +85,7 @@ import {persistor} from '../../app/Store';
 import CountdownVideo from '../Images/Countdown.mp4'
 import ConsistencyVideo from '../Images/Consistensy_Video.mp4'
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+import { InteractionManager } from 'react-native';
 const { width, height } = Dimensions.get('window');
 const CopilotView = walkthroughable(View);
 const CopilotTouchableOpacity = walkthroughable(TouchableOpacity);
@@ -671,6 +671,8 @@ const ConceptVideo = () => {
 
 const Schedule: React.FC = () => {
     // const [VideoPlayed, setVideoPlayed] = useState(false);
+    // const hasStarted = useRef(false);
+    // const [layoutReady, setLayoutReady] = useState(false);
     const isConnected = useInternetCheck();
     const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
@@ -1593,7 +1595,7 @@ const Schedule: React.FC = () => {
                     start(); 
                   }, 2000);
                 } 
-                }}>
+              }}>
           <LinearGradient
             // x = 0 is the left edge of the component.
             // x = 1 is the right edge of the component.
@@ -1602,7 +1604,7 @@ const Schedule: React.FC = () => {
             colors={['#a032d3', '#D2CFE4']}
             style={{
               paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : insets.top,
-              }}>
+            }}>
             <Navbar/>
           </LinearGradient>
           <View style={[styles.mainArea, tintstatus === true? styles.overlay : {}]}>

@@ -556,7 +556,7 @@ const Statistics = () => {
   // );
   
   return (
-    <SafeAreaView style={styles.safeView}>
+    <View style={styles.safeView}>
     <StatusBar
       translucent={true}
       backgroundColor="#D2CFE4" // Make the status bar transparent
@@ -721,9 +721,10 @@ const Statistics = () => {
         </ScrollView>
       </KeyboardAvoidingView>
       <TrueSheet
-      ref={ExistingSubjectSheet}
-      sizes={['auto', 'large']}
-      cornerRadius={24}
+        ref={ExistingSubjectSheet}
+        style={{width: Dimensions.get('window').width}}
+        detents={['auto']}
+        cornerRadius={24}
       >
         <ExistingSubjects 
         WorkToDo={FakeWork}
@@ -732,7 +733,7 @@ const Statistics = () => {
         />
       </TrueSheet>
       {/* <Taskbar activeState={'Statistics'}/> */}
-    </SafeAreaView>
+    </View>
   )
 }
 

@@ -6,6 +6,7 @@ import { createBottomTabNavigator, BottomTabNavigationProp } from '@react-naviga
 import { createDrawerNavigator, DrawerNavigationProp } from '@react-navigation/drawer';
 import { createStackNavigator, TransitionPresets, StackNavigationProp } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AddTiming from './Components/Screens/AddTiming';
 import Schedule from './Components/Tabs/Schedule';
 import Statistics from './Components/Tabs/Statistics';
@@ -28,7 +29,6 @@ import OnBoardingScreen from './Components/Authentication/OnBoardingScreen';
 import { useDispatch, useSelector } from 'react-redux' 
 import { RootState } from '../src/app/Store';
 import Subscription from './Components/Drawer/Subscription';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useAuth0, Auth0Provider} from 'react-native-auth0';
 import SplashScreen from 'react-native-splash-screen';
 import { addDays } from "date-fns";
@@ -136,109 +136,117 @@ function App(): React.JSX.Element {
   }, [])
 
   function StackScreen() {
+    const insets = useSafeAreaInsets();
     return (
-      // <Stack.Navigator initialRouteName={LocalStorageInfo["IsFirstLaunch"]? "OnBoardingScreenStack": "SignInStack"}>
-      <Stack.Navigator initialRouteName={"TaskCompletionBoardStack"}>
-        <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false}}/>
-        <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
-        <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
-        <Stack.Screen name="OtpVerificationStack" component={OtpVerificaton} options={{ headerShown: false }} />
-        <Stack.Screen name="TaskCompletionBoardStack" component={TaskCompletionBoard} options={{ headerShown: false }} />
-        <Stack.Screen name="OnBoardingScreenStack" component={OnBoardingScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
-        <Stack.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
-        {/* <Stack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
-      </Stack.Navigator>
+      <View style={{ flex: 1, paddingBottom: insets.bottom }}>
+        <Stack.Navigator initialRouteName={"OnBoardingScreenStack"}>
+          <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false}}/>
+          <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
+          <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
+          <Stack.Screen name="OtpVerificationStack" component={OtpVerificaton} options={{ headerShown: false }} />
+          <Stack.Screen name="TaskCompletionBoardStack" component={TaskCompletionBoard} options={{ headerShown: false }} />
+          <Stack.Screen name="OnBoardingScreenStack" component={OnBoardingScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
+          <Stack.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
+          {/* <Stack.Screen name="RoughCompTwo" component={RoughComponentTwo} options={{ headerShown: false }}/> */}
+        </Stack.Navigator>
+      </View>
     );
   };
 
   function DrawerNav() {
+    const insets = useSafeAreaInsets();
     return (
-    // <Drawer.Navigator initialRouteName={TrialValidity() == false? "SubscriptionDrawer" : "TabsDrawer"}
-    <Drawer.Navigator initialRouteName={"TabsDrawer"}
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
-      drawerStyle: {
-        backgroundColor: '#111827',
-        width: 240,
-      },
-      // drawerActiveTintColor: '#22d3ee',
-      drawerActiveTintColor: '#a150f3',
-      drawerInactiveTintColor: '#9ca3af',
-      drawerLabelStyle: {
-        fontSize: 16,
-        fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold'
-      },
-    }}
-    >
-      <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
-      {/* <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/> */}
-      <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
-      <Drawer.Screen name="SubscriptionDrawer" component={Subscription} options={{ headerShown: false, title: "Subscription"}}/>
-      {/* { (StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&
-      <Drawer.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
-      }
-      { StudentInfoData?.["Type of Account"] == "Admin" &&
-      <Drawer.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
-      } */}
-    </Drawer.Navigator>
+      <View style={{ flex: 1, paddingBottom: insets.bottom }}>
+        <Drawer.Navigator initialRouteName={"TabsDrawer"}
+          drawerContent={(props) => <CustomDrawerContent {...props} />}
+          screenOptions={{
+          drawerStyle: {
+            backgroundColor: '#111827',
+            width: 240,
+          },
+          // drawerActiveTintColor: '#22d3ee',
+          drawerActiveTintColor: '#a150f3',
+          drawerInactiveTintColor: '#9ca3af',
+          drawerLabelStyle: {
+            fontSize: 16,
+            fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold'
+          },
+        }}
+        >
+          <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
+          {/* <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/> */}
+          <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
+          <Drawer.Screen name="SubscriptionDrawer" component={Subscription} options={{ headerShown: false, title: "Subscription"}}/>
+          {/* { (StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&
+          <Drawer.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
+          }
+          { StudentInfoData?.["Type of Account"] == "Admin" &&
+          <Drawer.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
+          } */}
+        </Drawer.Navigator>
+      </View>
     )
   }
 
   function Tabs() {
     return (
-      <Tab.Navigator initialRouteName="ScheduleTab"
-       screenOptions={ ({route}) => ({
-        tabBarStyle: {
-          backgroundColor: '#d2cfe4',
-          height: Platform.OS == 'ios' ? 70 : 60,
-          paddingBottom: Platform.OS == 'ios' ? 8 : 10,
-        },
-        tabBarIcon: ({ focused }) => (
-        <View
-          style={[
-            styles.IconView,
-            { backgroundColor: focused ? "#C1BED5" : "#d2cfe4" },
-          ]}
+      // <View style={{ flex: 1, paddingBottom: insets.bottom }}>
+        <Tab.Navigator initialRouteName="ScheduleTab"
+        screenOptions={ ({route}) => ({
+          tabBarStyle: {
+            backgroundColor: '#d2cfe4',
+            height: Platform.OS == 'ios' ? 70 : 60,
+            paddingBottom: Platform.OS == 'ios' ? 8 : 10,
+          },
+          tabBarIcon: ({ focused }) => (
+          <View
+            style={[
+              styles.IconView,
+              { backgroundColor: focused ? "#C1BED5" : "#d2cfe4" },
+            ]}
+          >
+            <Image
+              source={route.name === "ScheduleTab" ? RescheduleIcon : StatisticsIcon}
+              style={{ tintColor: focused ? "black" : "grey",
+                height: 25, width: 25
+              }}
+            />
+          </View>
+          ),
+          tabBarLabel: ({ focused }) => (
+          <Text
+            style={{
+              color: focused ? "black" : "grey",
+              fontFamily: focused
+                ? "sf-pro-display-bold"
+                : "sf-pro-display-medium",
+              fontSize: 11,
+            }}
+          >
+            {route.name === "ScheduleTab" ? "Schedule" : "Statistics"}
+          </Text>
+          )
+        })}
         >
-          <Image
-            source={route.name === "ScheduleTab" ? RescheduleIcon : StatisticsIcon}
-            style={{ tintColor: focused ? "black" : "grey",
-              height: 25, width: 25
-             }}
-          />
-        </View>
-        ),
-        tabBarLabel: ({ focused }) => (
-        <Text
-          style={{
-            color: focused ? "black" : "grey",
-            fontFamily: focused
-              ? "sf-pro-display-bold"
-              : "sf-pro-display-medium",
-            fontSize: 11,
-          }}
-        >
-          {route.name === "ScheduleTab" ? "Schedule" : "Statistics"}
-        </Text>
-        )
-      })}
-      >
-        <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false }}/>
-        <Tab.Screen name="StatisticsTab" component={Statistics} options={{ headerShown: false }}/>
-        {/* <Tab.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/> */}
-      </Tab.Navigator>
+          <Tab.Screen name="ScheduleTab" component={Schedule} options={{ headerShown: false }}/>
+          <Tab.Screen name="StatisticsTab" component={Statistics} options={{ headerShown: false }}/>
+          {/* <Tab.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/> */}
+        </Tab.Navigator>
+      // </View>
     );
   }
 
   return (
-    <NavigationContainer>
-      {/* <NativeStack.Navigator initialRouteName={LocalStorageInfo["IsLoggedIn"]? "DrawerScreens": "StackScreens"}> */}
-      <NativeStack.Navigator initialRouteName={"DrawerScreens"}>
-        <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
-        <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
-      </NativeStack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        {/* <NativeStack.Navigator initialRouteName={LocalStorageInfo["IsLoggedIn"]? "DrawerScreens": "StackScreens"}> */}
+        <NativeStack.Navigator initialRouteName={"DrawerScreens"}>
+          <NativeStack.Screen name="StackScreens" component={StackScreen} options={{ headerShown: false, animation:'slide_from_left' }}/>
+          <NativeStack.Screen name="DrawerScreens" component={DrawerNav} options={{ headerShown: false }}/>
+        </NativeStack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 
