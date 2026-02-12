@@ -17,6 +17,7 @@ import {
     withSpring
   } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux' 
+import { CommonActions } from '@react-navigation/native';
 import { addExistingSubjectsObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, updateLocalStorageInfo,
   } from '../../app/Slice';
 import { updateStreakInfo } from '../../app/Slice';
@@ -197,7 +198,30 @@ const TaskCompletionBoard = () => {
   const NextPopUpClick = () => {
     console.log("Next Button in popup Clicked")
     setPopUpIsVisible(false);
-    // setPercentageArray([])
+    navigation.dispatch(
+      CommonActions.reset({
+          index: 0,
+          routes: [
+          {
+              name: 'DrawerScreens',
+              state: {
+                  routes: [
+                      {
+                      name: 'TabsDrawer',
+                      state: {
+                          routes: [
+                          {
+                              name: 'ScheduleTab',
+                          },
+                          ],
+                      },
+                      },
+                  ],
+              },
+          },
+          ],
+      })
+    );
   }
 
   const updatePercentageArray = useCallback((uniqueID: string, percentage: number, Current_Duration: string) => {
@@ -263,7 +287,6 @@ const TaskCompletionBoard = () => {
   }
   
   const OkBoardClick = async () => {
-    // console.log("Percentage Array in OkBoardclick: ", PercentageArray)
     if (PercentageArray.length === 0) {
       Alert.alert("Missing Subjects", ` No Subjects have been registered for Statistics. Please register all the subjects to gain the Streak`)
       return;
@@ -277,20 +300,6 @@ const TaskCompletionBoard = () => {
     dispatch(updateStreakInfo("Increase"));
     setPopUpIsVisible(true);
     // onDisplayNotification();
-
-    navigation.navigate('DrawerScreens', {
-      screen: 'TabsDrawer',
-      params: {
-        screen: 'ScheduleTab',
-        params: undefined
-      },
-    })
-
-    // Toast.show({
-    //   type: ALERT_TYPE.SUCCESS,
-    //   title: 'Success',
-    //   textBody: 'Congrats! You Reached a Streak of ' + (Number(StudentInfoData["Streak"]) + 1),
-    // })
 
     try {
       const response = await fetch (

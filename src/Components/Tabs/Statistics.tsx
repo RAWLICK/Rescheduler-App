@@ -1,4 +1,4 @@
-import React, { useEffect, memo } from 'react'
+import React, { useEffect, memo, useEffectEvent } from 'react'
 import { useState, useRef, useCallback } from 'react'
 import { BarChart } from 'react-native-chart-kit'
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
@@ -361,7 +361,8 @@ const Statistics = () => {
   const ExistingSubjectSheet = useRef<TrueSheet>(null);
   const [MonthBoxPos, setMonthBoxPos] = useState('up')
   const [FakeWork, setFakeWork] = useState('FakeWork')
-  const [StatsEnabled, setStatsEnabled] = useState(false)
+  const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
+  const [StatsEnabled, setStatsEnabled] = useState(LocalStorageInfo["StatsEnabled"] === true ? true : false)
   const dispatch = useDispatch();
   // const { start, copilotEvents } = useCopilot();
   // const [lastEvent, setLastEvent] = useState<string | null>(null);
@@ -530,7 +531,7 @@ const Statistics = () => {
   useEffect(() => {
     scrollingCondition();
   }, [currentDay])
-
+  
   // useEffect(() => {
   //   copilotEvents.on("stepChange", (step) => {
   //     setLastEvent(`stepChange: ${step?.name}`);

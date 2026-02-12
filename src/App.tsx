@@ -6,7 +6,7 @@ import { createBottomTabNavigator, BottomTabNavigationProp } from '@react-naviga
 import { createDrawerNavigator, DrawerNavigationProp } from '@react-navigation/drawer';
 import { createStackNavigator, TransitionPresets, StackNavigationProp } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import AddTiming from './Components/Screens/AddTiming';
 import Schedule from './Components/Tabs/Schedule';
 import Statistics from './Components/Tabs/Statistics';
@@ -111,10 +111,6 @@ function App(): React.JSX.Element {
   const NativeStack = createNativeStackNavigator<NativeStackParamList>();
   // const TopTab = createMaterialTopTabNavigator<TopTabParamList>();
 
-  // const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
-  // const DemoNumberHere = useSelector((state: RootState) => state.DemoArraySliceReducer.DemoArrayInitialState)
-  // const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
-  // const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
   function TrialValidity() {
     // const currentDate = new Date();
     // const formatDate = (dateStr: string) => {
@@ -132,14 +128,14 @@ function App(): React.JSX.Element {
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
-    }, 1000);
+    }, 500);
   }, [])
 
   function StackScreen() {
     const insets = useSafeAreaInsets();
     return (
       <View style={{ flex: 1, paddingBottom: insets.bottom }}>
-        <Stack.Navigator initialRouteName={"OnBoardingScreenStack"}>
+        <Stack.Navigator initialRouteName={"SignInStack"}>
           <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false}}/>
           <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
           <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -191,7 +187,6 @@ function App(): React.JSX.Element {
 
   function Tabs() {
     return (
-      // <View style={{ flex: 1, paddingBottom: insets.bottom }}>
         <Tab.Navigator initialRouteName="ScheduleTab"
         screenOptions={ ({route}) => ({
           tabBarStyle: {
@@ -233,7 +228,6 @@ function App(): React.JSX.Element {
           <Tab.Screen name="StatisticsTab" component={Statistics} options={{ headerShown: false }}/>
           {/* <Tab.Screen name="RoughComp" component={RoughComponent} options={{ headerShown: false }}/> */}
         </Tab.Navigator>
-      // </View>
     );
   }
 

@@ -22,7 +22,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import { BlurView } from "@react-native-community/blur";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-// import Carousel from 'react-native-reanimated-carousel';
 import {PythonShell} from 'python-shell';
 import LinearGradient from 'react-native-linear-gradient';
 import { TrueSheet } from "@lodev09/react-native-true-sheet"
@@ -649,8 +648,38 @@ const ConceptVideo = () => {
   const navigation = useNavigation<NavigationProp<any, any>>();
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const progress = useSharedValue(0);
+  const remainingTime = Math.max(0, duration - currentTime);
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+  const animatedStyle = useAnimatedStyle(() => {
+  return {
+    width: `${progress.value * 100}%`,
+  };
+});
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
+      <View style={styles.timerWrapper}>
+        <View style={styles.progressContainer}>
+          <Animated.View
+            style={[
+              styles.progressFill,
+              // { width: `${(currentTime / duration) * 100}%` }
+              animatedStyle
+            ]}
+          />
+        </View>
+
+        <Text style={styles.countdownText}>
+          {formatTime(remainingTime)}
+        </Text>
+      </View>
       <Video source={{uri: ConsistencyVideo}}
           style={styles.VideoStyle}   // ✅ fill screen like reels
           muted={false}
@@ -660,10 +689,25 @@ const ConceptVideo = () => {
           playInBackground={false}
           repeat={false}
           onEnd={() => dispatch(updateLocalStorageInfo("VideoPlayed"))}
-          onLoad={() => {
-          console.log("Video Loaded!");
-          // onVideoLoaded();      // 👈 signal the parent
-        }}
+          onLoad={(data) => {
+            setDuration(data.duration);
+          }}
+          // onProgress={(data) => {
+          //   setCurrentTime(data.currentTime);
+          // }}
+          onProgress={(data) => {
+            if (duration > 0) {
+              const percentage = data.currentTime / duration;
+
+              // For smooth animation
+              progress.value = withTiming(percentage, {
+                duration: 250,
+              });
+
+              // For countdown text
+              setCurrentTime(data.currentTime);
+            }
+          }}
       />
     </View>
   )
@@ -1572,6 +1616,17 @@ const Schedule: React.FC = () => {
     useEffect(() => {
       console.log("Local Storage Info: ", LocalStorageInfo)
     }, [])
+
+    useEffect(() => {
+      navigation.setOptions({
+        tabBarStyle: { 
+          backgroundColor: '#d2cfe4',
+          height: Platform.OS == 'ios' ? 70 : 60,
+          paddingBottom: Platform.OS == 'ios' ? 8 : 10,
+          display: LocalStorageInfo["VideoPlayed"] == false ? "none" : "flex"
+        },
+      });
+    }, [LocalStorageInfo["VideoPlayed"]]);
     
     return (
       <>
@@ -1681,10 +1736,40 @@ const Schedule: React.FC = () => {
 }
 
   const styles = StyleSheet.create({
-      VideoStyle: {
+    VideoStyle: {
       ...StyleSheet.absoluteFillObject, // makes video cover entire screen
       width: width,
       height: height,
+    },
+
+    timerWrapper: {
+      position: 'absolute',
+      top: 60,
+      left: 20,
+      right: 20,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+
+    progressContainer: {
+      flex: 1,
+      height: 4,
+      backgroundColor: 'rgba(255, 255, 255, 0.3)',
+      borderRadius: 4,
+      overflow: 'hidden',
+      marginRight: 10,
+    },
+
+    progressFill: {
+      height: '100%',
+      backgroundColor: '#ad8ef0',
+    },
+
+    countdownText: {
+      color: '#ad8ef0',
+      fontSize: 14,
+      fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Heavy' : 'sf-pro-display-heavy'
+      // fontWeight: '600',
     },
 
     safeView: {
