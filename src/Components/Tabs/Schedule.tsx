@@ -54,7 +54,8 @@ import {
   Dimensions,
   ActivityIndicator,
   Linking,
-  Alert
+  Alert,
+  InteractionManager
 } from 'react-native';
 // import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
@@ -84,7 +85,6 @@ import {persistor} from '../../app/Store';
 import CountdownVideo from '../Images/Countdown.mp4'
 import ConsistencyVideo from '../Images/Consistensy_Video.mp4'
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
-import { InteractionManager } from 'react-native';
 const { width, height } = Dimensions.get('window');
 const CopilotView = walkthroughable(View);
 const CopilotTouchableOpacity = walkthroughable(TouchableOpacity);
@@ -156,6 +156,13 @@ type BottomOptionsAreaPropsType = {
   currentDateStringFormat: string
 }
 
+type ConceptVideoPropsType = {
+  VideoDuration: number,
+  setVideoDuration: React.Dispatch<React.SetStateAction<number>>,
+  currentTime: number,
+  setCurrentTime: React.Dispatch<React.SetStateAction<number>>,
+}
+
 const Navbar = () => {
   const navigation = useNavigation<CombinedNavigationProp>();
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
@@ -211,7 +218,7 @@ const Clock = React.memo(() => {
           <View style={[styles.second, { transform: [{ rotate: `${sRotation}deg` }] }]}></View>
         </ImageBackground>
       </CopilotView>
-     </CopilotStep>
+    </CopilotStep>
   );
 });
 
@@ -451,6 +458,25 @@ const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) =
             props.setRescheduleStatus('rescheduled')
             props.setResButtonTitle('Back To Normal')
             props.roughRescheduleStatus.current = 'rescheduled';
+            if (Platform.OS == 'android') {
+              var whoosh = new Sound('smart_compress_sound.mp3', Sound.MAIN_BUNDLE, (error: Error | null) => {
+                if (error) {
+                  console.log('failed to load the sound', error);
+                  return;
+                }
+                // loaded successfully
+                console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
+              
+                // Play the sound with an onEnd callback
+                whoosh.play((success: boolean) => {
+                  if (success) {
+                    console.log('successfully finished playing');
+                  } else {
+                    console.log('playback failed due to audio decoding errors');
+                  }
+                });
+              });
+            }
           }
         })
       }
@@ -459,6 +485,25 @@ const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) =
       if (props.rescheduleStatus == 'rescheduled') {
         props.setRescheduleStatus('off')
         props.roughRescheduleStatus.current = 'off';
+        if (Platform.OS == 'android') {
+          var whoosh = new Sound('paper_ripping.mp3', Sound.MAIN_BUNDLE, (error: Error | null) => {
+            if (error) {
+              console.log('failed to load the sound', error);
+              return;
+            }
+            // loaded successfully
+            console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
+          
+            // Play the sound with an onEnd callback
+            whoosh.play((success: boolean) => {
+              if (success) {
+                console.log('successfully finished playing');
+              } else {
+                console.log('playback failed due to audio decoding errors');
+              }
+            });
+          });
+        }
       }
   }
   
@@ -644,14 +689,12 @@ const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
   )
 });
 
-const ConceptVideo = () => {
+const ConceptVideo = React.memo((props: ConceptVideoPropsType) => {
   const navigation = useNavigation<NavigationProp<any, any>>();
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
   const progress = useSharedValue(0);
-  const remainingTime = Math.max(0, duration - currentTime);
+  const remainingTime = Math.max(0, props.VideoDuration - props.currentTime);
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -664,63 +707,54 @@ const ConceptVideo = () => {
   };
 });
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
+    <View style={{flex: 1}}>
       <View style={styles.timerWrapper}>
         <View style={styles.progressContainer}>
-          <Animated.View
-            style={[
-              styles.progressFill,
-              // { width: `${(currentTime / duration) * 100}%` }
-              animatedStyle
-            ]}
-          />
+          <Animated.View style={[ styles.progressFill, animatedStyle ]}/>
         </View>
 
         <Text style={styles.countdownText}>
           {formatTime(remainingTime)}
         </Text>
       </View>
-      <Video source={{uri: ConsistencyVideo}}
-          style={styles.VideoStyle}   // ✅ fill screen like reels
-          muted={false}
-          paused={!isFocused}    
-          controls={false}    // hide controls for reels effect
-          playWhenInactive={false}
-          playInBackground={false}
-          repeat={false}
-          onEnd={() => dispatch(updateLocalStorageInfo("VideoPlayed"))}
-          onLoad={(data) => {
-            setDuration(data.duration);
-          }}
-          // onProgress={(data) => {
-          //   setCurrentTime(data.currentTime);
-          // }}
-          onProgress={(data) => {
-            if (duration > 0) {
-              const percentage = data.currentTime / duration;
+      <View style={{}}>
+        <Video source={{uri: ConsistencyVideo}}
+            style={styles.VideoStyle}   // ✅ fill screen like reels
+            muted={false}
+            paused={!isFocused}    
+            controls={false}    // hide controls for reels effect
+            playWhenInactive={false}
+            playInBackground={false}
+            repeat={false}
+            onEnd={() => dispatch(updateLocalStorageInfo("VideoPlayed"))}
+            onLoad={(data) => {
+              props.setVideoDuration(data.duration);
+            }}
+            onProgress={(data) => {
+              if (props.VideoDuration > 0) {
+                const percentage = data.currentTime / props.VideoDuration;
+                // For smooth animation
+                progress.value = withTiming(percentage, {
+                  duration: 250,
+                });
 
-              // For smooth animation
-              progress.value = withTiming(percentage, {
-                duration: 250,
-              });
-
-              // For countdown text
-              setCurrentTime(data.currentTime);
-            }
-          }}
-      />
+                // For countdown text
+                props.setCurrentTime(data.currentTime);
+              }
+            }}
+        />
+      </View>
     </View>
   )
-}
+})
 
 const Schedule: React.FC = () => {
-    // const [VideoPlayed, setVideoPlayed] = useState(false);
-    // const hasStarted = useRef(false);
-    // const [layoutReady, setLayoutReady] = useState(false);
     const isConnected = useInternetCheck();
     const route = useRoute<CombinedRouteProp>();
     const navigation = useNavigation<NavigationProp<any, any>>();
     // const navigation = useNavigation<CombinedNavigationProp>();
+    const [VideoDuration, setVideoDuration] = useState(0);
+    const [currentTime, setCurrentTime] = useState(0);
     const [currentDate, setCurrentDate] = useState(new Date());
     const currentHourTime = currentDate.getHours();
     const currentMinTime = currentDate.getMinutes();
@@ -1179,7 +1213,7 @@ const Schedule: React.FC = () => {
           if (TaskDate === selectedDate) {
             // console.log("TaskDate Equals Selected Date")
             if (hourRotation >= startAngle && hourRotation <= endAngle) {
-              console.log("A Time is alotted")
+              // console.log("A Time is alotted")
               setWork(angleWork);
               setduration(`(${angleDuration})`);
               settimeStart(TwelveHourFormat(startTime));
@@ -1187,7 +1221,7 @@ const Schedule: React.FC = () => {
               break;
             }
             else if (hourRotation < startAngle || hourRotation > endAngle) {
-              console.log("Free time was registered")
+              // console.log("Free time was registered")
               setWork('Free Time');
               setduration("");
               settimeStart("");
@@ -1640,7 +1674,12 @@ const Schedule: React.FC = () => {
       />
       {/* #BD54EE, 6c099b */}
         {LocalStorageInfo["VideoPlayed"] == false && (
-          <ConceptVideo/>
+          <ConceptVideo 
+            VideoDuration={VideoDuration}
+            setVideoDuration={setVideoDuration}
+            currentTime={currentTime}
+            setCurrentTime={setCurrentTime}
+          />
         )}
         {LocalStorageInfo["VideoPlayed"] == true && (
         <View style={styles.mainStyle} 
@@ -1650,7 +1689,8 @@ const Schedule: React.FC = () => {
                     start(); 
                   }, 2000);
                 } 
-              }}>
+              }}
+              >
           <LinearGradient
             // x = 0 is the left edge of the component.
             // x = 1 is the right edge of the component.
@@ -1737,7 +1777,7 @@ const Schedule: React.FC = () => {
 
   const styles = StyleSheet.create({
     VideoStyle: {
-      ...StyleSheet.absoluteFillObject, // makes video cover entire screen
+      // ...StyleSheet.absoluteFillObject, // makes video cover entire screen
       width: width,
       height: height,
     },
@@ -1749,6 +1789,7 @@ const Schedule: React.FC = () => {
       right: 20,
       flexDirection: 'row',
       alignItems: 'center',
+      zIndex: 10
     },
 
     progressContainer: {

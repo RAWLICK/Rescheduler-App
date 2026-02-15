@@ -135,7 +135,7 @@ function App(): React.JSX.Element {
     const insets = useSafeAreaInsets();
     return (
       <View style={{ flex: 1, paddingBottom: insets.bottom }}>
-        <Stack.Navigator initialRouteName={"SignInStack"}>
+        <Stack.Navigator initialRouteName={"TaskCompletionBoardStack"}>
           <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false}}/>
           <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
           <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />

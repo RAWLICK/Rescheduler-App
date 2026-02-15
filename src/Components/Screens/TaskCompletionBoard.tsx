@@ -6,14 +6,12 @@ import {
     Gesture,
     GestureDetector,
     GestureHandlerRootView,
-    PanGestureHandler,
     ScrollView,
   } from 'react-native-gesture-handler';
   import Animated, {
     useSharedValue,
     useAnimatedStyle,
     clamp,
-    runOnJS,
     withSpring
   } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux' 
@@ -35,6 +33,7 @@ import DemoLandingPage from '../Images/DemoLandingPage.jpeg';
 import { demoData } from '../../Functions/Animated-Bar-Chart/constants';
 import { set } from 'date-fns';
 import {useNavigation} from '@react-navigation/native';
+import { scheduleOnRN } from 'react-native-worklets';
 const { width, height } = Dimensions.get('window');
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 import {CombinedNavigationProp} from '../../App';
@@ -449,7 +448,8 @@ const TaskCompletionBoard = () => {
 
                     if (newPercentage !== lastPercentage.value) {
                       lastPercentage.value = newPercentage;
-                      runOnJS(updatePercentageArray)(uniqueID, newPercentage, Current_Duration);
+                      // runOnJS(updatePercentageArray)(uniqueID, newPercentage, Current_Duration);
+                      scheduleOnRN(updatePercentageArray, uniqueID, newPercentage, Current_Duration);
                     }
 
                     // runOnJS helps in running code on JavaScript thread instead on UI Thread
@@ -459,7 +459,8 @@ const TaskCompletionBoard = () => {
                     );
 
                     if (foundRange) {
-                      runOnJS(setDuration)(foundRange.duration);
+                      // runOnJS(setDuration)(foundRange.duration);
+                      scheduleOnRN(setDuration, foundRange.duration);
 
                       // runOnJS(setCoveredDurBoxes)((prevSelections) => {
                       //   // Check if the foundRange.boxNum is already in the previous selections

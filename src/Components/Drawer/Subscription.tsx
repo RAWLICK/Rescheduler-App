@@ -104,37 +104,41 @@ const Subscription = () => {
             <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: '#a06ef8' }}>₹499/Year</Text>
           </View>
 
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', paddingLeft: 10, paddingRight: 20, justifyContent: 'center', alignItems: 'center' }}>
-            <View style={{ flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 5 }}>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Image source={RescheduleClock} style={{ height: 40, width: 40 }} />
+          <View style={{ flexDirection: 'column', paddingLeft: 10, paddingRight: 10, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{flexDirection: 'row'}}>
+              <View style={{ flex: 1, flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 5}}>
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <Image source={RescheduleClock} style={{ height: 40, width: 40 }} />
+                </View>
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252' }}>Unlimited Reschedules</Text>
+                </View>
               </View>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252', marginLeft: 10 }}>   Unlimited Reschedules</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 10 }}>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Image source={StatisticsIcon} style={{ height: 40, width: 40, tintColor: '#a06ef8' }} />
-              </View>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252', marginLeft: 10 }}>   Measure Statistics</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 10 }}>
-              <View style={{ justifyContent: 'center', alignItems: 'center', }}>
-                <Image source={Streak} style={{ height: 40, width: 40 }} />
-              </View>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252', marginLeft: 10 }}>   Build Streaks</Text>
+              <View style={{ flex: 1, flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 10 }}>
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <Image source={StatisticsIcon} style={{ height: 40, width: 40, tintColor: '#a06ef8' }} />
+                </View>
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252'}}>Measure Statistics</Text>
+                </View>
               </View>
             </View>
-            <View style={{ flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 10 }}>
-              <View style={{ justifyContent: 'center', alignItems: 'center', }}>
-                <Image source={PieChartShow} style={{ height: 40, width: 40 }} />
+            <View style={{flexDirection: 'row'}}>
+              <View style={{ flex: 1, flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 10 }}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', }}>
+                  <Image source={Streak} style={{ height: 40, width: 40 }} />
+                </View>
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252'}}>Build Streaks</Text>
+                </View>
               </View>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252', marginLeft: 10 }}>   Schedule in PieChart Form</Text>
+              <View style={{ flex: 1,flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 10}}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', }}>
+                  <Image source={PieChartShow} style={{ height: 40, width: 40 }} />
+                </View>
+                <View style={{ justifyContent: 'center', alignItems: 'center'}}>
+                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252', textAlign: 'center'}}>Schedule in PieChart Form</Text>
+                </View>
               </View>
             </View>
           </View>

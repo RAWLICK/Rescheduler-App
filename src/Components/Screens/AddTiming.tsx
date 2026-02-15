@@ -51,6 +51,7 @@ import { updateStreakInfo } from '../../app/Slice';
 import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import LinearGradient from 'react-native-linear-gradient';
+import { scheduleOnRN, scheduleOnRuntime } from 'react-native-worklets';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PanGesture = ReturnType<typeof Gesture.Pan>;
@@ -671,7 +672,8 @@ const AddTiming = () => {
       );
 
       if (foundRange) {
-        runOnJS(setDuration)(foundRange.duration);
+        // runOnJS(setDuration)(foundRange.duration);
+        scheduleOnRN(setDuration, foundRange.duration);
 
         // runOnJS(setCoveredDurBoxes)((prevSelections) => {
         //   // Check if the foundRange.boxNum is already in the previous selections
