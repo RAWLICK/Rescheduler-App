@@ -223,7 +223,7 @@ const Clock = React.memo(() => {
 });
 
 const UpperArea = React.memo((props: UpperAreaPropsType) => {
-  console.log("Upper Area is made ran")
+  // console.log("Upper Area is made ran")
   const currentHourMinTime = `${props.currentHourTime.toString().padStart(2, '0')}:${props.currentMinTime.toString().padStart(2, '0')}`
   const stringToMonthConverter = (currentMonth: number) => {
     switch (currentMonth) {
@@ -617,7 +617,7 @@ const RescheduleButtonArea = React.memo((props: RescheduleButtonAreaPropsType) =
 });
 
 const BottomOptionsArea = React.memo((props: BottomOptionsAreaPropsType) => {
-  console.log("BottomOptionsArea is made ran");
+  // console.log("BottomOptionsArea is made ran");
   function ClickingAddTiming() {
     if (props.rescheduleStatus === 'rescheduled') {
       Alert.alert('You have used Smart Compress', 'Please click on "Back To Normal" to come back and add new timings of subjects')
@@ -713,9 +713,9 @@ const ConceptVideo = React.memo((props: ConceptVideoPropsType) => {
           <Animated.View style={[ styles.progressFill, animatedStyle ]}/>
         </View>
 
-        <Text style={styles.countdownText}>
+        {/* <Text style={styles.countdownText}>
           {formatTime(remainingTime)}
-        </Text>
+        </Text> */}
       </View>
       <View style={{}}>
         <Video source={{uri: ConsistencyVideo}}

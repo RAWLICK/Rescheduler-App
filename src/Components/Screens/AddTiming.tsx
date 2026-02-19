@@ -608,7 +608,7 @@ const AddTiming = () => {
   // var Sound = require('react-native-sound');
   Sound.setCategory('Playback');
 
-  console.log("AddTiming is made run")
+  // console.log("AddTiming is made run")
 
   function elaborateDuration(duration: string) {
     // console.log("elaborateDuration is made run");
@@ -822,7 +822,7 @@ const AddTiming = () => {
         console.error('Catch Error: ', error);
       }
     };
-  }, [WorkToDo]);
+  }, [WorkToDo, StartTime, EndTime, StartAngle, EndAngle, TaskDate]);
 
   useEffect(() => {
     setStartTime(currentTime);
@@ -838,7 +838,7 @@ const AddTiming = () => {
   }, [StartTime, EndTime]);
   
   useEffect(() => {
-      console.log("Is Connected from Settings: ", isConnected)
+      // console.log("Is Connected: ", isConnected)
       if (isConnected == false) {
         Dialog.show({
           type: ALERT_TYPE.DANGER,
@@ -854,10 +854,11 @@ const AddTiming = () => {
 
   useEffect(() => {
     console.log("Start Time: ", StartTime)
-  }, [])
+  }, [StartTime])
+
   
   return (
-    <SafeAreaView style={styles.safeView}>
+    <View style={styles.safeView}>
       <StatusBar
         animated={true}
         backgroundColor="#1B1B1D"
@@ -909,7 +910,7 @@ const AddTiming = () => {
           </ScrollView>
         </View>
       </GestureHandlerRootView>
-    </SafeAreaView>
+    </View>
   );
 };
 
