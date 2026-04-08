@@ -12,7 +12,7 @@ import StreakFire from '../Images/StreakFire.png'
 import Doodle from '../Images/Doodle.jpg'
 import Reload from '../Images/Reload.png'
 import 'react-native-gesture-handler'
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView, PointerType } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 import Svg, { Circle, Path, Defs, Stop } from 'react-native-svg';
 import Sound from 'react-native-sound';
@@ -60,6 +60,7 @@ import {
 // import Navbar from '../Navbar/Navbar';
 import ScheduleTable from '../Screens/ScheduleTable'
 import CalenderView from '../Screens/CalenderView'
+import InfoRegister from '../Screens/InfoRegister';
 import TaskCompletionBoard from '../Screens/TaskCompletionBoard';
 // import { TaskCompletionPopUp } from '../Screens/TaskCompletionBoard';
 import { ScheduleArrayItem } from '../Screens/AddTiming';
@@ -74,7 +75,7 @@ import { data } from '../../Functions/Animated-Bar-Chart/constants';
 import useInternetCheck from '../Authentication/InternetCheck';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import { addDays, subDays } from "date-fns";
-import { updateStreakInfo } from '../../app/Slice';
+import { updateStreakInfo, updateSubscriptionInfo } from '../../app/Slice';
 import { CommonActions, DrawerActions } from '@react-navigation/native';
 import { registerUserInfo } from '../../app/Slice';
 import { MotiView } from 'moti';
@@ -828,7 +829,6 @@ const Schedule: React.FC = () => {
     const dispatch = useDispatch();
     const { start, copilotEvents } = useCopilot();  // start is ran using onLayout in main View
     const [lastEvent, setLastEvent] = useState<string | null>(null);
-    
     const ScheduleArray = useSelector((state: RootState) => state.ScheduleArraySliceReducer.ScheduleArrayInitialState)
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
     const ExistingSubjectsArray = useSelector((state: RootState) => state.ExistingSubjectsArraySliceReducer.ExistingSubjectsArrayInitialState)
@@ -1378,6 +1378,33 @@ const Schedule: React.FC = () => {
       }
     }
 
+    async function IsSubscriptionActive() {
+      try {
+          const SubscriptionInfo = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/IsSubscriptionActive':'http://10.0.2.2:5000/IsSubscriptionActive',
+          'https://rescheduler-server.onrender.com/IsSubscriptionActive',
+          { 
+            method: 'POST', // Specify the request method
+            headers: {
+              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+            },
+            body: JSON.stringify({
+              uniqueID: StudentInfoData["uniqueID"]
+            }), // Convert the request payload to JSON.
+          })
+          
+          if (!SubscriptionInfo.ok) {  // Handle HTTP errors
+            throw new Error('Error in IsSubscriptionActive Response');
+          }
+          const fetched_SubscriptionInfo = await SubscriptionInfo.json();
+          console.log("Fetched IsSubscriptionActive")
+          dispatch(updateSubscriptionInfo(fetched_SubscriptionInfo))
+          
+      } catch (error) {
+          console.error('Catch Error(IsSubscriptionActive): ', error);
+      }
+    }
+
     async function RegularStudentInfoUpdate() {
       try {
           const StudentInfoResponse = await fetch(
@@ -1422,6 +1449,9 @@ const Schedule: React.FC = () => {
 
     useEffect(() => {
       checkAppVersion();
+      if (StudentInfoData["Subscription Type"] == "Premium") {
+        IsSubscriptionActive();
+      }
       RegularStudentInfoUpdate();
     }, [])
     
@@ -1765,6 +1795,8 @@ const Schedule: React.FC = () => {
               navigation={navigation}
               currentDateStringFormat={currentDateStringFormat}
             />
+
+            {/* <InfoRegister/> */}
           </View>
         </View>
         )}

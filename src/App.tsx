@@ -57,9 +57,9 @@ type DrawerParamList = {
    screen: keyof TabParamList;  // Match with TabParamList
    params?: TabParamList[keyof TabParamList];  // Include Tab parameters
   };
-  // SettingsDrawer: undefined;
-  PartneredLibrariesDrawer: undefined;
   SubscriptionDrawer:  undefined;
+  // SettingsDrawer: undefined;
+  // PartneredLibrariesDrawer: undefined;
   // AppDistributorDrawer: undefined;
   // AdminPanelDrawer: undefined;
 };
@@ -135,7 +135,7 @@ function App(): React.JSX.Element {
     const insets = useSafeAreaInsets();
     return (
       <View style={{ flex: 1, paddingBottom: insets.bottom }}>
-        <Stack.Navigator initialRouteName={"TaskCompletionBoardStack"}>
+        <Stack.Navigator initialRouteName={"SignInStack"}>
           <Stack.Screen name="AddTimingStack" component={AddTiming} options={{ headerShown: false}}/>
           <Stack.Screen name="SignInStack" component={SignIn} options={{ headerShown: false }} />
           <Stack.Screen name="SignUpStack" component={SignUp} options={{ headerShown: false }} />
@@ -171,15 +171,9 @@ function App(): React.JSX.Element {
         }}
         >
           <Drawer.Screen name="TabsDrawer" component={Tabs} options={{ headerShown: false, title: "Schedule"}}/>
-          {/* <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/> */}
-          <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/>
           <Drawer.Screen name="SubscriptionDrawer" component={Subscription} options={{ headerShown: false, title: "Subscription"}}/>
-          {/* { (StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&
-          <Drawer.Screen name="AppDistributorDrawer" component={AppDistributor} options={{ headerShown: false, title: "App Distributor"}}/>
-          }
-          { StudentInfoData?.["Type of Account"] == "Admin" &&
-          <Drawer.Screen name="AdminPanelDrawer" component={AdminPanel} options={{ headerShown: false, title: "Admin Panel"}}/>
-          } */}
+          {/* <Drawer.Screen name="SettingsDrawer" component={Settings} options={{ headerShown: false, title: "Settings"}}/> */}
+          {/* <Drawer.Screen name="PartneredLibrariesDrawer" component={PartneredLibraries} options={{ headerShown: false, title: "Partnered Libraries"}}/> */}
         </Drawer.Navigator>
       </View>
     )

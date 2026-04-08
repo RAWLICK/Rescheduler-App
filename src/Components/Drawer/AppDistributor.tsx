@@ -563,12 +563,12 @@ const AppDistributor = () => {
               <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 15}}>
                   <Image source={SearchIcon} style={{height: 25, width: 25, position: 'absolute', marginLeft: 10}} />
                   <TextInput
-                  style={styles.input}
-                  onChangeText={setStudentSearch}
-                  value={studentSearch}
-                  placeholder='Search "Kartavya Chauhan" '
-                  placeholderTextColor='#9b999c'
-                  keyboardType="default"
+                    style={styles.input}
+                    onChangeText={setStudentSearch}
+                    value={studentSearch}
+                    placeholder='Search "Kartavya Chauhan" '
+                    placeholderTextColor='#9b999c'
+                    keyboardType="default"
                   />
               </View>
 

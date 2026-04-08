@@ -5,6 +5,7 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import android.content.Intent 
 
 // import org.devio.rn.splashscreen.SplashScreen; // here
 
@@ -23,6 +24,11 @@ class MainActivity : ReactActivity() {
         // SplashScreen.show(this);  // here
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme) // Change to your AppTheme
+    }
+
+    override fun onNewIntent(intent: Intent) {
+      super.onNewIntent(intent)
+      setIntent(intent)
     }
 
   /**

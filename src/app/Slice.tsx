@@ -22,9 +22,9 @@ export type StudentInfoDataType = {
     "Gender": string,
     "Streak": number,
     "Subscription Type": string,
-    "Distribution Name": string,
-    "Distribution Branch": string,
-    "Distribution ID": string,
+    "Start Date": string,
+    "Expiry Date": string,
+    "Payments": [],
     "City": string,
     "State": string,
     "Country": string
@@ -130,9 +130,9 @@ export const StudentInfoSlice = createSlice({
                 "Gender": action.payload.Gender,
                 "Streak": action.payload.Streak,
                 "Subscription Type": action.payload['Subscription Type'],
-                "Distribution Name": action.payload['Distribution Name'],
-                "Distribution Branch": action.payload['Distribution Branch'],
-                "Distribution ID": action.payload['Distribution ID'],
+                "Start Date": action.payload['Start Date'],
+                "Expiry Date": action.payload['Expiry Date'],
+                "Payments": action.payload.Payments || [],
                 "City": action.payload.City,
                 "State": action.payload.State,
                 "Country": action.payload.Country,
@@ -147,6 +147,11 @@ export const StudentInfoSlice = createSlice({
             }
             else if (action.payload == "Vanish") {
                 state.StudentInfoInitialState["Streak"] = 1
+            }
+        },
+        updateSubscriptionInfo: (state, action) => {
+            if (action.payload["active"] == false) {
+                state.StudentInfoInitialState["Subscription Type"] = "Expired";
             }
         }
     }
@@ -388,7 +393,7 @@ export const StudentsDataArraySlice = createSlice({
 
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
 export const { updateLocalStorageInfo } = LocalStorageInfoSlice.actions
-export const { registerUserInfo, updateStreakInfo } = StudentInfoSlice.actions
+export const { registerUserInfo, updateStreakInfo, updateSubscriptionInfo } = StudentInfoSlice.actions
 export const { addScheduleObject, removeScheduleObject, addWholeScheduleArray } = ScheduleArraySlice.actions
 export const { addExistingSubjectsObject, EditExistingSubjectObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, addWholeExistingSubjectsArray } = ExistingSubjectsArraySlice.actions
 export const { addStudentObject, removeStudentObject, addWholeStudentsDataArray } = StudentsDataArraySlice.actions

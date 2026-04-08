@@ -14,15 +14,116 @@ import StatisticsIcon from '../Images/StatisticsIcon.png'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux' 
 import { RootState } from '../../app/Store';
-import { addDays } from "date-fns";
+import { addDays, format } from "date-fns";
 import { NavigationProp } from '@react-navigation/native';
+export const { registerUserInfo, updateStreakInfo } = StudentInfoSlice.actions
+import RazorpayCheckout from 'react-native-razorpay'
+import axios from "axios";
+import { StudentInfoSlice } from '../../app/Slice';
 const { width, height } = Dimensions.get('window');
 
 const Subscription = () => {
   const navigation = useNavigation<NavigationProp<any, any>>();
   const insets = useSafeAreaInsets();
+  const dispatch = useDispatch();
 
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+
+  async function RegularStudentInfoUpdate() {
+    try {
+        const StudentInfoResponse = await fetch(
+        // Platform.OS === 'ios'? 'http://localhost:5000/GetStudentInfo':'http://10.0.2.2:5000/GetStudentInfo',
+        'https://rescheduler-server.onrender.com/GetStudentInfo',
+        { 
+          method: 'POST', // Specify the request method
+          headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          },
+          body: JSON.stringify({
+            "Value": StudentInfoData["uniqueID"], // Use the uniqueID from StudentInfoData
+            "Type": "uniqueID"
+        }), // Convert the request payload to JSON.
+        })
+        
+        if (!StudentInfoResponse.ok) {  // Handle HTTP errors
+          throw new Error('Error in RegularStudentInfoUpdate Response');
+        }
+        const fetched_StudentInfo = await StudentInfoResponse.json();
+        console.log("Fetched RegularStudentInfoUpdate")
+        // console.log("Fetched StudentInfo: ", fetched_StudentInfo)
+        dispatch(registerUserInfo(fetched_StudentInfo))
+        
+    } catch (error) {
+        console.error('Catch Error(RegularStudentInfoUpdate): ', error);
+    }
+  }
+
+  const getPricing = async () => {
+    const res = await fetch('https://rescheduler-server.onrender.com/getPricing', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return res.json();
+  };
+
+  const createOrder = async () => {
+    const res = await fetch('https://rescheduler-server.onrender.com/createOrder', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "uniqueID": StudentInfoData["uniqueID"],
+      }), // Convert the request payload to JSON.
+    });
+
+    return res.json();
+  };
+
+  const verifyPayment = async (paymentData: any) => {
+    const res = await fetch('https://rescheduler-server.onrender.com/verifyPayment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(paymentData)
+    });
+
+    return res.json();
+  };
+
+  const startPayment = async () => {
+    const order = await createOrder(); // your API
+
+    const options = {
+      key: "rzp_live_SZCZ2pEWmp8WuL",
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.orderId,
+      name: "Rescheduler",
+      description: "Subscription"
+    };
+
+    try {
+      const data = await RazorpayCheckout.open(options);
+
+      // 🔥 Send to backend
+      await verifyPayment({
+        order_id: data.razorpay_order_id,
+        payment_id: data.razorpay_payment_id,
+        signature: data.razorpay_signature,
+        uniqueID: StudentInfoData["uniqueID"]
+      });
+
+      RegularStudentInfoUpdate();
+
+    } catch (err) {
+      console.log("Payment failed", err);
+    }
+  };
 
   function TrialValidity() {
     const currentDate = new Date();
@@ -35,6 +136,20 @@ const Subscription = () => {
       return false;
     }
   }
+
+  const formatDate = (isoString: string): string => {
+    const date = new Date(isoString);
+
+    const day = date.getUTCDate(); // 7
+    const year = date.getUTCFullYear(); // 2027
+
+    const month = date.toLocaleString("en-US", {
+      month: "long",
+      timeZone: "UTC",
+    }); // April
+
+    return `${day} ${month}, ${year}`;
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -101,7 +216,7 @@ const Subscription = () => {
         <View style={{ height: 300, backgroundColor: 'white', borderRadius: 20, padding: 10, paddingTop: 0, marginTop: 15 }}>
           <View style={{ height: 50, borderBottomWidth: 0.5, borderColor: 'black', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: 'black' }}>Rescheduler Premium - </Text>
-            <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: '#a06ef8' }}>₹499/Year</Text>
+            <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: '#a06ef8' }}>₹19/Year</Text>
           </View>
 
           <View style={{ flexDirection: 'column', paddingLeft: 10, paddingRight: 10, justifyContent: 'center', alignItems: 'center' }}>
@@ -111,7 +226,7 @@ const Subscription = () => {
                   <Image source={RescheduleClock} style={{ height: 40, width: 40 }} />
                 </View>
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252' }}>Unlimited Reschedules</Text>
+                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252', textAlign: 'center' }}>Smart Compress</Text>
                 </View>
               </View>
               <View style={{ flex: 1, flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 10 }}>
@@ -119,7 +234,7 @@ const Subscription = () => {
                   <Image source={StatisticsIcon} style={{ height: 40, width: 40, tintColor: '#a06ef8' }} />
                 </View>
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252'}}>Measure Statistics</Text>
+                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252', textAlign: 'center'}}>Measure Statistics</Text>
                 </View>
               </View>
             </View>
@@ -129,7 +244,7 @@ const Subscription = () => {
                   <Image source={Streak} style={{ height: 40, width: 40 }} />
                 </View>
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252'}}>Build Streaks</Text>
+                  <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: '#525252', textAlign: 'center' }}>Build Streaks</Text>
                 </View>
               </View>
               <View style={{ flex: 1,flexDirection: 'column', height: 120, width: 140, padding: 5, justifyContent: 'center', alignItems: 'center', rowGap: 10}}>
@@ -143,12 +258,23 @@ const Subscription = () => {
             </View>
           </View>
         </View>
+        {
+          StudentInfoData["Subscription Type"] == "Free" && (
+            <TouchableOpacity style={{ height: 50, borderRadius: 17, justifyContent: 'center', alignItems: 'center', backgroundColor: '#a06ef8', marginTop: 20, elevation: 5 }} onPress={startPayment}>
+              <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'black', fontSize: 16 }}>Get Premium</Text>
+            </TouchableOpacity>
+          ) 
+        }
+        
+        {
+          StudentInfoData["Subscription Type"] == "Premium" && (
+            <View style={{ height: 50, borderRadius: 17, justifyContent: 'center', alignItems: 'center', borderColor: '#a06ef8', marginTop: 20, borderWidth: 1.5, backgroundColor: '#d3bdfa', elevation: 5}}>
+              <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: '#393939', fontSize: 16 }}>{`Ending on ${formatDate(StudentInfoData["Expiry Date"])}`}</Text>
+            </View>
+          ) 
+        }
 
-        <TouchableOpacity style={{ height: 50, borderRadius: 17, justifyContent: 'center', alignItems: 'center', backgroundColor: '#a06ef8', marginTop: 20, elevation: 5 }} onPress={() => Linking.openURL('https://rzp.io/rzp/b42Y2qi')}>
-          <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'black', fontSize: 16 }}>Get Premium</Text>
-        </TouchableOpacity>
-
-        <View>
+        {/* <View>
           <View style={{ justifyContent: 'center', alignItems: 'center', height: 30, marginBottom: 10, marginTop: 10}}>
             <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 15, color: 'black'}}>OR</Text>
           </View>
@@ -167,9 +293,9 @@ const Subscription = () => {
               color: '#DDDDDD',
             }}>Join Our Partnered Libraries</Text>
           </TouchableOpacity>
-      </View>
+      </View> */}
 
-      <View style={{flexDirection: 'row', marginTop: 30, gap: 5}}>
+      {/* <View style={{flexDirection: 'row', marginTop: 30, gap: 5}}>
         {(StudentInfoData?.["Type of Account"] == "Distributor" || StudentInfoData?.["Type of Account"] == "Admin") &&
         <TouchableOpacity style={{flex: 1, justifyContent: 'center',
             alignItems: 'center',
@@ -192,7 +318,7 @@ const Subscription = () => {
             <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'black'}}>Admin Panel</Text>
         </TouchableOpacity>
         }
-      </View>
+      </View> */}
       </View>
     </View>
   )

@@ -29,7 +29,7 @@ import {BlurView} from '@react-native-community/blur';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Auth0 from 'react-native-auth0';
 import {useAuth0, Auth0Provider} from 'react-native-auth0';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { useDispatch, useSelector } from 'react-redux' 
 import { StudentInfoDataType } from '../../app/Slice';
 import { ScheduleArrayItem } from '../Screens/AddTiming';
@@ -120,203 +120,203 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
     clientId: 'nRmEpjXepZqDx39ScNB3qqpGJ5w7ErRg',
   });
 
-  const MatchNumber = async () => {
-    if (props.PhoneNumText == '0019') {
-      // Fetching Demo Account Student Info
-      try {
-          const StudentInfoResponse = await fetch(
-          // Platform.OS === 'ios'? 'http://localhost:5000/GetStudentInfo':'http://10.0.2.2:5000/GetStudentInfo',
-          'https://rescheduler-server.onrender.com/GetStudentInfo',
-          { 
-            method: 'POST', // Specify the request method
-            headers: {
-              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
-            },
-            body: JSON.stringify({
-              "Value": props.PhoneNumText,
-              "Type": "Phone Number"
-          }), // Convert the request payload to JSON.
-          })
+  // const MatchNumber = async () => {
+  //   if (props.PhoneNumText == '0019') {
+  //     // Fetching Demo Account Student Info
+  //     try {
+  //         const StudentInfoResponse = await fetch(
+  //         // Platform.OS === 'ios'? 'http://localhost:5000/GetStudentInfo':'http://10.0.2.2:5000/GetStudentInfo',
+  //         'https://rescheduler-server.onrender.com/GetStudentInfo',
+  //         { 
+  //           method: 'POST', // Specify the request method
+  //           headers: {
+  //             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+  //           },
+  //           body: JSON.stringify({
+  //             "Value": props.PhoneNumText,
+  //             "Type": "Phone Number"
+  //         }), // Convert the request payload to JSON.
+  //         })
           
-          if (!StudentInfoResponse.ok) {  // Handle HTTP errors
-            throw new Error('Failed to add data to the server');
-          }
-          fetched_StudentInfo = await StudentInfoResponse.json();
-          // console.log("Fetched StudentInfo: ", fetched_StudentInfo)
-          dispatch(registerUserInfo(fetched_StudentInfo))
-          dispatch(updateLocalStorageInfo("Login"))
-      } catch (error) {
-          console.error('Catch Error: ', error);
-          props.setLoading(false)
-      }
+  //         if (!StudentInfoResponse.ok) {  // Handle HTTP errors
+  //           throw new Error('Failed to add data to the server');
+  //         }
+  //         fetched_StudentInfo = await StudentInfoResponse.json();
+  //         // console.log("Fetched StudentInfo: ", fetched_StudentInfo)
+  //         dispatch(registerUserInfo(fetched_StudentInfo))
+  //         dispatch(updateLocalStorageInfo("Login"))
+  //     } catch (error) {
+  //         console.error('Catch Error: ', error);
+  //         props.setLoading(false)
+  //     }
 
-      // Fetching Demo Account Schedule Array
-      try {
-          const ScheduleArrayResponse = await fetch(
-          // Platform.OS === 'ios'? 'http://localhost:5000/GetScheduleArray':'http://192.168.31.141:5000/GetScheduleArray',
-          'https://rescheduler-server.onrender.com/GetScheduleArray',
-          { 
-            method: 'POST', // Specify the request method
-            headers: {
-              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
-            },
-            body: JSON.stringify({
-              "Type": "Phone Number",
-              "Value": props.PhoneNumText
-          }), // Convert the request payload to JSON.
-          })
+  //     // Fetching Demo Account Schedule Array
+  //     try {
+  //         const ScheduleArrayResponse = await fetch(
+  //         // Platform.OS === 'ios'? 'http://localhost:5000/GetScheduleArray':'http://192.168.31.141:5000/GetScheduleArray',
+  //         'https://rescheduler-server.onrender.com/GetScheduleArray',
+  //         { 
+  //           method: 'POST', // Specify the request method
+  //           headers: {
+  //             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+  //           },
+  //           body: JSON.stringify({
+  //             "Type": "Phone Number",
+  //             "Value": props.PhoneNumText
+  //         }), // Convert the request payload to JSON.
+  //         })
           
-          if (!ScheduleArrayResponse.ok) {  // Handle HTTP errors
-            throw new Error('Failed to download data from the server');
-          }
-          // props.setLoading(false)
-          fetched_ScheduleArray = await ScheduleArrayResponse.json();
-          // console.log("Fetched ScheduleArray: ", fetched_ScheduleArray)
-          dispatch(addWholeScheduleArray(fetched_ScheduleArray))
-          // console.log("Student Signed In");
-          // navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
+  //         if (!ScheduleArrayResponse.ok) {  // Handle HTTP errors
+  //           throw new Error('Failed to download data from the server');
+  //         }
+  //         // props.setLoading(false)
+  //         fetched_ScheduleArray = await ScheduleArrayResponse.json();
+  //         // console.log("Fetched ScheduleArray: ", fetched_ScheduleArray)
+  //         dispatch(addWholeScheduleArray(fetched_ScheduleArray))
+  //         // console.log("Student Signed In");
+  //         // navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
           
-      } catch (error) {
-          console.error('Catch Error: ', error);
-          props.setLoading(false)
-      }
+  //     } catch (error) {
+  //         console.error('Catch Error: ', error);
+  //         props.setLoading(false)
+  //     }
 
-      // Fetching Demo Account Existing Subjects Array
-      try {
-          const ExistingSubjectsResponse = await fetch(
-          // Platform.OS === 'ios'? 'http://localhost:5000/GetExistingSubjectsArray':'http://192.168.31.141:5000/GetExistingSubjectsArray',
-          'https://rescheduler-server.onrender.com/GetExistingSubjectsArray',
-          { 
-            method: 'POST', // Specify the request method
-            headers: {
-              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
-            },
-            body: JSON.stringify({
-              "Type": "Phone Number",
-              "Value": props.PhoneNumText
-          }), // Convert the request payload to JSON.
-          })
+  //     // Fetching Demo Account Existing Subjects Array
+  //     try {
+  //         const ExistingSubjectsResponse = await fetch(
+  //         // Platform.OS === 'ios'? 'http://localhost:5000/GetExistingSubjectsArray':'http://192.168.31.141:5000/GetExistingSubjectsArray',
+  //         'https://rescheduler-server.onrender.com/GetExistingSubjectsArray',
+  //         { 
+  //           method: 'POST', // Specify the request method
+  //           headers: {
+  //             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+  //           },
+  //           body: JSON.stringify({
+  //             "Type": "Phone Number",
+  //             "Value": props.PhoneNumText
+  //         }), // Convert the request payload to JSON.
+  //         })
           
-          if (!ExistingSubjectsResponse.ok) {  // Handle HTTP errors
-            throw new Error('Failed to download data from the server');
-          }
-          fetched_ExistingSubjectsArray = await ExistingSubjectsResponse.json();
-          // console.log("Fetched ExistingSubjectsArray: ", fetched_ExistingSubjectsArray)
-          dispatch(addWholeExistingSubjectsArray(fetched_ExistingSubjectsArray))
+  //         if (!ExistingSubjectsResponse.ok) {  // Handle HTTP errors
+  //           throw new Error('Failed to download data from the server');
+  //         }
+  //         fetched_ExistingSubjectsArray = await ExistingSubjectsResponse.json();
+  //         // console.log("Fetched ExistingSubjectsArray: ", fetched_ExistingSubjectsArray)
+  //         dispatch(addWholeExistingSubjectsArray(fetched_ExistingSubjectsArray))
 
-          // Fetching Library Students Info
-          if (fetched_StudentInfo?.["Type of Account"] === "Distributor" || fetched_StudentInfo?.["Type of Account"] === "Admin") {
-              try {
-                  const LibraryStudentsResponse = await fetch(
-                  // Platform.OS === 'ios'? 'http://localhost:5000/GetAllStudents':'http://192.168.31.141:5000/GetAllStudents',
-                  'https://rescheduler-server.onrender.com/GetAllStudents',
-                  { 
-                  method: 'POST', // Specify the request method
-                  headers: {
-                      'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
-                  },
-                  body: JSON.stringify({ "Distribution ID": fetched_StudentInfo?.["Distribution ID"] }), // Convert the request payload to JSON.
-                  })
+  //         // Fetching Library Students Info
+  //         if (fetched_StudentInfo?.["Type of Account"] === "Distributor" || fetched_StudentInfo?.["Type of Account"] === "Admin") {
+  //             try {
+  //                 const LibraryStudentsResponse = await fetch(
+  //                 // Platform.OS === 'ios'? 'http://localhost:5000/GetAllStudents':'http://192.168.31.141:5000/GetAllStudents',
+  //                 'https://rescheduler-server.onrender.com/GetAllStudents',
+  //                 { 
+  //                 method: 'POST', // Specify the request method
+  //                 headers: {
+  //                     'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+  //                 },
+  //                 body: JSON.stringify({ "Distribution ID": fetched_StudentInfo?.["Distribution ID"] }), // Convert the request payload to JSON.
+  //                 })
                   
-                  if (!LibraryStudentsResponse.ok) {  // Handle HTTP errors
-                  throw new Error('Failed to download data from the server');
-                  }
-                  const fetched_LibraryStudentsResponse = await LibraryStudentsResponse.json();
-                  // console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
-                  dispatch(addWholeStudentsDataArray(fetched_LibraryStudentsResponse))
+  //                 if (!LibraryStudentsResponse.ok) {  // Handle HTTP errors
+  //                 throw new Error('Failed to download data from the server');
+  //                 }
+  //                 const fetched_LibraryStudentsResponse = await LibraryStudentsResponse.json();
+  //                 // console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
+  //                 dispatch(addWholeStudentsDataArray(fetched_LibraryStudentsResponse))
               
-              } catch (error) {
-                  console.error('Catch Error: ', error);
-                  props.setLoading(false)
-              }
-          }
-          console.log("Student Signed In");
-          props.setLoading(false)
+  //             } catch (error) {
+  //                 console.error('Catch Error: ', error);
+  //                 props.setLoading(false)
+  //             }
+  //         }
+  //         console.log("Student Signed In");
+  //         props.setLoading(false)
           
-      } catch (error) {
-          console.error('Catch Error: ', error);
-          props.setLoading(false)
-      }
-      navigation.dispatch(
-          CommonActions.reset({
-              index: 0,
-              routes: [
-              {
-                  name: 'DrawerScreens',
-                  state: {
-                      routes: [
-                          {
-                          name: 'TabsDrawer',
-                          state: {
-                              routes: [
-                              {
-                                  name: 'ScheduleTab',
-                              },
-                              ],
-                          },
-                          },
-                      ],
-                  },
-              },
-              ],
-          })
-      );
-    }
-    else {
-      try {
-        props.setLoading(true)
-        const response = await fetch(
-        // Platform.OS === 'ios'? 'http://localhost:5000/MatchNumber':'http://192.168.31.141:5000/MatchNumber',
-        'https://rescheduler-server.onrender.com/MatchNumber',
-        {
-        method: 'POST', // Specify the request method
-        headers: {
-            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
-        },
-        body: JSON.stringify(props.PhoneNumText), // Convert the request payload to JSON.
-        })
+  //     } catch (error) {
+  //         console.error('Catch Error: ', error);
+  //         props.setLoading(false)
+  //     }
+  //     navigation.dispatch(
+  //         CommonActions.reset({
+  //             index: 0,
+  //             routes: [
+  //             {
+  //                 name: 'DrawerScreens',
+  //                 state: {
+  //                     routes: [
+  //                         {
+  //                         name: 'TabsDrawer',
+  //                         state: {
+  //                             routes: [
+  //                             {
+  //                                 name: 'ScheduleTab',
+  //                             },
+  //                             ],
+  //                         },
+  //                         },
+  //                     ],
+  //                 },
+  //             },
+  //             ],
+  //         })
+  //     );
+  //   }
+  //   else {
+  //     try {
+  //       props.setLoading(true)
+  //       const response = await fetch(
+  //       // Platform.OS === 'ios'? 'http://localhost:5000/MatchNumber':'http://192.168.31.141:5000/MatchNumber',
+  //       'https://rescheduler-server.onrender.com/MatchNumber',
+  //       {
+  //       method: 'POST', // Specify the request method
+  //       headers: {
+  //           'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+  //       },
+  //       body: JSON.stringify(props.PhoneNumText), // Convert the request payload to JSON.
+  //       })
 
-        if (!response.ok) {  // Handle HTTP errors
-        throw new Error('Failed to fetch data from the server');
-        }
+  //       if (!response.ok) {  // Handle HTTP errors
+  //       throw new Error('Failed to fetch data from the server');
+  //       }
 
-        const fetched_data = await response.json(); // Parse JSON response
-        props.setIsRegistered(fetched_data);
-        props.setLoading(false)
-        console.log("Is Number Registred? : ", fetched_data)
-        if (fetched_data === "true") {
-          await auth0Number.auth.passwordlessWithSMS({
-            phoneNumber: `+91${props.PhoneNumText}`,
-            send: 'code',
-          });
-          console.log(`OTP Sent to +91${props.PhoneNumText}`)
-          navigation.navigate('StackScreens', { screen: 'OtpVerificationStack', params: { Process: 'SignIn', PhoneNumber: props.PhoneNumText } });
-        } else if (fetched_data === "false") {
-            if (Platform.OS === 'android') {
-              Alert.alert(
-                "Register Yourself", "You are not registered yet.",
-                [{ text: "Register Now" }]
-              )
-            }
-            else if (Platform.OS === 'ios') {
-              Alert.alert(
-                "Register Yourself", "You are not registered yet.",
-                [{ text: "Register Now" }]
-              )
-            }
-            navigation.navigate('StackScreens', { screen: 'SignUpStack' });
-        } else {
-            console.log("Invalid Response from Server");
-        }
-      } catch (error) {
-        props.setLoading(false)
-          console.error('Catch Error: ', error);
-          console.log("Failed to connect to the backend");
-      }
-    }
-  };
+  //       const fetched_data = await response.json(); // Parse JSON response
+  //       props.setIsRegistered(fetched_data);
+  //       props.setLoading(false)
+  //       console.log("Is Number Registred? : ", fetched_data)
+  //       if (fetched_data === "true") {
+  //         await auth0Number.auth.passwordlessWithSMS({
+  //           phoneNumber: `+91${props.PhoneNumText}`,
+  //           send: 'code',
+  //         });
+  //         console.log(`OTP Sent to +91${props.PhoneNumText}`)
+  //         navigation.navigate('StackScreens', { screen: 'OtpVerificationStack', params: { Process: 'SignIn', PhoneNumber: props.PhoneNumText } });
+  //       } else if (fetched_data === "false") {
+  //           if (Platform.OS === 'android') {
+  //             Alert.alert(
+  //               "Register Yourself", "You are not registered yet.",
+  //               [{ text: "Register Now" }]
+  //             )
+  //           }
+  //           else if (Platform.OS === 'ios') {
+  //             Alert.alert(
+  //               "Register Yourself", "You are not registered yet.",
+  //               [{ text: "Register Now" }]
+  //             )
+  //           }
+  //           navigation.navigate('StackScreens', { screen: 'SignUpStack' });
+  //       } else {
+  //           console.log("Invalid Response from Server");
+  //       }
+  //     } catch (error) {
+  //       props.setLoading(false)
+  //         console.error('Catch Error: ', error);
+  //         console.log("Failed to connect to the backend");
+  //     }
+  //   }
+  // };
 
-  const MatchEmail = async (Email: string) => {
+  const MatchEmail = async (Email: string, Name: string) => {
     try {
         const response = await fetch(
         // Platform.OS === 'ios'? 'http://localhost:5000/MatchNumber':'http://192.168.31.141:5000/MatchNumber',
@@ -419,31 +419,31 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
               dispatch(addWholeExistingSubjectsArray(fetched_ExistingSubjectsArray))
 
               // Fetching Library Students Info
-              if (fetched_StudentInfo?.["Type of Account"] === "Distributor" || fetched_StudentInfo?.["Type of Account"] === "Admin") {
-                  try {
-                      const LibraryStudentsResponse = await fetch(
-                      // Platform.OS === 'ios'? 'http://localhost:5000/GetAllStudents':'http://192.168.31.141:5000/GetAllStudents',
-                      'https://rescheduler-server.onrender.com/GetAllStudents',
-                      { 
-                      method: 'POST', // Specify the request method
-                      headers: {
-                          'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
-                      },
-                      body: JSON.stringify({ "Distribution ID": fetched_StudentInfo?.["Distribution ID"] }), // Convert the request payload to JSON.
-                      })
+              // if (fetched_StudentInfo?.["Type of Account"] === "Distributor" || fetched_StudentInfo?.["Type of Account"] === "Admin") {
+              //     try {
+              //         const LibraryStudentsResponse = await fetch(
+              //         // Platform.OS === 'ios'? 'http://localhost:5000/GetAllStudents':'http://192.168.31.141:5000/GetAllStudents',
+              //         'https://rescheduler-server.onrender.com/GetAllStudents',
+              //         { 
+              //         method: 'POST', // Specify the request method
+              //         headers: {
+              //             'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+              //         },
+              //         body: JSON.stringify({ "Distribution ID": fetched_StudentInfo?.["Distribution ID"] }), // Convert the request payload to JSON.
+              //         })
                       
-                      if (!LibraryStudentsResponse.ok) {  // Handle HTTP errors
-                      throw new Error('Failed to download data from the server');
-                      }
-                      const fetched_LibraryStudentsResponse = await LibraryStudentsResponse.json();
-                      // console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
-                      dispatch(addWholeStudentsDataArray(fetched_LibraryStudentsResponse))
+              //         if (!LibraryStudentsResponse.ok) {  // Handle HTTP errors
+              //         throw new Error('Failed to download data from the server');
+              //         }
+              //         const fetched_LibraryStudentsResponse = await LibraryStudentsResponse.json();
+              //         // console.log("Fetched LibraryStudentsResponse: ", fetched_LibraryStudentsResponse)
+              //         dispatch(addWholeStudentsDataArray(fetched_LibraryStudentsResponse))
                   
-                  } catch (error) {
-                      console.error('Catch Error: ', error);
-                      props.setLoading(false)
-                  }
-              }
+              //     } catch (error) {
+              //         console.error('Catch Error: ', error);
+              //         props.setLoading(false)
+              //     }
+              // }
               console.log("Student Signed In");
               
           } catch (error) {
@@ -849,16 +849,16 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
         else if (fetched_data === "false") {
           let NewStudent = {
               "uniqueID": nanoid(),
-              "Name": "",
+              "Name": Name,
               "Phone Number": "",
               "Date Joined": currentDateandMonth,
               "Email ID": Email,
               "Gender": "",
               "Streak": 1,
               "Subscription Type": "Free",
-              "Distribution Name": "",
-              "Distribution Branch": "",
-              "Distribution ID": "",
+              "Start Date": "",
+              "Expiry Date": "",
+              "Payments": [],
               "City": "",
               "State": "",
               "Country": "",
@@ -1271,25 +1271,20 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
     try {
       const credentials = await auth0Mail.webAuth.authorize({
         scope: 'openid profile email',
-        // audience: 'https://YOUR_DOMAIN.auth0.com/userinfo',
-        redirectUri:
-        Platform.OS === 'ios'
-          ? 'com.rescheduler://dev-ohpipjjs64tqo7j8.us.auth0.com/ios/com.rescheduler/callback'
-          : 
-          'https://dev-ohpipjjs64tqo7j8.us.auth0.com/android/com.rescheduler/callback', // <-- Match exactly
-          // 'com.rescheduler://dev-ohpipjjs64tqo7j8.us.auth0.com/android/com.rescheduler/callback', // <-- Match exactly          
-
         connection: 'google-oauth2'
       });
 
       console.log("ID Token:", credentials.idToken);
       console.log("Access Token:", credentials.accessToken);
+
       if (credentials.idToken) {
-        const userInfo: any = jwtDecode(credentials.idToken); // idToken from Auth0
+        const userInfo: any = jwtDecode(credentials.idToken);
         console.log(userInfo);
-        await MatchEmail(userInfo.email);
+
+        await MatchEmail(userInfo.email, userInfo.name);
         setGmailLoading(false);
       }
+
     } catch (error) {
       console.error("Login error", error);
       setGmailLoading(false);
@@ -1340,7 +1335,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
         <View style={[styles.MotiveHeadingBox]}>
           <Text style={styles.MotiveHeading}>Sign In</Text>
         </View>
-        {/* <View>
+        <View>
           { props.PhoneNumberSelected && 
           <TouchableOpacity style={{flexDirection: 'row', borderWidth: 1, borderColor: '#c2c0c7', borderRadius: 10, padding: 10, marginBottom: 10, justifyContent: 'center', alignItems: 'center', columnGap: 15, shadowColor: '#000', shadowOffset: {width: 0, height: 3}, shadowOpacity: 0.2, shadowRadius: 2, backgroundColor: 'white'}} onPress={() => props.setPhoneNumberSelected(false)}>
               <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: 'black'}}>Continue With </Text>
@@ -1381,7 +1376,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             }
           </View>
           }
-          { !props.PhoneNumberSelected && 
+          {/* { !props.PhoneNumberSelected && 
           <View style={styles.OrSpacingBox}>
             <Text style={styles.OrSpacingText}>OR</Text>
           </View>
@@ -1391,9 +1386,9 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 16,
             color: 'white'}}>Continue With Phone Number</Text>
           </TouchableOpacity> 
-          }
-        </View> */}
-        { props.PhoneNumberSelected &&
+          } */}
+        </View>
+        {/* { props.PhoneNumberSelected &&
         <View>
           <View style={styles.CredentialBox}>
             <View style={styles.PhoneNumberBox}>
@@ -1429,7 +1424,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
             </TouchableOpacity>
           </View>
         </View>
-        }
+        } */}
       </View>
     </View>
   );
@@ -1439,7 +1434,7 @@ const SignIn = () => {
   const [PhoneNumText, setPhoneNumText] = useState('');
   const [IsRegistered, setIsRegistered] = useState("")
   const [Loading, setLoading] = useState(false)
-  const [PhoneNumberSelected, setPhoneNumberSelected] = useState(true)
+  const [PhoneNumberSelected, setPhoneNumberSelected] = useState(false)
   const navigation = useNavigation<NavigationProp<any, any>>();
   const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
   
