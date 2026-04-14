@@ -19,7 +19,10 @@ export type StudentInfoDataType = {
     "Phone Number": string | undefined,
     "Date Joined": string,
     "Email ID": string,
+    "Basic Info Filled": boolean,
     "Gender": string,
+    "Birth Date": string,
+    "Course": string,
     "Streak": number,
     "Subscription Type": string,
     "Start Date": string,
@@ -127,7 +130,10 @@ export const StudentInfoSlice = createSlice({
                 "Phone Number": action.payload['Phone Number'],
                 "Date Joined": action.payload['Date Joined'],
                 "Email ID": action.payload['Email ID'],
+                "Basic Info Filled": action.payload['Basic Info Filled'],
                 "Gender": action.payload.Gender,
+                "Birth Date": action.payload['Birth Date'],
+                "Course": action.payload['Course'],
                 "Streak": action.payload.Streak,
                 "Subscription Type": action.payload['Subscription Type'],
                 "Start Date": action.payload['Start Date'],
@@ -153,6 +159,12 @@ export const StudentInfoSlice = createSlice({
             if (action.payload["active"] == false) {
                 state.StudentInfoInitialState["Subscription Type"] = "Expired";
             }
+        },
+        updateBasicInfo: (state, action) => {
+            state.StudentInfoInitialState["Gender"] = action.payload['Gender'];
+            state.StudentInfoInitialState["Birth Date"] = action.payload['Birth Date'];
+            state.StudentInfoInitialState["Course"] = action.payload['Course'];
+            state.StudentInfoInitialState["Basic Info Filled"] = true;
         }
     }
 })
@@ -393,7 +405,7 @@ export const StudentsDataArraySlice = createSlice({
 
 // Exporting the functionalities(reducers) of slice individually because we will be using them individaully to update the states using them in components
 export const { updateLocalStorageInfo } = LocalStorageInfoSlice.actions
-export const { registerUserInfo, updateStreakInfo, updateSubscriptionInfo } = StudentInfoSlice.actions
+export const { registerUserInfo, updateStreakInfo, updateSubscriptionInfo, updateBasicInfo } = StudentInfoSlice.actions
 export const { addScheduleObject, removeScheduleObject, addWholeScheduleArray } = ScheduleArraySlice.actions
 export const { addExistingSubjectsObject, EditExistingSubjectObject, addExistingSubjectsWorkDoneObject, removeExistingSubjectsObject, addWholeExistingSubjectsArray } = ExistingSubjectsArraySlice.actions
 export const { addStudentObject, removeStudentObject, addWholeStudentsDataArray } = StudentsDataArraySlice.actions

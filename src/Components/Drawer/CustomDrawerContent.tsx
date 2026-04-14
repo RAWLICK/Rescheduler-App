@@ -7,6 +7,7 @@ import Infinity from '../Images/Infinity.png'
 import LogOut from '../Images/LogOut.png'
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
+import Auth0 from 'react-native-auth0';
 import { updateLocalStorageInfo
  } from '../../app/Slice';
 import { CommonActions } from '@react-navigation/native';
@@ -19,6 +20,12 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     const [NameHeading, setNameHeading] = useState("")
     const [SubscriptionHeading, setSubscriptionHeading] = useState("")
     const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
+
+    // For Auth0(Email Authentication)
+    const auth0Mail = new Auth0({
+        domain: 'dev-ohpipjjs64tqo7j8.us.auth0.com',
+        clientId: 'nRmEpjXepZqDx39ScNB3qqpGJ5w7ErRg',
+    });
 
     function SubscriptionHeadingDecider() {
         if (StudentInfoData['Subscription Type'] == "Free") {
@@ -48,7 +55,13 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         
     };
 
-    function LogoutPress() {
+    async function LogoutPress() {
+        // try {
+        //     await auth0Mail.webAuth.clearSession();
+        // } catch (e) {
+        //     console.log('Logout error:', e);
+        // }
+
         dispatch(updateLocalStorageInfo("Logout"));
 
         // Clear the persistor and AsyncStorage to remove all the data from the app
@@ -76,6 +89,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     useEffect(() => {
         SubscriptionHeadingDecider()
     }, [])
+
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
         <View style={{padding: 15, paddingLeft: 20, borderBottomColor: 'grey', borderBottomWidth: 0.5, marginBottom: 10}}>
@@ -85,7 +99,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                 <Text style={{color: '#05498d', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>Free Trial - 7 Days</Text>
             </View>
             }
-            {StudentInfoData['Subscription Type'] == "Library" &&
+            {StudentInfoData['Subscription Type'] == "Premium" &&
             <View style={{backgroundColor: '#f8de67', width: 120, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, paddingVertical: 2}}>
                 <Text style={{color: '#806a02', fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 12}}>Premium</Text>
             </View>

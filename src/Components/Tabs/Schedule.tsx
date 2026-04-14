@@ -1445,6 +1445,10 @@ const Schedule: React.FC = () => {
         Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
         return false;
       }
+      else if (StudentInfoData?.["Subscription Type"] == "Expired") {
+        Alert.alert("Premium Ended", `Your Premium Ended. Kindly Renew to continue`)
+        return false;
+      }
     }
 
     useEffect(() => {
@@ -1657,6 +1661,7 @@ const Schedule: React.FC = () => {
       });
       copilotEvents.on("stop", () => {
         setLastEvent(`stop`);
+        
         dispatch(updateLocalStorageInfo("Schedule_Walkthrough_Completed"))
         console.log("Steps Completed")
       });
@@ -1796,7 +1801,7 @@ const Schedule: React.FC = () => {
               currentDateStringFormat={currentDateStringFormat}
             />
 
-            {/* <InfoRegister/> */}
+            <InfoRegister/>
           </View>
         </View>
         )}

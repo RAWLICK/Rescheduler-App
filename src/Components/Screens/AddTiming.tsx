@@ -855,7 +855,6 @@ const AddTiming = () => {
     console.log("Start Time: ", StartTime)
   }, [StartTime])
 
-  
   return (
     <View style={styles.safeView}>
       <StatusBar

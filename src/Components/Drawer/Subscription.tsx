@@ -14,18 +14,20 @@ import StatisticsIcon from '../Images/StatisticsIcon.png'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux' 
 import { RootState } from '../../app/Store';
-import { addDays, format } from "date-fns";
+import { addDays, format, set } from "date-fns";
 import { NavigationProp } from '@react-navigation/native';
 export const { registerUserInfo, updateStreakInfo } = StudentInfoSlice.actions
 import RazorpayCheckout from 'react-native-razorpay'
 import axios from "axios";
 import { StudentInfoSlice } from '../../app/Slice';
+import { get } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 const { width, height } = Dimensions.get('window');
 
 const Subscription = () => {
   const navigation = useNavigation<NavigationProp<any, any>>();
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
+  const [SubscriptionPrice, setSubscriptionPrice] = useState<string>();
 
   const StudentInfoData = useSelector((state: RootState) => state.StudentInfoSliceReducer.StudentInfoInitialState)
 
@@ -65,8 +67,7 @@ const Subscription = () => {
         'Content-Type': 'application/json'
       }
     });
-
-    return res.json();
+    setSubscriptionPrice((await res.json()).pricing.amount);
   };
 
   const createOrder = async () => {
@@ -118,10 +119,19 @@ const Subscription = () => {
         uniqueID: StudentInfoData["uniqueID"]
       });
 
-      RegularStudentInfoUpdate();
+      await RegularStudentInfoUpdate();
+
+      navigation.navigate('DrawerScreens', {
+        screen: 'TabsDrawer',
+        params: {
+          screen: 'ScheduleTab',
+          params: undefined
+        },
+      })
 
     } catch (err) {
       console.log("Payment failed", err);
+      Alert.alert("Payment Failed", `Your payment was unsuccessful. Please try again.`)
     }
   };
 
@@ -131,8 +141,13 @@ const Subscription = () => {
       const [day, month, year] = dateStr.split("/"); // Split dd-mm-yyyy
       return new Date(`${year}-${month}-${day}`);   // Convert to yyyy-mm-dd
     };
-    if (currentDate >= addDays(formatDate(StudentInfoData["Date Joined"]), 7) && StudentInfoData["Subscription Type"] == "Free") {
-    // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free" ) {
+    if (currentDate >= addDays(formatDate(StudentInfoData?.["Date Joined"] || ''), 7) && StudentInfoData?.["Subscription Type"] == "Free") {
+    // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
+      Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
+      return false;
+    }
+    else if (StudentInfoData?.["Subscription Type"] == "Expired") {
+      Alert.alert("Premium Ended", `Your Premium Ended. Kindly Renew to continue`)
       return false;
     }
   }
@@ -151,6 +166,10 @@ const Subscription = () => {
     return `${day} ${month}, ${year}`;
   };
 
+  useEffect(() => {
+    getPricing();
+  }, [])
+  
   useFocusEffect(
     useCallback(() => {
       if (Platform.OS === 'android') {
@@ -162,6 +181,7 @@ const Subscription = () => {
       };
     }, [])
   );
+
   return (
     <View style={{ flex: 1 }}>
       <StatusBar
@@ -216,7 +236,7 @@ const Subscription = () => {
         <View style={{ height: 300, backgroundColor: 'white', borderRadius: 20, padding: 10, paddingTop: 0, marginTop: 15 }}>
           <View style={{ height: 50, borderBottomWidth: 0.5, borderColor: 'black', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: 'black' }}>Rescheduler Premium - </Text>
-            <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: '#a06ef8' }}>₹19/Year</Text>
+            <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 17, color: '#a06ef8' }}>{`${StudentInfoData["Country"] == "India" ? "₹" : "$"}${SubscriptionPrice}/Year`}</Text>
           </View>
 
           <View style={{ flexDirection: 'column', paddingLeft: 10, paddingRight: 10, justifyContent: 'center', alignItems: 'center' }}>
@@ -259,7 +279,7 @@ const Subscription = () => {
           </View>
         </View>
         {
-          StudentInfoData["Subscription Type"] == "Free" && (
+          (StudentInfoData["Subscription Type"] == "Free" || StudentInfoData["Subscription Type"] == "Expired") && (
             <TouchableOpacity style={{ height: 50, borderRadius: 17, justifyContent: 'center', alignItems: 'center', backgroundColor: '#a06ef8', marginTop: 20, elevation: 5 }} onPress={startPayment}>
               <Text style={{ fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', color: 'black', fontSize: 16 }}>Get Premium</Text>
             </TouchableOpacity>

@@ -48,8 +48,12 @@ type LogoSectionPropsType = {};
 type CredentialInputScreenPropsType = {
   PhoneNumberSelected: boolean;
   setPhoneNumberSelected: React.Dispatch<React.SetStateAction<boolean>>;
+  ManualEmailSelected: boolean;
+  setManualEmailSelected: React.Dispatch<React.SetStateAction<boolean>>;
   PhoneNumText: string | undefined;
   setPhoneNumText: React.Dispatch<React.SetStateAction<string>>;
+  EmailText: string | undefined;
+  setEmailText: React.Dispatch<React.SetStateAction<string>>;
   IsRegistered: string | undefined;
   setIsRegistered: React.Dispatch<React.SetStateAction<string>>;
   Loading: boolean;
@@ -93,6 +97,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
   const navigation = useNavigation<NavigationProp<any, any>>();
   const [GmailLoading, setGmailLoading] = useState(false);
   const [AppleLoading, setAppleLoading] = useState(false);
+  const [EmailLoading, setEmailLoading] = useState(false)
   const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
 
   function TrialValidity() {
@@ -104,6 +109,10 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
     if (currentDate >= addDays(formatDate(fetched_StudentInfo?.["Date Joined"] || ''), 7) && fetched_StudentInfo?.["Subscription Type"] == "Free") {
     // if (currentDate >= addDays(formatDate("02/05/2025"), 7) && StudentInfoData["Subscription Type"] == "Free") {
       Alert.alert("Trial Ended", `Your 7 Days Trial Ended. Kindly Subscribe to continue`)
+      return false;
+    }
+    else if (fetched_StudentInfo?.["Subscription Type"] == "Expired") {
+      Alert.alert("Premium Ended", `Your Premium Ended. Kindly Renew to continue`)
       return false;
     }
   }
@@ -119,6 +128,30 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
     domain: 'dev-ohpipjjs64tqo7j8.us.auth0.com',
     clientId: 'nRmEpjXepZqDx39ScNB3qqpGJ5w7ErRg',
   });
+
+  const DetectCountry = async () => {
+    try {
+        const CountryName = await fetch(
+        // Platform.OS === 'ios'? 'http://localhost:5000/GetStudentInfo':'http://10.0.2.2:5000/GetStudentInfo',
+        'https://rescheduler-server.onrender.com/DetectCountry',
+        { 
+          method: 'GET', // Specify the request method
+          headers: {
+            'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+          }
+        })
+        
+        if (!CountryName.ok) {  // Handle HTTP errors
+          throw new Error('Error in DetectCountry Response');
+        }
+        const fetched_CountryName = await CountryName.json();
+        console.log("Fetched Country Name: ", fetched_CountryName)
+        return fetched_CountryName.country_name;
+        
+    } catch (error) {
+        console.error('Catch Error(DetectCountry): ', error);
+    }
+  }
 
   // const MatchNumber = async () => {
   //   if (props.PhoneNumText == '0019') {
@@ -316,7 +349,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
   //   }
   // };
 
-  const MatchEmail = async (Email: string, Name: string) => {
+  const MatchEmail = async (Email: string, Name: string, Country: string) => {
     try {
         const response = await fetch(
         // Platform.OS === 'ios'? 'http://localhost:5000/MatchNumber':'http://192.168.31.141:5000/MatchNumber',
@@ -853,7 +886,10 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
               "Phone Number": "",
               "Date Joined": currentDateandMonth,
               "Email ID": Email,
+              "Basic Info Filled": false,
               "Gender": "",
+              "Birth Date": "",
+              "Course": "",
               "Streak": 1,
               "Subscription Type": "Free",
               "Start Date": "",
@@ -861,7 +897,7 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
               "Payments": [],
               "City": "",
               "State": "",
-              "Country": "",
+              "Country": Country,
               "Type of Account": "User",
               "RescheduledTimes": 0
           }
@@ -1280,8 +1316,9 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
       if (credentials.idToken) {
         const userInfo: any = jwtDecode(credentials.idToken);
         console.log(userInfo);
+        const countryName = await DetectCountry();
 
-        await MatchEmail(userInfo.email, userInfo.name);
+        await MatchEmail(userInfo.email, userInfo.name, countryName);
         setGmailLoading(false);
       }
 
@@ -1321,8 +1358,128 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
     // }
   };
 
-  function PhoneNumberClicked() {
-    props.setPhoneNumberSelected(true)
+  async function ManualEmailClicked() {
+    if (props.EmailText == 'demoaccount0019@gmail.com') {
+      setEmailLoading(true);
+      // Fetching Demo Account Student Info
+      try {
+          const StudentInfoResponse = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/GetStudentInfo':'http://10.0.2.2:5000/GetStudentInfo',
+          'https://rescheduler-server.onrender.com/GetStudentInfo',
+          { 
+            method: 'POST', // Specify the request method
+            headers: {
+              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+            },
+            body: JSON.stringify({
+              "Value": props.EmailText,
+              "Type": "Email ID"
+          }), // Convert the request payload to JSON.
+          })
+          
+          if (!StudentInfoResponse.ok) {  // Handle HTTP errors
+            throw new Error('Failed to add data to the server');
+          }
+          fetched_StudentInfo = await StudentInfoResponse.json();
+          // console.log("Fetched StudentInfo: ", fetched_StudentInfo)
+          dispatch(registerUserInfo(fetched_StudentInfo))
+          dispatch(updateLocalStorageInfo("Login"))
+      } catch (error) {
+          console.error('Catch Error: ', error);
+          props.setLoading(false)
+      }
+
+      // Fetching Demo Account Schedule Array
+      try {
+          const ScheduleArrayResponse = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/GetScheduleArray':'http://192.168.31.141:5000/GetScheduleArray',
+          'https://rescheduler-server.onrender.com/GetScheduleArray',
+          { 
+            method: 'POST', // Specify the request method
+            headers: {
+              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+            },
+            body: JSON.stringify({
+              "Value": props.EmailText,
+              "Type": "Email ID"
+          }), // Convert the request payload to JSON.
+          })
+          
+          if (!ScheduleArrayResponse.ok) {  // Handle HTTP errors
+            throw new Error('Failed to download data from the server');
+          }
+          // props.setLoading(false)
+          fetched_ScheduleArray = await ScheduleArrayResponse.json();
+          // console.log("Fetched ScheduleArray: ", fetched_ScheduleArray)
+          dispatch(addWholeScheduleArray(fetched_ScheduleArray))
+          // console.log("Student Signed In");
+          // navigation.navigate('StackScreens', {screen: 'OnBoardingScreenStack'})
+          
+      } catch (error) {
+          console.error('Catch Error: ', error);
+          props.setLoading(false)
+      }
+
+      // Fetching Demo Account Existing Subjects Array
+      try {
+          const ExistingSubjectsResponse = await fetch(
+          // Platform.OS === 'ios'? 'http://localhost:5000/GetExistingSubjectsArray':'http://192.168.31.141:5000/GetExistingSubjectsArray',
+          'https://rescheduler-server.onrender.com/GetExistingSubjectsArray',
+          { 
+            method: 'POST', // Specify the request method
+            headers: {
+              'Content-Type': 'application/json',  // Set the request header to indicate JSON payload
+            },
+            body: JSON.stringify({
+              "Value": props.EmailText,
+              "Type": "Email ID"
+          }), // Convert the request payload to JSON.
+          })
+          
+          if (!ExistingSubjectsResponse.ok) {  // Handle HTTP errors
+            throw new Error('Failed to download data from the server');
+          }
+          fetched_ExistingSubjectsArray = await ExistingSubjectsResponse.json();
+          // console.log("Fetched ExistingSubjectsArray: ", fetched_ExistingSubjectsArray)
+          dispatch(addWholeExistingSubjectsArray(fetched_ExistingSubjectsArray))
+          
+          console.log("Student Signed In");
+          props.setLoading(false)
+          
+      } catch (error) {
+          console.error('Catch Error: ', error);
+          props.setLoading(false)
+      }
+      navigation.dispatch(
+          CommonActions.reset({
+              index: 0,
+              routes: [
+              {
+                  name: 'DrawerScreens',
+                  state: {
+                      routes: [
+                          {
+                          name: 'TabsDrawer',
+                          state: {
+                              routes: [
+                              {
+                                  name: 'ScheduleTab',
+                              },
+                              ],
+                          },
+                          },
+                      ],
+                  },
+              },
+              ],
+          })
+      );
+      setEmailLoading(false);
+    }
+    else {
+      Alert.alert("Server Down", "Please Login with Google as our email services are currently down");
+      setEmailLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -1336,15 +1493,34 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
           <Text style={styles.MotiveHeading}>Sign In</Text>
         </View>
         <View>
-          { props.PhoneNumberSelected && 
-          <TouchableOpacity style={{flexDirection: 'row', borderWidth: 1, borderColor: '#c2c0c7', borderRadius: 10, padding: 10, marginBottom: 10, justifyContent: 'center', alignItems: 'center', columnGap: 15, shadowColor: '#000', shadowOffset: {width: 0, height: 3}, shadowOpacity: 0.2, shadowRadius: 2, backgroundColor: 'white'}} onPress={() => props.setPhoneNumberSelected(false)}>
-              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: 'black'}}>Continue With </Text>
-              <Image source={GoogleIcon} style={{width: 25, height: 25, alignSelf: 'center'}}/>
-              <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: 'black'}}>| </Text>
-              <Image source={AppleIcon} style={{width: 25, height: 25, alignSelf: 'center'}}/>
-          </TouchableOpacity>
+          { props.ManualEmailSelected && 
+          <View>
+            <TouchableOpacity style={{borderRadius: 15, borderWidth: 1, borderColor: '#c2c0c7', height: 50, marginBottom: 15, justifyContent: 'center', paddingLeft: 20}} onPress={ManualEmailClicked}>
+              <TextInput placeholder='Email ID' placeholderTextColor={'#c2c0c7'} value={props.EmailText}
+                onChangeText={props.setEmailText} style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: 'black'}}/>
+            </TouchableOpacity>
+            {EmailLoading ?
+              <View style={{borderRadius: 15, height: 50, marginBottom: 15, justifyContent: 'center', alignItems: 'center', backgroundColor: 'orange'}}>
+                <ActivityIndicator size="small" color="black" />
+              </View>
+              :
+              <TouchableOpacity style={{borderRadius: 15, height: 50, marginBottom: 15, justifyContent: 'center', alignItems: 'center', backgroundColor: 'orange'}} onPress={ManualEmailClicked}>
+                <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 15, color: 'white'}}>Next</Text>
+              </TouchableOpacity>
+            }
+            
+            <View style={styles.OrSpacingBox}>
+              <Text style={styles.OrSpacingText}>OR</Text>
+            </View>
+            <TouchableOpacity style={{flexDirection: 'row', borderWidth: 1, borderColor: '#c2c0c7', borderRadius: 10, padding: 10, marginBottom: 10, justifyContent: 'center', alignItems: 'center', columnGap: 15, shadowColor: '#000', shadowOffset: {width: 0, height: 3}, shadowOpacity: 0.2, shadowRadius: 2, backgroundColor: 'white'}} onPress={() => props.setManualEmailSelected(false)}>
+                <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: 'black'}}>Continue With </Text>
+                <Image source={GoogleIcon} style={{width: 25, height: 25, alignSelf: 'center'}}/>
+                <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: 'black'}}>| </Text>
+                <Image source={AppleIcon} style={{width: 25, height: 25, alignSelf: 'center'}}/>
+            </TouchableOpacity>
+          </View>
           }
-          { !props.PhoneNumberSelected && 
+          { !props.ManualEmailSelected && 
           <View>
             { GmailLoading ? 
             <View style={{height: 50, flexDirection: 'row', borderWidth: 1, borderColor: '#c2c0c7', borderRadius: 10, padding: 10, marginBottom: 10, justifyContent: 'center', alignItems: 'center', columnGap: 15, elevation: 3,
@@ -1374,57 +1550,15 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
                 <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium', fontSize: 15, color: 'black'}}>Continue With Apple</Text>
             </TouchableOpacity>
             }
-          </View>
-          }
-          {/* { !props.PhoneNumberSelected && 
-          <View style={styles.OrSpacingBox}>
-            <Text style={styles.OrSpacingText}>OR</Text>
-          </View>
-          }
-          { !props.PhoneNumberSelected && 
-          <TouchableOpacity style={[styles.RegisterNewUserBox, {backgroundColor: 'orange', elevation: 0}]} onPress={PhoneNumberClicked}>
-            <Text style={{fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold', fontSize: 16,
-            color: 'white'}}>Continue With Phone Number</Text>
-          </TouchableOpacity> 
-          } */}
-        </View>
-        {/* { props.PhoneNumberSelected &&
-        <View>
-          <View style={styles.CredentialBox}>
-            <View style={styles.PhoneNumberBox}>
-              <TouchableOpacity style={styles.CountryCodeBox}>
-                <Text style={styles.CountryCodeText}>+91</Text>
-              </TouchableOpacity>
-              <TextInput
-                style={styles.PhoneNumberText}
-                placeholder="Phone Number"
-                placeholderTextColor="#c2c0c7"
-                keyboardType="numeric"
-                value={props.PhoneNumText}
-                onChangeText={props.setPhoneNumText}
-              />
-            </View>
-
-            {props.Loading? 
-            <View style={styles.ContinueBox}>
-              <ActivityIndicator size="small" color="#ffffff" />
-            </View>
-            :
-            <TouchableOpacity style={styles.ContinueBox} onPress={MatchNumber}>
-              <Text style={styles.ContinueText}>Continue</Text>
-            </TouchableOpacity>
-            }
-          </View>
-          <View>
             <View style={styles.OrSpacingBox}>
               <Text style={styles.OrSpacingText}>OR</Text>
             </View>
-            <TouchableOpacity style={styles.RegisterNewUserBox} onPress={()=> navigation.navigate('StackScreens', { screen: 'SignUpStack'})}>
-              <Text style={styles.RegisterNewUserText}>Register New User</Text>
+            <TouchableOpacity style={styles.ContinueBox} onPress={() => props.setManualEmailSelected(true)}>
+              <Text style={styles.ContinueText}>Sign In with Email</Text>
             </TouchableOpacity>
           </View>
+          }
         </View>
-        } */}
       </View>
     </View>
   );
@@ -1432,9 +1566,11 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
 
 const SignIn = () => {
   const [PhoneNumText, setPhoneNumText] = useState('');
+  const [EmailText, setEmailText] = useState('')
   const [IsRegistered, setIsRegistered] = useState("")
   const [Loading, setLoading] = useState(false)
   const [PhoneNumberSelected, setPhoneNumberSelected] = useState(false)
+  const [ManualEmailSelected, setManualEmailSelected] = useState(false)
   const navigation = useNavigation<NavigationProp<any, any>>();
   const LocalStorageInfo = useSelector((state: RootState) => state.LocalStorageInfoSliceReducer.LocalStorageInfoInitialState)
   
@@ -1481,6 +1617,10 @@ const SignIn = () => {
         <CredentialInputSection
           PhoneNumberSelected={PhoneNumberSelected}
           setPhoneNumberSelected={setPhoneNumberSelected}
+          ManualEmailSelected={ManualEmailSelected}
+          setManualEmailSelected={setManualEmailSelected}
+          EmailText={EmailText}
+          setEmailText={setEmailText}
           IsRegistered={IsRegistered}
           setIsRegistered={setIsRegistered}
           PhoneNumText={PhoneNumText}
@@ -1519,9 +1659,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   ContinueText: {
-    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Bold' : 'sf-pro-display-bold',
+    fontFamily: Platform.OS === 'ios' ? 'SFProDisplay-Medium' : 'sf-pro-display-medium',
     color: 'white',
-    fontSize: 19,
+    fontSize: 16,
   },
   ContinueBox: {
     justifyContent: 'center',
