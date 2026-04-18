@@ -834,23 +834,23 @@ const CredentialInputSection = (props: CredentialInputScreenPropsType) => {
           // First come state and inside there are routes which then create new navigation stack
           // routes[0] is 'DrawerScreens', so it becomes the active root screen. It means: “Activate the first screen (at position 0) from the routes array.”
           if (TrialValidity() == false) {
-              navigation.dispatch(
-                  CommonActions.reset({
-                      index: 0,
-                      routes: [
-                          {
-                              name: 'DrawerScreens',
-                              state: {
-                                  routes: [
-                                      {
-                                          name: 'SubscriptionDrawer',
-                                      },
-                                  ],
-                              },
+            navigation.dispatch(
+              CommonActions.reset({
+                  index: 0,
+                  routes: [
+                      {
+                          name: 'DrawerScreens',
+                          state: {
+                              routes: [
+                                  {
+                                      name: 'SubscriptionDrawer',
+                                  },
+                              ],
                           },
-                      ],
-                  })
-              );
+                      },
+                  ],
+              })
+            );
           }
           else {
             navigation.dispatch(

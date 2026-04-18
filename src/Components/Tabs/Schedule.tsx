@@ -1537,11 +1537,6 @@ const Schedule: React.FC = () => {
       }
     }, [previousDay])
     
-    useEffect(() => {
-      // console.log("Reschedule Status: ", rescheduleStatus)
-      // console.log("rough Reschedule Status: ", roughRescheduleStatus.current)
-    }, [rescheduleStatus])
-    
     // useEffect(() => {
     //   console.log("PriorSelectionList: ", PriorSelections)
     // }, [PriorSelections]);
@@ -1654,14 +1649,13 @@ const Schedule: React.FC = () => {
 
     useEffect(() => {
       copilotEvents.on("stepChange", (step) => {
-        setLastEvent(`stepChange: ${step?.name}`);
+      setLastEvent(`stepChange: ${step?.name}`);
       });
       copilotEvents.on("start", () => {
         setLastEvent(`start`);
       });
       copilotEvents.on("stop", () => {
         setLastEvent(`stop`);
-        
         dispatch(updateLocalStorageInfo("Schedule_Walkthrough_Completed"))
         console.log("Steps Completed")
       });
@@ -1681,10 +1675,6 @@ const Schedule: React.FC = () => {
         };
       }, [])
     );
-
-    useEffect(() => {
-      console.log("Local Storage Info: ", LocalStorageInfo)
-    }, [])
 
     useEffect(() => {
       navigation.setOptions({
@@ -1719,11 +1709,11 @@ const Schedule: React.FC = () => {
         {LocalStorageInfo["VideoPlayed"] == true && (
         <View style={styles.mainStyle} 
               onLayout={() => {
-                if (LocalStorageInfo["Schedule_Walkthrough_Completed"] == false) {
+                if (LocalStorageInfo["Schedule_Walkthrough_Completed"] == false && StudentInfoData["Basic Info Filled"] == true) {
                   setTimeout(() => {
                     start(); 
                   }, 2000);
-                } 
+                }
               }}
               >
           <LinearGradient
@@ -1801,7 +1791,9 @@ const Schedule: React.FC = () => {
               currentDateStringFormat={currentDateStringFormat}
             />
 
-            <InfoRegister/>
+            {StudentInfoData["Basic Info Filled"] == false && (
+              <InfoRegister/>
+            )}
           </View>
         </View>
         )}

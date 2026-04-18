@@ -123,7 +123,8 @@ const InfoRegister = () => {
                     Updates: {
                         "Gender": ActiveGender,
                         "Birth Date": BirthDate,
-                        "Course": ActiveCourse
+                        "Course": ActiveCourse,
+                        "Basic Info Filled": true
                     }
                 }), // Convert the request payload to JSON.
                 })
